@@ -81,6 +81,8 @@ fn registry(only: Option<&[LayerArg]>) -> Registry {
     }
     if want(Layer::Container) {
         reg.push(Box::new(halftone_container::jpeg::QuantTables));
+        reg.push(Box::new(halftone_container::png::PngWriter));
+        reg.push(Box::new(halftone_container::exif::ExifConsistency));
     }
     if want(Layer::Mark) {
         reg.push(Box::new(halftone_mark::DwtDct { payload: b"SDV2".to_vec() }));

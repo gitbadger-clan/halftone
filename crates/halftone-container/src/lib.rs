@@ -1,10 +1,16 @@
 //! Layer 4 — container forensics. Deterministic, fast, no models.
 //!
-//! Sub-sources (each is its own [`EvidenceSource`] so they get separate verdicts):
-//! - [`jpeg::QuantTables`]: match luma/chroma quant tables and subsampling against a
-//!   fingerprint DB of camera firmwares, editors, and generator export paths.
-//! - `jpeg::DoubleCompression` (planned): DCT-histogram periodicity.
-//! - `png::ChunkOrder` (planned): chunk order/ancillary chunks vs. known writers.
-//! - `exif::Consistency` (planned): make/model vs. quant tables vs. dimensions.
+//! Each check is its own [`halftone_core::EvidenceSource`] so it gets a separate,
+//! independently calibratable verdict — never a merged "container score":
+//! - [`jpeg::QuantTables`]: quantization tables + chroma subsampling → encoder class
+//!   (libjpeg-family re-encode vs Adobe vs camera/proprietary).
+//! - [`png::PngWriter`]: PNG chunk inventory + embedded generation-parameters text.
+//! - [`exif::ExifConsistency`]: EXIF/XMP self-identification and camera-metadata
+//!   contradictions.
+//! - `jpeg::DoubleCompression` (planned): DCT-histogram periodicity — needs
+//!   coefficient-level entropy decoding, tracked separately.
 
+pub mod exif;
 pub mod jpeg;
+pub mod png;
+pub mod signatures;
