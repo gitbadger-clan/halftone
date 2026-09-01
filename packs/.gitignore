@@ -1,0 +1,8 @@
+# Allowlist: only pack manifests and published calibration are tracked.
+# Weights (*.onnx) and archives (*.tar.zst) are distributed by `halftone packs update`.
+*
+!*/
+!.gitignore
+!README.md
+!**/pack.json
+!**/calibration.json

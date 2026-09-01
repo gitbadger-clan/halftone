@@ -1,0 +1,10 @@
+# Tiny synthetic fixtures used by unit tests are tracked.
+# Bench corpora (real photos by source class + generated sets) are not:
+# only the corpus manifest is committed, and paths in it are relative to it.
+corpus/*
+!corpus/*.json
+!corpus/.gitkeep
+
+# Reports written next to fixtures during manual testing
+*.halftone.html
+*.halftone.json

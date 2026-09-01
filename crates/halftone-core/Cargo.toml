@@ -1,0 +1,19 @@
+[package]
+name = "halftone-core"
+description = "Evidence model, verdict schema and source registry for Halftone"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+sha2.workspace = true
+hex.workspace = true
+tracing.workspace = true
+
+[lints]
+workspace = true

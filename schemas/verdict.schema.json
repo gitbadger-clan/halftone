@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://halftone.gitbadger.com/schemas/verdict/1.0.0",
+  "title": "Halftone Inspection",
+  "type": "object",
+  "required": ["schema_version", "tool", "asset", "evidence", "created_at"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "tool": { "type": "object", "required": ["name", "version"] },
+    "asset": {
+      "type": "object",
+      "required": ["modality", "mime", "sha256", "size_bytes"],
+      "properties": { "modality": { "enum": ["image", "video", "audio", "text"] } }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["layer", "source", "status", "rationale", "duration_ms"],
+        "properties": {
+          "layer": { "enum": ["manifest", "container", "mark", "blind"] },
+          "source": { "type": "object", "required": ["name", "version"] },
+          "status": { "enum": ["present", "absent", "inconclusive", "not_applicable"] },
+          "statistic": {
+            "type": "object",
+            "required": ["name", "value", "null_model"],
+            "properties": { "p_value": { "type": "number" }, "threshold": { "type": "number" } }
+          },
+          "calibration": {
+            "type": "object",
+            "required": ["set_id", "sha256", "fpr_target"]
+          },
+          "rationale": { "type": "string" },
+          "details": {}
+        }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

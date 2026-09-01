@@ -1,0 +1,30 @@
+[package]
+name = "halftone-cli"
+description = "Halftone: layered provenance and forensics for image, video, audio and text"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "halftone"
+path = "src/main.rs"
+
+[dependencies]
+halftone-core.workspace = true
+halftone-c2pa.workspace = true
+halftone-container.workspace = true
+halftone-mark.workspace = true
+halftone-blind.workspace = true
+halftone-bench.workspace = true
+halftone-packs.workspace = true
+halftone-report.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[lints]
+workspace = true

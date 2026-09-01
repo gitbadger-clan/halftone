@@ -1,0 +1,74 @@
+# ---- Rust ----
+target/
+**/*.rs.bk
+*.pdb
+# Cargo.lock is tracked on purpose: this workspace ships a binary (halftone-cli),
+# and calibrations must be reproducible against an exact dependency set.
+
+# ---- Python (ONNX export / head training only; never imported by Rust) ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.python-version
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# ---- Model weights and pack archives: never committed, anywhere ----
+*.onnx
+*.onnx.data
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.gguf
+*.tar.zst
+# packs/.gitignore allowlists pack.json + calibration.json inside packs/.
+
+# ---- Keys, licenses, secrets ----
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+secrets/
+# C2PA trust anchors are public certs, not secrets. Keep them in a tracked
+# directory and un-ignore explicitly, e.g.:
+# !trust/**/*.pem
+
+# ---- Halftone runtime outputs ----
+# `halftone inspect --report` writes <input>.halftone.html next to the input.
+*.halftone.html
+*.halftone.json
+/reports/
+/dist/
+
+# ---- Bench corpora ----
+# Real/generated media lives under testdata/corpus/ and is not tracked;
+# see testdata/.gitignore (only corpus manifests are committed).
+
+# ---- Profiling / coverage ----
+flamegraph.svg
+perf.data*
+*.profraw
+*.profdata
+lcov.info
+tarpaulin-report.html
+cobertura.xml
+
+# ---- Repo snapshots for LLM context (repomix etc.) ----
+codebase.xml
+repomix-output.*
+
+# ---- Editors / OS ----
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
