@@ -40,6 +40,33 @@ pub struct PngInfo {
     pub text: Vec<TextEntry>,
     /// Whether an `eXIf` chunk is present.
     pub has_exif: bool,
+    /// Whether a `caBX` (JUMBF / C2PA) chunk is present.
+    pub has_c2pa: bool,
+}
+
+impl PngInfo {
+    /// Whether a chunk type is present.
+    pub fn has(&self, ty: &str) -> bool {
+        self.chunks.iter().any(|c| c == ty)
+    }
+
+    /// Heuristic writer family from the ancillary-chunk inventory. A hint, not a
+    /// fingerprint: this is what the layout is *consistent with*.
+    pub fn writer_hint(&self) -> &'static str {
+        let anc = |t: &str| self.has(t);
+        let bare = !anc("pHYs") && !anc("gAMA") && !anc("sRGB") && !anc("cHRM") && !anc("iCCP");
+        if anc("iDOT") {
+            "apple_imageio" // Apple's private parallel-decode chunk: macOS/iOS screenshots & exports
+        } else if self.text.iter().any(|t| t.keyword == "XML:com.adobe.xmp") && anc("pHYs") {
+            "adobe"
+        } else if bare {
+            "minimal_library" // Pillow default, many generation pipelines, some web tools
+        } else if anc("sRGB") && anc("gAMA") && anc("pHYs") {
+            "libpng_full" // libpng-based apps, Windows imaging, GIMP, browsers
+        } else {
+            "other"
+        }
+    }
 }
 
 /// Parse PNG chunk structure and uncompressed text. Bounds-checked; never panics.
@@ -82,6 +109,7 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
                 }
             }
             b"eXIf" => info.has_exif = true,
+            b"caBX" => info.has_c2pa = true,
             _ => {}
         }
         info.chunks.push(ty_str);
@@ -111,17 +139,23 @@ fn parse_itxt(data: &[u8]) -> Option<TextEntry> {
     // rest = [compression_flag, compression_method, lang\0, translated_keyword\0, text...]
     let comp_flag = *rest.first()?;
     let mut p = 2; // skip compression flag + method
-    // Skip the language tag and translated keyword (both NUL-terminated).
+                   // Skip the language tag and translated keyword (both NUL-terminated).
     for _ in 0..2 {
         let off = rest.get(p..)?.iter().position(|&c| c == 0)?;
         p += off + 1;
     }
     let text = rest.get(p..)?;
     if comp_flag == 0 {
-        Some(TextEntry { keyword, value: clip(&String::from_utf8_lossy(text), 4096) })
+        Some(TextEntry {
+            keyword,
+            value: clip(&String::from_utf8_lossy(text), 4096),
+        })
     } else {
         // Compressed (zlib) — record the keyword only; we don't pull in an inflate dep.
-        Some(TextEntry { keyword, value: "<compressed>".into() })
+        Some(TextEntry {
+            keyword,
+            value: "<compressed>".into(),
+        })
     }
 }
 
@@ -143,7 +177,10 @@ const GEN_KEYWORDS: &[&str] = &["parameters", "prompt", "workflow", "sd-metadata
 
 impl EvidenceSource for PngWriter {
     fn id(&self) -> SourceId {
-        SourceId { name: "png_writer".into(), version: env!("CARGO_PKG_VERSION").into() }
+        SourceId {
+            name: "png_writer".into(),
+            version: env!("CARGO_PKG_VERSION").into(),
+        }
     }
     fn layer(&self) -> Layer {
         Layer::Container
@@ -167,13 +204,17 @@ impl EvidenceSource for PngWriter {
         let param_kw = info
             .text
             .iter()
-            .find(|t| GEN_KEYWORDS.contains(&t.keyword.to_lowercase().as_str()) && t.value.len() > 8)
+            .find(|t| {
+                GEN_KEYWORDS.contains(&t.keyword.to_lowercase().as_str()) && t.value.len() > 8
+            })
             .map(|t| t.keyword.clone());
 
         let (status, rationale) = match (&hit, &param_kw) {
             (Some((tool, kw)), _) => (
                 Status::Present,
-                format!("Embedded metadata names a generation tool: {tool} (in PNG text chunk `{kw}`)."),
+                format!(
+                    "Embedded metadata names a generation tool: {tool} (in PNG text chunk `{kw}`)."
+                ),
             ),
             (None, Some(kw)) => (
                 Status::Present,
@@ -196,10 +237,12 @@ impl EvidenceSource for PngWriter {
                         Status::Inconclusive,
                         format!(
                             "No self-identifying metadata. {} chunks, colour type {}, {}interlaced; \
-                             writer family inferred from chunk inventory only.",
+                             layout consistent with a {} writer. PNG is never camera-native, so \
+                             this is an export-path hint, not evidence of origin.",
                             info.chunks.len(),
                             info.color_type,
-                            if info.interlace == 0 { "non-" } else { "" }
+                            if info.interlace == 0 { "non-" } else { "" },
+                            info.writer_hint().replace('_', " ")
                         ),
                     ),
                 }
@@ -221,6 +264,8 @@ impl EvidenceSource for PngWriter {
                 "color_type": info.color_type,
                 "interlace": info.interlace,
                 "has_exif_chunk": info.has_exif,
+                "has_c2pa_chunk": info.has_c2pa,
+                "writer_hint": info.writer_hint(),
                 "text_keywords": info.text.iter().map(|t| &t.keyword).collect::<Vec<_>>(),
             }),
             duration_ms: 0,
