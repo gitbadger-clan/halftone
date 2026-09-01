@@ -16,7 +16,10 @@ pub struct DwtDct {
 
 impl EvidenceSource for DwtDct {
     fn id(&self) -> SourceId {
-        SourceId { name: "dwtdct".into(), version: env!("CARGO_PKG_VERSION").into() }
+        SourceId {
+            name: "dwtdct".into(),
+            version: env!("CARGO_PKG_VERSION").into(),
+        }
     }
     fn layer(&self) -> Layer {
         Layer::Mark
@@ -26,6 +29,10 @@ impl EvidenceSource for DwtDct {
     }
     fn assess(&self, _a: &Asset) -> halftone_core::Result<Evidence> {
         // TODO: decode → Haar DWT → 4x4 block DCT → threshold → bit accuracy → z-test.
-        Ok(Evidence::not_applicable(self.layer(), self.id(), "dwtdct decoder not yet implemented"))
+        Ok(Evidence::not_applicable(
+            self.layer(),
+            self.id(),
+            "dwtdct decoder not yet implemented",
+        ))
     }
 }

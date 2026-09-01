@@ -13,7 +13,10 @@ pub struct FeatureProbe {
 
 impl EvidenceSource for FeatureProbe {
     fn id(&self) -> SourceId {
-        SourceId { name: "feature_probe".into(), version: self.pack.clone() }
+        SourceId {
+            name: "feature_probe".into(),
+            version: self.pack.clone(),
+        }
     }
     fn layer(&self) -> Layer {
         Layer::Blind
@@ -24,6 +27,10 @@ impl EvidenceSource for FeatureProbe {
     fn assess(&self, _a: &Asset) -> halftone_core::Result<Evidence> {
         // TODO: packs::load(&self.pack)? → preprocess → encoder → head → logit
         //       → threshold from pack calibration.json → Evidence with Statistic.
-        Ok(Evidence::not_applicable(self.layer(), self.id(), "no blind model pack installed"))
+        Ok(Evidence::not_applicable(
+            self.layer(),
+            self.id(),
+            "no blind model pack installed",
+        ))
     }
 }
