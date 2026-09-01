@@ -15,10 +15,28 @@ Four independent evidence layers, four separate verdicts, no merged score:
 halftone inspect photo.jpg
 halftone inspect --json --only manifest,container *.jpg
 halftone inspect --report clip.mp4
+halftone inspect --fingerprints my-writers.json --trust-anchors anchors.pem photo.jpg
+halftone fingerprint --writer "Canon EOS R5 fw 1.8.1" --class camera --into my-writers.json shots/*.jpg
 halftone sign photo.jpg --key mykey.pem
 halftone bench corpus.json
 halftone packs update
 ```
+
+## Container layer (implemented)
+
+| Source | Format | What it reports | `Present` means |
+|---|---|---|---|
+| `jpeg_quant` | JPEG | Annex-K quality (luma + chroma), chroma subsampling, Huffman class (default/optimised), marker inventory, writer fingerprint → DB lookup | libjpeg-family or Adobe re-encode, or a DB match. Encoder path, not authorship. |
+| `jpeg_double` | JPEG (baseline) | Double-quantization comb in luma DCT histograms (own baseline Huffman decoder) | Re-encoded after an earlier JPEG encoding. Blind spots stated in the rationale. |
+| `png_writer` | PNG | Chunk inventory, writer-family hint, `caBX`, generation-parameters text | Embedded metadata names a generator or carries pipeline parameters. |
+| `webp_writer` | WebP | Chunk inventory, lossy/lossless, EXIF/XMP | XMP names a generator. |
+| `exif_consistency` | JPEG/PNG/WebP/HEIF | Self-identification, camera-metadata contradictions, EXIF-vs-frame dimensions | Metadata explicitly names a generator. Contradictions are `Inconclusive`. |
+
+None of these carries a calibration yet; the `details` object exposes every raw
+discriminant so `halftone bench` can measure per-signal false-positive rates against a
+labelled corpus. The `jpeg_double` threshold is provisional and says so.
+
+Layer 1 (`c2pa`) is implemented behind the `c2pa` feature: `cargo build --features halftone-cli/c2pa`.
 
 ## Layout
 
@@ -28,7 +46,7 @@ halftone/
 ├── crates/
 │   ├── halftone-core/          Asset, Evidence, Status, EvidenceSource trait, Registry
 │   ├── halftone-c2pa/          layer 1
-│   ├── halftone-container/     layer 4: jpeg quant tables, png chunks, exif consistency
+│   ├── halftone-container/     layer 4: jpeg quant/huffman/double-compression, png, webp, exif
 │   ├── halftone-mark/          layer 2: detect + embed (DWT-DCT, AudioSeal via ort)
 │   ├── halftone-blind/         layer 3: ort-backed classifiers from signed packs
 │   ├── halftone-bench/         eval harness → calibration.json
