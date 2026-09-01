@@ -56,7 +56,11 @@ impl Registry {
             let id = src.id();
             let layer = src.layer();
             if !src.supports(asset) {
-                evidence.push(Evidence::not_applicable(layer, id, "source does not support this asset"));
+                evidence.push(Evidence::not_applicable(
+                    layer,
+                    id,
+                    "source does not support this asset",
+                ));
                 continue;
             }
             let t0 = Instant::now();
@@ -125,7 +129,10 @@ mod tests {
     struct Stub(Layer, &'static str, Status);
     impl EvidenceSource for Stub {
         fn id(&self) -> SourceId {
-            SourceId { name: self.1.into(), version: "test".into() }
+            SourceId {
+                name: self.1.into(),
+                version: "test".into(),
+            }
         }
         fn layer(&self) -> Layer {
             self.0
@@ -150,7 +157,10 @@ mod tests {
     struct Failing;
     impl EvidenceSource for Failing {
         fn id(&self) -> SourceId {
-            SourceId { name: "boom".into(), version: "test".into() }
+            SourceId {
+                name: "boom".into(),
+                version: "test".into(),
+            }
         }
         fn layer(&self) -> Layer {
             Layer::Blind
@@ -164,7 +174,10 @@ mod tests {
     }
 
     fn tool() -> ToolInfo {
-        ToolInfo { name: "halftone".into(), version: "test".into() }
+        ToolInfo {
+            name: "halftone".into(),
+            version: "test".into(),
+        }
     }
 
     #[test]
@@ -175,7 +188,11 @@ mod tests {
             .with(Stub(Layer::Manifest, "c2pa", Status::Present));
         let asset = Asset::from_bytes(vec![0xFF, 0xD8, 0xFF, 0xE0], None).unwrap();
         let out = reg.inspect(&asset, tool());
-        let names: Vec<_> = out.evidence.iter().map(|e| e.source.name.as_str()).collect();
+        let names: Vec<_> = out
+            .evidence
+            .iter()
+            .map(|e| e.source.name.as_str())
+            .collect();
         assert_eq!(names, ["c2pa", "blind", "boom"]);
         assert_eq!(out.evidence[2].status, Status::Inconclusive);
         assert_eq!(out.schema_version, SCHEMA_VERSION);

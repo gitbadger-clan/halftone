@@ -148,7 +148,10 @@ mod tests {
     fn evidence_roundtrips_json() {
         let e = Evidence::not_applicable(
             Layer::Mark,
-            SourceId { name: "dwtdct".into(), version: "0.1.0".into() },
+            SourceId {
+                name: "dwtdct".into(),
+                version: "0.1.0".into(),
+            },
             "no image data",
         );
         let s = serde_json::to_string(&e).unwrap();

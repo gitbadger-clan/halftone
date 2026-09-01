@@ -39,7 +39,13 @@ impl Asset {
         let (modality, mime) = sniff(&bytes)
             .ok_or_else(|| crate::Error::Unsupported("unrecognised file type".into()))?;
         let sha256 = hex::encode(Sha256::digest(&bytes));
-        Ok(Self { path, bytes, modality, mime: mime.to_string(), sha256 })
+        Ok(Self {
+            path,
+            bytes,
+            modality,
+            mime: mime.to_string(),
+            sha256,
+        })
     }
 
     /// Build from a file.
@@ -53,7 +59,13 @@ impl Asset {
     pub fn text(s: impl Into<String>, path: Option<PathBuf>) -> Self {
         let bytes = s.into().into_bytes();
         let sha256 = hex::encode(Sha256::digest(&bytes));
-        Self { path, bytes, modality: Modality::Text, mime: "text/plain".into(), sha256 }
+        Self {
+            path,
+            bytes,
+            modality: Modality::Text,
+            mime: "text/plain".into(),
+            sha256,
+        }
     }
 
     /// Serializable summary for reports.
