@@ -2,15 +2,24 @@
 //!
 //! Each check is its own [`halftone_core::EvidenceSource`] so it gets a separate,
 //! independently calibratable verdict — never a merged "container score":
-//! - [`jpeg::QuantTables`]: quantization tables + chroma subsampling → encoder class
-//!   (libjpeg-family re-encode vs Adobe vs camera/proprietary).
-//! - [`png::PngWriter`]: PNG chunk inventory + embedded generation-parameters text.
-//! - [`exif::ExifConsistency`]: EXIF/XMP self-identification and camera-metadata
-//!   contradictions.
-//! - `jpeg::DoubleCompression` (planned): DCT-histogram periodicity — needs
-//!   coefficient-level entropy decoding, tracked separately.
+//! - [`jpeg::QuantTables`] (`jpeg_quant`): quantization + Huffman tables, chroma
+//!   subsampling, marker inventory → encoder class and a writer fingerprint looked up
+//!   in [`fingerprints::FingerprintDb`].
+//! - [`double::DoubleCompression`] (`jpeg_double`): double-quantization comb in the
+//!   luma DCT-coefficient histograms, via the baseline decoder in [`jpeg::coeffs`].
+//! - [`png::PngWriter`] (`png_writer`): PNG chunk inventory, writer-family hint,
+//!   embedded generation-parameters text.
+//! - [`webp::WebpWriter`] (`webp_writer`): WebP chunk inventory and XMP.
+//! - [`exif::ExifConsistency`] (`exif_consistency`): self-identifying metadata, camera
+//!   contradictions, EXIF-vs-frame dimension conflicts.
+//!
+//! All sources report *encoder path* and *self-identification* facts. None of them
+//! claims authorship on its own; the rationale strings say so.
 
+pub mod double;
 pub mod exif;
+pub mod fingerprints;
 pub mod jpeg;
 pub mod png;
 pub mod signatures;
+pub mod webp;

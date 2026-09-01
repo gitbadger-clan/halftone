@@ -367,9 +367,11 @@ name = "halftone-container"
 version = "0.1.0"
 dependencies = [
  "halftone-core",
+ "hex",
  "kamadak-exif",
  "serde",
  "serde_json",
+ "sha2",
  "tracing",
 ]
 

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "fingerprint": "f6f7644aa15d63cf1bc460b7d2767155871ab7748554f629ddc925a7ba778cf8",
+      "writer": "libjpeg default marker order (Pillow/OpenCV), q=75, 4:2:0, standard Huffman",
+      "class": "library",
+      "notes": "4:2:0 subsampling, 2 tables, Standard huffman, ids=jfif, progressive=false, jfif=true, adobe=false",
+      "source": "harvested from Pillow 12.1.1 / libjpeg-turbo, halftone dev"
+    },
+    {
+      "fingerprint": "58c281b05f278630387ee99eea11716d9539c5fc9f86e0da14395113f79a535f",
+      "writer": "libjpeg default marker order (Pillow/OpenCV), q=80, 4:2:0, standard Huffman",
+      "class": "library",
+      "notes": "4:2:0 subsampling, 2 tables, Standard huffman, ids=jfif, progressive=false, jfif=true, adobe=false",
+      "source": "harvested from Pillow 12.1.1 / libjpeg-turbo, halftone dev"
+    },
+    {
+      "fingerprint": "8e4dea7cae7662dd22def9c9745ca0b07004ea22c5999219a61a75d8b150356f",
+      "writer": "libjpeg default marker order (Pillow/OpenCV), q=95, 4:2:0, standard Huffman",
+      "class": "library",
+      "notes": "4:2:0 subsampling, 2 tables, Standard huffman, ids=jfif, progressive=false, jfif=true, adobe=false",
+      "source": "harvested from Pillow 12.1.1 / libjpeg-turbo, halftone dev"
+    }
+  ]
+}
