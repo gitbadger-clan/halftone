@@ -4,5 +4,6 @@
 !*/
 !.gitignore
 !README.md
+!LICENSE-*.md
 !**/pack.json
 !**/calibration.json

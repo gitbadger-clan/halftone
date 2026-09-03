@@ -1,0 +1,17 @@
+Halftone
+Copyright 2026 Artur <SURNAME> (gitbadger)
+https://halftone.gitbadger.com
+
+This product is dual-licensed under the Apache License, Version 2.0
+(LICENSE-APACHE) or the MIT License (LICENSE-MIT), at your option.
+
+TRADEMARKS
+"Halftone", the Halftone logo, and "gitbadger" are trademarks of the
+copyright holder. Neither license above grants any right to use them.
+See TRADEMARK.md.
+
+NOT COVERED BY THESE LICENSES
+Model packs (ONNX weights), calibration sets, extended fingerprint
+databases, license keys, and the pack signing/distribution service are
+separate works distributed under the Halftone Pack License.
+See COMMERCIAL.md and packs/LICENSE.md.
