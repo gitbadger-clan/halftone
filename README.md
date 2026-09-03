@@ -39,6 +39,35 @@ labelled corpus. The `jpeg_double` threshold is provisional and says so.
 
 Layer 1 (`c2pa`) is implemented behind the `c2pa` feature: `cargo build --features halftone-cli/c2pa`.
 
+## Pixel layer (dark mode)
+
+`halftone-pixel` is the first crate that decodes pixels (via `image`); still model-free.
+`pixel_lattice` measures the period-8 residual energy rhythm left by latent-diffusion
+decoders — and equally by earlier JPEG compression re-saved losslessly and by
+nearest-neighbour 8× upscales, which the rationale names. PNG and lossless WebP only.
+It ships **dark**: `threshold: None`, verdict always `Inconclusive`, statistic reported.
+Promote it by constructing it with the threshold from its calibration file once
+`halftone bench` has produced one on ≥300 stratified real negatives with zero hits.
+
+## Calibration workflow
+
+```
+corpus/
+├── real-phone/          # straight off the device
+├── real-screenshot/     # your OS screenshots
+├── real-messaging/      # same photos after WhatsApp/Telegram
+├── gen-sdxl/            # generated locally, native resolution
+└── gen-flux/
+halftone corpus corpus/ --out corpus.json
+halftone bench corpus.json --fpr 0.01 --stats-out stats.jsonl --calib-dir calib/
+```
+
+`bench` runs every statistical source (`jpeg_double`, `pixel_lattice`, later the mark
+and blind layers), prints per-class FPR and per-generator TPR at the threshold, and
+writes `calib/<source>.calibration.json` in the pack `Calibration` shape — including
+`fpr_by_real_source`, which is the number that decides whether a source may leave dark
+mode.
+
 ## Layout
 
 ```
@@ -52,6 +81,7 @@ halftone/
 │   ├── halftone-blind/         layer 3: ort-backed classifiers from signed packs
 │   ├── halftone-bench/         eval harness → calibration.json
 │   ├── halftone-packs/         signed pack download/verify, offline license
+│   ├── halftone-pixel/         pixel-domain model-free statistics (dark until calibrated)
 │   ├── halftone-report/        per-file HTML/PDF report
 │   └── halftone-cli/           binary `halftone`
 ├── python/
