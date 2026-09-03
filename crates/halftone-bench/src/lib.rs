@@ -6,5 +6,6 @@
 //! real-source FPR breakdown, and a `calibration.json` ready to ship in a pack.
 
 pub mod corpus;
+#[cfg(feature = "distort")]
 pub mod distort;
 pub mod metrics;

@@ -12,8 +12,13 @@ halftone-core.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
-image.workspace = true
+image = { workspace = true, optional = true }
 rayon.workspace = true
+
+[features]
+default = ["distort"]
+# WAVES-style distortion suite (pulls the `image` crate).
+distort = ["dep:image"]
 
 [lints]
 workspace = true
