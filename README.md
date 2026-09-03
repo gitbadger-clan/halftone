@@ -11,16 +11,23 @@ Four independent evidence layers, four separate verdicts, no merged score:
 | Mark | `halftone-mark` | Does it carry a watermark we hold a key/decoder for? |
 | Blind | `halftone-blind` | Does a calibrated classifier flag it — at what FPR? |
 
+## Install
+
+    cargo install halftone-cli
+
+Installs the `ht` binary. Not related to the unrelated `halftone` crate
+on crates.io.
+
 ```
-halftone inspect photo.jpg
-halftone inspect --json --only manifest,container *.jpg
-halftone inspect --report clip.mp4
-halftone inspect --fingerprints my-writers.json --trust-anchors anchors.pem photo.jpg
-halftone fingerprint --writer "Canon EOS R5 fw 1.8.1" --class camera --into my-writers.json shots/*.jpg
-halftone fingerprint --writer "macOS 15 screenshot" --class screenshot --into my-writers.json ~/Desktop/Screenshot*.png
-halftone sign photo.jpg --key mykey.pem
-halftone bench corpus.json
-halftone packs update
+ht inspect photo.jpg
+ht inspect --json --only manifest,container *.jpg
+ht inspect --report clip.mp4
+ht inspect --fingerprints my-writers.json --trust-anchors anchors.pem photo.jpg
+ht fingerprint --writer "Canon EOS R5 fw 1.8.1" --class camera --into my-writers.json shots/*.jpg
+ht fingerprint --writer "macOS 15 screenshot" --class screenshot --into my-writers.json ~/Desktop/Screenshot*.png
+ht sign photo.jpg --key mykey.pem
+ht bench corpus.json
+ht packs update
 ```
 
 ## Container layer (implemented)
@@ -34,7 +41,7 @@ halftone packs update
 | `exif_consistency` | JPEG/PNG/WebP/HEIF | Self-identification, camera-metadata contradictions, EXIF-vs-frame dimensions | Metadata explicitly names a generator. Contradictions are `Inconclusive`. |
 
 None of these carries a calibration yet; the `details` object exposes every raw
-discriminant so `halftone bench` can measure per-signal false-positive rates against a
+discriminant so `ht bench` can measure per-signal false-positive rates against a
 labelled corpus. The `jpeg_double` threshold is provisional and says so.
 
 Layer 1 (`c2pa`) is implemented behind the `c2pa` feature: `cargo build --features halftone-cli/c2pa`.
@@ -47,7 +54,7 @@ decoders — and equally by earlier JPEG compression re-saved losslessly and by
 nearest-neighbour 8× upscales, which the rationale names. PNG and lossless WebP only.
 It ships **dark**: `threshold: None`, verdict always `Inconclusive`, statistic reported.
 Promote it by constructing it with the threshold from its calibration file once
-`halftone bench` has produced one on ≥300 stratified real negatives with zero hits.
+`ht bench` has produced one on ≥300 stratified real negatives with zero hits.
 
 ## Calibration workflow
 
@@ -58,8 +65,8 @@ corpus/
 ├── real-messaging/      # same photos after WhatsApp/Telegram
 ├── gen-sdxl/            # generated locally, native resolution
 └── gen-flux/
-halftone corpus corpus/ --out corpus.json
-halftone bench corpus.json --fpr 0.01 --stats-out stats.jsonl --calib-dir calib/
+ht corpus corpus/ --out corpus.json
+ht bench corpus.json --fpr 0.01 --stats-out stats.jsonl --calib-dir calib/
 ```
 
 `bench` runs every statistical source (`jpeg_double`, `pixel_lattice`, later the mark
@@ -83,7 +90,7 @@ halftone/
 │   ├── halftone-packs/         signed pack download/verify, offline license
 │   ├── halftone-pixel/         pixel-domain model-free statistics (dark until calibrated)
 │   ├── halftone-report/        per-file HTML/PDF report
-│   └── halftone-cli/           binary `halftone`
+│   └── halftone-cli/           binary `ht`
 ├── python/
 │   ├── export/                 PyTorch → ONNX export scripts only
 │   └── train/                  head training + calibration; never imported by Rust

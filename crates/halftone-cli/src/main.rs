@@ -8,7 +8,7 @@ use halftone_container::fingerprints::{FingerprintDb, WriterClass};
 use halftone_core::{Asset, Layer, Registry, Status, ToolInfo};
 
 #[derive(Parser)]
-#[command(name = "halftone", version, about = "Layered provenance and forensics")]
+#[command(name = "ht", version, about = "Layered provenance and forensics")]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,

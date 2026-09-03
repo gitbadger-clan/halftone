@@ -8,7 +8,7 @@ license.workspace = true
 repository.workspace = true
 
 [[bin]]
-name = "halftone"
+name = "ht"
 path = "src/main.rs"
 
 [dependencies]
