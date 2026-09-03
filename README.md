@@ -106,5 +106,24 @@ halftone/
 - `Absent` from a blind source means "not flagged at FPR x", never "human".
 - Text: keyed tests first; blind text is feature-gated, reports `Inconclusive` below a
   minimum length, and never emits per-sentence output.
-- No network except `halftone packs update`. No telemetry.
+- No network except `ht packs update`. No telemetry.
 - Not for education or hiring decisions. See `halftone-report::NOTICE`.
+
+## License
+
+The code in this repository is dual-licensed under either the
+[Apache License 2.0](LICENSE-APACHE) or the [MIT License](LICENSE-MIT),
+at your option.
+
+Model packs, calibration sets and fingerprint DB updates are separate
+works. Eval packs are under the
+[PolyForm Noncommercial License 1.0.0](packs/LICENSE-EVAL.md); pro
+packs are under commercial terms. See [COMMERCIAL.md](COMMERCIAL.md)
+for exactly what is open and what is paid.
+
+### Name
+
+Forks are welcome under the licenses above. Please don't call a modified
+version "Halftone": verdicts from this tool carry a stated false-positive
+rate, and a fork with different thresholds or models shouldn't be
+mistaken for it. "Forked from Halftone" is fine.

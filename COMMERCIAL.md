@@ -12,19 +12,24 @@ require ongoing work are paid.
 | Layer 2 (keyed watermark) detectors and embedders | MIT OR Apache-2.0 | this repo (you bring your own keys) |
 | Layer 3 inference plumbing (`halftone-blind`) | MIT OR Apache-2.0 | this repo |
 | Seed fingerprint DB (Pillow, libjpeg-turbo entries) | MIT OR Apache-2.0 | `crates/halftone-container/fingerprints.json` |
-| Pack manifest format, schema, verification code | MIT OR Apache-2.0 | `crates/halftone-packs`, `packs/*.json` |
-| **Layer 3 model packs** (ONNX weights + `calibration.json` with TPR@FPR tables) | Halftone Pack License | `halftone packs update` |
-| **Extended fingerprint DB** updates | Halftone Pack License | `halftone packs update` |
+| Pack manifest format, schema, verification code | MIT OR Apache-2.0 | `crates/halftone-packs`, `packs/**/pack.json` |
+| **Eval packs** — Layer 3 ONNX weights + `calibration.json`, `"tier": "eval"` | PolyForm Noncommercial 1.0.0 ([packs/LICENSE-EVAL.md](packs/LICENSE-EVAL.md)) | `ht packs update` |
+| **Pro packs** — maintained models, calibration sets, extended fingerprint DB, `"tier": "pro"` | Commercial terms, not yet published | planned |
 | License keys, pack signing keys, distribution service | proprietary, not published | — |
+
+Every pack carries its `tier` and `license` inside the signed
+`pack.json`, so `ht packs list` shows the terms you are running
+under.
 
 ## Tiers
 
 - **Free** — everything in this repo. Layers 1, 2, 4 and the eval
   harness work fully offline with no key. Layer 3 runs with any ONNX
-  model you supply and calibrate yourself.
-- **Pro / on-prem** — signed model packs with maintained calibration
-  sets, fingerprint DB updates, offline license keys, and support.
-  Pricing and terms: https://halftone.gitbadger.com/pricing
+  model you supply and calibrate yourself, or with eval packs for
+  non-commercial use.
+- **Pro / on-prem** (planned) — signed model packs with maintained
+  calibration sets, fingerprint DB updates, offline license keys, and
+  support. Not available yet; terms will be published here when they are.
 
 ## What this means in practice
 
@@ -33,11 +38,11 @@ require ongoing work are paid.
 - You can train your own models and ship your own packs; the pack
   format is open and `halftone-packs` will verify any Ed25519-signed
   pack whose public key you trust.
-- You can not redistribute official packs, share license keys, or use
-  official packs outside the seats/hosts your key covers. That is
-  governed by `packs/LICENSE.md`, not by the code license — removing
-  the signature check from your build does not change what you are
-  licensed to use.
-
-Not legal advice for your situation; the pack license text should be
-reviewed by a lawyer before you take money for it.
+- You can not use eval packs commercially, redistribute official packs,
+  share license keys, or use pro packs outside the seats/hosts your key
+  covers. That is governed by the pack license (PolyForm Noncommercial
+  for eval, the commercial agreement for pro), not by the code license —
+  removing the signature check from your build does not change what you
+  are licensed to use.
+- You can fork the code, build a competing product, and sell it. Please
+  give it a different name (see the README).

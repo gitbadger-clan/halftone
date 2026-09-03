@@ -1,17 +1,18 @@
 Halftone
-Copyright 2026 Artur <SURNAME> (gitbadger)
+Copyright 2026 Artur Daschevici (gitbadger)
 https://halftone.gitbadger.com
 
 This product is dual-licensed under the Apache License, Version 2.0
 (LICENSE-APACHE) or the MIT License (LICENSE-MIT), at your option.
 
 TRADEMARKS
-"Halftone", the Halftone logo, and "gitbadger" are trademarks of the
-copyright holder. Neither license above grants any right to use them.
-See TRADEMARK.md.
+"Halftone" refers to this project as released here. The licenses above
+do not grant use of the name for modified versions.
 
 NOT COVERED BY THESE LICENSES
 Model packs (ONNX weights), calibration sets, extended fingerprint
 databases, license keys, and the pack signing/distribution service are
-separate works distributed under the Halftone Pack License.
-See COMMERCIAL.md and packs/LICENSE.md.
+separate works and are not licensed under MIT or Apache-2.0.
+Evaluation packs are distributed under the PolyForm Noncommercial
+License 1.0.0 (packs/LICENSE-EVAL.md). Pro packs are distributed under
+separate commercial terms. See COMMERCIAL.md.
