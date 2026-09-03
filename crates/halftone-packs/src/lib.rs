@@ -10,4 +10,4 @@
 pub mod license;
 pub mod manifest;
 
-pub use manifest::{Calibration, PackManifest};
+pub use manifest::{Calibration, PackManifest, Tier};
