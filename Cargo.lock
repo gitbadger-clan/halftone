@@ -1349,8 +1349,10 @@ dependencies = [
  "halftone-core",
  "halftone-mark",
  "halftone-packs",
+ "halftone-pixel",
  "halftone-report",
  "serde_json",
+ "sha2 0.11.0",
  "tracing",
  "tracing-subscriber",
 ]
@@ -1403,6 +1405,17 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.11.0",
+ "tracing",
+]
+
+[[package]]
+name = "halftone-pixel"
+version = "0.1.0"
+dependencies = [
+ "halftone-core",
+ "image",
+ "serde",
+ "serde_json",
  "tracing",
 ]
 

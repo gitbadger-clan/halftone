@@ -20,6 +20,7 @@ halftone-blind = { path = "crates/halftone-blind", version = "0.1.0" }
 halftone-bench = { path = "crates/halftone-bench", version = "0.1.0" }
 halftone-packs = { path = "crates/halftone-packs", version = "0.1.0" }
 halftone-report = { path = "crates/halftone-report", version = "0.1.0" }
+halftone-pixel = { path = "crates/halftone-pixel", version = "0.1.0" }
 
 # shared
 serde = { version = "1", features = ["derive"] }

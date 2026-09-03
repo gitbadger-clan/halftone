@@ -164,14 +164,14 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
         reg.push(Box::new(halftone_container::jpeg::QuantTables {
             db: db.clone(),
         }));
-        reg.push(Box::new(
-            halftone_container::double::DoubleCompression::default(),
-        ));
+        reg.push(Box::<halftone_container::double::DoubleCompression>::default());
         reg.push(Box::new(halftone_container::png::PngWriter {
             db: db.clone(),
         }));
         reg.push(Box::new(halftone_container::webp::WebpWriter));
         reg.push(Box::new(halftone_container::exif::ExifConsistency));
+        // Pixel-domain lattice runs dark (no threshold) until a calibration exists.
+        reg.push(Box::new(halftone_pixel::LatticeSource { threshold: None }));
     }
     if want(Layer::Mark) {
         reg.push(Box::new(halftone_mark::DwtDct {
