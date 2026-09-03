@@ -30,10 +30,29 @@ enum Cmd {
         #[arg(long)]
         key: PathBuf,
     },
-    /// Run the evaluation harness on a corpus.
+    /// Build a corpus manifest from a labelled folder tree
+    /// (`real-<class>/` and `gen-<generator>/` subfolders).
+    Corpus {
+        /// Directory containing `real-*` / `gen-*` subfolders of images.
+        dir: PathBuf,
+        /// Output manifest path.
+        #[arg(long, default_value = "corpus.json")]
+        out: PathBuf,
+    },
+    /// Run every statistical source over a corpus: per-class statistics, a threshold
+    /// at the target FPR, and per-source calibration JSON.
     Bench {
-        /// Corpus manifest.
+        /// Corpus manifest (see `halftone corpus`).
         corpus: PathBuf,
+        /// Target false-positive rate for thresholding.
+        #[arg(long, default_value_t = 0.01)]
+        fpr: f64,
+        /// Append one JSON line per (file, source) with the raw statistic.
+        #[arg(long)]
+        stats_out: Option<PathBuf>,
+        /// Write `<source>.calibration.json` files into this directory.
+        #[arg(long)]
+        calib_dir: Option<PathBuf>,
     },
     /// Manage model packs.
     Packs {
@@ -218,7 +237,13 @@ fn main() -> Result<()> {
                 key.display()
             )
         }
-        Cmd::Bench { corpus } => anyhow::bail!("bench: not yet implemented ({})", corpus.display()),
+        Cmd::Corpus { dir, out } => make_corpus(&dir, &out),
+        Cmd::Bench {
+            corpus,
+            fpr,
+            stats_out,
+            calib_dir,
+        } => bench(&corpus, fpr, stats_out.as_deref(), calib_dir.as_deref()),
         Cmd::Packs {
             cmd: PacksCmd::List,
         } => anyhow::bail!("packs list: not yet implemented"),
@@ -330,4 +355,233 @@ fn fingerprint(a: FingerprintArgs) -> Result<()> {
         None => println!("{json}"),
     }
     Ok(())
+}
+
+fn make_corpus(dir: &std::path::Path, out: &std::path::Path) -> Result<()> {
+    use halftone_bench::corpus::{Corpus, Entry, Label};
+    let mut entries = Vec::new();
+    for sub in std::fs::read_dir(dir).with_context(|| format!("reading {}", dir.display()))? {
+        let sub = sub?;
+        if !sub.file_type()?.is_dir() {
+            continue;
+        }
+        let name = sub.file_name().to_string_lossy().into_owned();
+        let label = if let Some(class) = name.strip_prefix("real-") {
+            Label::Real {
+                source: class.to_string(),
+            }
+        } else if let Some(generator) = name.strip_prefix("gen-") {
+            Label::Generated {
+                generator: generator.to_string(),
+            }
+        } else {
+            eprintln!("skipping {name}: folder is neither real-<class> nor gen-<generator>");
+            continue;
+        };
+        let mut files: Vec<_> = std::fs::read_dir(sub.path())?
+            .filter_map(|f| f.ok())
+            .map(|f| f.path())
+            .filter(|p| {
+                matches!(
+                    p.extension()
+                        .and_then(|e| e.to_str())
+                        .map(str::to_lowercase)
+                        .as_deref(),
+                    Some("jpg" | "jpeg" | "png" | "webp")
+                )
+            })
+            .collect();
+        files.sort();
+        for f in files {
+            entries.push(Entry {
+                path: format!(
+                    "{name}/{}",
+                    f.file_name().unwrap_or_default().to_string_lossy()
+                ),
+                label: label.clone(),
+            });
+        }
+    }
+    anyhow::ensure!(
+        !entries.is_empty(),
+        "no labelled images found under {}",
+        dir.display()
+    );
+    let id = format!(
+        "{}-{}",
+        dir.file_name().unwrap_or_default().to_string_lossy(),
+        entries.len()
+    );
+    let n = entries.len();
+    let corpus = Corpus { id, entries };
+    std::fs::write(out, serde_json::to_string_pretty(&corpus)?)?;
+    eprintln!("wrote {} entries to {}", n, out.display());
+    Ok(())
+}
+
+fn bench(
+    manifest: &std::path::Path,
+    fpr: f64,
+    stats_out: Option<&std::path::Path>,
+    calib_dir: Option<&std::path::Path>,
+) -> Result<()> {
+    use halftone_bench::corpus::{Corpus, Label};
+    use halftone_bench::metrics::{threshold_at_fpr, tpr};
+    use sha2::{Digest, Sha256};
+    use std::collections::BTreeMap;
+
+    let manifest_bytes = std::fs::read(manifest)?;
+    let corpus: Corpus = serde_json::from_slice(&manifest_bytes)?;
+    let corpus_sha256 = hex_lower(&Sha256::digest(&manifest_bytes));
+    let base = manifest.parent().unwrap_or(std::path::Path::new("."));
+    let reg = registry(&RegistryOpts {
+        only: None,
+        fingerprints: None,
+        trust_anchors: None,
+    })?;
+
+    // (source → (label, value)) for every statistic-bearing evidence.
+    let mut by_source: BTreeMap<String, Vec<(Label, f64)>> = BTreeMap::new();
+    let mut log = match stats_out {
+        Some(p) => Some(std::io::BufWriter::new(
+            std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(p)?,
+        )),
+        None => None,
+    };
+    let mut failed = 0usize;
+    for e in &corpus.entries {
+        let path = base.join(&e.path);
+        let asset = match Asset::from_path(&path) {
+            Ok(a) => a,
+            Err(err) => {
+                eprintln!("skip {}: {err}", path.display());
+                failed += 1;
+                continue;
+            }
+        };
+        let insp = reg.inspect(&asset, tool());
+        for ev in &insp.evidence {
+            if let Some(stat) = &ev.statistic {
+                by_source
+                    .entry(ev.source.name.clone())
+                    .or_default()
+                    .push((e.label.clone(), stat.value));
+                if let Some(w) = log.as_mut() {
+                    use std::io::Write as _;
+                    writeln!(
+                        w,
+                        "{}",
+                        serde_json::json!({
+                            "path": e.path,
+                            "label": e.label,
+                            "source": ev.source.name,
+                            "statistic": stat.name,
+                            "value": stat.value,
+                            "sha256": insp.asset.sha256,
+                        })
+                    )?;
+                }
+            }
+        }
+    }
+    anyhow::ensure!(
+        failed < corpus.entries.len(),
+        "no corpus entries could be read"
+    );
+
+    for (source, rows) in &by_source {
+        let negatives: Vec<f64> = rows
+            .iter()
+            .filter(|(l, _)| matches!(l, Label::Real { .. }))
+            .map(|(_, v)| *v)
+            .collect();
+        let mut by_class: BTreeMap<String, Vec<f64>> = BTreeMap::new();
+        let mut by_gen: BTreeMap<String, Vec<f64>> = BTreeMap::new();
+        for (l, v) in rows {
+            match l {
+                Label::Real { source } => by_class.entry(source.clone()).or_default().push(*v),
+                Label::Generated { generator } => {
+                    by_gen.entry(generator.clone()).or_default().push(*v)
+                }
+            }
+        }
+        println!(
+            "\n== {source}  ({} real, {} generated) ==",
+            negatives.len(),
+            rows.len() - negatives.len()
+        );
+        if negatives.is_empty() {
+            println!("  no real-labelled samples; cannot set a threshold");
+            continue;
+        }
+        let t = threshold_at_fpr(&negatives, fpr);
+        println!("  threshold @ FPR {fpr}: {t:.5}");
+        for (class, vals) in &by_class {
+            let f = vals.iter().filter(|&&v| v >= t).count() as f64 / vals.len() as f64;
+            println!(
+                "  real/{class:<12} n={:<4} fpr@t={f:.3}  median={:.4}",
+                vals.len(),
+                median_of(vals)
+            );
+        }
+        let mut overall_pos = Vec::new();
+        for (generator, vals) in &by_gen {
+            overall_pos.extend_from_slice(vals);
+            println!(
+                "  gen/{generator:<13} n={:<4} tpr@t={:.3}  median={:.4}",
+                vals.len(),
+                tpr(vals, t),
+                median_of(vals)
+            );
+        }
+        if let Some(dir) = calib_dir {
+            std::fs::create_dir_all(dir)?;
+            let fpr_by_real_source: BTreeMap<&String, f64> = by_class
+                .iter()
+                .map(|(c, vals)| {
+                    (
+                        c,
+                        vals.iter().filter(|&&v| v >= t).count() as f64 / vals.len() as f64,
+                    )
+                })
+                .collect();
+            // Shape matches halftone_packs::manifest::Calibration.
+            let calib = serde_json::json!({
+                "set_id": corpus.id,
+                "corpus_sha256": corpus_sha256,
+                "fpr_target": fpr,
+                "threshold": t,
+                "heldout_generators": by_gen.keys().collect::<Vec<_>>(),
+                "tpr_at_fpr": if overall_pos.is_empty() { 0.0 } else { tpr(&overall_pos, t) },
+                "fpr_by_real_source": fpr_by_real_source,
+                "robustness": [],
+            });
+            let out = dir.join(format!("{source}.calibration.json"));
+            std::fs::write(&out, serde_json::to_string_pretty(&calib)?)?;
+            println!("  wrote {}", out.display());
+        }
+    }
+    Ok(())
+}
+
+fn median_of(v: &[f64]) -> f64 {
+    let mut s = v.to_vec();
+    s.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    if s.is_empty() {
+        0.0
+    } else {
+        s[s.len() / 2]
+    }
+}
+
+fn hex_lower(b: &[u8]) -> String {
+    use std::fmt::Write as _;
+    b.iter()
+        .fold(String::with_capacity(b.len() * 2), |mut s, x| {
+            let _ = write!(s, "{x:02x}");
+            s
+        })
 }
