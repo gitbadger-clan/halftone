@@ -7,8 +7,8 @@
 //!   in [`fingerprints::FingerprintDb`].
 //! - [`double::DoubleCompression`] (`jpeg_double`): double-quantization comb in the
 //!   luma DCT-coefficient histograms, via the baseline decoder in [`jpeg::coeffs`].
-//! - [`png::PngWriter`] (`png_writer`): PNG chunk inventory, writer-family hint,
-//!   embedded generation-parameters text.
+//! - [`png::PngWriter`] (`png_writer`): PNG chunk inventory → built-in writer rules
+//!   ([`png_rules`]) and exact-hash DB lookup; embedded generation-parameters text.
 //! - [`webp::WebpWriter`] (`webp_writer`): WebP chunk inventory and XMP.
 //! - [`exif::ExifConsistency`] (`exif_consistency`): self-identifying metadata, camera
 //!   contradictions, EXIF-vs-frame dimension conflicts.
@@ -21,5 +21,6 @@ pub mod exif;
 pub mod fingerprints;
 pub mod jpeg;
 pub mod png;
+pub mod png_rules;
 pub mod signatures;
 pub mod webp;

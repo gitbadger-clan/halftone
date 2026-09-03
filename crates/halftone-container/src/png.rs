@@ -9,8 +9,10 @@
 
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
 use serde::Serialize;
+use sha2::{Digest, Sha256};
 
-use crate::signatures;
+use crate::fingerprints::{FingerprintDb, WriterClass};
+use crate::{png_rules, signatures};
 
 /// A decoded PNG text entry (uncompressed `tEXt` or uncompressed `iTXt`).
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -42,6 +44,10 @@ pub struct PngInfo {
     pub has_exif: bool,
     /// Whether a `caBX` (JUMBF / C2PA) chunk is present.
     pub has_c2pa: bool,
+    /// iCCP profile name (e.g. `Display P3`, `sRGB IEC61966-2.1`), if present.
+    pub icc_name: Option<String>,
+    /// pHYs pixels-per-unit (x, y, unit), if present.
+    pub phys: Option<(u32, u32, u8)>,
 }
 
 impl PngInfo {
@@ -50,22 +56,52 @@ impl PngInfo {
         self.chunks.iter().any(|c| c == ty)
     }
 
-    /// Heuristic writer family from the ancillary-chunk inventory. A hint, not a
-    /// fingerprint: this is what the layout is *consistent with*.
+    /// Writer family from the built-in rules (see [`crate::png_rules`]); a short
+    /// machine label for `details`. `other` when no rule matches.
     pub fn writer_hint(&self) -> &'static str {
-        let anc = |t: &str| self.has(t);
-        let bare = !anc("pHYs") && !anc("gAMA") && !anc("sRGB") && !anc("cHRM") && !anc("iCCP");
-        if anc("iDOT") {
-            "apple_imageio" // Apple's private parallel-decode chunk: macOS/iOS screenshots & exports
-        } else if self.text.iter().any(|t| t.keyword == "XML:com.adobe.xmp") && anc("pHYs") {
-            "adobe"
-        } else if bare {
-            "minimal_library" // Pillow default, many generation pipelines, some web tools
-        } else if anc("sRGB") && anc("gAMA") && anc("pHYs") {
-            "libpng_full" // libpng-based apps, Windows imaging, GIMP, browsers
-        } else {
-            "other"
+        match png_rules::match_rules(self) {
+            Some(m) => match m.class {
+                WriterClass::Screenshot => "screenshot_pipeline",
+                WriterClass::Editor => "editor",
+                WriterClass::Generator => "generator_pipeline",
+                WriterClass::Library => "library",
+                _ => "known_writer",
+            },
+            None => "other",
         }
+    }
+
+    /// Stable fingerprint of the writer-determined structure: chunk order with the IDAT
+    /// run collapsed, IHDR depth/colour/interlace, text keywords, ICC profile name and
+    /// pHYs. Image size and pixel data are excluded.
+    pub fn fingerprint(&self) -> String {
+        let mut h = Sha256::new();
+        let mut prev_idat = false;
+        for c in &self.chunks {
+            let idat = c == "IDAT";
+            if idat && prev_idat {
+                continue;
+            }
+            prev_idat = idat;
+            h.update(c.as_bytes());
+            h.update([0]);
+        }
+        h.update([self.bit_depth, self.color_type, self.interlace]);
+        let mut keys: Vec<&str> = self.text.iter().map(|t| t.keyword.as_str()).collect();
+        keys.sort_unstable();
+        for k in keys {
+            h.update(k.as_bytes());
+            h.update([1]);
+        }
+        if let Some(n) = &self.icc_name {
+            h.update(n.as_bytes());
+        }
+        if let Some((x, y, u)) = self.phys {
+            h.update(x.to_be_bytes());
+            h.update(y.to_be_bytes());
+            h.update([u]);
+        }
+        hex::encode(h.finalize())
     }
 }
 
@@ -110,6 +146,18 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
             }
             b"eXIf" => info.has_exif = true,
             b"caBX" => info.has_c2pa = true,
+            b"iCCP" => {
+                if let Some(nul) = data.iter().position(|&c| c == 0) {
+                    info.icc_name = Some(clip(&String::from_utf8_lossy(&data[..nul]), 80));
+                }
+            }
+            b"pHYs" if data.len() >= 9 => {
+                info.phys = Some((
+                    u32::from_be_bytes([data[0], data[1], data[2], data[3]]),
+                    u32::from_be_bytes([data[4], data[5], data[6], data[7]]),
+                    data[8],
+                ));
+            }
             _ => {}
         }
         info.chunks.push(ty_str);
@@ -170,7 +218,10 @@ fn clip(s: &str, n: usize) -> String {
 /// editor was named or no self-identifying metadata exists (chunk inventory reported in
 /// `details`); `Absent` is not used — absence of embedded metadata is not evidence.
 #[derive(Debug, Default)]
-pub struct PngWriter;
+pub struct PngWriter {
+    /// Writer fingerprint database (exact-hash entries); rules are always consulted too.
+    pub db: FingerprintDb,
+}
 
 /// Keywords that generation pipelines use to store their parameters verbatim.
 const GEN_KEYWORDS: &[&str] = &["parameters", "prompt", "workflow", "sd-metadata", "dream"];
@@ -209,6 +260,10 @@ impl EvidenceSource for PngWriter {
             })
             .map(|t| t.keyword.clone());
 
+        let fp = info.fingerprint();
+        let db_hit = self.db.lookup(&fp);
+        let rule = png_rules::match_rules(&info);
+
         let (status, rationale) = match (&hit, &param_kw) {
             (Some((tool, kw)), _) => (
                 Status::Present,
@@ -218,31 +273,65 @@ impl EvidenceSource for PngWriter {
             ),
             (None, Some(kw)) => (
                 Status::Present,
-                format!(
-                    "PNG carries a generation-parameters text chunk (`{kw}`) of the kind written \
-                     by diffusion pipelines; tool not in the known-signature list."
-                ),
+                match &rule {
+                    Some(m) if m.class == WriterClass::Generator => format!(
+                        "PNG carries a generation-parameters text chunk (`{kw}`); chunk layout \
+                         matches {}.",
+                        m.name
+                    ),
+                    _ => format!(
+                        "PNG carries a generation-parameters text chunk (`{kw}`) of the kind \
+                         written by diffusion pipelines; tool not in the known-signature list."
+                    ),
+                },
             ),
             (None, None) => {
                 let editor = info
                     .text
                     .iter()
                     .find_map(|t| signatures::find_editor(&format!("{} {}", t.keyword, t.value)));
-                match editor {
-                    Some(ed) => (
+                match (editor, db_hit, &rule) {
+                    (Some(ed), _, _) => (
                         Status::Inconclusive,
                         format!("Embedded metadata names an editor ({ed}); no generation metadata."),
                     ),
-                    None => (
+                    (None, Some(w), _) => (
+                        if w.class == WriterClass::Generator { Status::Present } else { Status::Inconclusive },
+                        format!(
+                            "PNG structure matches a known writer fingerprint: {} ({}). No \
+                             self-identifying metadata; PNG is never camera-native, so this is an \
+                             export-path fact, not evidence of origin.",
+                            w.writer,
+                            w.class.describe()
+                        ),
+                    ),
+                    (None, None, Some(m)) => (
                         Status::Inconclusive,
                         format!(
-                            "No self-identifying metadata. {} chunks, colour type {}, {}interlaced; \
-                             layout consistent with a {} writer. PNG is never camera-native, so \
-                             this is an export-path hint, not evidence of origin.",
+                            "No self-identifying metadata. Chunk layout is consistent with {} ({}{}). \
+                             PNG is never camera-native, so this is an export-path hint, not \
+                             evidence of origin.",
+                            m.name,
+                            m.class.describe(),
+                            if m.confidence == png_rules::Confidence::Documented {
+                                "; rule from documented layout, not yet verified"
+                            } else {
+                                ""
+                            }
+                        ),
+                    ),
+                    (None, None, None) => (
+                        Status::Inconclusive,
+                        format!(
+                            "No self-identifying metadata and no known writer layout. {} chunks, \
+                             colour type {}, {}interlaced{}.",
                             info.chunks.len(),
                             info.color_type,
                             if info.interlace == 0 { "non-" } else { "" },
-                            info.writer_hint().replace('_', " ")
+                            match &info.icc_name {
+                                Some(n) => format!(", ICC `{n}`"),
+                                None => String::new(),
+                            }
                         ),
                     ),
                 }
@@ -265,6 +354,13 @@ impl EvidenceSource for PngWriter {
                 "interlace": info.interlace,
                 "has_exif_chunk": info.has_exif,
                 "has_c2pa_chunk": info.has_c2pa,
+                "icc_name": info.icc_name,
+                "xmp_excerpt": info.text.iter().find(|t| t.keyword == "XML:com.adobe.xmp").map(|t| t.value.chars().take(600).collect::<String>()),
+                "phys": info.phys,
+                "fingerprint": fp,
+                "writer": db_hit.map(|w| &w.writer),
+                "writer_class": db_hit.map(|w| w.class),
+                "writer_rule": rule,
                 "writer_hint": info.writer_hint(),
                 "text_keywords": info.text.iter().map(|t| &t.keyword).collect::<Vec<_>>(),
             }),
@@ -323,7 +419,7 @@ mod tests {
         data.extend_from_slice(b"masterpiece, Steps: 20, Sampler: Euler a, Model: sd_xl_base");
         let png = png_with(&[(b"tEXt", data)]);
         let a = halftone_core::Asset::from_bytes(png, None).unwrap();
-        let ev = PngWriter.assess(&a).unwrap();
+        let ev = PngWriter::default().assess(&a).unwrap();
         assert_eq!(ev.status, Status::Present);
     }
 
@@ -333,7 +429,7 @@ mod tests {
         data.extend_from_slice(b"ComfyUI");
         let png = png_with(&[(b"tEXt", data)]);
         let a = halftone_core::Asset::from_bytes(png, None).unwrap();
-        let ev = PngWriter.assess(&a).unwrap();
+        let ev = PngWriter::default().assess(&a).unwrap();
         assert_eq!(ev.status, Status::Present);
         assert!(ev.rationale.contains("ComfyUI"));
     }
@@ -341,7 +437,7 @@ mod tests {
     #[test]
     fn plain_png_is_inconclusive() {
         let a = halftone_core::Asset::from_bytes(png_with(&[]), None).unwrap();
-        let ev = PngWriter.assess(&a).unwrap();
+        let ev = PngWriter::default().assess(&a).unwrap();
         assert_eq!(ev.status, Status::Inconclusive);
     }
 }

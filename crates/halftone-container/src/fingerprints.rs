@@ -18,6 +18,7 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 use crate::jpeg::JpegStructure;
+use crate::png::PngInfo;
 
 /// Coarse class of the software that produced a fingerprint.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -62,6 +63,9 @@ impl WriterClass {
 pub struct WriterEntry {
     /// Hex SHA-256 fingerprint.
     pub fingerprint: String,
+    /// Container the fingerprint was computed over: `jpeg` or `png`.
+    #[serde(default = "default_format")]
+    pub format: String,
     /// Human name, e.g. `Canon EOS R5 fw 1.8.1`, `Pillow 10 q=75 4:2:0`.
     pub writer: String,
     /// Class.
@@ -72,6 +76,10 @@ pub struct WriterEntry {
     /// Who/what harvested it (provenance of the reference data itself).
     #[serde(default)]
     pub source: String,
+}
+
+fn default_format() -> String {
+    "jpeg".into()
 }
 
 /// On-disk format.
@@ -178,6 +186,7 @@ impl FingerprintDb {
     ) -> WriterEntry {
         WriterEntry {
             fingerprint: s.fingerprint(),
+            format: "jpeg".into(),
             writer: writer.into(),
             class,
             notes: format!(
@@ -189,6 +198,44 @@ impl FingerprintDb {
                 s.progressive,
                 s.has_jfif,
                 s.has_adobe
+            ),
+            source: source.into(),
+        }
+    }
+
+    /// Build an entry from a parsed PNG.
+    pub fn harvest_png(
+        info: &PngInfo,
+        writer: impl Into<String>,
+        class: WriterClass,
+        source: impl Into<String>,
+    ) -> WriterEntry {
+        let mut chunks: Vec<&str> = Vec::new();
+        for c in &info.chunks {
+            if c == "IDAT" && chunks.last() == Some(&"IDAT") {
+                continue;
+            }
+            chunks.push(c);
+        }
+        WriterEntry {
+            fingerprint: info.fingerprint(),
+            format: "png".into(),
+            writer: writer.into(),
+            class,
+            notes: format!(
+                "chunks {}, depth {}, colour type {}, text keys [{}]{}",
+                chunks.join(" "),
+                info.bit_depth,
+                info.color_type,
+                info.text
+                    .iter()
+                    .map(|t| t.keyword.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", "),
+                match &info.icc_name {
+                    Some(n) => format!(", ICC `{n}`"),
+                    None => String::new(),
+                }
             ),
             source: source.into(),
         }
@@ -211,6 +258,7 @@ mod tests {
         let mut db = FingerprintDb::empty();
         db.insert(WriterEntry {
             fingerprint: "ab".repeat(32),
+            format: "jpeg".into(),
             writer: "Test Writer".into(),
             class: WriterClass::Camera,
             notes: String::new(),

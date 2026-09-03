@@ -67,14 +67,14 @@ struct InspectArgs {
     /// Extra JPEG writer-fingerprint DB (JSON) merged over the built-in one.
     #[arg(long)]
     fingerprints: Option<PathBuf>,
-    /// C2PA trust-anchor bundle (PEM). Default: the c2pa crate's built-in trust list.
+    /// Extra C2PA trust anchors (PEM bundle), added to the crate's built-in trust list.
     #[arg(long)]
     trust_anchors: Option<PathBuf>,
 }
 
 #[derive(Args)]
 struct FingerprintArgs {
-    /// JPEG files all written by the same, known software at the same settings.
+    /// JPEG or PNG files all written by the same, known software at the same settings.
     #[arg(required = true)]
     inputs: Vec<PathBuf>,
     /// Writer name, e.g. "Canon EOS R5 fw 1.8.1". `{q}` is replaced by the libjpeg
@@ -161,11 +161,15 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
                 .map_err(|e| anyhow::anyhow!("loading fingerprints {}: {e}", p.display()))?,
             None => FingerprintDb::builtin(),
         };
-        reg.push(Box::new(halftone_container::jpeg::QuantTables { db }));
+        reg.push(Box::new(halftone_container::jpeg::QuantTables {
+            db: db.clone(),
+        }));
         reg.push(Box::new(
             halftone_container::double::DoubleCompression::default(),
         ));
-        reg.push(Box::new(halftone_container::png::PngWriter));
+        reg.push(Box::new(halftone_container::png::PngWriter {
+            db: db.clone(),
+        }));
         reg.push(Box::new(halftone_container::webp::WebpWriter));
         reg.push(Box::new(halftone_container::exif::ExifConsistency));
     }
@@ -293,15 +297,22 @@ fn fingerprint(a: FingerprintArgs) -> Result<()> {
     };
     for input in &a.inputs {
         let bytes = std::fs::read(input).with_context(|| format!("reading {}", input.display()))?;
-        let s = halftone_container::jpeg::parse_structure(&bytes)
-            .map_err(|e| anyhow::anyhow!("{}: {e}", input.display()))?;
-        let q = s
-            .luma_table()
-            .and_then(halftone_container::jpeg::estimate_libjpeg_quality)
-            .map(|q| q.to_string())
-            .unwrap_or_else(|| "n/a".into());
-        let writer = a.writer.replace("{q}", &q);
-        let entry = FingerprintDb::harvest(&s, writer, a.class.into(), a.source.clone());
+        let entry = if bytes.starts_with(b"\x89PNG") {
+            let info = halftone_container::png::parse_png(&bytes)
+                .map_err(|e| anyhow::anyhow!("{}: {e}", input.display()))?;
+            let writer = a.writer.replace("{q}", "n/a");
+            FingerprintDb::harvest_png(&info, writer, a.class.into(), a.source.clone())
+        } else {
+            let s = halftone_container::jpeg::parse_structure(&bytes)
+                .map_err(|e| anyhow::anyhow!("{}: {e}", input.display()))?;
+            let q = s
+                .luma_table()
+                .and_then(halftone_container::jpeg::estimate_libjpeg_quality)
+                .map(|q| q.to_string())
+                .unwrap_or_else(|| "n/a".into());
+            let writer = a.writer.replace("{q}", &q);
+            FingerprintDb::harvest(&s, writer, a.class.into(), a.source.clone())
+        };
         eprintln!(
             "{}  {}  {}",
             input.display(),

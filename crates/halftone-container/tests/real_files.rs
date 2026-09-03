@@ -100,19 +100,25 @@ fn exif_consistency_on_real_files() {
 
 #[test]
 fn png_and_webp_sources_on_real_files() {
+    let png_src = png::PngWriter::default();
     assert_eq!(
-        png::PngWriter
-            .assess(&fixture("sd_params.png"))
-            .unwrap()
-            .status,
+        png_src.assess(&fixture("sd_params.png")).unwrap().status,
         Status::Present
     );
-    let ev = png::PngWriter.assess(&fixture("comfy.png")).unwrap();
+    let ev = png_src.assess(&fixture("comfy.png")).unwrap();
     assert_eq!(ev.status, Status::Present);
     assert!(ev.rationale.contains("ComfyUI"));
-    let ev = png::PngWriter.assess(&fixture("plain.png")).unwrap();
+    let ev = png_src.assess(&fixture("plain.png")).unwrap();
     assert_eq!(ev.status, Status::Inconclusive);
-    assert_eq!(ev.details["writer_hint"], "minimal_library");
+    assert_eq!(ev.details["writer_hint"], "library");
+    assert!(
+        ev.details["writer_rule"]["name"]
+            .as_str()
+            .unwrap()
+            .starts_with("Pillow default"),
+        "{}",
+        ev.rationale
+    );
     let ev = webp::WebpWriter.assess(&fixture("pil.webp")).unwrap();
     assert_eq!(ev.status, Status::Inconclusive);
     assert_eq!(ev.details["kind"], "lossy");
