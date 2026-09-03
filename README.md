@@ -17,6 +17,7 @@ halftone inspect --json --only manifest,container *.jpg
 halftone inspect --report clip.mp4
 halftone inspect --fingerprints my-writers.json --trust-anchors anchors.pem photo.jpg
 halftone fingerprint --writer "Canon EOS R5 fw 1.8.1" --class camera --into my-writers.json shots/*.jpg
+halftone fingerprint --writer "macOS 15 screenshot" --class screenshot --into my-writers.json ~/Desktop/Screenshot*.png
 halftone sign photo.jpg --key mykey.pem
 halftone bench corpus.json
 halftone packs update
@@ -28,7 +29,7 @@ halftone packs update
 |---|---|---|---|
 | `jpeg_quant` | JPEG | Annex-K quality (luma + chroma), chroma subsampling, Huffman class (default/optimised), marker inventory, writer fingerprint → DB lookup | libjpeg-family or Adobe re-encode, or a DB match. Encoder path, not authorship. |
 | `jpeg_double` | JPEG (baseline) | Double-quantization comb in luma DCT histograms (own baseline Huffman decoder) | Re-encoded after an earlier JPEG encoding. Blind spots stated in the rationale. |
-| `png_writer` | PNG | Chunk inventory, writer-family hint, `caBX`, generation-parameters text | Embedded metadata names a generator or carries pipeline parameters. |
+| `png_writer` | PNG | Chunk inventory → built-in writer rules (`png_rules.rs`, each marked verified/documented) + exact-hash DB, iCCP name, pHYs, `caBX`, generation-parameters text | Embedded metadata names a generator or carries pipeline parameters. Writer matches are `Inconclusive` unless the writer is a generator. |
 | `webp_writer` | WebP | Chunk inventory, lossy/lossless, EXIF/XMP | XMP names a generator. |
 | `exif_consistency` | JPEG/PNG/WebP/HEIF | Self-identification, camera-metadata contradictions, EXIF-vs-frame dimensions | Metadata explicitly names a generator. Contradictions are `Inconclusive`. |
 
