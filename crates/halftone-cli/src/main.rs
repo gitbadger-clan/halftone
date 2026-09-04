@@ -1,5 +1,7 @@
 //! `halftone` CLI.
+mod glyph;
 
+use glyph::{Glyphs, StatusGlyph};
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
@@ -7,8 +9,16 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 use halftone_container::fingerprints::{FingerprintDb, WriterClass};
 use halftone_core::{Asset, Layer, Registry, Status, ToolInfo};
 
+const BANNER: &str = concat!(
+    "  ▄██  ● • ·\n",
+    " ▐███  ● ● • ·   halftone ",
+    env!("CARGO_PKG_VERSION"),
+    "\n",
+    "  ▀██  ● • ·",
+);
+
 #[derive(Parser)]
-#[command(name = "ht", version, about = "Layered provenance and forensics")]
+#[command(name = "ht", version, about = "Layered provenance and forensics", before_help = BANNER)]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,
@@ -259,6 +269,7 @@ fn inspect(a: InspectArgs) -> Result<()> {
         fingerprints: a.fingerprints.clone(),
         trust_anchors: a.trust_anchors.clone(),
     })?;
+    let glyphs = Glyphs::detect();
     let mut any_present = false;
     for input in &a.inputs {
         let asset =
@@ -276,23 +287,18 @@ fn inspect(a: InspectArgs) -> Result<()> {
             );
             // Sources that simply don't apply to this format are noise in the human view;
             // they stay in the JSON. NotApplicable for other reasons (no pack) is shown.
-            let skipped = insp
-                .evidence
-                .iter()
-                .filter(|e| {
-                    e.status == Status::NotApplicable
-                        && e.rationale == "source does not support this asset"
-                })
-                .count();
-            for e in insp.evidence.iter().filter(|e| {
-                !(e.status == Status::NotApplicable
-                    && e.rationale == "source does not support this asset")
-            }) {
+            let unsupported = |e: &&halftone_core::Evidence| {
+                e.status == Status::NotApplicable
+                    && e.rationale == "source does not support this asset"
+            };
+            let skipped = insp.evidence.iter().filter(unsupported).count();
+            for e in insp.evidence.iter().filter(|e| !unsupported(e)) {
                 println!(
-                    "  {:<9} {:<17} {:<14} {}",
+                    "  {} {:<13} {:<9} {:<17} {}",
+                    e.status.glyph(glyphs),
+                    format!("{:?}", e.status),
                     format!("{:?}", e.layer),
                     e.source.name,
-                    format!("{:?}", e.status),
                     e.rationale
                 );
             }
