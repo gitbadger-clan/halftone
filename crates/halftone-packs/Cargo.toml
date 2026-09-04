@@ -15,6 +15,17 @@ tracing.workspace = true
 ed25519-dalek.workspace = true
 sha2.workspace = true
 hex.workspace = true
+thiserror.workspace = true
+tar = "0.4"
+zstd = "0.13"
+ureq = { version = "3", default-features = false, features = ["rustls", "gzip"], optional = true }
+
+
+[features]
+default = []
+# Network fetch for `packs update`. Off by default so library users stay offline;
+# the CLI turns it on.
+net = ["dep:ureq"]
 
 [lints]
 workspace = true

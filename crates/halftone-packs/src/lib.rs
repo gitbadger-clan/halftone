@@ -7,7 +7,10 @@
 //! License = signed JSON (customer, plan, expiry, features). Verified offline.
 //! No network calls except explicit `halftone packs update`.
 
+pub mod index;
 pub mod license;
 pub mod manifest;
+pub mod store;
+pub mod update;
 
 pub use manifest::{Calibration, PackManifest, Tier};
