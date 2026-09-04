@@ -75,8 +75,39 @@ enum Cmd {
 enum PacksCmd {
     /// Show installed packs and their calibration.
     List,
-    /// Download and verify current packs (the only networked command).
-    Update,
+    /// Download and verify current packs and trust lists (the only networked command).
+    Update(UpdateArgs),
+}
+
+#[derive(Args)]
+struct UpdateArgs {
+    /// Report what would change without writing anything.
+    #[arg(long)]
+    dry_run: bool,
+    /// Restrict to one artifact kind.
+    #[arg(long, value_enum)]
+    only: Option<OnlyArg>,
+    /// Fetch the C2PA trust lists straight from the C2PA conformance repository
+    /// (TLS only, no publisher signature, no index). Works before any key ceremony.
+    #[arg(long)]
+    upstream: bool,
+    /// Install from a directory holding index.json, index.json.sig and the artifacts,
+    /// instead of the network (air-gapped hosts).
+    #[arg(long)]
+    from: Option<PathBuf>,
+    /// Index URL (mirrors, staging).
+    #[arg(long, default_value = halftone_packs::index::DEFAULT_INDEX_URL)]
+    index_url: String,
+    /// Additional publisher verifying key (hex). Repeatable. Also read from
+    /// HALFTONE_PUBLISHER_KEYS (comma-separated).
+    #[arg(long, action = clap::ArgAction::Append)]
+    publisher_key: Vec<String>,
+}
+
+#[derive(Clone, Copy, ValueEnum)]
+enum OnlyArg {
+    Trust,
+    Packs,
 }
 
 #[derive(Args)]
@@ -256,18 +287,89 @@ fn main() -> Result<()> {
         } => bench(&corpus, fpr, stats_out.as_deref(), calib_dir.as_deref()),
         Cmd::Packs {
             cmd: PacksCmd::List,
-        } => anyhow::bail!("packs list: not yet implemented"),
+        } => packs_list(),
         Cmd::Packs {
-            cmd: PacksCmd::Update,
-        } => anyhow::bail!("packs update: not yet implemented"),
+            cmd: PacksCmd::Update(a),
+        } => packs_update(a),
     }
+}
+
+fn packs_update(a: UpdateArgs) -> Result<()> {
+    use halftone_packs::index::{parse_keys, OFFICIAL_PUBLISHER_KEYS_HEX};
+    use halftone_packs::store::Store;
+    use halftone_packs::update::{run, Only, UpdateOptions};
+
+    let mut keys: Vec<String> = OFFICIAL_PUBLISHER_KEYS_HEX
+        .iter()
+        .map(|s| s.to_string())
+        .collect();
+    keys.extend(a.publisher_key);
+    if let Ok(env) = std::env::var("HALFTONE_PUBLISHER_KEYS") {
+        keys.extend(
+            env.split(',')
+                .map(str::trim)
+                .filter(|s| !s.is_empty())
+                .map(String::from),
+        );
+    }
+    let opts = UpdateOptions {
+        index_url: a.index_url,
+        publisher_keys: parse_keys(&keys).map_err(|e| anyhow::anyhow!("{e}"))?,
+        only: match a.only {
+            None => Only::All,
+            Some(OnlyArg::Trust) => Only::Trust,
+            Some(OnlyArg::Packs) => Only::Packs,
+        },
+        dry_run: a.dry_run,
+        upstream: a.upstream,
+        from_dir: a.from,
+        ..Default::default()
+    };
+    let store = Store::resolve().map_err(|e| anyhow::anyhow!("{e}"))?;
+    let report = run(&store, &opts).map_err(|e| anyhow::anyhow!("{e}"))?;
+    // Report goes to stderr so stdout stays clean for scripting.
+    for line in &report {
+        eprintln!("{line}");
+    }
+    eprintln!("home: {}", store.root().display());
+    Ok(())
+}
+
+fn packs_list() -> Result<()> {
+    use halftone_packs::store::Store;
+    let store = Store::resolve().map_err(|e| anyhow::anyhow!("{e}"))?;
+    let inst = store.load_installed().map_err(|e| anyhow::anyhow!("{e}"))?;
+    println!("home: {}", store.root().display());
+    if inst.packs.is_empty() && inst.trust.is_empty() {
+        println!("nothing installed; run `ht packs update`");
+    }
+    for (name, p) in &inst.packs {
+        println!(
+            "pack   {name:<32} {:<12} {:<5} {}",
+            p.version, p.tier, p.installed_at
+        );
+    }
+    for (name, t) in &inst.trust {
+        println!(
+            "trust  {name:<32} {:<12} {:<8} {}",
+            t.version, t.origin, t.fetched_at
+        );
+        for (f, h) in &t.files {
+            println!("       {f:<32} {}", &h[..16]);
+        }
+    }
+    Ok(())
 }
 
 fn inspect(a: InspectArgs) -> Result<()> {
     let reg = registry(&RegistryOpts {
         only: a.only.clone(),
         fingerprints: a.fingerprints.clone(),
-        trust_anchors: a.trust_anchors.clone(),
+        trust: TrustConfig {
+            internal: internal_list(&a.trust_list),
+            custom_anchors: a.trust_anchors.clone(),
+            home: None,
+        },
     })?;
     let glyphs = Glyphs::detect();
     let mut any_present = false;

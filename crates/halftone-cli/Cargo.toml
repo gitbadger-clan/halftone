@@ -18,7 +18,7 @@ halftone-container.workspace = true
 halftone-mark.workspace = true
 halftone-blind.workspace = true
 halftone-bench.workspace = true
-halftone-packs.workspace = true
+halftone-packs = { workspace = true, features = ["net"] }
 halftone-report.workspace = true
 halftone-pixel.workspace = true
 anyhow.workspace = true
