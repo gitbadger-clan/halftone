@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 468 128" width="468" height="128" role="img" aria-label="Halftone">
+
+<clipPath id="c"><circle cx="64" cy="64" r="60"/></clipPath>
+<g fill="#1B3A5C" clip-path="url(#c)">
+<path d="M64 4A60 60 0 0 0 64 124Z"/>
+<circle cx="70" cy="4" r="5.5"/>
+<circle cx="70" cy="16" r="5.5"/>
+<circle cx="70" cy="28" r="5.5"/>
+<circle cx="70" cy="40" r="5.5"/>
+<circle cx="70" cy="52" r="5.5"/>
+<circle cx="70" cy="64" r="5.5"/>
+<circle cx="70" cy="76" r="5.5"/>
+<circle cx="70" cy="88" r="5.5"/>
+<circle cx="70" cy="100" r="5.5"/>
+<circle cx="70" cy="112" r="5.5"/>
+<circle cx="70" cy="124" r="5.5"/>
+<circle cx="82" cy="4" r="4.8"/>
+<circle cx="82" cy="16" r="4.8"/>
+<circle cx="82" cy="28" r="4.8"/>
+<circle cx="82" cy="40" r="4.8"/>
+<circle cx="82" cy="52" r="4.8"/>
+<circle cx="82" cy="64" r="4.8"/>
+<circle cx="82" cy="76" r="4.8"/>
+<circle cx="82" cy="88" r="4.8"/>
+<circle cx="82" cy="100" r="4.8"/>
+<circle cx="82" cy="112" r="4.8"/>
+<circle cx="82" cy="124" r="4.8"/>
+<circle cx="94" cy="16" r="4"/>
+<circle cx="94" cy="28" r="4"/>
+<circle cx="94" cy="40" r="4"/>
+<circle cx="94" cy="52" r="4"/>
+<circle cx="94" cy="64" r="4"/>
+<circle cx="94" cy="76" r="4"/>
+<circle cx="94" cy="88" r="4"/>
+<circle cx="94" cy="100" r="4"/>
+<circle cx="94" cy="112" r="4"/>
+<circle cx="106" cy="28" r="3.1"/>
+<circle cx="106" cy="40" r="3.1"/>
+<circle cx="106" cy="52" r="3.1"/>
+<circle cx="106" cy="64" r="3.1"/>
+<circle cx="106" cy="76" r="3.1"/>
+<circle cx="106" cy="88" r="3.1"/>
+<circle cx="106" cy="100" r="3.1"/>
+<circle cx="118" cy="40" r="2.1"/>
+<circle cx="118" cy="52" r="2.1"/>
+<circle cx="118" cy="64" r="2.1"/>
+<circle cx="118" cy="76" r="2.1"/>
+<circle cx="118" cy="88" r="2.1"/>
+</g>
+<text x="156" y="87" fill="#1B3A5C" font-family="'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace" font-size="60" font-weight="500" letter-spacing="1.5">halftone</text>
+</svg>
