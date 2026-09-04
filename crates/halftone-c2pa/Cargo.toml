@@ -9,9 +9,12 @@ repository.workspace = true
 
 [dependencies]
 halftone-core.workspace = true
+halftone-packs.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
+hex.workspace = true
+sha2.workspace = true
 c2pa = { workspace = true, optional = true }
 
 [features]

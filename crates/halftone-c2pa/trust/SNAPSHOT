@@ -1,0 +1,5 @@
+c2pa-org/conformance-public@99927caef670 2026-08-14T21:00:15Z
+source: https://raw.githubusercontent.com/c2pa-org/conformance-public/main/trust-list
+fetched: 2026-09-04T12:37:51Z
+C2PA-TRUST-LIST.pem sha256 75cacc98b79ecac33713c7ecfb58d4a0ef383f3c1f886e7409f9e37e8664aea5 (30 certs)
+C2PA-TSA-TRUST-LIST.pem sha256 c688d3555f4a2f1f8d663472bbd37888ff234abdd234c25934c0f9292e4eb5c9 (22 certs)

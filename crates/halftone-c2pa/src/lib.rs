@@ -14,16 +14,22 @@
 //! thread-local state — built once per assessment, then
 //! `Reader::from_context(ctx).with_stream(mime, bytes)`. Everything after that is read
 //! from `Reader::json()` so minor API churn in the crate does not break this layer.
-//! Trust anchors go into `trust.user_anchors`, which *adds* to the crate's built-in
-//! C2PA trust list rather than replacing it.
+//! The c2pa crate ships **no** trust anchors outside its own tests, and verifies
+//! trust by default, so an unconfigured Reader treats every signer as untrusted.
+//! [`trust::TrustConfig`] supplies the official list (`trust.trust_anchors`) and
+//! any operator anchors (`trust.user_anchors`), and records where each came from.
+//!
+pub mod trust;
+pub use trust::{InternalList, TrustConfig};
 
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId};
 
+// crates/halftone-c2pa/src/lib.rs
 /// C2PA manifest validator.
 #[derive(Debug, Default)]
 pub struct C2paSource {
-    /// Path to a PEM bundle of trust anchors; `None` = the c2pa crate's built-in list.
-    pub trust_anchors: Option<std::path::PathBuf>,
+    /// Which trust lists and anchors the signer is judged against.
+    pub trust: TrustConfig,
 }
 
 impl EvidenceSource for C2paSource {
@@ -58,6 +64,7 @@ impl EvidenceSource for C2paSource {
 
 #[cfg(feature = "c2pa")]
 mod imp {
+    use super::trust::ResolvedTrust;
     use super::C2paSource;
     use halftone_core::{Asset, Evidence, EvidenceSource, Status};
     use std::io::Cursor;
@@ -65,12 +72,16 @@ mod imp {
     /// Build the validation context. A user PEM bundle is added to the built-in trust
     /// list via `trust.user_anchors`. If the c2pa settings API moves again, this is the
     /// only function to touch.
-    fn context(src: &C2paSource) -> Result<c2pa::Context, String> {
+    fn context(resolved: &ResolvedTrust) -> Result<c2pa::Context, String> {
         let mut settings = c2pa::Settings::new();
-        if let Some(p) = &src.trust_anchors {
-            let pem = std::fs::read_to_string(p).map_err(|e| format!("{}: {e}", p.display()))?;
+        if !resolved.internal_pem.trim().is_empty() {
             settings = settings
-                .with_value("trust.user_anchors", pem)
+                .with_value("trust.trust_anchors", resolved.internal_pem.clone())
+                .map_err(|e| e.to_string())?;
+        }
+        if !resolved.custom_pem.trim().is_empty() {
+            settings = settings
+                .with_value("trust.user_anchors", resolved.custom_pem.clone())
                 .map_err(|e| e.to_string())?;
         }
         c2pa::Context::new()
@@ -100,11 +111,34 @@ mod imp {
             duration_ms: 0,
         };
 
-        let ctx = match context(src) {
+        // A broken trust configuration is a misconfiguration, not evidence about the
+        // file: say so instead of silently judging against an empty anchor set.
+        let resolved = match src.trust.resolve() {
+            Ok(r) => r,
+            Err(e) => {
+                return mk(
+                    Status::Inconclusive,
+                    format!(
+                        "Trust configuration could not be loaded, so signer trust was not \
+                         evaluated: {e}"
+                    ),
+                    serde_json::json!({ "error": e }),
+                )
+            }
+        };
+        if resolved.is_empty() {
+            tracing::warn!(
+                "no trust anchors configured; every signer will be reported as untrusted"
+            );
+        }
+        let ctx = match context(&resolved) {
             Ok(c) => c,
             Err(e) => {
-                tracing::warn!(error = %e, "could not load trust anchors; using built-in list only");
-                c2pa::Context::new()
+                return mk(
+                    Status::Inconclusive,
+                    format!("c2pa settings rejected the trust configuration: {e}"),
+                    serde_json::json!({ "error": e, "trust": resolved.details() }),
+                )
             }
         };
 
@@ -208,8 +242,8 @@ mod imp {
                 Status::Inconclusive,
                 format!(
                     "C2PA manifest from {who} is cryptographically valid and the content is \
-                     unchanged since signing, but the signer is not on the trust list — \
-                     self-signed or unknown certificate.{ai_note}"
+                     unchanged since signing, but the signer does not chain to any configured \
+                     trust anchor (see details.trust for which lists were used).{ai_note}"
                 ),
             ),
             c2pa::ValidationState::Invalid => (
@@ -236,6 +270,7 @@ mod imp {
                 "ingredients": ingredients,
                 "assertions": assertion_labels,
                 "declares_ai": declares_ai,
+                "trust": resolved.details(),
             }),
         )
     }

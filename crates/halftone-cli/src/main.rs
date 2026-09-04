@@ -6,6 +6,7 @@ use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand, ValueEnum};
+use halftone_c2pa::{InternalList, TrustConfig};
 use halftone_container::fingerprints::{FingerprintDb, WriterClass};
 use halftone_core::{Asset, Layer, Registry, Status, ToolInfo};
 
@@ -127,9 +128,22 @@ struct InspectArgs {
     /// Extra JPEG writer-fingerprint DB (JSON) merged over the built-in one.
     #[arg(long)]
     fingerprints: Option<PathBuf>,
-    /// Extra C2PA trust anchors (PEM bundle), added to the crate's built-in trust list.
-    #[arg(long)]
-    trust_anchors: Option<PathBuf>,
+    /// Extra C2PA trust anchors (PEM bundle). Repeatable. Added to the internal list.
+    #[arg(long, action = clap::ArgAction::Append)]
+    trust_anchors: Vec<PathBuf>,
+    /// Internal C2PA trust list: `auto` (installed copy, else vendored), `vendored`,
+    /// `none`, or a path to a PEM bundle that replaces the official list.
+    #[arg(long, default_value = "auto")]
+    trust_list: String,
+}
+
+fn internal_list(s: &str) -> InternalList {
+    match s {
+        "auto" => InternalList::Auto,
+        "vendored" => InternalList::Vendored,
+        "none" => InternalList::Disabled,
+        p => InternalList::File(PathBuf::from(p)),
+    }
 }
 
 #[derive(Args)]
@@ -201,7 +215,7 @@ impl From<WriterClassArg> for WriterClass {
 struct RegistryOpts {
     only: Option<Vec<LayerArg>>,
     fingerprints: Option<PathBuf>,
-    trust_anchors: Option<PathBuf>,
+    trust: TrustConfig,
 }
 
 fn registry(o: &RegistryOpts) -> Result<Registry> {
@@ -212,7 +226,7 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
     let mut reg = Registry::new();
     if want(Layer::Manifest) {
         reg.push(Box::new(halftone_c2pa::C2paSource {
-            trust_anchors: o.trust_anchors.clone(),
+            trust: o.trust.clone(),
         }));
     }
     if want(Layer::Container) {
@@ -263,7 +277,7 @@ fn main() -> Result<()> {
             let reg = registry(&RegistryOpts {
                 only: None,
                 fingerprints: None,
-                trust_anchors: None,
+                trust: TrustConfig::default(),
             })?;
             for (layer, id) in reg.ids() {
                 println!("{layer:?}\t{}\t{}", id.name, id.version);
@@ -545,7 +559,7 @@ fn bench(
     let reg = registry(&RegistryOpts {
         only: None,
         fingerprints: None,
-        trust_anchors: None,
+        trust: TrustConfig::default(),
     })?;
 
     // (source → (label, value)) for every statistic-bearing evidence.
