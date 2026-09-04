@@ -1,5 +1,10 @@
 # Halftone
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="brand/halftone-lockup-dark.svg">
+  <img alt="Halftone" src="brand/halftone-lockup-light.svg" width="360">
+</picture>
+
 Layered provenance and forensics for image, video, audio and text. Local-first.
 
 Four independent evidence layers, four separate verdicts, no merged score:
