@@ -1,11 +1,13 @@
 //! `halftone` CLI.
+mod complete;
 mod glyph;
 
 use glyph::{Glyphs, StatusGlyph};
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
-use clap::{Args, Parser, Subcommand, ValueEnum};
+use clap::{Args, CommandFactory as _, Parser, Subcommand, ValueEnum, ValueHint};
+use clap_complete::CompleteEnv;
 use halftone_c2pa::{InternalList, TrustConfig};
 use halftone_container::fingerprints::{FingerprintDb, WriterClass};
 use halftone_core::{Asset, Layer, Registry, Status, ToolInfo};
@@ -36,33 +38,36 @@ enum Cmd {
     /// Embed a C2PA manifest and an open watermark (provenance side).
     Sign {
         /// Input file.
+        #[arg(add = complete::asset_files())]
         input: PathBuf,
         /// Signing key.
-        #[arg(long)]
+        #[arg(long, value_hint = ValueHint::FilePath)]
         key: PathBuf,
     },
     /// Build a corpus manifest from a labelled folder tree
     /// (`real-<class>/` and `gen-<generator>/` subfolders).
     Corpus {
         /// Directory containing `real-*` / `gen-*` subfolders of images.
+        #[arg(add = complete::dirs())]
         dir: PathBuf,
         /// Output manifest path.
-        #[arg(long, default_value = "corpus.json")]
+        #[arg(long, default_value = "corpus.json", value_hint = ValueHint::AnyPath)]
         out: PathBuf,
     },
     /// Run every statistical source over a corpus: per-class statistics, a threshold
     /// at the target FPR, and per-source calibration JSON.
     Bench {
-        /// Corpus manifest (see `halftone corpus`).
+        /// Corpus manifest (see `ht corpus`).
+        #[arg(add = complete::json_files())]
         corpus: PathBuf,
         /// Target false-positive rate for thresholding.
         #[arg(long, default_value_t = 0.01)]
         fpr: f64,
         /// Append one JSON line per (file, source) with the raw statistic.
-        #[arg(long)]
+        #[arg(long, value_hint = ValueHint::AnyPath)]
         stats_out: Option<PathBuf>,
         /// Write `<source>.calibration.json` files into this directory.
-        #[arg(long)]
+        #[arg(long, add = complete::dirs())]
         calib_dir: Option<PathBuf>,
     },
     /// Manage model packs.
@@ -70,6 +75,38 @@ enum Cmd {
         #[command(subcommand)]
         cmd: PacksCmd,
     },
+    /// Print the shell snippet that enables tab completion (dynamic: candidates are
+    /// computed by `ht` itself at every `<TAB>`).
+    ///
+    /// fish:  `ht completions fish > ~/.config/fish/completions/ht.fish`
+    /// zsh:   `ht completions zsh >> ~/.zshrc`
+    /// bash:  `ht completions bash >> ~/.bashrc`
+    Completions {
+        /// Shell to generate for.
+        #[arg(value_enum)]
+        shell: ShellArg,
+    },
+}
+
+#[derive(Clone, Copy, ValueEnum)]
+enum ShellArg {
+    Bash,
+    Zsh,
+    Fish,
+    Elvish,
+    Powershell,
+}
+
+impl ShellArg {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Bash => "bash",
+            Self::Zsh => "zsh",
+            Self::Fish => "fish",
+            Self::Elvish => "elvish",
+            Self::Powershell => "powershell",
+        }
+    }
 }
 
 #[derive(Subcommand)]
@@ -94,10 +131,10 @@ struct UpdateArgs {
     upstream: bool,
     /// Install from a directory holding index.json, index.json.sig and the artifacts,
     /// instead of the network (air-gapped hosts).
-    #[arg(long)]
+    #[arg(long, add = complete::dirs())]
     from: Option<PathBuf>,
     /// Index URL (mirrors, staging).
-    #[arg(long, default_value = halftone_packs::index::DEFAULT_INDEX_URL)]
+    #[arg(long, default_value = halftone_packs::index::DEFAULT_INDEX_URL, value_hint = ValueHint::Url)]
     index_url: String,
     /// Additional publisher verifying key (hex). Repeatable. Also read from
     /// HALFTONE_PUBLISHER_KEYS (comma-separated).
@@ -114,7 +151,7 @@ enum OnlyArg {
 #[derive(Args)]
 struct InspectArgs {
     /// Files to inspect.
-    #[arg(required = true)]
+    #[arg(required = true, add = complete::asset_files())]
     inputs: Vec<PathBuf>,
     /// Emit JSON (one object per line).
     #[arg(long)]
@@ -126,14 +163,14 @@ struct InspectArgs {
     #[arg(long)]
     report: bool,
     /// Extra JPEG writer-fingerprint DB (JSON) merged over the built-in one.
-    #[arg(long)]
+    #[arg(long, add = complete::json_files())]
     fingerprints: Option<PathBuf>,
     /// Extra C2PA trust anchors (PEM bundle). Repeatable. Added to the internal list.
-    #[arg(long, action = clap::ArgAction::Append)]
+    #[arg(long, action = clap::ArgAction::Append, add = complete::pem_files())]
     trust_anchors: Vec<PathBuf>,
     /// Internal C2PA trust list: `auto` (installed copy, else vendored), `vendored`,
     /// `none`, or a path to a PEM bundle that replaces the official list.
-    #[arg(long, default_value = "auto")]
+    #[arg(long, default_value = "auto", add = complete::trust_list())]
     trust_list: String,
 }
 
@@ -149,20 +186,20 @@ fn internal_list(s: &str) -> InternalList {
 #[derive(Args)]
 struct FingerprintArgs {
     /// JPEG or PNG files all written by the same, known software at the same settings.
-    #[arg(required = true)]
+    #[arg(required = true, add = complete::jpeg_png_files())]
     inputs: Vec<PathBuf>,
     /// Writer name, e.g. "Canon EOS R5 fw 1.8.1". `{q}` is replaced by the libjpeg
     /// quality when the tables are Annex-K scaled.
-    #[arg(long)]
+    #[arg(long, add = complete::known_writers())]
     writer: String,
     /// Writer class.
     #[arg(long, value_enum)]
     class: WriterClassArg,
     /// Where the reference files came from (recorded in the entry).
-    #[arg(long, default_value = "manual")]
+    #[arg(long, default_value = "manual", add = complete::known_sources())]
     source: String,
     /// Merge into an existing DB file instead of printing a fresh one.
-    #[arg(long)]
+    #[arg(long, add = complete::json_files())]
     into: Option<PathBuf>,
 }
 
@@ -268,6 +305,9 @@ fn tool() -> ToolInfo {
 }
 
 fn main() -> Result<()> {
+    // Must run before anything touches stdout. A no-op unless `COMPLETE=<shell>` is set,
+    // in which case it prints candidates (or the registration script) and exits.
+    CompleteEnv::with_factory(Cli::command).complete();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
@@ -305,6 +345,11 @@ fn main() -> Result<()> {
         Cmd::Packs {
             cmd: PacksCmd::Update(a),
         } => packs_update(a),
+        Cmd::Completions { shell } => {
+            let mut out = std::io::stdout().lock();
+            complete::write_registration(shell.name(), &mut out)?;
+            Ok(())
+        }
     }
 }
 
@@ -707,3 +752,4 @@ fn hex_lower(b: &[u8]) -> String {
             s
         })
 }
+

@@ -23,6 +23,7 @@ halftone-report.workspace = true
 halftone-pixel.workspace = true
 anyhow.workspace = true
 clap.workspace = true
+clap_complete.workspace = true
 serde_json.workspace = true
 sha2.workspace = true
 tracing.workspace = true
@@ -34,3 +35,4 @@ c2pa = ["halftone-c2pa/c2pa"]
 
 [lints]
 workspace = true
+

@@ -32,6 +32,8 @@ hex = "0.4"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 clap = { version = "4", features = ["derive"] }
+# Dynamic (runtime) shell completion: `COMPLETE=<shell> ht`.
+clap_complete = { version = "4.6", features = ["unstable-dynamic"] }
 rayon = "1"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 kamadak-exif = "0.6"
@@ -55,3 +57,4 @@ all = "warn"
 lto = "thin"
 codegen-units = 1
 strip = true
+

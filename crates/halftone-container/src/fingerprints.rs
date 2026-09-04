@@ -176,6 +176,11 @@ impl FingerprintDb {
         self.entries.is_empty()
     }
 
+    /// Iterate over every entry, in no particular order.
+    pub fn entries(&self) -> impl Iterator<Item = &WriterEntry> {
+        self.entries.values()
+    }
+
     /// Build an entry from a parsed structure. This is how the DB grows: run it over
     /// files whose writer you *know*, review, and commit the JSON.
     pub fn harvest(
@@ -269,3 +274,4 @@ mod tests {
         assert!(back.lookup("nope").is_none());
     }
 }
+
