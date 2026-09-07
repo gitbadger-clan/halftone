@@ -87,7 +87,10 @@ struct TrustListCompleter;
 impl ValueCompleter for TrustListCompleter {
     fn complete(&self, current: &OsStr) -> Vec<CompletionCandidate> {
         const KEYWORDS: [(&str, &str); 3] = [
-            ("auto", "installed copy of the official list, else the vendored one"),
+            (
+                "auto",
+                "installed copy of the official list, else the vendored one",
+            ),
             ("vendored", "the list compiled into this binary"),
             ("none", "no internal list; only --trust-anchors"),
         ];
@@ -201,7 +204,15 @@ mod tests {
     #[test]
     fn subcommands_are_offered() {
         let c = complete(&["ht", ""], 1);
-        for want in ["inspect", "sources", "fingerprint", "corpus", "bench", "packs", "completions"] {
+        for want in [
+            "inspect",
+            "sources",
+            "fingerprint",
+            "corpus",
+            "bench",
+            "packs",
+            "completions",
+        ] {
             assert!(c.iter().any(|x| x == want), "missing {want} in {c:?}");
         }
     }
@@ -209,7 +220,10 @@ mod tests {
     #[test]
     fn nested_packs_subcommands() {
         let c = complete(&["ht", "packs", ""], 2);
-        assert!(c.contains(&"list".to_string()) && c.contains(&"update".to_string()), "{c:?}");
+        assert!(
+            c.contains(&"list".to_string()) && c.contains(&"update".to_string()),
+            "{c:?}"
+        );
     }
 
     #[test]
@@ -222,9 +236,15 @@ mod tests {
     #[test]
     fn value_enums_complete() {
         let c = complete(&["ht", "fingerprint", "--class", ""], 3);
-        assert!(c.contains(&"camera".to_string()) && c.contains(&"generator".to_string()), "{c:?}");
+        assert!(
+            c.contains(&"camera".to_string()) && c.contains(&"generator".to_string()),
+            "{c:?}"
+        );
         let c = complete(&["ht", "packs", "update", "--only", ""], 4);
-        assert!(c.contains(&"trust".to_string()) && c.contains(&"packs".to_string()), "{c:?}");
+        assert!(
+            c.contains(&"trust".to_string()) && c.contains(&"packs".to_string()),
+            "{c:?}"
+        );
         let c = complete(&["ht", "completions", ""], 2);
         for s in ["bash", "zsh", "fish"] {
             assert!(c.iter().any(|x| x == s), "{c:?}");
@@ -238,7 +258,10 @@ mod tests {
             assert!(c.iter().any(|x| x == k), "{c:?}");
         }
         let c = complete(&["ht", "inspect", "--trust-list", "v"], 3);
-        assert!(c.iter().any(|x| x == "vendored") && !c.iter().any(|x| x == "auto"), "{c:?}");
+        assert!(
+            c.iter().any(|x| x == "vendored") && !c.iter().any(|x| x == "auto"),
+            "{c:?}"
+        );
     }
 
     #[test]
@@ -275,9 +298,15 @@ mod tests {
         assert!(assets.contains(&"d.wav".into()), "{assets:?}");
         assert!(!assets.contains(&"c.txt".into()), "{assets:?}");
         assert!(!assets.contains(&"e.json".into()), "{assets:?}");
-        assert!(assets.iter().any(|x| x.starts_with("sub")), "dirs must stay: {assets:?}");
+        assert!(
+            assets.iter().any(|x| x.starts_with("sub")),
+            "dirs must stay: {assets:?}"
+        );
         let json = list(files_with_ext(JSON_EXTS));
-        assert!(json.contains(&"e.json".into()) && !json.contains(&"b.png".into()), "{json:?}");
+        assert!(
+            json.contains(&"e.json".into()) && !json.contains(&"b.png".into()),
+            "{json:?}"
+        );
         let _ = std::fs::remove_dir_all(&tmp);
     }
 
@@ -286,7 +315,10 @@ mod tests {
         let mut buf = Vec::new();
         write_registration("fish", &mut buf).unwrap();
         let s = String::from_utf8(buf).unwrap();
-        assert!(s.contains("COMPLETE=fish") && s.contains("--command ht"), "{s}");
+        assert!(
+            s.contains("COMPLETE=fish") && s.contains("--command ht"),
+            "{s}"
+        );
         assert!(write_registration("cmd.exe", &mut Vec::new()).is_err());
     }
 }

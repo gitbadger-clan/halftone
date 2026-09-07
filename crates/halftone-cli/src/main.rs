@@ -752,4 +752,3 @@ fn hex_lower(b: &[u8]) -> String {
             s
         })
 }
-
