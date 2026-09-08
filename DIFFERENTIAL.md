@@ -2,14 +2,14 @@
 
 Halftone's deterministic sources are checked against ExifTool and c2patool on a
 corpus of real files (`corpus/differential/`, ground truth in `expectations.json`,
-collected by `scripts/differential.py`, asserted by
+collected by `uv run scripts/differential.py`, asserted by
 `crates/halftone-cli/tests/differential.rs`). Every disagreement class ever seen is
 recorded here with its cause and resolution, whether the fix landed in Halftone, in
 the expectations, or in how a reference tool is invoked.
 
 Regenerate ground truth:
 
-    scripts/differential.py corpus/differential \
+    uv run scripts/differential.py corpus/differential \
         --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem
 
 Run:

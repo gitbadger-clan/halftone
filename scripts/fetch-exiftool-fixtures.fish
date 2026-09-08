@@ -71,4 +71,4 @@ printf "source: %s\nsubdir: %s\ncommit: %s\nfetched: %s\nkept: %d image files (s
 
 rm -rf $tmp
 echo "kept $kept ($relabeled relabeled), skipped $skipped -> $dest (commit $commit)"
-echo "next: scripts/differential.py corpus/differential/02-exiftool"
+echo "next: uv run scripts/differential.py corpus/differential/02-exiftool"

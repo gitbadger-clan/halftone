@@ -74,8 +74,8 @@ for t in trainedAlgorithmicMedia compositeWithTrainedAlgorithmicMedia
     add "term_$t" jpg present $t "generative term, URI form" $dst=$scheme/$t
 end
 for t in digitalCapture computationalCapture negativeFilm positiveFilm print humanEdits \
-    compositeCapture algorithmicallyEnhanced dataDrivenMedia digitalCreation \
-    virtualRecording compositeSynthetic algorithmicMedia screenCapture
+        compositeCapture algorithmicallyEnhanced dataDrivenMedia digitalCreation \
+        virtualRecording compositeSynthetic algorithmicMedia screenCapture
     add "term_$t" jpg absent $t "non-generative term, URI form" $dst=$scheme/$t
 end
 for t in digitalArt minorHumanEdits
@@ -98,7 +98,7 @@ add unknown_scheme jpg present trainedAlgorithmicMedia "foreign scheme, known te
 add form_attribute jpg present trainedAlgorithmicMedia "attribute (shorthand) form" -api XMPShorthand=1 $dst=$scheme/trainedAlgorithmicMedia
 
 # 5. Packet size: >64 KiB forces ExtendedXMP on JPEG.
-string repeat -n 70000 X >$dest/.pad.txt
+string repeat -n 70000 X > $dest/.pad.txt
 add extended_xmp jpg present trainedAlgorithmicMedia "ExtendedXMP: field in the extension packet" "-XMP-dc:Description<=$dest/.pad.txt" $dst=$scheme/trainedAlgorithmicMedia
 add extended_xmp_no_field jpg absent - "ExtendedXMP present, no field anywhere" "-XMP-dc:Description<=$dest/.pad.txt"
 rm -f $dest/.pad.txt
@@ -118,15 +118,15 @@ for ext in jpg png webp
     add plain $ext absent - "no metadata at all"
 end
 
-echo "{" >$dest/cases.json
+echo "{" > $dest/cases.json
 set -l n (count $cases)
 for i in (seq $n)
     if test $i -lt $n
-        echo "  $cases[$i]," >>$dest/cases.json
+        echo "  $cases[$i]," >> $dest/cases.json
     else
-        echo "  $cases[$i]" >>$dest/cases.json
+        echo "  $cases[$i]" >> $dest/cases.json
     end
 end
-echo "}" >>$dest/cases.json
+echo "}" >> $dest/cases.json
 echo (count $cases)" files -> $dest (cases.json holds the intended verdicts)"
 echo "next: uv run scripts/differential.py corpus/differential/03-synthetic"
