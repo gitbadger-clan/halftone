@@ -229,8 +229,10 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("halftone-store-{}", std::process::id()));
         let st = Store::at(&dir);
         st.ensure_layout().unwrap();
-        let mut inst = Installed::default();
-        inst.index_generated_at = Some("2026-09-04T00:00:00Z".into());
+        let inst = Installed {
+            index_generated_at: Some("2026-09-04T00:00:00Z".into()),
+            ..Default::default()
+        };
         st.save_installed(&inst).unwrap();
         let back = st.load_installed().unwrap();
         assert_eq!(
