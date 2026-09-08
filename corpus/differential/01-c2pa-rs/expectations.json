@@ -1,4 +1,5 @@
 {
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n",
   "corpus": "corpus/differential/01-c2pa-rs",
   "files": {
     "C.jpg": {
@@ -379,17 +380,8 @@
     },
     "cloud.jpg": {
       "c2patool": {
-        "assertions": [],
-        "claim_generator": "cai-helper-test cai-helper/0.4.8 c2pa-rs/0.13.0",
-        "claim_version": 1,
-        "digital_source_type": [],
-        "digital_source_type_raw": [],
-        "issuer": "Adobe Inc.",
-        "present": true,
-        "validation_codes": [
-          "signingCredential.untrusted"
-        ],
-        "validation_state": "Valid"
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/adobe-urn-uuid-5f37e182-3687-462e-a7fb-573462780391"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -405,8 +397,8 @@
     },
     "cloudx.jpg": {
       "c2patool": {
-        "error": "Error: could not fetch the remote manifest an error occurred from the underlying http resolver: io: failed to lookup address information: nodename nor servname provided, or not known",
-        "present": null
+        "present": null,
+        "remote_manifest": "https://cai-manifestx.adobe.com/manifests/adobe-urn-uuid-5f37e182-3687-462e-a7fb-573462780391"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -539,8 +531,8 @@
     },
     "libpng-test_with_url.png": {
       "c2patool": {
-        "error": "Error: could not fetch the remote manifest an error occurred from the underlying http resolver: http status: 403",
-        "present": null
+        "present": null,
+        "remote_manifest": "http://localhost:5000/libpng-test.c2pa"
       },
       "exiftool": {
         "digital_source_type": [],
