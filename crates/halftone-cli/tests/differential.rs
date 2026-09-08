@@ -173,6 +173,25 @@ fn compare_file(
         }
     }
 
+    // ---- intended verdicts (synthetic strata) -----------------------------------
+    // cases.json, merged by the collector, states what marking_metadata must say.
+    let want = &exp["halftone"];
+    if want.is_object() {
+        let status = evidence(insp, "marking_metadata")
+            .map(|e| e["status"].as_str().unwrap_or("").to_string())
+            .unwrap_or_else(|| "missing".into());
+        push(
+            "intended.marking.status",
+            want["status"].as_str().unwrap_or("").to_string(),
+            status,
+        );
+        push(
+            "intended.marking.digital_source_type",
+            show(str_set(&want["digital_source_type"])),
+            show(str_set(&row["marking"]["digital_source_type"])),
+        );
+    }
+
     // ---- manifest: c2pa vs c2patool ---------------------------------------------
     let ct = &exp["c2patool"];
     let c2pa_ev = evidence(insp, "c2pa");

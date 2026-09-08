@@ -1,0 +1,990 @@
+{
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n",
+  "corpus": "corpus/differential/03-synthetic",
+  "files": {
+    "bare_term.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "bare term, no scheme URI",
+        "status": "present"
+      },
+      "sha256": "07a29c28e54da9fae9711467aa1d2c4deebff4aa0bb02b7568cfd4d508994e5e",
+      "size_bytes": 10505
+    },
+    "case_variant.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "TrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/TrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "TrainedAlgorithmicMedia"
+        ],
+        "note": "capitalised term: not in vocabulary, verbatim",
+        "status": "inconclusive"
+      },
+      "sha256": "c72dafafc4d9f7f7186e6195c957aa6d156f72858195a0868c2444fdb4c7833a",
+      "size_bytes": 10552
+    },
+    "extended_xmp.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "ExtendedXMP: field in the extension packet",
+        "status": "present"
+      },
+      "sha256": "de3255b9637bdc0a9f5a96a1fb1f588945de292ffe62b833fc5ecc5ae458cd89",
+      "size_bytes": 81263
+    },
+    "extended_xmp_no_field.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "ExtendedXMP present, no field anywhere",
+        "status": "absent"
+      },
+      "sha256": "c398ca8e7858419ddc352445674a7e0ba443cd888cc48df2cbfc4d3c70d25c4d",
+      "size_bytes": 81008
+    },
+    "form_attribute.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "attribute (shorthand) form",
+        "status": "present"
+      },
+      "sha256": "a3d49b89d1e52dc7cfd755ce188a1bb3cb4f2bfcb753de003366880543a7f601",
+      "size_bytes": 10502
+    },
+    "gen_png.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "PNG iTXt XML:com.adobe.xmp",
+        "status": "present"
+      },
+      "sha256": "26eebdab57d56226ebb12c0d5190165aed1d0e2ed9604e31d2382132d20833ca",
+      "size_bytes": 28333
+    },
+    "gen_webp.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "note": "WebP XMP chunk",
+        "status": "present"
+      },
+      "sha256": "0b9fc62086b2f52fa4d7092c16e1cce93f7dacbcf6defa0c7206e6935824d744",
+      "size_bytes": 9692
+    },
+    "https_scheme.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "https://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "https scheme instead of http",
+        "status": "present"
+      },
+      "sha256": "49a07c68994a92803cd9c5836d43992bbf9772c15365adfb0aff225492797154",
+      "size_bytes": 10553
+    },
+    "iim_and_capture.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "digitalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+        ],
+        "iim_originating_program": "SynthCam",
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "digitalCapture"
+        ],
+        "note": "IIM plus capture XMP",
+        "status": "absent"
+      },
+      "sha256": "e3f123db04838f723e21dbeada8031e3a5f89d30656bdc2aa3c4e56e2c6da7e2",
+      "size_bytes": 10593
+    },
+    "iim_and_dst.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": "SynthGen",
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "IIM plus generative XMP",
+        "status": "present"
+      },
+      "sha256": "3b7be3a85ae861beb2e6b642eeb19855542f5c933503214ba8ec92827485a0d5",
+      "size_bytes": 10602
+    },
+    "iim_only.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": "SynthCam",
+        "iim_program_version": "2.1",
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "IIM OriginatingProgram, no XMP",
+        "status": "absent"
+      },
+      "sha256": "74bfac4439b2df3dbf0cf7ced15fbfb7a71fcec3916cb11c0fd4dd63360660c5",
+      "size_bytes": 7666
+    },
+    "plain.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "no metadata at all",
+        "status": "absent"
+      },
+      "sha256": "b22cba5b89c0fa06c6640adc7e69b38e2bbdcd1842d37f9c6af091661a8b43d0",
+      "size_bytes": 7608
+    },
+    "plain.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "no metadata at all",
+        "status": "absent"
+      },
+      "sha256": "0e140aa8c1060f954b3c61f54f4a4d8b06fe35a55b3e81af0a72532b81a71027",
+      "size_bytes": 27812
+    },
+    "plain.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "no metadata at all",
+        "status": "absent"
+      },
+      "sha256": "e9276c8264704e012f3a66940de76dbdffd04309e6aa64e09a3e092e5e0bab56",
+      "size_bytes": 6742
+    },
+    "term_algorithmicMedia.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "algorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "algorithmicMedia"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "94f255e13db37410302adf07791cc871a4ab7f8130cee99c2c03b617700982b6",
+      "size_bytes": 10545
+    },
+    "term_algorithmicallyEnhanced.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "algorithmicallyEnhanced"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicallyEnhanced"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "algorithmicallyEnhanced"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "3e5371d82fffe33f8f597321a8f7f6a88525f33a00f0dcb8e6459da5580bd591",
+      "size_bytes": 10552
+    },
+    "term_compositeCapture.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeCapture"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "compositeCapture"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "87e3bfac5810add2e11c45d51dcab97a97c32f2a32601434b229af93d8e2e863",
+      "size_bytes": 10545
+    },
+    "term_compositeSynthetic.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeSynthetic"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeSynthetic"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "compositeSynthetic"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "b74304bd9418b538d54552f9f724d2bb265d8200addd20d6fef8a4bc246ef00c",
+      "size_bytes": 10547
+    },
+    "term_compositeWithTrainedAlgorithmicMedia.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "note": "generative term, URI form",
+        "status": "present"
+      },
+      "sha256": "f3f036c49170648c7a56802c1cc3f18d15a787d777cd3809d9251b5bb47d5efd",
+      "size_bytes": 10565
+    },
+    "term_computationalCapture.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "ac6f2a4048a3beb7f58e214809bcf9f051c3bf2f1fa465d2110776fbddba23bd",
+      "size_bytes": 10549
+    },
+    "term_dataDrivenMedia.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "dataDrivenMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/dataDrivenMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "dataDrivenMedia"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "d1640c42cd4c27855c7d8d4829143412c3521055d77bc52dd52e82bfd96f1895",
+      "size_bytes": 10544
+    },
+    "term_digitalArt.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "digitalArt"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/digitalArt"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "digitalArt"
+        ],
+        "note": "retired term; interpreted, flagged retired",
+        "status": "absent"
+      },
+      "sha256": "5181a946548cf43e7af69cc7c4a3e9cb7d2297ab5034c4cb1b9e7df5d62de68c",
+      "size_bytes": 10539
+    },
+    "term_digitalCapture.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "digitalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "digitalCapture"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "7dfac2e8a3a3f7620070595a6950795c3ab0310b908ac551402a1cedcd77369c",
+      "size_bytes": 10543
+    },
+    "term_digitalCreation.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "digitalCreation"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCreation"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "digitalCreation"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "3d1de3955021e6d71571a5b012e303d9ceee7e2b6aafa6c27db2b86b53b77d7d",
+      "size_bytes": 10544
+    },
+    "term_humanEdits.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "humanEdits"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/humanEdits"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "humanEdits"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "0d928ab452cb59249b9176b7b31372d836a8622716d191d2c520f6af75e27a60",
+      "size_bytes": 10539
+    },
+    "term_minorHumanEdits.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "minorHumanEdits"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/minorHumanEdits"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "minorHumanEdits"
+        ],
+        "note": "retired term; interpreted, flagged retired",
+        "status": "absent"
+      },
+      "sha256": "89bed869cb8b2df096703ace8fc348ac146abb5290f51e67f7d7c3e6412affb9",
+      "size_bytes": 10544
+    },
+    "term_negativeFilm.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "negativeFilm"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/negativeFilm"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "negativeFilm"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "bdb26796ed0ea2744fa3cd2533a6f810eecc3ee9ba2de4b703cb44a05d18f7c8",
+      "size_bytes": 10541
+    },
+    "term_positiveFilm.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "positiveFilm"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/positiveFilm"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "positiveFilm"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "46a913abadacd731ceec09628a307b479e5e769b3776370c52c638be01f4767f",
+      "size_bytes": 10541
+    },
+    "term_print.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "print"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/print"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "print"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "2948ea4eb771d780f97da9ea15f68b7fab8d99a33a4131588c1b88c8023aec25",
+      "size_bytes": 10534
+    },
+    "term_screenCapture.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "screenCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/screenCapture"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "screenCapture"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "ac56ec5283663006232bf19c0e06cab6fd74dd5e397f968b2f9e9080c47ead47",
+      "size_bytes": 10542
+    },
+    "term_trainedAlgorithmicMedia.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "generative term, URI form",
+        "status": "present"
+      },
+      "sha256": "ac0914ce6df3a55f1d941b2b8c835498de7d28d55844b4b37b7b283795f29720",
+      "size_bytes": 10552
+    },
+    "term_virtualRecording.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "virtualRecording"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/virtualRecording"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "virtualRecording"
+        ],
+        "note": "non-generative term, URI form",
+        "status": "absent"
+      },
+      "sha256": "478a91bf097244351ba7437774215da81c49143b41966437dd0f58817a4ef999",
+      "size_bytes": 10545
+    },
+    "trailing_slash.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia/"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "trailing slash on the URI",
+        "status": "present"
+      },
+      "sha256": "51ecd550f036c90a1028f0dc69d5f80910a8634b387d61aec842819d413ca310",
+      "size_bytes": 10553
+    },
+    "unknown_scheme.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://example.org/vocab/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "foreign scheme, known term: last segment wins",
+        "status": "present"
+      },
+      "sha256": "dfee2f36fbb3389d4dabf4008187a7d420d47ff71675b1716e5b2cf06170b254",
+      "size_bytes": 10530
+    },
+    "unknown_term.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "syntheticFoo"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/syntheticFoo"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "syntheticFoo"
+        ],
+        "note": "term outside the vocabulary",
+        "status": "inconclusive"
+      },
+      "sha256": "8442ce7c73ffb8d8e3b581bda2ad272a3dbafe5ac8c7a2028ec62a0db84ee38e",
+      "size_bytes": 10541
+    },
+    "xmp_no_field.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "XMP with CreatorTool only",
+        "status": "absent"
+      },
+      "sha256": "d806825bd11f5a0f72b0fb17f4ad8d2eac11131d790228d6e9a4cbbfa77b91e7",
+      "size_bytes": 10451
+    },
+    "xmp_no_field.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "XMP with CreatorTool only",
+        "status": "absent"
+      },
+      "sha256": "0daf7116afbb0ac65e0fde906600435b3e591ccb83ade66575fae51526be1270",
+      "size_bytes": 28232
+    },
+    "xmp_no_field.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "note": "XMP with CreatorTool only",
+        "status": "absent"
+      },
+      "sha256": "a8cac39f1392014c13540e10f396c18ef7347320ed80e138654d7bd5a61004c5",
+      "size_bytes": 9578
+    }
+  },
+  "schema": "halftone-differential-expectations/1",
+  "tools": {
+    "c2patool": "c2patool 0.27.20",
+    "exiftool": "13.55"
+  },
+  "trust_anchors": null
+}
