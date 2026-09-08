@@ -44,6 +44,8 @@ ht packs update
 | `png_writer` | PNG | Chunk inventory → built-in writer rules (`png_rules.rs`, each marked verified/documented) + exact-hash DB, iCCP name, pHYs, `caBX`, generation-parameters text | Embedded metadata names a generator or carries pipeline parameters. Writer matches are `Inconclusive` unless the writer is a generator. |
 | `webp_writer` | WebP | Chunk inventory, lossy/lossless, EXIF/XMP | XMP names a generator. |
 | `exif_consistency` | JPEG/PNG/WebP/HEIF | Self-identification, camera-metadata contradictions, EXIF-vs-frame dimensions | Metadata explicitly names a generator. Contradictions are `Inconclusive`. |
+| `marking_metadata` | JPEG/PNG/WebP | IPTC `DigitalSourceType` in XMP (JPEG APP1 + ExtendedXMP, PNG iTXt, WebP), value and syntactic form as written; IPTC IIM block from APP13 (originating program, version) | XMP self-declares a generative source type (`trainedAlgorithmicMedia` / `compositeWithTrainedAlgorithmicMedia`). Unsigned; verifies nothing. Non-generative terms are `Absent` with the value in `details`; unknown or conflicting terms are `Inconclusive`. |
+
 
 None of these carries a calibration yet; the `details` object exposes every raw
 discriminant so `ht bench` can measure per-signal false-positive rates against a

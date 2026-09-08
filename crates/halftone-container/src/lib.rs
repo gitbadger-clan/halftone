@@ -12,6 +12,9 @@
 //! - [`webp::WebpWriter`] (`webp_writer`): WebP chunk inventory and XMP.
 //! - [`exif::ExifConsistency`] (`exif_consistency`): self-identifying metadata, camera
 //!   contradictions, EXIF-vs-frame dimension conflicts.
+//! - [`marking::MarkingMetadata`] (`marking_metadata`): the IPTC `DigitalSourceType`
+//!   self-declaration in XMP (JPEG APP1 + ExtendedXMP, PNG iTXt, WebP), and the
+//!   legacy IPTC IIM block from APP13, as explicit fields.
 //!
 //! All sources report *encoder path* and *self-identification* facts. None of them
 //! claims authorship on its own; the rationale strings say so.
@@ -20,6 +23,7 @@ pub mod double;
 pub mod exif;
 pub mod fingerprints;
 pub mod jpeg;
+pub mod marking;
 pub mod png;
 pub mod png_rules;
 pub mod signatures;
