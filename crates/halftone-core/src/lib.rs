@@ -7,6 +7,7 @@
 //!   verdicts stay interpretable after models are swapped.
 
 pub mod asset;
+pub mod dst;
 pub mod evidence;
 pub mod registry;
 
