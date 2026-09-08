@@ -238,6 +238,10 @@ pub struct MarkingScan {
     pub values: Vec<DstValue>,
     /// IIM block, if an APP13 IPTC resource was present.
     pub iim: Option<IimInfo>,
+    /// A C2PA manifest container is present (JPEG APP11 JUMBF, PNG `caBX`, WebP
+    /// `C2PA`). Any `digitalSourceType` inside it is signed and belongs to the
+    /// manifest layer; recorded here so the rationale can point the reader there.
+    pub manifest_container_present: bool,
 }
 
 /// Extract marking metadata from JPEG, PNG or WebP bytes.
@@ -245,8 +249,8 @@ pub fn scan(mime: &str, b: &[u8]) -> Result<MarkingScan, String> {
     let mut s = MarkingScan::default();
     let packets = match mime {
         "image/jpeg" => jpeg_packets(b, &mut s)?,
-        "image/png" => png_packets(b)?,
-        "image/webp" => webp_packets(b)?,
+        "image/png" => png_packets(b, &mut s)?,
+        "image/webp" => webp_packets(b, &mut s)?,
         _ => return Err(format!("unsupported container {mime}")),
     };
     for p in packets {
@@ -334,6 +338,7 @@ fn jpeg_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
                     }
                 }
             }
+            0xEB => s.manifest_container_present |= seg.starts_with(b"JP"),
             0xED => {
                 if let Some(rest) = seg.strip_prefix(IRB) {
                     if let Some(iim) = parse_irb_iptc(rest) {
@@ -439,7 +444,7 @@ fn parse_iim(b: &[u8]) -> IimInfo {
 
 /// Collect XMP packets from PNG `iTXt` chunks keyed `XML:com.adobe.xmp`
 /// (uncompressed only, per the XMP specification). Bounds-checked; never panics.
-fn png_packets(b: &[u8]) -> Result<Vec<Vec<u8>>, String> {
+fn png_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
     const SIG: [u8; 8] = [0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
     if !b.starts_with(&SIG) {
         return Err("not a PNG".into());
@@ -481,6 +486,9 @@ fn png_packets(b: &[u8]) -> Result<Vec<Vec<u8>>, String> {
                 }
             }
         }
+        if ty == b"caBX" {
+            s.manifest_container_present = true;
+        }
         if ty == b"IEND" {
             break;
         }
@@ -490,7 +498,7 @@ fn png_packets(b: &[u8]) -> Result<Vec<Vec<u8>>, String> {
 }
 
 /// Collect the WebP `XMP ` chunk. Bounds-checked; never panics.
-fn webp_packets(b: &[u8]) -> Result<Vec<Vec<u8>>, String> {
+fn webp_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
     if b.len() < 12 || &b[0..4] != b"RIFF" || &b[8..12] != b"WEBP" {
         return Err("not a WebP".into());
     }
@@ -507,6 +515,9 @@ fn webp_packets(b: &[u8]) -> Result<Vec<Vec<u8>>, String> {
         if fourcc == b"XMP " {
             let data = &b[start..end];
             packets.push(data[..data.len().min(MAX_XMP_BYTES)].to_vec());
+        }
+        if fourcc == b"C2PA" {
+            s.manifest_container_present = true;
         }
         i = end + (len & 1);
     }
@@ -676,6 +687,12 @@ impl EvidenceSource for MarkingMetadata {
                 Some(_) => "; an IPTC IIM block is present, which cannot carry it",
                 None => "",
             };
+            let manifest = if s.manifest_container_present {
+                " A C2PA manifest container is present: any source-type declaration inside \
+                 it is signed and is reported by the manifest layer, not here."
+            } else {
+                ""
+            };
             let status = if s.xmp_extended_incomplete {
                 Status::Inconclusive
             } else {
@@ -685,9 +702,9 @@ impl EvidenceSource for MarkingMetadata {
                 status,
                 format!(
                     "No IPTC DigitalSourceType marking found ({where_}{iim}). The file does \
-                     not self-declare its source type. Absence says nothing about origin: most \
-                     files carry no marking, and any marking is stripped by common re-save and \
-                     messaging paths."
+                     not self-declare its source type in XMP. Absence says nothing about \
+                     origin: most files carry no marking, and any marking is stripped by \
+                     common re-save and messaging paths.{manifest}"
                 ),
             )
         } else if !unknown.is_empty() {
@@ -758,6 +775,7 @@ impl EvidenceSource for MarkingMetadata {
                 "xmp_extended": s.xmp_extended,
                 "xmp_extended_incomplete": s.xmp_extended_incomplete,
                 "iim": s.iim,
+                "manifest_container_present": s.manifest_container_present,
             }),
             duration_ms: 0,
         })
@@ -1013,6 +1031,23 @@ mod tests {
         v.extend(png_chunk(b"IEND", &[]));
         let ev = assess(v);
         assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+    }
+
+    #[test]
+    fn png_with_manifest_but_no_xmp_points_to_manifest_layer() {
+        // The ChatGPT PNG case: caBX (C2PA) present, no XMP at all.
+        let mut v = vec![0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
+        let mut ihdr = Vec::new();
+        ihdr.extend_from_slice(&16u32.to_be_bytes());
+        ihdr.extend_from_slice(&16u32.to_be_bytes());
+        ihdr.extend_from_slice(&[8, 6, 0, 0, 0]);
+        v.extend(png_chunk(b"IHDR", &ihdr));
+        v.extend(png_chunk(b"caBX", b"\0\0\0\x10jumb"));
+        v.extend(png_chunk(b"IEND", &[]));
+        let ev = assess(v);
+        assert_eq!(ev.status, Status::Absent, "{}", ev.rationale);
+        assert!(ev.rationale.contains("reported by the manifest layer"));
+        assert_eq!(ev.details["manifest_container_present"], true);
     }
 
     #[test]
