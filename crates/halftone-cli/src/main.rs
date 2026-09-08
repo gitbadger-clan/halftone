@@ -156,6 +156,10 @@ struct InspectArgs {
     /// Emit JSON (one object per line).
     #[arg(long)]
     json: bool,
+    /// One document for all inputs: with --json a batch object (full inspections plus
+    /// per-file summary rows); otherwise a file × source matrix. Exit code unchanged.
+    #[arg(long)]
+    batch: bool,
     /// Only run these layers.
     #[arg(long, value_delimiter = ',')]
     only: Option<Vec<LayerArg>>,
@@ -434,11 +438,20 @@ fn inspect(a: InspectArgs) -> Result<()> {
     })?;
     let glyphs = Glyphs::detect();
     let mut any_present = false;
+    let mut collected: Vec<halftone_core::Inspection> = Vec::new();
     for input in &a.inputs {
         let asset =
             Asset::from_path(input).with_context(|| format!("loading {}", input.display()))?;
         let insp = reg.inspect(&asset, tool());
         any_present |= insp.evidence.iter().any(|e| e.status == Status::Present);
+        if a.report {
+            let out = input.with_extension("halftone.html");
+            std::fs::write(&out, halftone_report::to_html(&insp))?;
+        }
+        if a.batch {
+            collected.push(insp);
+            continue;
+        }
         if a.json {
             println!("{}", serde_json::to_string(&insp)?);
         } else {
@@ -469,9 +482,16 @@ fn inspect(a: InspectArgs) -> Result<()> {
                 println!("  ({skipped} sources not applicable to this format)");
             }
         }
-        if a.report {
-            let out = input.with_extension("halftone.html");
-            std::fs::write(&out, halftone_report::to_html(&insp))?;
+    }
+    if a.batch {
+        let batch = halftone_core::Batch::new(tool(), collected);
+        if a.json {
+            println!("{}", serde_json::to_string(&batch)?);
+        } else {
+            print!(
+                "{}",
+                halftone_core::render_matrix(&batch, |s| s.glyph(glyphs))
+            );
         }
     }
     // Exit code for CI: 0 = nothing present, 2 = at least one layer reported Present.

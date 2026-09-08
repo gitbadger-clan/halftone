@@ -36,3 +36,34 @@ fn json_mode_emits_only_json_lines() {
             .unwrap_or_else(|e| panic!("stdout line {i} is not JSON: {e}\n{line}"));
     }
 }
+
+#[test]
+fn batch_json_is_one_object_with_summary_rows() {
+    let out = Command::new(env!("CARGO_BIN_EXE_ht"))
+        .args([
+            "inspect",
+            "--json",
+            "--batch",
+            "--only",
+            "container",
+            &fixture("comfy.png"),
+            &fixture("dst_gen_exiftool.jpg"),
+        ])
+        .output()
+        .expect("run ht");
+    assert!(matches!(out.status.code(), Some(0 | 2)));
+    let stdout = String::from_utf8(out.stdout).unwrap();
+    assert_eq!(
+        stdout.lines().count(),
+        1,
+        "batch mode emits exactly one line"
+    );
+    let v: serde_json::Value = serde_json::from_str(stdout.trim()).unwrap();
+    assert_eq!(v["schema_version"], "1.1.0");
+    assert_eq!(v["summary"].as_array().unwrap().len(), 2);
+    assert_eq!(v["inspections"].as_array().unwrap().len(), 2);
+    assert_eq!(
+        v["summary"][1]["marking"]["digital_source_type"][0],
+        "trainedAlgorithmicMedia"
+    );
+}
