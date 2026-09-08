@@ -222,10 +222,10 @@ mod imp {
             .unwrap_or(serde_json::Value::Null);
 
         let who = match (&claim_generator, &issuer) {
-            (Some(g), Some(i)) => format!("{g}, signed by {i}"),
-            (Some(g), None) => g.clone(),
+            (Some(g), Some(i)) => format!("from {g}, signed by {i}"),
+            (Some(g), None) => format!("from {g}, signer unknown"),
             (None, Some(i)) => format!("signed by {i}"),
-            (None, None) => "unknown claim generator".into(),
+            (None, None) => "from an unknown claim generator".into(),
         };
         let ai_note = crate::source_type::describe(&source_type);
 
@@ -233,14 +233,14 @@ mod imp {
             c2pa::ValidationState::Trusted => (
                 Status::Present,
                 format!(
-                    "Valid C2PA manifest from {who}; signer chains to a trusted anchor and the \
+                    "Valid C2PA manifest {who}; signer chains to a trusted anchor and the \
                      content hash matches, so the file is unchanged since signing.{ai_note}"
                 ),
             ),
             c2pa::ValidationState::Valid => (
                 Status::Inconclusive,
                 format!(
-                    "C2PA manifest from {who} is cryptographically valid and the content is \
+                    "C2PA manifest {who} is cryptographically valid and the content is \
                      unchanged since signing, but the signer does not chain to any configured \
                      trust anchor (see details.trust for which lists were used).{ai_note}"
                 ),
@@ -248,7 +248,7 @@ mod imp {
             c2pa::ValidationState::Invalid => (
                 Status::Inconclusive,
                 format!(
-                    "C2PA manifest from {who} is present but does not validate: the signature \
+                    "C2PA manifest {who} is present but does not validate: the signature \
                      fails or the content was modified after signing. See validation_status.{ai_note}"
                 ),
             ),
