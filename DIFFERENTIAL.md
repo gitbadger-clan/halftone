@@ -72,3 +72,22 @@ leading space inside the signed assertion. Both the collector and Halftone's
 `code_of` trim before taking the last path segment, so both read `digitalCapture`.
 Kept as a fixture of the "trim, then match exactly" rule: whitespace is tolerated,
 case is not.
+
+### D-007 · 2026-09-08 · Stapled OCSP assertion fails to decode with c2pa_cbor 0.77.2
+
+File: `ocsp_with_assertion.jpg` (c2pa-rs fixture; Photoshop manifest with an OCSP
+response stapled as `c2pa.certificate-status`, plus an ingredient manifest).
+Halftone built from the workspace `Cargo.lock` (c2pa 0.90.20, c2pa_cbor 0.77.2)
+errored at `Reader::from_stream`: "could not decode assertion
+c2pa.certificate-status (content type application/cbor): invalid value: byte array,
+expected a string", and reported `Inconclusive` / "could not be read". The same
+source built by `cargo install` (fresh resolve, c2pa_cbor 0.77.4) read it as `Valid`,
+matching c2patool 0.27.20. Isolated by `cargo update --dry-run`: `c2pa_cbor` is the
+only crate on the decode path that differed. Cause: a byte-string deserialisation
+bug in c2pa_cbor 0.77.2, a transitive dependency of c2pa-rs. Resolution:
+`cargo update -p c2pa_cbor`, lockfile committed, shipped binaries built with
+`cargo install --locked`; optionally `c2pa_cbor = ">=0.77.4"` as a direct dependency
+of `halftone-c2pa` to make the bad range a build error. The file stays in the corpus
+as the regression guard. A stapled OCSP response is what a careful signer adds so
+validators need no network; failing the read would have told a client their
+manifest was broken.
