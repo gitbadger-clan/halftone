@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.15"
+# dependencies = []
+# ///
 """Collect ground truth for the differential test from ExifTool and c2patool.
 
 Walks a corpus directory and writes ``expectations.json`` next to it, recording for
@@ -10,10 +14,10 @@ the same files and asserts field-by-field agreement.
 This script is a collector, not a dependency: Halftone never imports it, and the
 expectations file is committed (or regenerated) so the Rust side needs neither tool.
 
-Usage:
-    scripts/differential.py corpus/differential
-    scripts/differential.py corpus/differential --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem
-    scripts/differential.py corpus/differential --out /tmp/expectations.json
+Usage (uv resolves the interpreter from the inline metadata; no venv needed):
+    uv run scripts/differential.py corpus/differential
+    uv run scripts/differential.py corpus/differential --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem
+    uv run scripts/differential.py corpus/differential --out /tmp/expectations.json
 
 Network: c2patool is run with ``verify.remote_manifest_fetch = false`` and
 ``verify.ocsp_fetch = false`` (a temporary settings file), matching Halftone, so the
