@@ -382,9 +382,9 @@ checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
 name = "c2pa"
-version = "0.90.16"
+version = "0.90.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c736cd424ccd6f63204a037bc12fb6919dcebc01b884d7d3d2c3eed11e6548c"
+checksum = "90af5aa56db6deaeb69722c3955f0cee32c87e95674f433c8926d0339d1f9c9b"
 dependencies = [
  "asn1-rs",
  "async-generic",
@@ -473,9 +473,9 @@ dependencies = [
 
 [[package]]
 name = "c2pa_cbor"
-version = "0.77.2"
+version = "0.77.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a32d9f47773390b9e3400021ddd9ef7a8d61b8a6501cf72aecd6409d6d447c89"
+checksum = "88380203853f999aa8e5bcdac2a0984d082c42994cc5a99d240aed180b2c2f3b"
 dependencies = [
  "half",
  "serde",

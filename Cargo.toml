@@ -37,7 +37,8 @@ clap_complete = { version = "4.6", features = ["unstable-dynamic"] }
 rayon = "1"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 kamadak-exif = "0.6"
-c2pa = "0.90"
+c2pa = "0.90.20"
+c2pa_cbor = ">=0.77.4"
 ort = "2.0.0-rc.9"
 ndarray = "0.17"
 rustfft = "6"

@@ -73,6 +73,8 @@ The source also reports every `digitalSourceType` the active manifest declares
 judged against the same IPTC vocabulary as `marking_metadata` (`halftone_core::dst`,
 `details.vocabulary_version`). The two readings are deliberately separate: the manifest
 copy is signed, the XMP copy is not, and a report shows both.
+Inspection never contacts the network: remote manifest references are not fetched
+(reported as `Inconclusive` with the URL) and OCSP is not consulted.
 
 ## Pixel layer (dark mode)
 

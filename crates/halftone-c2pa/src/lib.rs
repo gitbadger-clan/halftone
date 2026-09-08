@@ -76,7 +76,14 @@ mod imp {
     /// list via `trust.user_anchors`. If the c2pa settings API moves again, this is the
     /// only function to touch.
     fn context(resolved: &ResolvedTrust) -> Result<c2pa::Context, String> {
-        let mut settings = c2pa::Settings::new();
+        // Inspection never touches the network: a file must not be able to make the
+        // tool call out to a URL it carries. Remote manifests are reported as such
+        // (Inconclusive), OCSP is not consulted.
+        let mut settings = c2pa::Settings::new()
+            .with_value("verify.remote_manifest_fetch", false)
+            .map_err(|e| e.to_string())?
+            .with_value("verify.ocsp_fetch", false)
+            .map_err(|e| e.to_string())?;
         if !resolved.internal_pem.trim().is_empty() {
             settings = settings
                 .with_value("trust.trust_anchors", resolved.internal_pem.clone())
@@ -145,6 +152,17 @@ mod imp {
                     "No C2PA manifest. Most files have none; this says nothing about origin."
                         .into(),
                     serde_json::Value::Null,
+                )
+            }
+            Err(c2pa::Error::RemoteManifestUrl(url)) => {
+                return mk(
+                    Status::Inconclusive,
+                    format!(
+                        "The file carries no manifest of its own, only a reference to a \
+                         remote one ({url}). Halftone does not fetch it: inspection never \
+                         contacts the network, so a remote manifest cannot be verified here."
+                    ),
+                    serde_json::json!({ "remote_manifest_url": url }),
                 )
             }
             Err(e) => {

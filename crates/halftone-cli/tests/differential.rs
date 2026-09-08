@@ -184,6 +184,15 @@ fn compare_file(
                 .contains("built without")
         })
         .unwrap_or(false);
+    if ct.is_object() && ct.get("remote_manifest").is_some() && layer_enabled {
+        // Only a reference to a remote manifest: neither tool fetches it. Halftone
+        // must say Inconclusive (a container is there, unverifiable here), never
+        // Present or Absent.
+        let status = c2pa_ev
+            .map(|e| e["status"].as_str().unwrap_or("").to_string())
+            .unwrap_or_default();
+        push("c2pa.remote_manifest", "inconclusive".into(), status);
+    }
     if ct.is_object() && ct.get("error").is_some() && layer_enabled {
         // c2patool refused the file (remote manifest, unknown algorithm, prerelease
         // claim…). Halftone may say whatever it likes except Present.

@@ -15,6 +15,11 @@ Usage:
     scripts/differential.py corpus/differential --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem
     scripts/differential.py corpus/differential --out /tmp/expectations.json
 
+Network: c2patool is run with ``verify.remote_manifest_fetch = false`` and
+``verify.ocsp_fetch = false`` (a temporary settings file), matching Halftone, so the
+expectations do not depend on the network or on the day they were collected. A file
+that only references a remote manifest is recorded as ``remote_manifest: <url>``.
+
 Trust: c2patool reports ``Trusted`` only when given the same anchors Halftone uses.
 Pass ``--trust-anchors`` for an exact ``validation_state`` comparison; without it the
 file records ``trust_anchors: null`` and the Rust test accepts ``Trusted`` where
@@ -26,9 +31,13 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+
+C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n"
 
 # Extensions worth sniffing. The decision is made on ExifTool's MIME type, never on
 # the extension: fixture corpora contain mislabeled files on purpose.
@@ -111,17 +120,20 @@ def walk_dst(v, out: list[str]) -> None:
             walk_dst(child, out)
 
 
-def c2patool_facts(p: Path, anchors: Path | None) -> dict:
+def c2patool_facts(p: Path, anchors: Path | None, settings: Path) -> dict:
     env = dict(os.environ)
     if anchors:
         env["C2PATOOL_TRUST_ANCHORS"] = str(anchors)
     try:
-        rc, out, err = run(["c2patool", str(p)], env=env)
+        rc, out, err = run(["c2patool", "--settings", str(settings), str(p)], env=env)
     except FileNotFoundError:
         return {"error": "c2patool not found"}
     text = (out + "\n" + err).lower()
     if "no claim found" in text or "no manifest" in text or "jumbfnotfound" in text:
         return {"present": False}
+    m = re.search(r"must fetch remote manifests from url (\S+)", out + "\n" + err)
+    if m:
+        return {"present": None, "remote_manifest": m.group(1)}
     if rc != 0 and not out.strip().startswith("{"):
         return {"present": None, "error": (err or out).strip()[:400]}
     try:
@@ -179,6 +191,9 @@ def main() -> int:
         print("c2patool not found on PATH (pass --no-c2pa to skip manifest ground truth)", file=sys.stderr)
         return 2
 
+    settings_file = Path(tempfile.mkstemp(suffix=".toml", prefix="c2patool-")[1])
+    settings_file.write_text(C2PATOOL_SETTINGS)
+
     files: dict[str, dict] = {}
     paths = sorted(p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in IMAGE_EXTS)
     skipped: list[str] = []
@@ -194,10 +209,11 @@ def main() -> int:
             "exiftool": ex,
         }
         if not a.no_c2pa:
-            entry["c2patool"] = c2patool_facts(p, a.trust_anchors)
+            entry["c2patool"] = c2patool_facts(p, a.trust_anchors, settings_file)
         files[rel] = entry
         dst = ex.get("digital_source_type") or []
-        state = (entry.get("c2patool") or {}).get("validation_state") or "-"
+        ct = entry.get("c2patool") or {}
+        state = ct.get("validation_state") or ("remote" if ct.get("remote_manifest") else "-")
         print(f"{rel:60} xmp={'y' if ex.get('xmp_present') else 'n'} dst={','.join(dst) or '-':40} c2pa={state}")
 
     doc = {
@@ -205,8 +221,10 @@ def main() -> int:
         "corpus": str(corpus),
         "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver},
         "trust_anchors": str(a.trust_anchors) if a.trust_anchors else None,
+        "c2patool_settings": C2PATOOL_SETTINGS,
         "files": files,
     }
+    settings_file.unlink(missing_ok=True)
     out_path.write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n")
     print(f"\n{len(files)} files -> {out_path}")
     if skipped:
