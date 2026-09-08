@@ -168,10 +168,20 @@ mod imp {
             .and_then(|l| js.get("manifests").and_then(|m| m.get(l)))
             .cloned()
             .unwrap_or(serde_json::Value::Null);
+        // Claim v1 carries a `claim_generator` string; claim v2 (c2pa 2.x, e.g. OpenAI)
+        // carries `claim_generator_info: [{name, version}]` and no string at all.
         let claim_generator = active
             .get("claim_generator")
             .and_then(|v| v.as_str())
-            .map(str::to_string);
+            .map(str::to_string)
+            .or_else(|| {
+                let g = active.get("claim_generator_info")?.as_array()?.first()?;
+                let name = g.get("name")?.as_str()?;
+                Some(match g.get("version").and_then(|v| v.as_str()) {
+                    Some(ver) => format!("{name} {ver}"),
+                    None => name.to_string(),
+                })
+            });
         let title = active
             .get("title")
             .and_then(|v| v.as_str())
