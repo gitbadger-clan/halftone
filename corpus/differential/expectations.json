@@ -1,0 +1,1034 @@
+{
+  "corpus": "corpus/differential",
+  "files": {
+    "01-c2pa-rs/C.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.33.1 c2pa-rs/0.33.1",
+        "claim_version": 1,
+        "digital_source_type": [
+          "algorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia"
+        ],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "a2d14755db55de67a47c04090340d8266e892367be4104a45626d7a6fa6e9ffd",
+      "size_bytes": 132518
+    },
+    "01-c2pa-rs/CA.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.33.1 c2pa-rs/0.33.1",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e71bff58fc57640803e6e65f7534e2fb0c2f99018c85276cc14b30f04427cc76",
+      "size_bytes": 166864
+    },
+    "01-c2pa-rs/CACA.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images 0.67.1",
+        "claim_version": 2,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e735fe9e50057f8280baf96182a38d516a4acfb144da7f1e6aad32de44c76aea",
+      "size_bytes": 279782
+    },
+    "01-c2pa-rs/CACAE-uri-CA.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.36.0 c2pa-rs/0.36.0",
+        "claim_version": 1,
+        "digital_source_type": [
+          "algorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia"
+        ],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "66baccd7a155946eec0bcffd1c26a635e462493816414f677baf336989a0482a",
+      "size_bytes": 388188
+    },
+    "01-c2pa-rs/CA_ct.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.33.1 c2pa-rs/0.33.1",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e7d6cb48303593c0a34de44aadf9b6f4386a8b263c74e76b6c19ea97eb87e853",
+      "size_bytes": 166864
+    },
+    "01-c2pa-rs/CIE-sig-CA.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.55.0",
+        "claim_version": 1,
+        "digital_source_type": [
+          "algorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia"
+        ],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0c343c0f7c07ff6a1e8a0ec3d69d79fe2990d72450e778702e0fdae6458206c5",
+      "size_bytes": 354543
+    },
+    "01-c2pa-rs/C_with_CAWG_data.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "cawg.training-mining",
+          "cawg.identity"
+        ],
+        "claim_generator": "c2pa cawg test 0.58.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "digitalCapture"
+        ],
+        "digital_source_type_raw": [
+          " http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+        ],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "fa0b257c863cb5b367135a017813ce0c1fbfc690a03e94acdd047c25c2d1ed46",
+      "size_bytes": 139636
+    },
+    "01-c2pa-rs/E-sig-CA.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_xxxxxx/0.33.1 c2pa-rs/0.33.1",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "claimSignature.mismatch"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "20dc072a4c843d3b7d7cb4f4002fbb4d8f20d7ee859ca726f2458c1e0358a98c",
+      "size_bytes": 166864
+    },
+    "01-c2pa-rs/IMG_0003.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 132
+      },
+      "sha256": "f999fd78bfe8a83c96e468a078830ba94485bc1bc6fd086fb94a43bd29dd0f23",
+      "size_bytes": 61720
+    },
+    "01-c2pa-rs/P1000827.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 133
+      },
+      "sha256": "9d33d48863ac4f94711e289bebc43e849d45be1819ee16c479bd9a8385f1ae08",
+      "size_bytes": 167548
+    },
+    "01-c2pa-rs/XCA.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.33.1 c2pa-rs/0.33.1",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "assertion.dataHash.mismatch"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "81f20702a2e81611b29aa773f811b59ade6095acd3d089d6ffdae6b591d6d5a5",
+      "size_bytes": 142765
+    },
+    "01-c2pa-rs/adobe-20220124-E-clm-CAICAI.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.16.1 c2pa-rs/0.16.1",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "ingredient.manifest.missing",
+          "signingCredential.untrusted",
+          "assertion.hashedURI.mismatch",
+          "ingredient.manifest.missing"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "b3ff3f00c66602280977d3e4d962a836d33ab83953d0009f7c1e6490d0065feb",
+      "size_bytes": 656258
+    },
+    "01-c2pa-rs/boxhash.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.3.0 c2pa-rs/0.3.0",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "b63a8df44b09d78cbe60b2c828b0a76b97b953407942fd9a2d0698c77c29b176",
+      "size_bytes": 174308
+    },
+    "01-c2pa-rs/cloud.jpg": {
+      "c2patool": {
+        "assertions": [],
+        "claim_generator": "cai-helper-test cai-helper/0.4.8 c2pa-rs/0.13.0",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "Adobe Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 15
+      },
+      "sha256": "e6ad9f51be5bb83f137322a3f260b5881738e3528aee208727e75b6daaba6092",
+      "size_bytes": 183901
+    },
+    "01-c2pa-rs/cloudx.jpg": {
+      "c2patool": {
+        "error": "Error: could not fetch the remote manifest an error occurred from the underlying http resolver: io: failed to lookup address information: nodename nor servname provided, or not known",
+        "present": null
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 15
+      },
+      "sha256": "15ca4263485f55bdb64e45a8c13cfa09fd0760fc2fbc628688d7fc5d74f3c194",
+      "size_bytes": 183901
+    },
+    "01-c2pa-rs/earth_apollo17.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 14
+      },
+      "sha256": "b7ffd2579d0921aae0c0b2edf3cf5ef22621b07f27d7c56a856a09e5428779ad",
+      "size_bytes": 183712
+    },
+    "01-c2pa-rs/exp-test1.png": {
+      "c2patool": {
+        "assertions": [
+          "adobe.beta",
+          "adobe.dictionary",
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2",
+          "adobe.crypto.addresses"
+        ],
+        "claim_generator": "Adobe_Photoshop/23.5.0 (build 20220720.m.1828 0ac45e5; mac)",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "Adobe Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted",
+          "signingCredential.invalid",
+          "signingCredential.untrusted",
+          "signingCredential.untrusted",
+          "signingCredential.untrusted",
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "8794b09652ab0585b9337f9c85981407ee297eda20f5885964057fca59648bd3",
+      "size_bytes": 5884439
+    },
+    "01-c2pa-rs/ingredient__contentauth_urn_uuid_b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3__c2pa.assertions__c2pa.thumbnail.claim.jpeg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7e945945c21f096d5800930bcd22a55184c226c148af9c78d656770b6050e4f2",
+      "size_bytes": 28486
+    },
+    "01-c2pa-rs/legacy_ingredient_hash.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "make_test_images/0.16.0 c2pa-rs/0.16.0",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "e64168ba337fb8793f8577d4a9194f21df4bf0bce7b90485fe4dc46ccf0d2d2d",
+      "size_bytes": 378962
+    },
+    "01-c2pa-rs/libpng-test.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "c5c635a1dbbec9a768c3bb4527dbaea62a1be05efcee17d66799cc07b673b29b",
+      "size_bytes": 3700
+    },
+    "01-c2pa-rs/libpng-test_with_url.png": {
+      "c2patool": {
+        "error": "Error: could not fetch the remote manifest an error occurred from the underlying http resolver: http status: 403",
+        "present": null
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "8ffdf61c6497696b4a18f8e04b416c749f7ad67f4a1529862f50231db86d1411",
+      "size_bytes": 4104
+    },
+    "01-c2pa-rs/mars.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e8402f9020e2e0152e9284525f2220afa79897918cc7db0d4815d86e892d3d13",
+      "size_bytes": 174860
+    },
+    "01-c2pa-rs/no_alg.jpg": {
+      "c2patool": {
+        "error": "Error: unknown algorithm",
+        "present": null
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7c91641416c18319b823c292ae603c5354892ac365c05543519154c48c6a1f8a",
+      "size_bytes": 86499
+    },
+    "01-c2pa-rs/no_manifest.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 13
+      },
+      "sha256": "9ac395ca04fc9d348acf6f81920f5e894d336341c3f764ca86c354eec6f7c2d6",
+      "size_bytes": 97591
+    },
+    "01-c2pa-rs/ocsp.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Adobe_Photoshop/26.9.0 adobe_c2pa/0.14.2 c2pa-rs/0.43.0",
+        "claim_version": 1,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Adobe Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "49a6b089bf3fe610960ef91b2beb81c86b62e7d531c97f33fc029841d864b2cb",
+      "size_bytes": 285562
+    },
+    "01-c2pa-rs/ocsp_with_assertion.jpg": {
+      "c2patool": {
+        "assertions": [
+          "stds.schema-org.CreativeWork",
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Adobe_Photoshop/26.8.1 adobe_c2pa/0.14.2 c2pa-rs/0.43.0",
+        "claim_version": 1,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "Adobe Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "210fb95c6a766d3cd89ef0583898ec7248fe60f0ed651af216fb270cd9cbe17a",
+      "size_bytes": 599791
+    },
+    "01-c2pa-rs/prerelease.jpg": {
+      "c2patool": {
+        "error": "Error: Prerelease claim found",
+        "present": null
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "17ea3035caaa4eb6f7cb06c89bda6c86a74a92c40dc5b8119e9954ed9cd99831",
+      "size_bytes": 374959
+    },
+    "01-c2pa-rs/sample1.avif": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/avif",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "a10de8204aee73ba1786daca6390546bd7aa6b069aaa644012219a1c11246a43",
+      "size_bytes": 97436
+    },
+    "01-c2pa-rs/sample1.heic": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/heic",
+        "xmp_present": true,
+        "xmp_tag_count": 1
+      },
+      "sha256": "46ac93516093b70bfed23d11f651819a4fb946088a6a933d6a5d34f4fb967bad",
+      "size_bytes": 2503495
+    },
+    "01-c2pa-rs/sample1.heif": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/heif",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "00d9e0636b645036f77b3809fcd26a29df71b9ee66f2865fd8729b894aeabf59",
+      "size_bytes": 293608
+    },
+    "01-c2pa-rs/sample1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0bd72c972c14e5fd27d8473c5599e801031576e1398f384c40c3394696a2619a",
+      "size_bytes": 299257
+    },
+    "01-c2pa-rs/sample1.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "006ee0871284b06a311286b9b72b3d083951ea6e9c78aa14d7894742daebfad3",
+      "size_bytes": 50408
+    },
+    "01-c2pa-rs/test.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "a3665d7a6fd48ff60137ae29ac6792207aed3f768c2c05ef324f64c78352d5a5",
+      "size_bytes": 4928
+    },
+    "01-c2pa-rs/test_lossless.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b90cb047e529364197e0435122e96be3e105c7e4b21688a56be9532af9a08609",
+      "size_bytes": 12822
+    },
+    "01-c2pa-rs/test_xmp.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 21
+      },
+      "sha256": "769bf38d77496cc610ad0a0a5515f77e5c0ac185b64f99e4fa1ac4ede6dc290b",
+      "size_bytes": 25020
+    },
+    "01-c2pa-rs/thumbnail.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 132
+      },
+      "sha256": "f999fd78bfe8a83c96e468a078830ba94485bc1bc6fd086fb94a43bd29dd0f23",
+      "size_bytes": 61720
+    },
+    "01-c2pa-rs/update_manifest.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.time-stamp"
+        ],
+        "claim_generator": "claim_v2_unit_test",
+        "claim_version": 2,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 14
+      },
+      "sha256": "c855bbce1e2ea50bfc1da939f55b7d1bce97a9afa5a0e671ed05d59dc7950b3b",
+      "size_bytes": 227319
+    },
+    "c2pa_gen_testcert.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Halftone differential fixture 0.1",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "C2PA Test Signing Cert",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "9219761195e7083cb4d0f3839f7d3bd10381b781f0caccda892b713f1643c714",
+      "size_bytes": 193049
+    },
+    "cap_iim_exiftool.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "digitalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+        ],
+        "iim_originating_program": "TestCam",
+        "iim_program_version": "1.0",
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "cfa384c9621d501cc1b2bcb951fd600967e1d55c9617539438d21f490919ed3c",
+      "size_bytes": 6717
+    },
+    "gen_exiftool.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "d70908c25c449aac8ab1ca97e401832dab8e44e2ca5b23a0de74a075f9389083",
+      "size_bytes": 6668
+    },
+    "gen_exiftool.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "e1e2249ca79e4700827792423733005f1c89fbab4e9d201415fbcc8f06714d12",
+      "size_bytes": 12941
+    },
+    "gen_exiftool.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "0f136d69f57b2400a061594f21586f9fa2e169d1f27a0bd711a6da868d5dc350",
+      "size_bytes": 6116
+    },
+    "gen_extxmp_exiftool.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "13d09ea76815e4a1c13bbb682471320c9ff07955bcbc1c732ac18cab0083a49a",
+      "size_bytes": 77392
+    },
+    "plain.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "c180b07a1c93a277b53f80ed1fd1621359f9194e3b833f17c8ecf480fd02a66f",
+      "size_bytes": 3724
+    },
+    "plain.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b8e4f60e59dac3a88a61848977eff9bf36527a38b48c9168c221f7bb1586e1e7",
+      "size_bytes": 12420
+    }
+  },
+  "schema": "halftone-differential-expectations/1",
+  "tools": {
+    "c2patool": "c2patool 0.27.20",
+    "exiftool": "13.55"
+  },
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem"
+}
