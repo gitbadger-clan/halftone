@@ -852,6 +852,710 @@
       "sha256": "c855bbce1e2ea50bfc1da939f55b7d1bce97a9afa5a0e671ed05d59dc7950b3b",
       "size_bytes": 227319
     },
+    "02-exiftool/AFCP.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "4fcd62252ada39e21b001074e5da4704f4cdae7f34909254d80a6ab94505299a",
+      "size_bytes": 1110
+    },
+    "02-exiftool/Apple.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "113a01f606e2508bda673503e1d62ea94e7fada9f92872880d69bc91f3d45ec8",
+      "size_bytes": 2355
+    },
+    "02-exiftool/Canon.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "98c290283dbff10950bd0eac63bf95804fd09661de727df4f2946d203ca9e7a2",
+      "size_bytes": 2697
+    },
+    "02-exiftool/Canon1DmkIII.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d754d0f8d2eed21e6d7e1ab1a7bac7d451ba50730a1919aaaf97c3482256d5bd",
+      "size_bytes": 8337
+    },
+    "02-exiftool/Casio.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "c08fed0e193a1549c130d79814d30a3ac3fcd81980e261c4947ff45691628f92",
+      "size_bytes": 1203
+    },
+    "02-exiftool/Casio2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "24e19e2eecc5391e63cfbc2a5f17b62a0e86cbb783c98bd294c107a090d6cd02",
+      "size_bytes": 1699
+    },
+    "02-exiftool/CasioQVCI.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "bcb7f2c2e9620a4cc0e562847c4993774bf183fa31a57d6de304d62629275a97",
+      "size_bytes": 407
+    },
+    "02-exiftool/ExifTool.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 25
+      },
+      "sha256": "fdca3287a21453b51e250e67aba836d560e6043559a6e37acb429a03e720e412",
+      "size_bytes": 26106
+    },
+    "02-exiftool/ExtendedXMP.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 8
+      },
+      "sha256": "43c971e0db60917a69be759be57ad33bca23028ec6456621a55cd22eb673a0f6",
+      "size_bytes": 1380
+    },
+    "02-exiftool/FLIR.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "3e217e288a21ac765cfe0e4f072e98efc84310bc574464a64a41e6a6ae1a90b9",
+      "size_bytes": 7338
+    },
+    "02-exiftool/FotoStation.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "05c90d683c6d889bfdbaa19c2c32bcc7fdcd3f9d6645acc53e7176e0063b9a1b",
+      "size_bytes": 4320
+    },
+    "02-exiftool/FujiFilm.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0e9e951ef4c091c2d35f107f664acd5b2dd2f8735f24d4cc8633f7380d784dac",
+      "size_bytes": 1373
+    },
+    "02-exiftool/GE.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "393e9a5c424d97db3b551175f5a53a7cffc4daae5f8cbc634db54e7cc9330c05",
+      "size_bytes": 1467
+    },
+    "02-exiftool/GPS.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "4fb0a681632d618a2a35f463127e3e39ab5eac683f88e7945f9b3ea82692d843",
+      "size_bytes": 2133
+    },
+    "02-exiftool/GoPro.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d4f9d433ae69deffd764e23b709174d3d3304f1a767f6f20d1b868b4219180c4",
+      "size_bytes": 4601
+    },
+    "02-exiftool/Google.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "156a7510315a4fb27c97d12a6dedb4e791eaf26e4810458e86b629f862e34651",
+      "size_bytes": 41417
+    },
+    "02-exiftool/IPTC.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "2fc7ca78b0abbb694c2483fee8e4b7d137ff085220004d53c5dd86f8c1cca04b",
+      "size_bytes": 9851
+    },
+    "02-exiftool/InfiRay.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "de2565cee6084d9524f22161049b64f785eb572aed7a3faf4c38b312aafe0874",
+      "size_bytes": 2207
+    },
+    "02-exiftool/JVC.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "4dfd04b3525052a57ae5825f3da3fbebb155ef311ce7f05c0302290b66aee557",
+      "size_bytes": 1253
+    },
+    "02-exiftool/JVC2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "f1b9460770ac07d639c5993417033db08b4c8c413fc15402d550d0cf88bb8e74",
+      "size_bytes": 947
+    },
+    "02-exiftool/Kodak.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "eab06f9fb9f1d5ad6ff888046a5273ca115398f43e7bd01a98a054036a79aed3",
+      "size_bytes": 3375
+    },
+    "02-exiftool/MWG.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 9
+      },
+      "sha256": "762b840c07bf353e2cd15084ff7dcb92b0130c06b450a72ed31afc3b5f38b4e9",
+      "size_bytes": 2255
+    },
+    "02-exiftool/Minolta.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "adddfd71a847396fce34bce473bb800cde31bc8fb4eb4ad5ec2f0fcf26e6cbad",
+      "size_bytes": 13501
+    },
+    "02-exiftool/Motorola.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d4c38eacb7cec6bb24773494a411f134266525cd9dd104f6ef1386fb47813fc3",
+      "size_bytes": 2489
+    },
+    "02-exiftool/Nikon.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "26e9f26631281d399002b28ac2bb468cbb8cb12ffc7a309631bbfb18fed410be",
+      "size_bytes": 1703
+    },
+    "02-exiftool/NikonD2Hs.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "aab7d17da3151e9e34f78c4ee3102826d8269877dbb1e50cbd84971b852e2c08",
+      "size_bytes": 3505
+    },
+    "02-exiftool/NikonD70.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "62aafe7295848d10c88f5d97849a21e9bb60470a31e3e896ff38d26136e50304",
+      "size_bytes": 3661
+    },
+    "02-exiftool/Olympus.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "86265e9c942bf3a4f72e8b69f238bc63bbaa93f77184e4623b4f13aba1c366f8",
+      "size_bytes": 1573
+    },
+    "02-exiftool/Olympus2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "61124579779fa7ce6b74392c7c94f75cdd0efbd301db520ab4e3bef2e1620c0d",
+      "size_bytes": 7701
+    },
+    "02-exiftool/OlympusE1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7d76d6421265420326bb43845e15732c45d1ffe5866df2a63553ae0bc8e228f8",
+      "size_bytes": 7365
+    },
+    "02-exiftool/PNG.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "45f0bd6bd3c85cf8c79028dee8f0de5cd470eb3b0124d2c7559f0dd3de24a288",
+      "size_bytes": 572
+    },
+    "02-exiftool/Panasonic.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "ea5b7c50c4314e212bf99c21b870058b4eace03153ec88b02fea73904f269c71",
+      "size_bytes": 7099
+    },
+    "02-exiftool/Pentax.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "554756d3cbbebad49d8ab67ecb8add51740a022015f97d6bd97acce87551a3c6",
+      "size_bytes": 2721
+    },
+    "02-exiftool/PhotoMechanic.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 26
+      },
+      "sha256": "958036dd4e25c2dcf06d5f1c869e7df3df98538a9423bbcd2daeb505e623ff48",
+      "size_bytes": 3417
+    },
+    "02-exiftool/QuickTime.heic": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/heif",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "4e1785e9924600d0274176f52609a2d514481877103b91c714bd2088ea803ae7",
+      "size_bytes": 623
+    },
+    "02-exiftool/RIFF.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "054fb882674304992a0af031a77df061c3f802c30891dbb8bc2d16e41213767d",
+      "size_bytes": 586
+    },
+    "02-exiftool/Ricoh.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "c563500ea71e9221b896b7c226d5db6f88e4ff32f11236fa7070a906be1bb621",
+      "size_bytes": 1903
+    },
+    "02-exiftool/Ricoh2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "863fad461be0ce69720f4f93eb847d980898553914c403787b18f34bd3d8789c",
+      "size_bytes": 3187
+    },
+    "02-exiftool/Sanyo.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "aba50453000eeecced8c81318ab2c873d0973613a70bf47c9fba00bbfef60ebc",
+      "size_bytes": 2165
+    },
+    "02-exiftool/Sigma.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "164624e76a45ee2d151b79cc774b3c2220426cbf3f6f600891b1dc5e282d6683",
+      "size_bytes": 1531
+    },
+    "02-exiftool/Sony.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7376ad79cad2ac750e765ad253df2f3ae297c2089a562d00d88e9338ea8980b7",
+      "size_bytes": 2779
+    },
+    "02-exiftool/Unknown.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "cb3484f91dd6de6a41e79fe39f63c709bd345990ee66cc00ec844482aba91292",
+      "size_bytes": 7199
+    },
+    "02-exiftool/Writer.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "c4ccfb8dc64caf6622d8cf330741dff990fb33b73aa274010352db02aa161aaa",
+      "size_bytes": 251
+    },
+    "02-exiftool/XMP.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 25
+      },
+      "sha256": "8b39cd1636913ef5027dd6816b006a3942e6df5377aa2ebfcf082916e9859b39",
+      "size_bytes": 10314
+    },
     "c2pa_gen_testcert.jpg": {
       "c2patool": {
         "assertions": [
