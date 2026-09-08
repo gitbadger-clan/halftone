@@ -72,3 +72,4 @@ repomix-output.*
 *~
 .DS_Store
 Thumbs.db
+.pins
