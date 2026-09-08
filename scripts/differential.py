@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.15"
+# requires-python = ">=3.14"
 # dependencies = []
 # ///
 """Collect ground truth for the differential test from ExifTool and c2patool.
