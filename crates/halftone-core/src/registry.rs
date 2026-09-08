@@ -100,7 +100,7 @@ impl Registry {
 }
 
 /// UTC timestamp without pulling in `chrono`; good enough for a stamp.
-fn now_rfc3339() -> String {
+pub(crate) fn now_rfc3339() -> String {
     let secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())

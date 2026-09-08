@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::AssetInfo;
 
 /// Version of the JSON verdict schema emitted by [`Inspection`].
-pub const SCHEMA_VERSION: &str = "1.0.0";
+pub const SCHEMA_VERSION: &str = "1.1.0";
 
 /// The four independent evidence layers. Order is cheapest-first and is the
 /// default execution order in [`crate::Registry`].

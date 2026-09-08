@@ -7,11 +7,13 @@
 //!   verdicts stay interpretable after models are swapped.
 
 pub mod asset;
+pub mod batch;
 pub mod dst;
 pub mod evidence;
 pub mod registry;
 
 pub use asset::{Asset, AssetInfo, Modality};
+pub use batch::{render_matrix, summarize, Batch, FileRow};
 pub use evidence::{
     CalibrationRef, Evidence, Inspection, Layer, SourceId, Statistic, Status, ToolInfo,
     SCHEMA_VERSION,
