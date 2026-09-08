@@ -12,9 +12,9 @@ halftone-core.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
-image.workspace = true
-ndarray.workspace = true
-rustfft.workspace = true
+# image.workspace = true
+# ndarray.workspace = true
+# rustfft.workspace = true
 # ort.workspace = true      # enable for AudioSeal / VideoSeal decoders
 
 [lints]
