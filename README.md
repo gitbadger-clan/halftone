@@ -11,7 +11,7 @@ Four independent evidence layers, four separate verdicts, no merged score:
 
 | Layer | Crate | Question |
 |---|---|---|
-| Manifest | `halftone-c2pa` | Is there a valid signed C2PA manifest? |
+| Manifest | `halftone-c2pa` | Is there a valid signed C2PA manifest, and what source type does it declare? |
 | Container | `halftone-container` | Does the file structure match its claimed origin? |
 | Mark | `halftone-mark` | Does it carry a watermark we hold a key/decoder for? |
 | Blind | `halftone-blind` | Does a calibrated classifier flag it — at what FPR? |
@@ -26,6 +26,8 @@ on crates.io.
 ```
 ht inspect photo.jpg
 ht inspect --json --only manifest,container *.jpg
+ht inspect --batch shots/*.jpg                  # file × source matrix
+ht inspect --batch --json shots/*.jpg > run.json # one document, per-file summary rows
 ht inspect --report clip.mp4
 ht inspect --fingerprints my-writers.json --trust-anchors anchors.pem photo.jpg
 ht fingerprint --writer "Canon EOS R5 fw 1.8.1" --class camera --into my-writers.json shots/*.jpg
@@ -44,14 +46,33 @@ ht packs update
 | `png_writer` | PNG | Chunk inventory → built-in writer rules (`png_rules.rs`, each marked verified/documented) + exact-hash DB, iCCP name, pHYs, `caBX`, generation-parameters text | Embedded metadata names a generator or carries pipeline parameters. Writer matches are `Inconclusive` unless the writer is a generator. |
 | `webp_writer` | WebP | Chunk inventory, lossy/lossless, EXIF/XMP | XMP names a generator. |
 | `exif_consistency` | JPEG/PNG/WebP/HEIF | Self-identification, camera-metadata contradictions, EXIF-vs-frame dimensions | Metadata explicitly names a generator. Contradictions are `Inconclusive`. |
-| `marking_metadata` | JPEG/PNG/WebP | IPTC `DigitalSourceType` in XMP (JPEG APP1 + ExtendedXMP, PNG iTXt, WebP), value and syntactic form as written; IPTC IIM block from APP13 (originating program, version) | XMP self-declares a generative source type (`trainedAlgorithmicMedia` / `compositeWithTrainedAlgorithmicMedia`). Unsigned; verifies nothing. Non-generative terms are `Absent` with the value in `details`; unknown or conflicting terms are `Inconclusive`. |
-
+| `marking_metadata` | JPEG/PNG/WebP | IPTC `DigitalSourceType` in XMP (JPEG APP1 + ExtendedXMP, PNG iTXt, WebP), value and syntactic form as written; IPTC IIM block from APP13 (originating program, version); whether a C2PA container is present | XMP self-declares a generative source type (`trainedAlgorithmicMedia` / `compositeWithTrainedAlgorithmicMedia`). Unsigned; verifies nothing. Non-generative terms are `Absent` with the value in `details`; unknown or conflicting terms are `Inconclusive`. |
 
 None of these carries a calibration yet; the `details` object exposes every raw
 discriminant so `ht bench` can measure per-signal false-positive rates against a
 labelled corpus. The `jpeg_double` threshold is provisional and says so.
 
+## Batch output
+
+`--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.1.0`):
+the full inspections plus a `summary` row per file with every source's status and the
+named columns a marking scan is about — manifest `validation_state`, issuer, claim
+generator and declared `digitalSourceType`; XMP `DigitalSourceType`, packet count and
+whether a C2PA container is present. Rows are projections of the evidence, never a
+score; the report and the differential runner read rows, not `details`. Without
+`--json` the same run prints a numbered file × source matrix.
+
+## Manifest layer
+
 Layer 1 (`c2pa`) is implemented behind the `c2pa` feature: `cargo build --features halftone-cli/c2pa`.
+`Present` means the manifest validates and the signer chains to a configured trust
+anchor (`details.validation_state = Trusted`); a valid signature from an untrusted signer,
+or a broken hard binding, is `Inconclusive` with the reason in `details.validation_status`.
+The source also reports every `digitalSourceType` the active manifest declares
+(`details.digital_source_type`, with assertion, action and JSON path per occurrence),
+judged against the same IPTC vocabulary as `marking_metadata` (`halftone_core::dst`,
+`details.vocabulary_version`). The two readings are deliberately separate: the manifest
+copy is signed, the XMP copy is not, and a report shows both.
 
 ## Pixel layer (dark mode)
 
@@ -134,3 +155,4 @@ Forks are welcome under the licenses above. Please don't call a modified
 version "Halftone": verdicts from this tool carry a stated false-positive
 rate, and a fork with different thresholds or models shouldn't be
 mistaken for it. "Forked from Halftone" is fine.
+
