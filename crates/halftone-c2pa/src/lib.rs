@@ -2,9 +2,11 @@
 //!
 //! Status semantics:
 //! - `Present`: a manifest exists, its signature validates, and the signer chains to a
-//!   trusted anchor. `details` carries the parsed claim chain, and `declares_ai`
-//!   says whether the manifest itself declares the asset as (partly) generated
-//!   (`digitalSourceType` = `trainedAlgorithmicMedia` / `compositeWithTrainedAlgorithmicMedia`).
+//!   trusted anchor. `details` carries the parsed claim chain plus every
+//!   `digitalSourceType` the active manifest declares ([`source_type`]): the term
+//!   codes in `digital_source_type`, each occurrence with its assertion, action and
+//!   JSON path in `digital_source_type_hits`, and `declares_ai` = any occurrence is a
+//!   generative term of the shared vocabulary in [`halftone_core::dst`].
 //! - `Absent`: no manifest. Say nothing about origin; most real photos have none.
 //! - `Inconclusive`: manifest present but the signature fails, the signer is not
 //!   trusted, the hard binding is broken (bytes changed after signing), or it can't be
@@ -19,6 +21,7 @@
 //! [`trust::TrustConfig`] supplies the official list (`trust.trust_anchors`) and
 //! any operator anchors (`trust.user_anchors`), and records where each came from.
 //!
+pub mod source_type;
 pub mod trust;
 pub use trust::{InternalList, TrustConfig};
 
@@ -87,16 +90,6 @@ mod imp {
         c2pa::Context::new()
             .with_settings(settings)
             .map_err(|e| e.to_string())
-    }
-
-    /// Depth-first search for any string value containing `needle`.
-    fn json_contains(v: &serde_json::Value, needle: &str) -> bool {
-        match v {
-            serde_json::Value::String(s) => s.contains(needle),
-            serde_json::Value::Array(a) => a.iter().any(|x| json_contains(x, needle)),
-            serde_json::Value::Object(o) => o.values().any(|x| json_contains(x, needle)),
-            _ => false,
-        }
     }
 
     pub(super) fn assess(src: &C2paSource, a: &Asset) -> Evidence {
@@ -207,7 +200,7 @@ mod imp {
                     .collect()
             })
             .unwrap_or_default();
-        let declares_ai = json_contains(&active, "trainedAlgorithmicMedia");
+        let source_type = crate::source_type::find(&active);
         let manifests = js
             .get("manifests")
             .and_then(|m| m.as_object())
@@ -224,11 +217,7 @@ mod imp {
             (None, Some(i)) => format!("signed by {i}"),
             (None, None) => "unknown claim generator".into(),
         };
-        let ai_note = if declares_ai {
-            " The manifest itself declares the content as generated or composited with a trained algorithm."
-        } else {
-            ""
-        };
+        let ai_note = crate::source_type::describe(&source_type);
 
         let (status, rationale) = match state {
             c2pa::ValidationState::Trusted => (
@@ -269,9 +258,14 @@ mod imp {
                 "signed_at": signed_at,
                 "ingredients": ingredients,
                 "assertions": assertion_labels,
-                "declares_ai": declares_ai,
+                "declares_ai": source_type.declares_ai,
+                "digital_source_type": source_type.codes,
+                "digital_source_type_unknown": source_type.unknown,
+                "digital_source_type_hits": source_type.hits,
+                "vocabulary_version": halftone_core::dst::VOCABULARY_VERSION,
                 "trust": resolved.details(),
             }),
         )
     }
 }
+
