@@ -44,3 +44,31 @@ Cause: claim v2 manifests carry `claim_generator_info: [{name, version, …}]` a
 `name` + `version` of the first entry, matching what the collector extracts from
 c2patool's JSON. Note the extra `org.contentauth.c2pa_rs` key c2pa-rs adds to that
 object; it is not part of the name.
+
+### D-004 · 2026-09-08 · Remote manifests make results depend on the network
+
+Files: `cloud.jpg`, `cloudx.jpg`, `libpng-test_with_url.png` (c2pa-rs fixtures).
+These carry only a URL to a manifest. c2patool with default settings fetched
+`cloud.jpg`'s manifest from Adobe and reported `Valid`, signer Adobe Inc.; on a
+machine without that route it errored. Halftone (c2pa-rs default
+`verify.remote_manifest_fetch = true`) would have made the same outbound request
+during an inspection, which an offline, privacy-preserving tool must never do.
+Resolution: Halftone sets `verify.remote_manifest_fetch = false` and
+`verify.ocsp_fetch = false` in its validation context and reports a remote-only
+manifest as `Inconclusive` with the URL in `details.remote_manifest_url`; the
+collector runs c2patool with the same settings and records `remote_manifest`; the
+test asserts `Inconclusive`. Expectations no longer depend on the network.
+
+### D-005 · 2026-09-08 · Duplicate bytes under two names
+
+`thumbnail.jpg` and `IMG_0003.jpg` in the c2pa-rs fixtures are byte-identical
+(same SHA-256). The test matches by hash, so both names compare against one row.
+Not a bug; noted so a count mismatch is not chased.
+
+### D-006 · 2026-09-08 · Leading whitespace in a declared digitalSourceType
+
+`C_with_CAWG_data.jpg` declares `" http://cv.iptc.org/…/digitalCapture"` with a
+leading space inside the signed assertion. Both the collector and Halftone's
+`code_of` trim before taking the last path segment, so both read `digitalCapture`.
+Kept as a fixture of the "trim, then match exactly" rule: whitespace is tolerated,
+case is not.
