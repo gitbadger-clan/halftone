@@ -24,17 +24,37 @@ struct Disagreement {
     got: String,
 }
 
-fn corpus_dir() -> Option<PathBuf> {
-    let dir = std::env::var_os("HALFTONE_DIFFERENTIAL_CORPUS")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| {
-            Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("..")
-                .join("..")
-                .join("corpus")
-                .join("differential")
-        });
-    dir.join("expectations.json").is_file().then_some(dir)
+/// Corpora to compare. `$HALFTONE_DIFFERENTIAL_CORPUS` names one directory;
+/// otherwise every immediate subdirectory of `<repo>/corpus/differential` (one per
+/// stratum) that has an `expectations.json`, plus the root itself if it has one.
+fn corpora() -> Vec<PathBuf> {
+    if let Some(d) = std::env::var_os("HALFTONE_DIFFERENTIAL_CORPUS") {
+        let d = PathBuf::from(d);
+        return if d.join("expectations.json").is_file() {
+            vec![d]
+        } else {
+            Vec::new()
+        };
+    }
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("..")
+        .join("corpus")
+        .join("differential");
+    let mut out = Vec::new();
+    if root.join("expectations.json").is_file() {
+        out.push(root.clone());
+    }
+    if let Ok(rd) = std::fs::read_dir(&root) {
+        let mut subs: Vec<PathBuf> = rd
+            .flatten()
+            .map(|e| e.path())
+            .filter(|p| p.is_dir() && p.join("expectations.json").is_file())
+            .collect();
+        subs.sort();
+        out.extend(subs);
+    }
+    out
 }
 
 /// Run `ht inspect --batch --json` over the files in chunks and return every
@@ -276,52 +296,74 @@ fn render(rows: &[Disagreement]) -> String {
 }
 
 #[test]
+#[ignore = "needs corpus/differential on disk; run by the differential workflow or the nightly runner"]
 fn halftone_agrees_with_exiftool_and_c2patool() {
-    let Some(dir) = corpus_dir() else {
+    let dirs = corpora();
+    if dirs.is_empty() {
         eprintln!("differential: no corpus with expectations.json; skipped");
         return;
-    };
-    let exp: Value =
-        serde_json::from_str(&std::fs::read_to_string(dir.join("expectations.json")).unwrap())
-            .expect("expectations.json");
-    let trust_exact = !exp["trust_anchors"].is_null();
-    let files_obj = exp["files"].as_object().expect("files object");
-    let files: Vec<PathBuf> = files_obj.keys().map(|k| dir.join(k)).collect();
-    assert!(!files.is_empty(), "expectations.json lists no files");
-
-    let results = run_ht(&files);
-    let by_sha: HashMap<String, (Value, Value)> = results
-        .into_iter()
-        .filter_map(|(row, insp)| Some((row["sha256"].as_str()?.to_string(), (row, insp))))
-        .collect();
-
-    let mut dis = Vec::new();
-    let mut compared = 0;
-    for (name, e) in files_obj {
-        let sha = e["sha256"].as_str().unwrap_or("");
-        match by_sha.get(sha) {
-            Some((row, insp)) => {
-                compared += 1;
-                compare_file(name, e, row, insp, trust_exact, &mut dis);
-            }
-            None => dis.push(Disagreement {
-                file: name.clone(),
-                field: "file",
-                expected: format!("sha256 {sha}"),
-                got: "not in ht output (missing, unreadable, or bytes changed)".into(),
-            }),
+    }
+    let mut all: Vec<Disagreement> = Vec::new();
+    let mut total_files = 0;
+    let mut total_compared = 0;
+    for dir in &dirs {
+        let exp: Value =
+            serde_json::from_str(&std::fs::read_to_string(dir.join("expectations.json")).unwrap())
+                .expect("expectations.json");
+        let trust_exact = !exp["trust_anchors"].is_null();
+        let files_obj = exp["files"].as_object().expect("files object");
+        let files: Vec<PathBuf> = files_obj.keys().map(|k| dir.join(k)).collect();
+        if files.is_empty() {
+            continue;
         }
+        let label = dir
+            .file_name()
+            .map(|f| f.to_string_lossy().into_owned())
+            .unwrap_or_default();
+
+        let results = run_ht(&files);
+        let by_sha: HashMap<String, (Value, Value)> = results
+            .into_iter()
+            .filter_map(|(row, insp)| Some((row["sha256"].as_str()?.to_string(), (row, insp))))
+            .collect();
+
+        let mut dis = Vec::new();
+        let mut compared = 0;
+        for (name, e) in files_obj {
+            let sha = e["sha256"].as_str().unwrap_or("");
+            let name = format!("{label}/{name}");
+            match by_sha.get(sha) {
+                Some((row, insp)) => {
+                    compared += 1;
+                    compare_file(&name, e, row, insp, trust_exact, &mut dis);
+                }
+                None => dis.push(Disagreement {
+                    file: name,
+                    field: "file",
+                    expected: format!("sha256 {sha}"),
+                    got: "not in ht output (missing, unreadable, or bytes changed)".into(),
+                }),
+            }
+        }
+        println!(
+            "differential[{label}]: {compared} of {} files compared, {} disagreements",
+            files_obj.len(),
+            dis.len()
+        );
+        total_files += files_obj.len();
+        total_compared += compared;
+        all.extend(dis);
     }
     println!(
-        "differential: {compared} of {} files compared, {} disagreements\n{}",
-        files_obj.len(),
-        dis.len(),
-        render(&dis)
+        "differential: {total_compared} of {total_files} files across {} corpora, {} disagreements\n{}",
+        dirs.len(),
+        all.len(),
+        render(&all)
     );
     assert!(
-        dis.is_empty(),
+        all.is_empty(),
         "{} disagreement(s):\n{}",
-        dis.len(),
-        render(&dis)
+        all.len(),
+        render(&all)
     );
 }

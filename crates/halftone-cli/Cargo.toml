@@ -11,6 +11,10 @@ repository.workspace = true
 name = "ht"
 path = "src/main.rs"
 
+[[test]]
+name = "differential"
+required-features = ["c2pa"]
+
 [dependencies]
 halftone-core.workspace = true
 halftone-c2pa.workspace = true
