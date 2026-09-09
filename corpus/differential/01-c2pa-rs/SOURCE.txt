@@ -1,0 +1,7 @@
+source: https://github.com/contentauth/c2pa-rs
+subdir: sdk/tests/fixtures
+commit: 8641fbac3971dc7163c4ba67d8c588f62c99761b
+fetched: 2026-09-09T06:43:02Z
+kept: 37 image files (sniffed jpeg/png/webp/heic/avif)
+skipped: 205 non-image or unsupported files
+licence: repository Apache-2.0 OR MIT; image contents may carry their own terms. Do not redistribute this directory.

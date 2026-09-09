@@ -1,0 +1,7 @@
+source: https://github.com/exiftool/exiftool
+subdir: t/images
+commit: 2200871d9cef988051d2a99d67df3bda6cbb30a8
+fetched: 2026-09-09T06:43:19Z
+kept: 44 image files (sniffed jpeg/png/webp/heic/avif), 0 of them with an extension that did not match their bytes (suffix added)
+skipped: 150 non-image or unsupported files
+licence: ExifTool is GPL-1+ OR Artistic; test images are test material. Do not redistribute this directory.
