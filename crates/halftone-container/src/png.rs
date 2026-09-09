@@ -310,11 +310,17 @@ impl EvidenceSource for PngWriter {
                         format!(
                             "No self-identifying metadata. Chunk layout is consistent with {} ({}{}). \
                              PNG is never camera-native, so this is an export-path hint, not \
-                             evidence of origin.",
+                             evidence of origin.{}",
                             m.name,
                             m.class.describe(),
                             if m.confidence == png_rules::Confidence::Documented {
                                 "; rule from documented layout, not yet verified"
+                            } else {
+                                ""
+                            },
+                            if info.has_c2pa {
+                                " A caBX (C2PA) chunk is also present; the layout rule ignores it \
+                                 because provenance libraries append it after the writer has finished."
                             } else {
                                 ""
                             }
