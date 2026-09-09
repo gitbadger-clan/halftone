@@ -46,8 +46,11 @@ while test $i -le (count $argv)
     end
     set i (math $i + 1)
 end
-if test -e $dest/SOURCE.txt
-    echo "$dest already populated ("(count $dest/*)" files); use --refresh to re-fetch"
+# "Populated" means fetched files are present, not just the committed ground truth
+# (expectations.json, SOURCE.txt), which a fresh checkout already has.
+set -l fetched (find $dest -maxdepth 1 -type f ! -name expectations.json ! -name SOURCE.txt ! -name cases.json 2>/dev/null)
+if test (count $fetched) -gt 0
+    echo "$dest already populated ("(count $fetched)" files); use --refresh to re-fetch"
     exit 0
 end
 mkdir -p $dest

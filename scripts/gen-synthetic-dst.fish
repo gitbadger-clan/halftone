@@ -28,8 +28,10 @@ if test "$argv[1]" = --refresh
         end
     end
 end
-if test -e $dest/cases.json
-    echo "$dest already populated; use --refresh to regenerate"
+# "Populated" means generated files are present, not just the committed ground truth.
+set -l generated (find $dest -maxdepth 1 -type f ! -name expectations.json ! -name cases.json 2>/dev/null)
+if test (count $generated) -gt 0
+    echo "$dest already populated ("(count $generated)" files); use --refresh to regenerate"
     exit 0
 end
 mkdir -p $dest $base
