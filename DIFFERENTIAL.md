@@ -35,7 +35,8 @@ marking survives exactly as far as the `caBX` chunk does.
 Cause: c2patool ships no trust anchors; without `--trust-anchors` it cannot chain
 the signer. Resolution: the collector records `trust_anchors: null` and the test
 accepts `Trusted` where c2patool said `Valid`; pass the vendored PEM for an exact
-comparison.
+comparison. Since 2026-09-09 stratum 01 is collected with the vendored trust list,
+so the Valid/Trusted allowance is off there and the state comparison is exact.
 
 ### D-003 · 2026-09-08 · Claim v2 generator name
 
