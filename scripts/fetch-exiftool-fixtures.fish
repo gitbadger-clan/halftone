@@ -5,7 +5,8 @@
 # files. Writes SOURCE.txt with the commit and licence.
 #
 #   scripts/fetch-exiftool-fixtures.fish            # into corpus/differential/02-exiftool
-#   scripts/fetch-exiftool-fixtures.fish --refresh  # wipe and re-fetch
+#   scripts/fetch-exiftool-fixtures.fish --refresh  # re-fetch; keeps expectations.json
+#   scripts/fetch-exiftool-fixtures.fish --commit <full-sha>   # pin upstream (CI); also $EXIFTOOL_FIXTURES_COMMIT
 #
 # Requires: git ≥ 2.25 (sparse checkout), exiftool. Network: github.com only.
 # The corpus directory is not for redistribution: ExifTool is GPL-1+/Artistic and
@@ -22,8 +23,28 @@ if not type -q exiftool
     exit 2
 end
 
-if test "$argv[1]" = --refresh
-    rm -rf $dest
+set -l commit 2200871d9cef988051d2a99d67df3bda6cbb30a8
+if set -q EXIFTOOL_FIXTURES_COMMIT
+    set commit $EXIFTOOL_FIXTURES_COMMIT
+end
+set -l i 1
+while test $i -le (count $argv)
+    switch $argv[$i]
+        case --refresh
+            # Wipe the fetched files but keep the committed ground truth.
+            if test -d $dest
+                for f in $dest/*
+                    test (basename $f) = expectations.json; or rm -rf $f
+                end
+            end
+        case --commit
+            set i (math $i + 1)
+            set commit $argv[$i]
+        case '*'
+            echo "unknown argument: $argv[$i]" >&2
+            exit 2
+    end
+    set i (math $i + 1)
 end
 if test -e $dest/SOURCE.txt
     echo "$dest already populated ("(count $dest/*)" files); use --refresh to re-fetch"
@@ -33,9 +54,20 @@ mkdir -p $dest
 
 set -l tmp (mktemp -d)
 echo "sparse clone of $repo ($subdir) …"
-git clone --quiet --depth 1 --filter=blob:none --sparse $repo $tmp/repo; or exit 1
-git -C $tmp/repo sparse-checkout set $subdir; or exit 1
-set -l commit (git -C $tmp/repo rev-parse --short HEAD)
+if test -n "$commit"
+    git clone --quiet --no-checkout --filter=blob:none --sparse $repo $tmp/repo; or exit 1
+    git -C $tmp/repo sparse-checkout set $subdir; or exit 1
+    git -C $tmp/repo fetch --quiet --depth 1 origin $commit; or exit 1
+    git -C $tmp/repo checkout --quiet $commit; or exit 1
+else
+    git clone --quiet --depth 1 --filter=blob:none --sparse $repo $tmp/repo; or exit 1
+    git -C $tmp/repo sparse-checkout set $subdir; or exit 1
+end
+set commit (git -C $tmp/repo rev-parse HEAD)
+# Provenance first, so an interrupted run is visibly incomplete rather than
+# silently missing its SOURCE.txt.
+printf "source: %s\nsubdir: %s\ncommit: %s\nstatus: fetch in progress (interrupted if you can read this)\n" \
+    $repo $subdir $commit >$dest/SOURCE.txt
 
 set -l kept 0
 set -l skipped 0
@@ -67,7 +99,7 @@ for f in (find $tmp/repo/$subdir -type f | sort)
 end
 
 printf "source: %s\nsubdir: %s\ncommit: %s\nfetched: %s\nkept: %d image files (sniffed jpeg/png/webp/heic/avif), %d of them with an extension that did not match their bytes (suffix added)\nskipped: %d non-image or unsupported files\nlicence: ExifTool is GPL-1+ OR Artistic; test images are test material. Do not redistribute this directory.\n" \
-    $repo $subdir $commit (date -u +%Y-%m-%dT%H:%M:%SZ) $kept $relabeled $skipped > $dest/SOURCE.txt
+    $repo $subdir $commit (date -u +%Y-%m-%dT%H:%M:%SZ) $kept $relabeled $skipped >$dest/SOURCE.txt
 
 rm -rf $tmp
 echo "kept $kept ($relabeled relabeled), skipped $skipped -> $dest (commit $commit)"
