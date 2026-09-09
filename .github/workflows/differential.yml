@@ -1,0 +1,63 @@
+# Differential test on the public strata (01 c2pa-rs fixtures, 02 ExifTool test
+# images, 03 synthetic). Ground truth (expectations.json, cases.json) is committed;
+# the files are rebuilt from pinned upstream commits, so neither c2patool nor the
+# network at inspection time is involved. Private strata (04+) run on the
+# self-hosted nightly runner, which has the corpus on disk.
+name: differential
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # Full shas; keep in step with corpus/differential/*/SOURCE.txt
+  # (scripts/refresh-public-strata.fish prints both after a run).
+  C2PA_FIXTURES_COMMIT: 8641fbac3971dc7163c4ba67d8c588f62c99761b
+  EXIFTOOL_FIXTURES_COMMIT: 2200871d9cef988051d2a99d67df3bda6cbb30a8
+
+jobs:
+  public-strata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain (rust-toolchain.toml)
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+      - uses: Swatinem/rust-cache@v2
+
+      - name: System tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libimage-exiftool-perl fish
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Cache public fixtures
+        id: fixtures
+        uses: actions/cache@v4
+        with:
+          path: |
+            corpus/differential/01-c2pa-rs
+            corpus/differential/02-exiftool
+          key: fixtures-${{ env.C2PA_FIXTURES_COMMIT }}-${{ env.EXIFTOOL_FIXTURES_COMMIT }}
+
+      - name: Fetch public fixtures (pinned)
+        if: steps.fixtures.outputs.cache-hit != 'true'
+        run: |
+          fish scripts/fetch-c2pa-fixtures.fish --commit "$C2PA_FIXTURES_COMMIT"
+          fish scripts/fetch-exiftool-fixtures.fish --commit "$EXIFTOOL_FIXTURES_COMMIT"
+
+      - name: Generate synthetic stratum
+        run: fish scripts/gen-synthetic-dst.fish --refresh
+
+      - name: Check committed ground truth is present
+        run: |
+          for d in 01-c2pa-rs 02-exiftool 03-synthetic; do
+            test -f "corpus/differential/$d/expectations.json" || { echo "missing corpus/differential/$d/expectations.json (run uv run scripts/differential.py and commit it)"; exit 1; }
+          done
+
+      - name: Differential test
+        run: cargo test -p halftone-cli --features c2pa --test differential -- --ignored --nocapture
