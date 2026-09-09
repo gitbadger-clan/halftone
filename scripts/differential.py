@@ -173,6 +173,23 @@ def c2patool_facts(p: Path, anchors: Path | None, settings: Path) -> dict:
     }
 
 
+def repo_relative(p: Path) -> str:
+    """Path as recorded in the committed ground truth: relative to the git root when
+    inside it, so the file is identical on every machine; otherwise as given."""
+    p = p.resolve()
+    try:
+        rc, out, _ = run(["git", "rev-parse", "--show-toplevel"])
+        root = Path(out.strip()).resolve() if rc == 0 and out.strip() else None
+    except FileNotFoundError:
+        root = None
+    if root is not None:
+        try:
+            return p.relative_to(root).as_posix()
+        except ValueError:
+            pass
+    return str(p)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("corpus", type=Path)
@@ -235,9 +252,9 @@ def main() -> int:
 
     doc = {
         "schema": "halftone-differential-expectations/1",
-        "corpus": str(corpus),
+        "corpus": repo_relative(corpus),
         "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver},
-        "trust_anchors": str(a.trust_anchors) if a.trust_anchors else None,
+        "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
         "c2patool_settings": C2PATOOL_SETTINGS,
         "files": files,
     }
