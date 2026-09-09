@@ -311,6 +311,9 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             serde_json::from_str(&std::fs::read_to_string(dir.join("expectations.json")).unwrap())
                 .expect("expectations.json");
         let trust_exact = !exp["trust_anchors"].is_null();
+        // Generated strata (03-synthetic) are re-made on each machine and embed the
+        // writer version in their bytes; they are matched by file name.
+        let by_name = exp["match_by"].as_str() == Some("name");
         let files_obj = exp["files"].as_object().expect("files object");
         let label = dir
             .file_name()
@@ -339,9 +342,19 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         }
 
         let results = run_ht(&files);
-        let by_sha: HashMap<String, (Value, Value)> = results
+        let keyed: HashMap<String, (Value, Value)> = results
             .into_iter()
-            .filter_map(|(row, insp)| Some((row["sha256"].as_str()?.to_string(), (row, insp))))
+            .filter_map(|(row, insp)| {
+                let key = if by_name {
+                    Path::new(row["path"].as_str()?)
+                        .file_name()?
+                        .to_string_lossy()
+                        .into_owned()
+                } else {
+                    row["sha256"].as_str()?.to_string()
+                };
+                Some((key, (row, insp)))
+            })
             .collect();
 
         let mut compared = 0;
@@ -350,8 +363,16 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                 continue; // already reported as missing
             }
             let sha = e["sha256"].as_str().unwrap_or("");
+            let key = if by_name {
+                Path::new(name)
+                    .file_name()
+                    .map(|f| f.to_string_lossy().into_owned())
+                    .unwrap_or_default()
+            } else {
+                sha.to_string()
+            };
             let name = format!("{label}/{name}");
-            match by_sha.get(sha) {
+            match keyed.get(&key) {
                 Some((row, insp)) => {
                     compared += 1;
                     compare_file(&name, e, row, insp, trust_exact, &mut dis);
@@ -359,7 +380,11 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                 None => dis.push(Disagreement {
                     file: name,
                     field: "file",
-                    expected: format!("sha256 {sha}"),
+                    expected: if by_name {
+                        "matched by name".into()
+                    } else {
+                        format!("sha256 {sha}")
+                    },
                     got: "not in ht output (missing, unreadable, or bytes changed)".into(),
                 }),
             }

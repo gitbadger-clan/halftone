@@ -241,7 +241,12 @@ def main() -> int:
     # Halftone verdict per file; merge it so the test can assert semantics, not just
     # agreement with the reference tools.
     cases_path = corpus / "cases.json"
+    match_by = "sha256"
     if cases_path.is_file():
+        # A generated stratum is reproduced on other machines with other ExifTool /
+        # Pillow versions; the packets embed the writer version, so bytes differ while
+        # the facts do not. Such strata are matched by file name, not by hash.
+        match_by = "name"
         cases = json.loads(cases_path.read_text())
         merged = 0
         for rel, want in cases.items():
@@ -256,6 +261,7 @@ def main() -> int:
         "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver},
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
         "c2patool_settings": C2PATOOL_SETTINGS,
+        "match_by": match_by,
         "files": files,
     }
     settings_file.unlink(missing_ok=True)
