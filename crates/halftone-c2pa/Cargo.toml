@@ -16,12 +16,15 @@ tracing.workspace = true
 hex.workspace = true
 sha2.workspace = true
 c2pa = { workspace = true, optional = true }
+# Not used directly. Floor set by DIFFERENTIAL.md D-007: 0.77.2 fails to decode
+# stapled OCSP (c2pa.certificate-status) and rejects otherwise valid manifests.
+c2pa_cbor = { version = ">=0.77.4", optional = true }
 
 [features]
 # Real manifest validation via the `c2pa` crate. Off by default only because the crate
 # is heavy; enable with `--features halftone-cli/c2pa` (or make it default once it builds
 # in CI). Without it the source reports NotApplicable.
-c2pa = ["dep:c2pa"]
+c2pa = ["dep:c2pa", "dep:c2pa_cbor"]
 
 [lints]
 workspace = true

@@ -1328,6 +1328,7 @@ name = "halftone-c2pa"
 version = "0.1.0"
 dependencies = [
  "c2pa",
+ "c2pa_cbor",
  "halftone-core",
  "halftone-packs",
  "hex",
