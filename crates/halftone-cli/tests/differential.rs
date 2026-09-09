@@ -312,14 +312,31 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                 .expect("expectations.json");
         let trust_exact = !exp["trust_anchors"].is_null();
         let files_obj = exp["files"].as_object().expect("files object");
-        let files: Vec<PathBuf> = files_obj.keys().map(|k| dir.join(k)).collect();
-        if files.is_empty() {
-            continue;
-        }
         let label = dir
             .file_name()
             .map(|f| f.to_string_lossy().into_owned())
             .unwrap_or_default();
+        // Only hand ht files that exist: one missing file would abort the whole
+        // batch. Missing ones are reported as rows instead.
+        let mut dis = Vec::new();
+        let mut files: Vec<PathBuf> = Vec::new();
+        for k in files_obj.keys() {
+            let p = dir.join(k);
+            if p.is_file() {
+                files.push(p);
+            } else {
+                dis.push(Disagreement {
+                    file: format!("{label}/{k}"),
+                    field: "file",
+                    expected: "present on disk".into(),
+                    got: "missing (fetch the stratum: scripts/refresh-public-strata.fish)".into(),
+                });
+            }
+        }
+        if files.is_empty() {
+            all.extend(dis);
+            continue;
+        }
 
         let results = run_ht(&files);
         let by_sha: HashMap<String, (Value, Value)> = results
@@ -327,9 +344,11 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             .filter_map(|(row, insp)| Some((row["sha256"].as_str()?.to_string(), (row, insp))))
             .collect();
 
-        let mut dis = Vec::new();
         let mut compared = 0;
         for (name, e) in files_obj {
+            if !dir.join(name).is_file() {
+                continue; // already reported as missing
+            }
             let sha = e["sha256"].as_str().unwrap_or("");
             let name = format!("{label}/{name}");
             match by_sha.get(sha) {
