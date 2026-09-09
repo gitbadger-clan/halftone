@@ -858,5 +858,5 @@
     "c2patool": "c2patool 0.27.20",
     "exiftool": "13.55"
   },
-  "trust_anchors": null
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem"
 }
