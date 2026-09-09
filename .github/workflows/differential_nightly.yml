@@ -1,0 +1,80 @@
+# Nightly differential run on the self-hosted runner, which has the private strata
+# (04-generators, 05-fold, 06-phones, …) on disk under corpus/differential/.
+#
+# Unlike the push/PR job this one is allowed to drift on purpose: the public strata
+# are re-fetched at upstream HEAD, and the reference tools (exiftool, c2patool)
+# are whatever the runner has installed. A red night means one of three things:
+#   - upstream fixtures moved     -> re-run refresh-public-strata.fish locally, bump the pins
+#   - a reference tool moved      -> re-collect the affected stratum, commit the diff + a D-entry
+#   - Halftone regressed          -> the disagreement table is the bug report
+# Never fix a red night by editing expectations.json on an unrelated PR branch.
+name: differential-nightly
+
+on:
+  # schedule:
+  #   - cron: "0 3 * * *"        # 03:00 UTC, before the working day in Zurich
+  workflow_dispatch:
+
+concurrency:
+  group: differential-nightly
+  cancel-in-progress: false
+
+env:
+  TRUST_ANCHORS: crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem
+
+jobs:
+  all-strata:
+    runs-on: [self-hosted, nightly]
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: false            # keep corpus/differential/* (ignored files) between runs
+
+      - name: Reference tool versions
+        run: |
+          exiftool -ver
+          c2patool --version
+          uv --version
+          cargo --version
+
+      - name: Rebuild public strata at upstream HEAD
+        run: fish scripts/refresh-public-strata.fish --no-test
+
+      - name: Re-collect private strata
+        shell: fish {0}
+        run: |
+          set -l found 0
+          for d in corpus/differential/*/
+              set -l name (basename $d)
+              # Public strata were just handled; private ones are anything else with files.
+              contains -- $name 00-base 01-c2pa-rs 02-exiftool 03-synthetic; and continue
+              set -l files (find $d -maxdepth 1 -type f ! -name expectations.json ! -name cases.json ! -name SOURCE.txt)
+              test (count $files) -gt 0; or continue
+              set found (math $found + 1)
+              echo "== $name ("(count $files)" files)"
+              uv run scripts/differential.py $d --trust-anchors $TRUST_ANCHORS | tail -3
+          end
+          echo "$found private strata re-collected"
+
+      - name: Differential test (every stratum on disk)
+        run: cargo test -p halftone-cli --features c2pa --test differential -- --ignored --nocapture
+
+      - name: Ground truth drift
+        if: always()
+        run: |
+          echo "## Ground truth changed tonight" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          git status --short -- corpus/differential >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          git diff --stat -- corpus/differential >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Keep tonight's expectations as an artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: differential-expectations-${{ github.run_id }}
+          path: |
+            corpus/differential/*/expectations.json
+            corpus/differential/*/SOURCE.txt
+          retention-days: 30
