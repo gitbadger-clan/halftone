@@ -139,6 +139,18 @@ impl Batch {
             .filter(|r| !r.present.is_empty())
             .count()
     }
+
+    /// Number of rows with a `Present` in the given layer.
+    pub fn files_with_present_in(&self, layer: Layer) -> usize {
+        self.summary
+            .iter()
+            .filter(|r| {
+                r.statuses
+                    .iter()
+                    .any(|s| s.layer == layer && s.status == Status::Present)
+            })
+            .count()
+    }
 }
 
 /// Derive one summary row from an inspection.
@@ -258,11 +270,16 @@ pub fn render_matrix(batch: &Batch, glyph: impl Fn(Status) -> &'static str) -> S
             out.push_str(&format!("{:<name_w$} {detail}\n", ""));
         }
     }
+    // Per-layer counts: a fingerprint match in the container layer is a Present
+    // too, and lumping it with a valid manifest misleads.
     out.push_str(&format!(
-        "{} file{}, {} with a Present verdict\n",
+        "{} file{}: manifest present {}, mark present {}, blind present {}, container {}\n",
         batch.summary.len(),
         if batch.summary.len() == 1 { "" } else { "s" },
-        batch.files_with_present()
+        batch.files_with_present_in(Layer::Manifest),
+        batch.files_with_present_in(Layer::Mark),
+        batch.files_with_present_in(Layer::Blind),
+        batch.files_with_present_in(Layer::Container),
     ));
     out
 }
@@ -501,7 +518,11 @@ mod tests {
             !lines[3].contains("c2pa container present"),
             "redundant when manifest column is set"
         );
-        assert_eq!(lines[4], "1 file, 1 with a Present verdict");
+        assert_eq!(
+            lines[4],
+            "1 file: manifest present 1, mark present 0, blind present 0, container 0"
+        );
+    }
     }
 
     #[test]
