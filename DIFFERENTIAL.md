@@ -35,8 +35,7 @@ marking survives exactly as far as the `caBX` chunk does.
 Cause: c2patool ships no trust anchors; without `--trust-anchors` it cannot chain
 the signer. Resolution: the collector records `trust_anchors: null` and the test
 accepts `Trusted` where c2patool said `Valid`; pass the vendored PEM for an exact
-comparison. Since 2026-09-09 stratum 01 is collected with the vendored trust list,
-so the Valid/Trusted allowance is off there and the state comparison is exact.
+comparison.
 
 ### D-003 · 2026-09-08 · Claim v2 generator name
 
@@ -92,3 +91,18 @@ of `halftone-c2pa` to make the bad range a build error. The file stays in the co
 as the regression guard. A stapled OCSP response is what a careful signer adds so
 validators need no network; failing the read would have told a client their
 manifest was broken.
+
+### D-008 · 2026-09-09 · c2patool ignored the trust anchors; `Valid` vs `Trusted` on Google-signed files
+
+Files: every Google-signed file in 04-generators (Flow downloads, and the
+aggregator download, which turned out to be Google-signed).
+The collector passed the vendored trust list through `$C2PATOOL_TRUST_ANCHORS`,
+which c2patool only reads under its `trust` sub-command; with a plain
+`c2patool <file>` it is ignored, so c2patool reported `Valid` while Halftone,
+with the same list configured, reported `Trusted`. Resolution: the collector now
+writes the PEM into the settings TOML (`[trust] trust_anchors`, `verify.verify_trust
+= true`), verified against the c2pa-rs test root (`Valid` → `Trusted`). Re-collect
+every stratum that was collected with `--trust-anchors` (01, 04).
+Note for the trust picture: with the 2026-08-14 vendored list, Google LLC chains
+(`Trusted`), Microsoft Corporation does not (`Valid`), and the Firefly files come
+back `Inconclusive` for a reason still to be read from their rationale.

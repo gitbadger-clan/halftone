@@ -34,7 +34,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import re
 import subprocess
 import sys
@@ -42,6 +41,19 @@ import tempfile
 from pathlib import Path
 
 C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n"
+
+
+def c2patool_settings(anchors: Path | None) -> str:
+    """Settings TOML for c2patool. Trust anchors go in here as PEM text: c2patool
+    ignores $C2PATOOL_TRUST_ANCHORS unless the `trust` sub-command is used, so the
+    settings file is the one mechanism that works for a plain `c2patool <file>`."""
+    if anchors is None:
+        return C2PATOOL_SETTINGS
+    pem = anchors.read_text()
+    return (
+        "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\nverify_trust = true\n\n"
+        '[trust]\ntrust_anchors = """\n' + pem + '"""\n'
+    )
 
 # Extensions worth sniffing. The decision is made on ExifTool's MIME type, never on
 # the extension: fixture corpora contain mislabeled files on purpose.
@@ -124,12 +136,9 @@ def walk_dst(v, out: list[str]) -> None:
             walk_dst(child, out)
 
 
-def c2patool_facts(p: Path, anchors: Path | None, settings: Path) -> dict:
-    env = dict(os.environ)
-    if anchors:
-        env["C2PATOOL_TRUST_ANCHORS"] = str(anchors)
+def c2patool_facts(p: Path, settings: Path) -> dict:
     try:
-        rc, out, err = run(["c2patool", "--settings", str(settings), str(p)], env=env)
+        rc, out, err = run(["c2patool", "--settings", str(settings), str(p)])
     except FileNotFoundError:
         return {"error": "c2patool not found"}
     text = (out + "\n" + err).lower()
@@ -213,7 +222,7 @@ def main() -> int:
         return 2
 
     settings_file = Path(tempfile.mkstemp(suffix=".toml", prefix="c2patool-")[1])
-    settings_file.write_text(C2PATOOL_SETTINGS)
+    settings_file.write_text(c2patool_settings(a.trust_anchors))
 
     files: dict[str, dict] = {}
     paths = sorted(p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in IMAGE_EXTS)
@@ -230,7 +239,7 @@ def main() -> int:
             "exiftool": ex,
         }
         if not a.no_c2pa:
-            entry["c2patool"] = c2patool_facts(p, a.trust_anchors, settings_file)
+            entry["c2patool"] = c2patool_facts(p, settings_file)
         files[rel] = entry
         dst = ex.get("digital_source_type") or []
         ct = entry.get("c2patool") or {}
@@ -260,7 +269,7 @@ def main() -> int:
         "corpus": repo_relative(corpus),
         "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver},
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
-        "c2patool_settings": C2PATOOL_SETTINGS,
+        "c2patool_settings": C2PATOOL_SETTINGS + ("[trust] trust_anchors = <pem>" if a.trust_anchors else ""),
         "match_by": match_by,
         "files": files,
     }
