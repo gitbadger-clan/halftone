@@ -52,6 +52,10 @@ pub struct ManifestColumns {
     /// Any declared term is generative.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub declares_ai: Option<bool>,
+    /// The file carries only a reference to a remote manifest at this URL; nothing
+    /// was fetched, so no `validation_state` exists.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub remote_manifest_url: Option<String>,
 }
 
 /// Named columns from the XMP marking source (`marking_metadata`).
@@ -176,6 +180,7 @@ pub fn summarize(insp: &Inspection) -> FileRow {
                 manifest.claim_generator = str_field(d, "claim_generator");
                 manifest.digital_source_type = str_list(d, "digital_source_type");
                 manifest.declares_ai = d.get("declares_ai").and_then(|v| v.as_bool());
+                manifest.remote_manifest_url = str_field(d, "remote_manifest_url");
             }
             SOURCE_MARKING => {
                 marking.digital_source_type = str_list(d, "digital_source_type");
@@ -308,6 +313,14 @@ fn truncate(s: &str, w: usize) -> String {
 fn detail_line(row: &FileRow) -> String {
     let mut parts: Vec<String> = Vec::new();
     let m = &row.manifest;
+    if let Some(url) = &m.remote_manifest_url {
+        let host = url
+            .split("://")
+            .nth(1)
+            .and_then(|r| r.split('/').next())
+            .unwrap_or(url);
+        parts.push(format!("manifest remote at {host}, not fetched"));
+    }
     if let Some(state) = &m.validation_state {
         let mut s = format!("manifest {state}");
         if let Some(g) = &m.claim_generator {
@@ -523,6 +536,26 @@ mod tests {
             "1 file: manifest present 1, mark present 0, blind present 0, container 0"
         );
     }
+
+    #[test]
+    fn remote_manifest_reference_is_shown() {
+        let i = insp(
+            "/tmp/ff.png",
+            vec![ev(
+                Layer::Manifest,
+                "c2pa",
+                Status::Inconclusive,
+                json!({"remote_manifest_url": "https://cai-manifests.adobe.com/manifests/urn-x"}),
+            )],
+        );
+        let row = summarize(&i);
+        assert_eq!(
+            row.manifest.remote_manifest_url.as_deref(),
+            Some("https://cai-manifests.adobe.com/manifests/urn-x")
+        );
+        let b = Batch::new(tool(), vec![i]);
+        let text = render_matrix(&b, |_| "x");
+        assert!(text.contains("manifest remote at cai-manifests.adobe.com, not fetched"));
     }
 
     #[test]

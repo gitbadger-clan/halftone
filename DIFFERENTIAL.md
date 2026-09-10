@@ -106,3 +106,24 @@ every stratum that was collected with `--trust-anchors` (01, 04).
 Note for the trust picture: with the 2026-08-14 vendored list, Google LLC chains
 (`Trusted`), Microsoft Corporation does not (`Valid`), and the Firefly files come
 back `Inconclusive` for a reason still to be read from their rationale.
+
+### D-009 · 2026-09-10 · Adobe Firefly downloads carry only a remote manifest reference
+
+Files: every Firefly download in 04-generators (Image 5 PNG, Image 4 Ultra JPEG,
+Image 5 upscaled JPEG).
+No embedded manifest. The file's XMP carries a `dcterms:provenance` link to
+`https://cai-manifests.adobe.com/manifests/urn-c2pa-…-adobe`, which is where the
+signed manifest lives. Halftone (offline by construction since D-004) reports
+`Inconclusive` with the URL in `details.remote_manifest_url`; c2patool with the
+same settings refuses with "must fetch remote manifests"; the two agree.
+Consequences:
+- Offline verification of a Firefly file is impossible by design; the reference
+  is only as durable as the XMP packet (the same fragility as an IPTC field), and
+  every copy/save path in the batch dropped it.
+- The report must show this as its own state, "remote reference, not fetched",
+  distinct from Absent and from a broken manifest; the batch row now carries
+  `manifest.remote_manifest_url` and the matrix prints
+  "manifest remote at <host>, not fetched".
+- An explicit, logged online mode (`--fetch-remote-manifests`, off by default,
+  recorded in details with URL and time) is the only way to validate Adobe output
+  in a client scan. Agencies are Adobe-heavy; decide before week 4's report.
