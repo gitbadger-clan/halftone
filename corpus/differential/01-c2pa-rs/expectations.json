@@ -1,5 +1,5 @@
 {
-  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n",
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[trust] trust_anchors = <pem>",
   "corpus": "corpus/differential/01-c2pa-rs",
   "files": {
     "C.jpg": {
@@ -853,6 +853,7 @@
       "size_bytes": 227319
     }
   },
+  "match_by": "sha256",
   "schema": "halftone-differential-expectations/1",
   "tools": {
     "c2patool": "c2patool 0.27.20",
