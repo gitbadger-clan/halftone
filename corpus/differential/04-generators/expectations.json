@@ -1,0 +1,913 @@
+{
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[trust] trust_anchors = <pem>",
+  "corpus": "corpus/differential/04-generators",
+  "files": {
+    "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "d3fea3f04c1da0e9ea2bc62fda15fb1ce9ce0c438a80387f75b2a92452bbc7e8",
+      "size_bytes": 6053385
+    },
+    "adobe-firefly__firefly-image-4-ultra__web-download-thumb__p1__1.jpg": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-38e41b3e-433d-4f05-a6a8-50b1d214dba4-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "d97e26dfa442d9660702792f19b2577bb16b776072593be5b99b529127002b71",
+      "size_bytes": 1111847
+    },
+    "adobe-firefly__firefly-image-5-upscaled__web-download-open__p1__1.jpg": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-ce43a138-7bec-4ecd-92cb-e986d4d6f647-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "d5e31c44866978dd6f334d0b1559fd51bb1df024105c49aa19b61c65633338ff",
+      "size_bytes": 2619720
+    },
+    "adobe-firefly__firefly-image-5__share-copy__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "4bbc62a9e747e115948c910cc9b664dedff68a6f70a6b0fbfe94a64b7ecf9841",
+      "size_bytes": 5704704
+    },
+    "adobe-firefly__firefly-image-5__web-download-thumb__p1__1.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-db34c8cc-afe7-44a6-9de0-492b2a2c99ea-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "f5e87bcd6f4ed8298602a56e2bd0c508e37a94931df2c166feab27c066ae2db6",
+      "size_bytes": 4397672
+    },
+    "aggregator-zimage__base__browser-save__p1__1.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "32c4bb64a6bb77554f7fdcfcb8fb8a7d14b0505f76562bc04942e39465203b76",
+      "size_bytes": 93224
+    },
+    "aggregator-zimage__base__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "15bf3d5e998e2d18271a215c80d9cf26d141a403996b33b3a6e9a39a9334d618",
+      "size_bytes": 1629285
+    },
+    "aggregator-zimage__base__web-download__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 974154588:977359787",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "1e92b496cdff48c6febc049dd9b9002027e3a0bf0f685035ff599a05e126aae8",
+      "size_bytes": 1687731
+    },
+    "bing-image__mai-image-2.5-flash-1x1__web-download__p2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Microsoft Corporation",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "8099062b549b65c2175bc15310e228253dd63074bd74c3a99c2fab362c745c96",
+      "size_bytes": 627168
+    },
+    "bing-image__mai-image-2.5-flash__browser-save__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Microsoft Corporation",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "ab47cc0a70aaf3232a81788c827c5c324dc88e755a5b60d9b39c10a9f9bb65ac",
+      "size_bytes": 398421
+    },
+    "bing-image__mai-image-2.5-flash__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "6a4fa134bac7da2baa2d53f34a8d5323770fd546075f619b1fde8cffa9eddf1f",
+      "size_bytes": 1411766
+    },
+    "bing-image__mai-image-2.5-flash__web-download__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Microsoft Corporation",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "ab47cc0a70aaf3232a81788c827c5c324dc88e755a5b60d9b39c10a9f9bb65ac",
+      "size_bytes": 398421
+    },
+    "bing-image__mai-image-2.5-flash__web-download__p2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Microsoft Corporation",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "715a7b354d0873819b84056c2e769190078ea062a18af4dc346547590e78df90",
+      "size_bytes": 627886
+    },
+    "bing-image__mai-image-2.5-flash__web-download__p3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Microsoft Corporation",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "483a88388af922b151e0c88d837036abf3034fec1444564024b6e8bc65f34fcf",
+      "size_bytes": 175899
+    },
+    "bing-image__mai-image-2.5-flash__web-download__p4__4.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Microsoft Corporation",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d61f67bd517249bc61b74e696069c09fd18aa27d629da268a476195843c53e87",
+      "size_bytes": 461040
+    },
+    "bing-image__mai-image-2.5-flash__web-download__p5__5.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Microsoft Corporation",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "3e5cabf6ba5a17e7ee7a2237623eb35bf56c5dc413404613b88e845b005db29e",
+      "size_bytes": 235307
+    },
+    "google-flow__nano-banana-2-1x1__web-download-thumb__p3__1.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 977676112:977676112",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b888cd5f656e5a0311e8775571f0362265bd4a910208d02a2da1097b9f2e9dfe",
+      "size_bytes": 520644
+    },
+    "google-flow__nano-banana-2-upscaled__web-download-thumb__p2__2.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 977676112:977676112",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "25b2ed027c7b0b8d49945b7fbef50d423ce0a31850c08569d21c555bedd32cd1",
+      "size_bytes": 4527819
+    },
+    "google-flow__nano-banana-2__browser-save-open__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "6beb27977b4388a61a131e737e32bf94f89c180c4faa6687d42d4e90f043b871",
+      "size_bytes": 5886313
+    },
+    "google-flow__nano-banana-2__copy-image-open__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "9d75c81a39d5c553d1da3c86726653c2ee8db9a5c872b46bac4f45f5f30106f7",
+      "size_bytes": 5906131
+    },
+    "google-flow__nano-banana-2__copy-image-thumb__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "60c0dffc43ad10624814dc2e119f5dc7d4a5930930b81defd7e30fb860f0fdc9",
+      "size_bytes": 1981373
+    },
+    "google-flow__nano-banana-2__web-download-open__p2__2.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 977676112:977676112",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e89a209aa0a960145d998e0c15756504404fa1d1aac52e6f2c5e44013f1c3ed8",
+      "size_bytes": 1086943
+    },
+    "google-flow__nano-banana-2__web-download-thumb__p1__1.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 977676112:977676112",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "5b25693a3fc1182de52912aa116eb094dd708e302a85d6296ad8d00fe7324b0d",
+      "size_bytes": 828788
+    },
+    "google-flow__nano-banana-2__web-download-thumb__p2__2.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 977676112:977676112",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e89a209aa0a960145d998e0c15756504404fa1d1aac52e6f2c5e44013f1c3ed8",
+      "size_bytes": 1086943
+    },
+    "google-flow__nano-banana-2__web-download-thumb__p3__3.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 978252314:978252314",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e86e34e6a3377080807dcb8cbf22d78d8941bae31b1c17a79774859c65475ec4",
+      "size_bytes": 496935
+    },
+    "google-flow__nano-banana-2__web-download-thumb__p4__4.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 978252314:978252314",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "283c51dd1d866ad7d6bde55fbcc11990b1843783a6dc10d96a63ddcf703d2478",
+      "size_bytes": 843324
+    },
+    "google-flow__nano-banana-2__web-download-thumb__p5__5.jpeg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 978252314:978252314",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "89ddf2c207d598f74e720577ef6ed004aeb9c693d9c9874c8570d72b0ed6473e",
+      "size_bytes": 586921
+    },
+    "zai__glm-wm-off__browser-save__p1__1.jpeg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "5f2aa6beafb25dba44d14ed4b1516433648fbbcb8c3cb8ad692a9873fbed4a76",
+      "size_bytes": 161346
+    },
+    "zai__glm-wm-off__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "923b67459a2edd3f8af3b7214f8ab30941d898dccf77dfbcc992c635736c386a",
+      "size_bytes": 1851923
+    },
+    "zai__glm-wm-off__web-download__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b2ffac43fee7532d51bc9e2905290109c097a83c2ba9a8f6dbf6371cbd658f3c",
+      "size_bytes": 170623
+    },
+    "zai__glm-wm-off__web-download__p2__2.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "9673904efbdca50880d9279479983ef6afe5974b6269cf3723c0795d94b4feda",
+      "size_bytes": 376140
+    },
+    "zai__glm-wm-off__web-download__p3__3.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b4c50eed5029ce1bdefa846cb9a77ea6c26d6343aebf84204bb0afdccbf131bb",
+      "size_bytes": 196083
+    },
+    "zai__glm-wm-off__web-download__p4__4.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "bdcf955e8237a102ba62082e2156cdb9689fdca5f4e1224fd04d0b781d7ec759",
+      "size_bytes": 189130
+    },
+    "zai__glm-wm-off__web-download__p5__5.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "09e043b68242735f000983a3d5e78376e84116641c12a1d2b7e2233bf88142be",
+      "size_bytes": 174924
+    },
+    "zai__glm-wm-on__browser-save__p1__1.jpeg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "5f2aa6beafb25dba44d14ed4b1516433648fbbcb8c3cb8ad692a9873fbed4a76",
+      "size_bytes": 161346
+    },
+    "zai__glm-wm-on__browser-save__p2__2.jpeg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "07738d2860f278394022628a8f4fba69b0b8084a8a2d1e55d6b46cf915cb3d0b",
+      "size_bytes": 332987
+    },
+    "zai__glm-wm-on__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "923b67459a2edd3f8af3b7214f8ab30941d898dccf77dfbcc992c635736c386a",
+      "size_bytes": 1851923
+    },
+    "zai__glm-wm-on__copy-image__p2__2.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "24555a80346732620f0e2368d63a19d91efcfffb05ba3e77b4e36564d3bb9755",
+      "size_bytes": 3170116
+    },
+    "zai__glm-wm-on__web-download__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "5f2aa6beafb25dba44d14ed4b1516433648fbbcb8c3cb8ad692a9873fbed4a76",
+      "size_bytes": 161346
+    },
+    "zai__glm-wm-on__web-download__p2__2.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "07738d2860f278394022628a8f4fba69b0b8084a8a2d1e55d6b46cf915cb3d0b",
+      "size_bytes": 332987
+    }
+  },
+  "match_by": "sha256",
+  "schema": "halftone-differential-expectations/1",
+  "tools": {
+    "c2patool": "c2patool 0.27.20",
+    "exiftool": "13.55"
+  },
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem"
+}

@@ -5,5 +5,7 @@
 !**/expectations.json
 !**/SOURCE.txt
 !**/cases.json
+!**/SOURCE.md
+!**/PROMPTS.md
 
 !.gitignore
