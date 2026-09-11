@@ -1096,6 +1096,55 @@
       "sha256": "89ddf2c207d598f74e720577ef6ed004aeb9c693d9c9874c8570d72b0ed6473e",
       "size_bytes": 586921
     },
+    "ideogram__ideogram-v4__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "01606ef930cacab34b5e17dd30b165e4c666428df745cd718c2f54cc46393498",
+      "size_bytes": 6833536
+    },
+    "ideogram__ideogram-v4__web-download__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Ideogram, Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "302e98fce25d329dfcd0496de21f6c4e00290ce25064383d31d55d994d830a13",
+      "size_bytes": 593931
+    },
     "ideogram__p-image-ideogram-medium-3x1__web-download__p2__2.jpg": {
       "c2patool": {
         "assertions": [
@@ -1177,7 +1226,7 @@
       "sha256": "cee8c4ccc04d36881075ccf53f1ff3009e44699e7dc04a03f4b775aeef028421",
       "size_bytes": 7226869
     },
-    "ideogram__p-image-ideogram-medium__copy-image__p1__2.png": {
+    "ideogram__p-image-ideogram-medium__ui-copy__p1__1.png": {
       "c2patool": {
         "present": false
       },
