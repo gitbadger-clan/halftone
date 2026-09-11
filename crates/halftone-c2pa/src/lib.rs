@@ -22,6 +22,9 @@
 //! any operator anchors (`trust.user_anchors`), and records where each came from.
 //!
 pub mod source_type;
+// Declared only to pin the floor from DIFFERENTIAL.md D-007; nothing to import.
+#[cfg(feature = "c2pa")]
+use c2pa_cbor as _;
 pub mod trust;
 pub use trust::{InternalList, TrustConfig};
 
