@@ -4,8 +4,12 @@
 //! labelled by generator), a distortion suite, and a registry of sources.
 //! Outputs: per-source ROC, TPR@{1%,0.1%} FPR per generator per distortion,
 //! real-source FPR breakdown, and a `calibration.json` ready to ship in a pack.
+//!
+//! [`survive`] is the metadata-survival runner behind `ht survive`: the same
+//! distortion suite, applied to marked files, reporting whether the manifest and
+//! the XMP field still read afterwards.
 
 pub mod corpus;
-#[cfg(feature = "distort")]
 pub mod distort;
 pub mod metrics;
+pub mod survive;

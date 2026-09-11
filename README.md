@@ -62,6 +62,31 @@ whether a C2PA container is present. Rows are projections of the evidence, never
 score; the report and the differential runner read rows, not `details`. Without
 `--json` the same run prints a numbered file × source matrix.
 
+## Survival table
+
+`ht survive` answers one question per file and transform: does the marking still
+read after this happens to the file?
+
+```
+ht survive corpus/differential/04-generators/google-flow__*.jpeg
+ht survive --captured corpus/messaging --keep /tmp/derived --long a.jpg b.png
+ht survive --suite none,jpeg_q80,webp --json a.jpg > survive.json
+```
+
+The default suite is identity, JPEG q95/q80/q70, 50% resize, 10% centre crop, PNG
+and lossless-WebP round-trips, computed in memory with the `image` crate: fast and
+deterministic, but not libjpeg, so a q80 here is not byte-identical to Photoshop's
+q80 (for metadata survival that does not matter — `image` writes no metadata, so a
+synthetic transform is always a clean re-encode, which is what most pipelines do).
+Real routes cannot be simulated, so files an application actually produced join the
+table via `--captured <dir>`, named `<input stem>__<label>.<ext>`; they appear as
+`captured:<label>` columns. Every derivative runs through the same registry as
+`ht inspect`, and the output is a batch document with `source` and `transform` on
+each row. The aggregate view groups by `<generator>__<variant>` and marks each cell
+`M` (manifest) / `X` (XMP field): ✓ kept, ✗ stripped, ! broken (still present, no
+longer validates), + gained, · nothing to lose. No quality metric is computed:
+metadata survival does not depend on PSNR; the watermark robustness ladder will.
+
 ## Manifest layer
 
 Layer 1 (`c2pa`) is implemented behind the `c2pa` feature: `cargo build --features halftone-cli/c2pa`.

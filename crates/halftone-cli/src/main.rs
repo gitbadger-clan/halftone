@@ -31,6 +31,9 @@ struct Cli {
 enum Cmd {
     /// Inspect one or more files.
     Inspect(InspectArgs),
+    /// Apply a transform suite to marked files and report whether the manifest and
+    /// the XMP field still read afterwards (the survival table).
+    Survive(SurviveArgs),
     /// List registered evidence sources.
     Sources,
     /// Harvest JPEG writer fingerprints from files whose writer you know.
@@ -178,6 +181,43 @@ struct InspectArgs {
     trust_list: String,
 }
 
+#[derive(Args)]
+struct SurviveArgs {
+    /// Files to run the suite on (the originals).
+    #[arg(required = true)]
+    inputs: Vec<PathBuf>,
+    /// Directory of files real applications produced from the inputs, named
+    /// <input stem>__<label>.<ext> (e.g. foo__whatsapp_photo.jpg). Each joins the
+    /// table as captured:<label>.
+    #[arg(long)]
+    captured: Option<PathBuf>,
+    /// Comma-separated transforms; default is the survival suite
+    /// (none,jpeg_q95,jpeg_q80,jpeg_q70,resize_0.5,crop_0.1,png,webp).
+    #[arg(long)]
+    suite: Option<String>,
+    /// Write every derivative here as <stem>__<transform>.<ext> for reproduction.
+    #[arg(long)]
+    keep: Option<PathBuf>,
+    /// Emit the batch document (JSON) instead of the tables.
+    #[arg(long)]
+    json: bool,
+    /// Print the long table (one line per file × transform) instead of the aggregate.
+    #[arg(long)]
+    long: bool,
+    /// Only run these layers. Default: manifest,container.
+    #[arg(long, value_delimiter = ',')]
+    only: Option<Vec<LayerArg>>,
+    /// Extra JPEG writer-fingerprint DB (JSON) merged over the built-in one.
+    #[arg(long)]
+    fingerprints: Option<PathBuf>,
+    /// Extra C2PA trust anchors (PEM bundle). Repeatable.
+    #[arg(long, action = clap::ArgAction::Append)]
+    trust_anchors: Vec<PathBuf>,
+    /// Internal C2PA trust list: auto, vendored, none, or a PEM path.
+    #[arg(long, default_value = "auto")]
+    trust_list: String,
+}
+
 fn internal_list(s: &str) -> InternalList {
     match s {
         "auto" => InternalList::Auto,
@@ -319,6 +359,7 @@ fn main() -> Result<()> {
         .init();
     match Cli::parse().cmd {
         Cmd::Inspect(a) => inspect(a),
+        Cmd::Survive(a) => survive(a),
         Cmd::Sources => {
             let reg = registry(&RegistryOpts {
                 only: None,
@@ -497,6 +538,54 @@ fn inspect(a: InspectArgs) -> Result<()> {
     // Exit code for CI: 0 = nothing present, 2 = at least one layer reported Present.
     if any_present {
         std::process::exit(2);
+    }
+    Ok(())
+}
+
+fn survive(a: SurviveArgs) -> Result<()> {
+    use halftone_bench::distort::{parse_suite, Distortion};
+    use halftone_bench::survive::{
+        match_captured, render_aggregate, render_long, run, SurviveConfig,
+    };
+
+    let reg = registry(&RegistryOpts {
+        only: Some(
+            a.only
+                .clone()
+                .unwrap_or_else(|| vec![LayerArg::Manifest, LayerArg::Container]),
+        ),
+        fingerprints: a.fingerprints.clone(),
+        trust: TrustConfig {
+            internal: internal_list(&a.trust_list),
+            custom_anchors: a.trust_anchors.clone(),
+            home: None,
+        },
+    })?;
+    let suite = match &a.suite {
+        Some(s) => parse_suite(s).map_err(|e| anyhow::anyhow!(e))?,
+        None => Distortion::survival_suite(),
+    };
+    if !suite.contains(&Distortion::None) {
+        anyhow::bail!("the suite must include `none` so every input has a baseline row");
+    }
+    let (captured, unmatched) = match &a.captured {
+        Some(dir) => match_captured(&a.inputs, dir),
+        None => (Vec::new(), Vec::new()),
+    };
+    for u in &unmatched {
+        eprintln!("captured file matches no input by stem: {}", u.display());
+    }
+    let cfg = SurviveConfig {
+        suite,
+        keep: a.keep.clone(),
+    };
+    let batch = run(&reg, tool(), &a.inputs, &captured, &cfg)?;
+    if a.json {
+        println!("{}", serde_json::to_string(&batch)?);
+    } else if a.long {
+        print!("{}", render_long(&batch));
+    } else {
+        print!("{}", render_aggregate(&batch));
     }
     Ok(())
 }
