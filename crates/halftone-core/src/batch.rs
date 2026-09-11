@@ -78,6 +78,13 @@ pub struct FileRow {
     /// Path as given, if the asset had one.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub path: Option<String>,
+    /// For survival runs: the original file this row was derived from.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<String>,
+    /// For survival runs: the transform applied to `source` (`none` is the
+    /// untouched original; `captured:<label>` a file a real application produced).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub transform: Option<String>,
     /// SHA-256 of the bytes.
     pub sha256: String,
     /// Sniffed MIME type.
@@ -198,6 +205,8 @@ pub fn summarize(insp: &Inspection) -> FileRow {
             .path
             .as_ref()
             .map(|p| p.to_string_lossy().into_owned()),
+        source: None,
+        transform: None,
         sha256: insp.asset.sha256.clone(),
         mime: insp.asset.mime.clone(),
         size_bytes: insp.asset.size_bytes,
