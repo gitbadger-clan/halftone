@@ -53,10 +53,17 @@ jobs:
       - name: Generate synthetic stratum
         run: fish scripts/gen-synthetic-dst.fish --refresh
 
-      - name: Check committed ground truth is present
+      - name: Check public strata are complete
+        # Ground truth must be committed AND the files must be on disk: the test
+        # skips a stratum whose files are entirely absent (that is how private
+        # strata stay out of CI), so an unfetched public stratum would otherwise
+        # pass silently.
         run: |
           for d in 01-c2pa-rs 02-exiftool 03-synthetic; do
             test -f "corpus/differential/$d/expectations.json" || { echo "missing corpus/differential/$d/expectations.json (run uv run scripts/differential.py and commit it)"; exit 1; }
+            n=$(find "corpus/differential/$d" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.heic' -o -iname '*.avif' \) | wc -l)
+            test "$n" -gt 0 || { echo "corpus/differential/$d has no image files; fetch/generate step failed"; exit 1; }
+            echo "$d: $n files"
           done
 
       - name: Differential test
