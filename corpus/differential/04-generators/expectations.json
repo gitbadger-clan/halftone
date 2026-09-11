@@ -35,6 +35,23 @@
       "sha256": "d97e26dfa442d9660702792f19b2577bb16b776072593be5b99b529127002b71",
       "size_bytes": 1111847
     },
+    "adobe-firefly__firefly-image-4-ultra__web-download-thumb__p2__2.jpg": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-3892f470-88e0-4760-bfb5-1213a5b2aa48-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "6848348e0e388bfeaee8ec29d13dd915628964dc0b757af34f89d99a880cf4b4",
+      "size_bytes": 1529330
+    },
     "adobe-firefly__firefly-image-5-upscaled__web-download-open__p1__1.jpg": {
       "c2patool": {
         "present": null,
@@ -84,6 +101,23 @@
       },
       "sha256": "f5e87bcd6f4ed8298602a56e2bd0c508e37a94931df2c166feab27c066ae2db6",
       "size_bytes": 4397672
+    },
+    "adobe-firefly__firefly-image-5__web-download-thumb__p2__2.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-078d8888-ded8-456b-af60-656fe0718aa7-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "26ae7f7e3ea939fe1de486ee561f6e1dbe7de9a66fae08772b7912ee84c775c3",
+      "size_bytes": 1815426
     },
     "aggregator-zimage__base__browser-save__p1__1.webp": {
       "c2patool": {
@@ -399,6 +433,374 @@
       "sha256": "3e5cabf6ba5a17e7ee7a2237623eb35bf56c5dc413404613b88e845b005db29e",
       "size_bytes": 235307
     },
+    "canva__canva-ai-bg-removed-erase__web-download__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "e4567ac4184e8e0444822a191261d9b82956ba045e7b38a2b39e8191d72b5406",
+      "size_bytes": 231702
+    },
+    "canva__canva-ai-bg-removed__web-download__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "03fa568923e830095419bdc85a007dd567bd83a07ee36d9d8489d5bbb1dfa173",
+      "size_bytes": 236061
+    },
+    "canva__canva-ai-free__web-download__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "3275f1cb1694bb51dc52016e7ce42eab9da6dcfd76e741ec23f3ec1d8eb1f857",
+      "size_bytes": 1361613
+    },
+    "canva__canva-ai-larger__web-download__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "1263eecf0cf6ca8004d8f0ccd8615b5f07c96a3a5b7d7dc5a89013c901ed43c2",
+      "size_bytes": 413136
+    },
+    "canva__canva-ai-magic-edit__web-download__p2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "dc74e47ee33a5f7423fb598bf1a4a6e918b495431742d199ed762819d52dcaed",
+      "size_bytes": 3671213
+    },
+    "canva__canva-ai__web-download-editor__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "1e826ac5692fe3e63b38e71c7e552e132233b93c2aed61d817d903f108eba773",
+      "size_bytes": 2217508
+    },
+    "canva__canva-ai__web-download-jpg__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "88dc4c5a106c87ee5c3b5cbaa0c1eb2baf1a4a00fa7c81bfe92ca27556cc5d61",
+      "size_bytes": 157437
+    },
+    "canva__canva-ai__web-download__p1__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "6c368b8a3568c861655546b30a24bf0a06fab8713bdecf3ac4d50195a8278ab7",
+      "size_bytes": 2061831
+    },
+    "canva__canva-ai__web-download__p2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "4068767774a07971f51c0e1f2e1ff9aea81b4b1d02067ba714f456721f6a2556",
+      "size_bytes": 3646251
+    },
+    "canva__canva-ai__web-download__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "10359189f551a8b26af3e83532d5be1129469eced25292b35cb1c7169cd6341c",
+      "size_bytes": 326920
+    },
+    "canva__canva-ai__web-download__p4__4.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "b5dd0788793332328d73ac331c58cdaf6a40c7f74c932c793bd829e5e5eb4652",
+      "size_bytes": 3315958
+    },
+    "canva__canva-ai__web-download__p5__5.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "15039a0c3b88f0583445d72ee761f854fff88e57a1dad80382ecb25c9b2bc62d",
+      "size_bytes": 617823
+    },
     "google-flow__nano-banana-2-1x1__web-download-thumb__p3__1.jpeg": {
       "c2patool": {
         "assertions": [
@@ -693,6 +1095,580 @@
       },
       "sha256": "89ddf2c207d598f74e720577ef6ed004aeb9c693d9c9874c8570d72b0ed6473e",
       "size_bytes": 586921
+    },
+    "ideogram__p-image-ideogram-medium-3x1__web-download__p2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Ideogram, Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "8df7d4560ddecc679653d72c990d7e1e799ddb9adabbcdb0436fae395dada983",
+      "size_bytes": 1011943
+    },
+    "ideogram__p-image-ideogram-medium-no-bg__web-download__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "5aac16315a10e3bd2535c06085eed9766d20119f12e90b034fd05977296912d8",
+      "size_bytes": 190885
+    },
+    "ideogram__p-image-ideogram-medium__browser-save__p1__1.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "25a48539b2d963a1fce25a560f383cb67abb0ced93355d766f4df522a1323f12",
+      "size_bytes": 4419630
+    },
+    "ideogram__p-image-ideogram-medium__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "cee8c4ccc04d36881075ccf53f1ff3009e44699e7dc04a03f4b775aeef028421",
+      "size_bytes": 7226869
+    },
+    "ideogram__p-image-ideogram-medium__copy-image__p1__2.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "cee8c4ccc04d36881075ccf53f1ff3009e44699e7dc04a03f4b775aeef028421",
+      "size_bytes": 7226869
+    },
+    "ideogram__p-image-ideogram-medium__web-download__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Ideogram, Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "34d29ced12825c6040f18dcb9c099a2b330f14ba6eb218ff8fd937ae4a3c880d",
+      "size_bytes": 671134
+    },
+    "ideogram__p-image-ideogram-medium__web-download__p2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Ideogram, Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "776850685ac18a66e2c1763f3f14654f79e0f0b37e90f9e8020811bca9bbf07e",
+      "size_bytes": 1577182
+    },
+    "ideogram__p-image-ideogram-medium__web-download__p3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Ideogram, Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0eb9ae9fe12a76f5e986dc9e31dd6cdc40523d2d2b851a48d0805e78c9cfe76f",
+      "size_bytes": 289432
+    },
+    "ideogram__p-image-ideogram-medium__web-download__p4__4.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Ideogram, Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d2600ea0625ab995b9149f5d6ede7faf5badf605fbeb907e6e3e9e62930af899",
+      "size_bytes": 874307
+    },
+    "ideogram__p-image-ideogram-medium__web-download__p5__5.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Ideogram, Inc.",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d40f53d0671269d775e239ca1717244796c9c07c69a169218c5bae834b0045d6",
+      "size_bytes": 494415
+    },
+    "meta-ai__instant__browser-save-open__p1__1.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 1
+      },
+      "sha256": "9fe6e83f238813f4f327f621f93b0965bf6dbaf41ddcdbbedf8060e89f27088a",
+      "size_bytes": 364584
+    },
+    "meta-ai__instant__copy-image-open__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "e21542751f2c6fd4f7b4b06010f11e9e78f001d0e457c1beefbfbc00e5d3b232",
+      "size_bytes": 2708122
+    },
+    "meta-ai__instant__share-browser-save__p1__1.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 1
+      },
+      "sha256": "9fe6e83f238813f4f327f621f93b0965bf6dbaf41ddcdbbedf8060e89f27088a",
+      "size_bytes": 364584
+    },
+    "meta-ai__instant__share-download-open__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "9a086197e09872456d7c48bae0257f4727db0762ca61c673b241cffd719e981b",
+      "size_bytes": 164373
+    },
+    "meta-ai__instant__share-download-thumb__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "9a086197e09872456d7c48bae0257f4727db0762ca61c673b241cffd719e981b",
+      "size_bytes": 164373
+    },
+    "meta-ai__instant__share-instagram-browser-save__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "c19e654d1cd3620988f08ce35efcc34b41ae3f80d2167f7576a776e2406804af",
+      "size_bytes": 27181
+    },
+    "meta-ai__instant__web-download-open__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "9a086197e09872456d7c48bae0257f4727db0762ca61c673b241cffd719e981b",
+      "size_bytes": 164373
+    },
+    "meta-ai__instant__web-download-thumb__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "9a086197e09872456d7c48bae0257f4727db0762ca61c673b241cffd719e981b",
+      "size_bytes": 164373
+    },
+    "meta-ai__instant__web-download-thumb__p2__2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "9a20fdd0bdcc6235e384c3dcd0e6f5ad55c292bb1e9e403e4fe76aab41beb69a",
+      "size_bytes": 520010
+    },
+    "meta-ai__instant__web-download-thumb__p3__3.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "a1b0a4031eab510d582c144ed41a2d2b5560916a8170f4453e06a9ce98eb5273",
+      "size_bytes": 42774
+    },
+    "meta-ai__instant__web-download-thumb__p4__4.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "7f911a48ce15043768112355134dfdc087eb9a63bc2071156f47c8275a519275",
+      "size_bytes": 255543
+    },
+    "meta-ai__instant__web-download-thumb__p5__5.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "2030c72d00e1338a0470302e6e6a925b06d767e20dda881a904b6ee3654fdf3d",
+      "size_bytes": 70934
+    },
+    "meta-ai__thinking__browser-save-thumb__p1__1.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 1
+      },
+      "sha256": "5f5c5f10da846f41b323be666f61f19f4190dc8036badf1f3865104ac13eb6e9",
+      "size_bytes": 388436
+    },
+    "meta-ai__thinking__copy-image-thumb__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "956dca43af270fc740fb19b9fadcaa70e37b7990cf79f34176b8da41f296421b",
+      "size_bytes": 2920288
+    },
+    "meta-ai__thinking__share-download-thumb__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "5d11c414eaa7152863b12db3ed1e70fe6d1e4ce247ad88780fc33661323d3fcb",
+      "size_bytes": 173734
+    },
+    "meta-ai__thinking__web-download-thumb__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "5d11c414eaa7152863b12db3ed1e70fe6d1e4ce247ad88780fc33661323d3fcb",
+      "size_bytes": 173734
     },
     "zai__glm-wm-off__browser-save__p1__1.jpeg": {
       "c2patool": {

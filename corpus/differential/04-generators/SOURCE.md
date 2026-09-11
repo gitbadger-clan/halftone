@@ -112,6 +112,99 @@ For `copy-image`, the receiving application is the writer: name it below.
   signing certificate is in the C2PA trust list), and whether an IPTC
   `DigitalSourceType` also appears in XMP alongside the manifest.
 
+## Meta AI — meta.ai (web), modes "instant" and "thinking"
+
+- Date: 2026-09-10. Plan: free (Meta account). Default mode: instant;
+  the other mode used for one p1 as a second variant. Default aspect: 3:2
+  landscape (1920×1280, read from the download; the UI does not state it).
+- Controls and the paths they map to:
+  - `web-download-thumb` / `web-download-open`: download control on the result
+    card and in the opened view. JPEG, 1920×1280.
+  - `share-download-thumb` / `share-download-open`: Share menu → Download, both
+    contexts. JPEG.
+  - `browser-save-thumb` / `browser-save-open`: right-click Save Image on the page
+    image. WebP, 1920×1280.
+  - `share-browser-save`: Share menu → opens the image in a new tab → browser
+    Save Image. WebP.
+  - `copy-image-thumb` / `copy-image-open`: right-click Copy Image, pasted into
+    macOS Preview, saved as PNG (Preview is the writer).
+  - `share-instagram-browser-save`: Share menu → Instagram → the image as Instagram
+    served it, saved from the browser. 27 KB JPEG, i.e. a platform thumbnail.
+    First platform-served file in the corpus; a stratum-10 row kept here for now.
+- Finding (hash and size check): the four download JPEGs (`web-download-thumb/
+  -open`, `share-download-thumb/-open`) are byte-identical; the two WebPs
+  (`browser-save-open`, `share-browser-save`) are byte-identical. Meta serves one
+  JPEG through every download control and one lossy WebP render of the same
+  1920×1280 pixels to the page — re-encoded, not downscaled. Future Meta AI
+  downloads need only `web-download-thumb`.
+- Files (16): instant p1 via all nine paths; instant p2–p5 via
+  `web-download-thumb`; thinking p1 via web-download-thumb, share-download-thumb,
+  browser-save-thumb, copy-image-thumb.
+- Pending: the Meta AI app on the Fold — in-app save (`app-save`) and the share
+  sheet (`share`); Meta AI inside WhatsApp, saved from the chat (`whatsapp-save`);
+  `edit-photo` e1–e3 once base photos exist.
+- Expectation to check: Meta's stated policy is an IPTC `DigitalSourceType` in
+  XMP; whether a manifest is present at all; whether the Instagram thumbnail kept
+  either.
+
+## Canva — Canva AI image generator (canva.com)
+
+- Date: 2026-09-10. Plan: Pro trial (one free-tier file predates it, see below).
+  Model as shown in the UI: not stated → variant `canva-ai`. Default aspect: 1:1.
+- Purpose in the corpus: agency tooling. Canva is a C2PA member; whether its
+  export writes a manifest, and whether its own edits keep one, is the row.
+- Paths: all downloads taken from the opened preview (`web-download`). The
+  download dialog offers PNG (default) and JPG (`web-download-jpg`), plus a
+  "larger size" option (variant `canva-ai-larger`, an export-time upscale). The
+  editor-canvas export after "Edit image" is `web-download-editor`. The
+  result-card download was not exercised. Right-click Save / Copy on the canvas:
+  not available.
+- Edits (variant token), all on Canva's own generations: `bg-removed` =
+  Background Remover on p3; `bg-removed-erase` = Background Remover then Magic
+  Eraser on a segment of p3; `magic-edit` = Magic Edit (generative inpaint) on p2.
+  Expand (outpaint): not found in this UI on 2026-09-10. Survival rows for
+  "generated → edited in Canva → exported", separate from e1–e3.
+- Finding: C2PA manifest signed by Canva (c2pa-rs 0.89.3), `Valid` (signer not on
+  the vendored 2026-08-14 list). One assertion, `c2pa.actions.v2`, one action
+  `c2pa.created` declaring `compositeWithTrainedAlgorithmicMedia`; zero
+  ingredients. The same manifest shape on plain generations, on the editor
+  export, and on the edited variants: Canva's edits are not recorded as actions
+  and the generated image is not an ingredient. The manifest asserts "created in
+  Canva with generative AI" and carries no history. No IPTC field in XMP.
+- Tier: `canva-ai-free` p1 was exported on the free tier before the trial and
+  carries no manifest and no XMP; every Pro-tier export carries the manifest.
+  Tier-dependent marking is the hypothesis; see Pending.
+- Files (12): free-tier p1; Pro p1 via opened preview, editor, and JPG; p2–p5 via
+  opened preview; p3 larger-size; p3 bg-removed and bg-removed-erase; p2
+  magic-edit.
+- Pending: after the trial ends, re-download p2 from the same Pro-era design on
+  the free tier (`canva-ai-free__web-download__p2__2`) — same generation, same
+  control, only the tier differs; share link → served asset; one non-default
+  aspect; e1–e3 on the base photos via Canva's edit tools once they exist;
+  confirm the magic-edit manifest has the same one-action, zero-ingredient shape.
+
+## Ideogram — Ideogram 3 (ideogram.ai), rendering "Medium"
+
+- Date: 2026-09-10. Plan: free. Model/quality as shown in the UI: "p-image-ideogram-medium", rendering speed "Medium" → variant
+  `p-image-ideogram-medium` (Ideogram's internal model id, as labelled in the UI).
+  Default aspect: 1:1, 2048×2048.
+- Paths: download button (`web-download`, JPG 2048×2048); right-click Save Image
+  on the page (`browser-save`, WebP 2048×2048 — same pixels re-encoded, not a
+  downscale); right-click Copy Image into macOS Preview (`copy-image`, PNG).
+- Variants: `-3x1` = 3:1 aspect of p2 (JPG 3072×1024); `-no-bg` = the
+  transparent-background option on p1 (PNG with alpha, **1024×1024** — a
+  different render at half resolution, the only PNG the download path produces).
+- Files (10): p1 via all three paths (copy-image twice); p2–p5 via download; p2
+  at 3:1; p1 no-bg.
+- Finding: C2PA manifest signed by "Ideogram, Inc." on every download JPG,
+  `Valid` (signer not on the vendored 2026-08-14 list), one `c2pa.actions.v2`
+  assertion with a single `c2pa.created` action declaring
+  `trainedAlgorithmicMedia`, zero ingredients; no IPTC field in XMP. The
+  `-no-bg` PNG carries no manifest and no XMP: a separate export pipeline that
+  signs nothing. Browser-save WebP: nothing. Copy-image: Preview's XMP, no field.
+- Pending: upscale if offered; edit-photo via Ideogram's canvas/inpaint once base
+  photos exist.
+
 ## Midjourney
 - Not tested: paid-only as of 2026-09-09, no subscription. Row shows "not tested".
 
