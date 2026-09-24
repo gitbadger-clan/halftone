@@ -1,5 +1,7 @@
 {
+  "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[trust] trust_anchors = <pem>",
+  "collected_at": "2026-09-24T06:10:15Z",
   "corpus": "corpus/differential/01-c2pa-rs",
   "files": {
     "C.jpg": {
@@ -856,7 +858,7 @@
   "match_by": "sha256",
   "schema": "halftone-differential-expectations/1",
   "tools": {
-    "c2patool": "c2patool 0.27.20",
+    "c2patool": "c2patool 0.27.22",
     "exiftool": "13.55"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem"

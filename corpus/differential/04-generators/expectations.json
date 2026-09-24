@@ -1,5 +1,7 @@
 {
+  "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[trust] trust_anchors = <pem>",
+  "collected_at": "2026-09-24T06:10:22Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
@@ -118,6 +120,57 @@
       },
       "sha256": "26ae7f7e3ea939fe1de486ee561f6e1dbe7de9a66fae08772b7912ee84c775c3",
       "size_bytes": 1815426
+    },
+    "adobe-firefly__firefly-image-5__web-download__p3__3.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-4f2937cc-2fe7-4fbe-84fd-2c3dd7d553d7-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "a3cd9ca1a46cdbab86348801f8ba3d37f331373a2736c78405f4bb331d5e9d54",
+      "size_bytes": 945026
+    },
+    "adobe-firefly__firefly-image-5__web-download__p4__4.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-bcc1eb1c-c17c-411d-8ff3-8a1ce09ab4b6-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "188e0298d223f851bfea1622600df93154e01afcbb272e4935e0f6f4beff4d1c",
+      "size_bytes": 1185578
+    },
+    "adobe-firefly__firefly-image-5__web-download__p5__5.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-5760fe6a-0940-4392-8918-cc7e9b0c1d1a-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "0bd5663eb4956de1f11ac761ed730b08e0dfd393fb1544250b07b13797cdf3ab",
+      "size_bytes": 424261
     },
     "aggregator-zimage__base__browser-save__p1__1.webp": {
       "c2patool": {
@@ -251,22 +304,6 @@
       },
       "sha256": "ab47cc0a70aaf3232a81788c827c5c324dc88e755a5b60d9b39c10a9f9bb65ac",
       "size_bytes": 398421
-    },
-    "bing-image__mai-image-2.5-flash__copy-image__p1__1.png": {
-      "c2patool": {
-        "present": false
-      },
-      "exiftool": {
-        "digital_source_type": [],
-        "digital_source_type_raw": [],
-        "iim_originating_program": null,
-        "iim_program_version": null,
-        "mime": "image/png",
-        "xmp_present": true,
-        "xmp_tag_count": 5
-      },
-      "sha256": "6a4fa134bac7da2baa2d53f34a8d5323770fd546075f619b1fde8cffa9eddf1f",
-      "size_bytes": 1411766
     },
     "bing-image__mai-image-2.5-flash__web-download__p1__1.jpg": {
       "c2patool": {
@@ -449,9 +486,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -481,9 +519,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -529,9 +568,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -561,9 +601,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -593,9 +634,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -625,9 +667,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -657,9 +700,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -689,9 +733,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -721,9 +766,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -753,9 +799,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -785,9 +832,10 @@
         "issuer": "Canva",
         "present": true,
         "validation_codes": [
+          "signingCredential.expired",
           "signingCredential.untrusted"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -1931,7 +1979,7 @@
   "match_by": "sha256",
   "schema": "halftone-differential-expectations/1",
   "tools": {
-    "c2patool": "c2patool 0.27.20",
+    "c2patool": "c2patool 0.27.22",
     "exiftool": "13.55"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem"

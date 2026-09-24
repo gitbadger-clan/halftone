@@ -14,7 +14,7 @@ Regenerate ground truth:
 
 Run:
 
-    cargo test -p halftone-cli --features c2pa --test differential -- --nocapture
+    cargo test -p halftone-cli --features c2pa --test differential -- --nocapture --ignored
 
 ## Entries
 
@@ -105,7 +105,16 @@ writes the PEM into the settings TOML (`[trust] trust_anchors`, `verify.verify_t
 every stratum that was collected with `--trust-anchors` (01, 04).
 Note for the trust picture: with the 2026-08-14 vendored list, Google LLC chains
 (`Trusted`), Microsoft Corporation does not (`Valid`), and the Firefly files come
-back `Inconclusive` for a reason still to be read from their rationale.
+back `Inconclusive` because they carry only a remote manifest reference (D-009).
+Update 2026-09-24: c2patool also reads a settings file it does not mention when
+it uses one, `$XDG_CONFIG_HOME/c2pa/c2pa.toml` by default or the path in
+`$C2PATOOL_SETTINGS` (`c2patool --help`, `--settings`). An operator with the
+trust list in either gets `Trusted` from a plain `c2patool <file>`, and this
+entry would never have surfaced on that machine. The collector now runs every
+c2patool call with both variables unset and `XDG_CONFIG_HOME` pointed at an
+empty directory (`c2patool_env()` in `scripts/differential.py`), so the only
+settings in play are the ones it writes and records in `expectations.json`.
+Reproduction of the original disagreement: `scripts/pub/d008.fish`.
 
 ### D-009 · 2026-09-10 · Adobe Firefly downloads carry only a remote manifest reference
 
@@ -127,3 +136,33 @@ Consequences:
 - An explicit, logged online mode (`--fetch-remote-manifests`, off by default,
   recorded in details with URL and time) is the only way to validate Adobe output
   in a client scan. Agencies are Adobe-heavy; decide before week 4's report.
+
+### D-010 · 2026-09-20 · Canva's Content Credentials expire after eight days
+
+Files: every Canva export in 04-generators (11 files, PNG and JPG, plain and
+edited variants).
+On 2026-09-10 both tools read `Valid` (`signingCredential.untrusted` only). On
+2026-09-20 both read `Invalid` with `signingCredential.expired` +
+`signingCredential.untrusted`. The signing certificate (`O=Canva, CN=Canva
+Signing`) is valid 2026-09-09T23:52:03Z to 2026-09-17T23:52:03Z — eight days —
+and the manifest carries a single `c2pa.actions.v2` assertion and no
+`c2pa.time-stamp`, so nothing fixes the signing time inside that window. The
+content hash still matches; the file is unchanged. Google, Microsoft and Ideogram
+rows are unchanged on the same day.
+Not a tool disagreement (Halftone and c2patool agree on both dates) but a
+time-dependent ground truth: the differential test correctly fails against
+expectations collected on the 10th.
+Resolutions:
+- Layer 1 now distinguishes expiry from breakage: `Inconclusive` with a rationale
+  naming the expired certificate, the missing time-stamp, and that the file may
+  have validated when made; the generic "does not validate" stays for hash and
+  signature failures.
+- The collector records `collected_at` in the expectations header and the test
+  prints it per stratum; re-collected 2026-09-20; the committed state is the
+  2026-09-24 re-collect after the D-008 isolation.
+- Every validation state in a report carries the date it was evaluated; the
+  methodology says why.
+For a provider relying on Content Credentials for Article 50 evidence, this is
+the finding of the corpus so far: the evidence has a shelf life the provider is
+unlikely to know about, and a regulator checking a file a month later sees
+`Invalid`.
