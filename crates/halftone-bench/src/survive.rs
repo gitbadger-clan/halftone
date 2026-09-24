@@ -121,8 +121,46 @@ pub fn match_captured(inputs: &[PathBuf], dir: &Path) -> (Vec<Captured>, Vec<Pat
     (matched, unmatched)
 }
 
+/// Inputs with identical bytes, folded: each kept path plus the paths that were
+/// dropped because they had the same content. Byte-identical inputs are the
+/// finding ("this route serves the same file"), but they must not count twice in a
+/// survival table.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Dedup {
+    /// Inputs to run, first occurrence of each distinct content, original order.
+    pub kept: Vec<PathBuf>,
+    /// (dropped path, the kept path it duplicates).
+    pub dropped: Vec<(PathBuf, PathBuf)>,
+}
+
+/// Fold byte-identical inputs. Unreadable paths are kept (so `run` reports the
+/// error) rather than silently dropped.
+pub fn dedup_inputs(inputs: &[PathBuf]) -> Dedup {
+    let mut seen: BTreeMap<String, PathBuf> = BTreeMap::new();
+    let mut kept = Vec::new();
+    let mut dropped = Vec::new();
+    for p in inputs {
+        match std::fs::read(p) {
+            Ok(bytes) => {
+                let key = halftone_core::sha256_hex(&bytes);
+                match seen.get(&key) {
+                    Some(first) => dropped.push((p.clone(), first.clone())),
+                    None => {
+                        seen.insert(key, p.clone());
+                        kept.push(p.clone());
+                    }
+                }
+            }
+            Err(_) => kept.push(p.clone()),
+        }
+    }
+    Dedup { kept, dropped }
+}
+
 /// Run the suite over `inputs` (plus any captured files) and return one batch.
 /// Rows are ordered by input, then by suite order, then captured labels.
+/// Inputs are taken as given; call [`dedup_inputs`] first to fold byte-identical
+/// files (the CLI does, and reports what it folded).
 pub fn run(
     registry: &Registry,
     tool: ToolInfo,
@@ -776,6 +814,22 @@ mod tests {
         assert_eq!(xmp_fate(&none, &trusted), Fate::Gained);
         assert_eq!(xmp_fate(&trusted, &other_term), Fate::Broken);
         assert_eq!(xmp_fate(&none, &none), Fate::NotApplicable);
+    }
+
+    #[test]
+    fn byte_identical_inputs_are_folded_and_reported() {
+        let dir = tmpdir("dedup");
+        let a = dir.join("zai__glm-wm-on__web-download__p1__1.png");
+        let b = dir.join("zai__glm-wm-on__browser-save__p1__1.png");
+        let c = dir.join("zai__glm-wm-off__web-download__p1__1.png");
+        std::fs::write(&a, marked_png()).unwrap();
+        std::fs::write(&b, marked_png()).unwrap();
+        std::fs::write(&c, Distortion::Png.apply(&marked_png()).unwrap().bytes).unwrap();
+        let missing = dir.join("missing.png");
+        let d = dedup_inputs(&[a.clone(), b.clone(), c.clone(), missing.clone()]);
+        assert_eq!(d.kept, vec![a.clone(), c.clone(), missing.clone()]);
+        assert_eq!(d.dropped, vec![(b, a)]);
+        let _ = std::fs::remove_dir_all(dir);
     }
 
     #[test]

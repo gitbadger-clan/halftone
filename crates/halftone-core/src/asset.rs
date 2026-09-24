@@ -33,6 +33,12 @@ pub struct Asset {
     pub sha256: String,
 }
 
+/// SHA-256 of `bytes` as lowercase hex — the same digest [`Asset`] records, for
+/// callers that need to compare content without building an asset.
+pub fn sha256_hex(bytes: &[u8]) -> String {
+    hex::encode(Sha256::digest(bytes))
+}
+
 impl Asset {
     /// Build from bytes, sniffing modality and MIME from magic bytes.
     pub fn from_bytes(bytes: Vec<u8>, path: Option<PathBuf>) -> crate::Result<Self> {

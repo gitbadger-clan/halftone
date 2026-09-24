@@ -545,7 +545,7 @@ fn inspect(a: InspectArgs) -> Result<()> {
 fn survive(a: SurviveArgs) -> Result<()> {
     use halftone_bench::distort::{parse_suite, Distortion};
     use halftone_bench::survive::{
-        match_captured, render_aggregate, render_long, run, SurviveConfig,
+        dedup_inputs, match_captured, render_aggregate, render_long, run, SurviveConfig,
     };
 
     let reg = registry(&RegistryOpts {
@@ -568,8 +568,19 @@ fn survive(a: SurviveArgs) -> Result<()> {
     if !suite.contains(&Distortion::None) {
         anyhow::bail!("the suite must include `none` so every input has a baseline row");
     }
+    // Byte-identical inputs (a route that serves the same file twice) are a
+    // finding, not two rows: fold them and say so.
+    let dedup = dedup_inputs(&a.inputs);
+    for (dropped, kept) in &dedup.dropped {
+        eprintln!(
+            "same bytes as {}: {} (folded)",
+            kept.display(),
+            dropped.display()
+        );
+    }
+    let inputs = dedup.kept;
     let (captured, unmatched) = match &a.captured {
-        Some(dir) => match_captured(&a.inputs, dir),
+        Some(dir) => match_captured(&inputs, dir),
         None => (Vec::new(), Vec::new()),
     };
     for u in &unmatched {
@@ -579,7 +590,7 @@ fn survive(a: SurviveArgs) -> Result<()> {
         suite,
         keep: a.keep.clone(),
     };
-    let batch = run(&reg, tool(), &a.inputs, &captured, &cfg)?;
+    let batch = run(&reg, tool(), &inputs, &captured, &cfg)?;
     if a.json {
         println!("{}", serde_json::to_string(&batch)?);
     } else if a.long {
