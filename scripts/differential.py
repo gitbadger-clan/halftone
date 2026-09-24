@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.14"
+# requires-python = ">=3.11"
 # dependencies = []
 # ///
 """Collect ground truth for the differential test from ExifTool and c2patool.
@@ -38,6 +38,8 @@ import re
 import subprocess
 import sys
 import tempfile
+import os
+import atexit, shutil
 from pathlib import Path
 
 C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n"
@@ -46,7 +48,8 @@ C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false
 def c2patool_settings(anchors: Path | None) -> str:
     """Settings TOML for c2patool. Trust anchors go in here as PEM text: c2patool
     ignores $C2PATOOL_TRUST_ANCHORS unless the `trust` sub-command is used, so the
-    settings file is the one mechanism that works for a plain `c2patool <file>`."""
+    settings file passed with --settings is the one mechanism that works for a
+    plain `c2patool <file>` (DIFFERENTIAL.md D-008)."""
     if anchors is None:
         return C2PATOOL_SETTINGS
     pem = anchors.read_text()
@@ -55,6 +58,21 @@ def c2patool_settings(anchors: Path | None) -> str:
         '[trust]\ntrust_anchors = """\n' + pem + '"""\n'
     )
 
+def c2patool_env() -> dict[str, str]:
+    """Environment for every c2patool call. c2patool also reads
+    $XDG_CONFIG_HOME/c2pa/c2pa.toml and $C2PATOOL_SETTINGS without saying so; an
+    operator with the trust list in either would get `Trusted` from a call that
+    should say `Valid`, and the ground truth would depend on the machine
+    (D-008, update 2026-09-24). The settings file we write is the whole story."""
+    env = {k: v for k, v in os.environ.items()
+           if k not in ("C2PATOOL_SETTINGS", "C2PATOOL_TRUST_ANCHORS")}
+    xdg = tempfile.mkdtemp(prefix="c2patool-xdg-")
+    atexit.register(shutil.rmtree, xdg, ignore_errors=True)
+    env["XDG_CONFIG_HOME"] = xdg
+    return env
+
+
+C2PATOOL_ENV = c2patool_env()
 # Extensions worth sniffing. The decision is made on ExifTool's MIME type, never on
 # the extension: fixture corpora contain mislabeled files on purpose.
 IMAGE_EXTS = {".jpg", ".jpeg", ".jpe", ".png", ".webp", ".heic", ".heif", ".avif"}
@@ -138,7 +156,7 @@ def walk_dst(v, out: list[str]) -> None:
 
 def c2patool_facts(p: Path, settings: Path) -> dict:
     try:
-        rc, out, err = run(["c2patool", "--settings", str(settings), str(p)])
+        rc, out, err = run(["c2patool", "--settings", str(settings), str(p)], env=C2PATOOL_ENV)
     except FileNotFoundError:
         return {"error": "c2patool not found"}
     text = (out + "\n" + err).lower()
@@ -264,12 +282,19 @@ def main() -> int:
                 merged += 1
         print(f"merged intended verdicts for {merged} of {len(cases)} cases from {cases_path}")
 
+    from datetime import datetime, timezone
+
     doc = {
         "schema": "halftone-differential-expectations/1",
+        # Validation states are date-dependent when a signer uses short-lived
+        # certificates without a trusted time-stamp (DIFFERENTIAL.md D-010); a
+        # reader of this file needs to know when the states were true.
+        "collected_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "corpus": repo_relative(corpus),
         "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver},
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
         "c2patool_settings": C2PATOOL_SETTINGS + ("[trust] trust_anchors = <pem>" if a.trust_anchors else ""),
+        "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
         "match_by": match_by,
         "files": files,
     }

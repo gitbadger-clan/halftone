@@ -397,9 +397,10 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             }
         }
         println!(
-            "differential[{label}]: {compared} of {} files compared, {} disagreements",
+            "differential[{label}]: {compared} of {} files compared, {} disagreements (ground truth collected {})",
             files_obj.len(),
-            dis.len()
+            dis.len(),
+            exp["collected_at"].as_str().unwrap_or("undated")
         );
         total_files += files_obj.len();
         total_compared += compared;
