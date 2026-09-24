@@ -266,13 +266,54 @@ mod imp {
                      trust anchor (see details.trust for which lists were used).{ai_note}"
                 ),
             ),
-            c2pa::ValidationState::Invalid => (
-                Status::Inconclusive,
-                format!(
-                    "C2PA manifest {who} is present but does not validate: the signature \
-                     fails or the content was modified after signing. See validation_status.{ai_note}"
-                ),
-            ),
+            c2pa::ValidationState::Invalid => {
+                // Distinguish the two things "Invalid" can mean to a reader: the
+                // content or signature is broken, or the signing certificate has
+                // expired and nothing in the manifest fixes when it was signed. The
+                // second is a property of the signer's setup, not of the file's
+                // integrity, and it is date-dependent: the same file validated before
+                // the certificate's notAfter.
+                let codes: Vec<&str> = validation_status
+                    .as_array()
+                    .map(|a| {
+                        a.iter()
+                            .filter_map(|x| x.get("code").and_then(|c| c.as_str()))
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                let expired = codes.iter().any(|c| *c == "signingCredential.expired");
+                let broken = codes.iter().any(|c| {
+                    c.ends_with(".mismatch")
+                        || c.starts_with("claimSignature.") && !c.ends_with(".validated")
+                });
+                let has_timestamp = assertion_labels.iter().any(|l| l == "c2pa.time-stamp");
+                if expired && !broken {
+                    (
+                        Status::Inconclusive,
+                        format!(
+                            "C2PA manifest {who} is present and its content hash still matches, \
+                             but the signing certificate has expired{}. The signature cannot be \
+                             placed inside the certificate's validity window, so it no longer \
+                             validates; it may have validated when the file was made. Whether a \
+                             reader accepts it now depends on the date of checking. See \
+                             validation_status.{ai_note}",
+                            if has_timestamp {
+                                ""
+                            } else {
+                                " and the manifest carries no trusted time-stamp"
+                            }
+                        ),
+                    )
+                } else {
+                    (
+                        Status::Inconclusive,
+                        format!(
+                            "C2PA manifest {who} is present but does not validate: the signature \
+                             fails or the content was modified after signing. See validation_status.{ai_note}"
+                        ),
+                    )
+                }
+            }
         };
 
         mk(
