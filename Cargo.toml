@@ -38,14 +38,20 @@ rayon = "1"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 kamadak-exif = "0.6"
 c2pa = "0.90.20"
-c2pa_cbor = ">=0.77.4"
-ort = "2.0.0-rc.9"
-ndarray = "0.17"
-rustfft = "6"
-hound = "3"
-symphonia = "0.6"
+c2pa_cbor = "^0.77.4"
+# Same major as c2pa's own HTTP client, so `ureq::Agent` is the type c2pa implements
+# its resolver trait for. No features of our own: c2pa already enables rustls.
+ureq = { version = "3.4", default-features = false }
 ed25519-dalek = "3"
-criterion = "0.8"
+
+
+# Reserved: no crate uses these yet. Uncomment here together with the crate-level line.
+# ort = "2.0.0-rc.9"     # blind FeatureProbe encoder + head; mark AudioSeal/VideoSeal (check for a newer 2.0 first)
+# ndarray = "0.17"       # input tensors for ort
+# rustfft = "6"          # frequency-domain watermark checks in halftone-mark
+# hound = "3"            # WAV input for audio mark checks
+# symphonia = "0.6"      # compressed audio decode (MP3/AAC/FLAC) for audio mark checks
+# criterion = "0.8"      # perf benches once throughput matters (batch inspect, pixel decode)
 
 [workspace.lints.rust]
 unsafe_code = "warn"
@@ -58,4 +64,3 @@ all = "warn"
 lto = "thin"
 codegen-units = 1
 strip = true
-

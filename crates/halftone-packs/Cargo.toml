@@ -6,19 +6,20 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
+homepage.workspace = true
 
 [dependencies]
-halftone-core.workspace = true
+# halftone-core.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-tracing.workspace = true
+# tracing.workspace = true
 ed25519-dalek.workspace = true
 sha2.workspace = true
+ureq = { workspace = true, features = ["rustls", "gzip"], optional = true }
 hex.workspace = true
 thiserror.workspace = true
 tar = "0.4"
-zstd = "0.13"
-ureq = { version = "3", default-features = false, features = ["rustls", "gzip"], optional = true }
+zstd = "0.14"
 
 
 [features]

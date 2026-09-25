@@ -6,16 +6,18 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
+homepage.workspace = true
 
 [dependencies]
 halftone-core.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
-image.workspace = true
-ndarray.workspace = true
-halftone-packs.workspace = true
-# ort.workspace = true      # enable when wiring the first model
+# Enable when FeatureProbe::assess is wired (TODO in src/image.rs):
+# halftone-packs.workspace = true   # signed model pack + calibration.json
+# image.workspace = true            # decode + resize to the encoder input
+# ndarray.workspace = true          # input tensor for ort
+# ort.workspace = true              # encoder and head ONNX graphs
 
 [lints]
 workspace = true
