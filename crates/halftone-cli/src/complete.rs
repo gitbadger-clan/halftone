@@ -16,7 +16,7 @@
 //! | `packs update --from`, `corpus <dir>`, `bench --calib-dir` | directories                  |
 //!
 //! Activation is environment-driven and costs nothing on a normal run: `main` calls
-//! [`CompleteEnv::complete`] first thing; unless `COMPLETE=<shell>` is set it returns
+//! [`clap_complete::CompleteEnv::complete`] first thing; unless `COMPLETE=<shell>` is set it returns
 //! immediately. `ht completions <shell>` prints the one-line registration snippet.
 
 use std::ffi::OsStr;

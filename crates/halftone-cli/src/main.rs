@@ -182,6 +182,8 @@ struct InspectArgs {
 }
 
 #[derive(Args)]
+// Doc comments on clap args are `--help` text; `<placeholder>` is meant literally there.
+#[allow(rustdoc::invalid_html_tags)]
 struct SurviveArgs {
     /// Files to run the suite on (the originals).
     #[arg(required = true)]

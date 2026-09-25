@@ -58,7 +58,7 @@ pub struct LatticeStats {
     pub tiles: Vec<TileScore>,
     /// Median tile contrast — the headline statistic.
     pub median: f64,
-    /// Fraction of tiles above [`CONSISTENT_MARGIN`].
+    /// Fraction of tiles above `CONSISTENT_MARGIN` (0.04).
     pub consistent_tiles: f64,
     /// Median per-axis contrasts, for diagnosing single-axis resizes.
     pub median_x: f64,
