@@ -98,8 +98,17 @@ The source also reports every `digitalSourceType` the active manifest declares
 judged against the same IPTC vocabulary as `marking_metadata` (`halftone_core::dst`,
 `details.vocabulary_version`). The two readings are deliberately separate: the manifest
 copy is signed, the XMP copy is not, and a report shows both.
-Inspection never contacts the network: remote manifest references are not fetched
-(reported as `Inconclusive` with the URL) and OCSP is not consulted.
+Inspection is offline by default: a remote manifest reference is not fetched
+(reported as `Inconclusive` with the URL) and OCSP is never consulted.
+`ht inspect --fetch-remote-manifests` opts in to fetching remote-only manifests
+(e.g. Adobe Firefly downloads): the file is read offline first, the reference must be
+`https://` to a host name (no IP literals, no `localhost`), and each fetch has a 20 s
+limit. A fetched manifest is validated like an embedded one, with `details.fetched_from`
+and `details.fetched_at` and a rationale saying the result depends on that server and
+time; the batch row carries `manifest.fetched_from`. Files with an embedded manifest
+never touch the network. `survive`, `bench` and the differential harness never fetch.
+Do not enable fetching in a service that inspects untrusted uploads: the URL comes from
+the file, and a public name can still resolve to a private address.
 
 ## Pixel layer (dark mode)
 
@@ -182,4 +191,3 @@ Forks are welcome under the licenses above. Please don't call a modified
 version "Halftone": verdicts from this tool carry a stated false-positive
 rate, and a fork with different thresholds or models shouldn't be
 mistaken for it. "Forked from Halftone" is fine.
-

@@ -58,6 +58,16 @@ Resolution: Halftone sets `verify.remote_manifest_fetch = false` and
 manifest as `Inconclusive` with the URL in `details.remote_manifest_url`; the
 collector runs c2patool with the same settings and records `remote_manifest`; the
 test asserts `Inconclusive`. Expectations no longer depend on the network.
+Follow-up 2026-09-25 (the online mode D-009 called for): ht inspect
+--fetch-remote-manifests fetches a remote-only manifest on request; off by
+default, and survive, bench and this test never pass it. Fetching needs c2pa's
+fetch_remote_manifests compile feature (the runtime setting alone does nothing),
+now enabled with Halftone's c2pa feature. The file is read offline first; the
+reference must be https:// to a host name; the fetch uses a 20 s timeout and at
+most 3 HTTPS-only redirects (c2pa's default agent has no timeout and follows 10
+redirects to any scheme). A fetched manifest reports details.fetched_from and
+details.fetched_at, never remote_manifest_url, so the batch row keeps "remote
+reference, not fetched" and "fetched" apart.
 
 ### D-005 · 2026-09-08 · Duplicate bytes under two names
 

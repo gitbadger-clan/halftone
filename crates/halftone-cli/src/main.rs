@@ -179,6 +179,12 @@ struct InspectArgs {
     /// `none`, or a path to a PEM bundle that replaces the official list.
     #[arg(long, default_value = "auto", add = complete::trust_list())]
     trust_list: String,
+    /// Fetch the C2PA manifest when a file carries only a reference to a remote one
+    /// (e.g. Adobe Firefly downloads). Off by default: without it, inspection never
+    /// contacts the network. HTTPS only, host names only, 20 s per fetch; the result
+    /// then depends on that server and the time of checking, and says so.
+    #[arg(long)]
+    fetch_remote_manifests: bool,
 }
 
 #[derive(Args)]
@@ -299,6 +305,8 @@ struct RegistryOpts {
     only: Option<Vec<LayerArg>>,
     fingerprints: Option<PathBuf>,
     trust: TrustConfig,
+    /// Only `inspect` exposes this; every other command stays offline.
+    fetch_remote_manifests: bool,
 }
 
 fn registry(o: &RegistryOpts) -> Result<Registry> {
@@ -310,6 +318,7 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
     if want(Layer::Manifest) {
         reg.push(Box::new(halftone_c2pa::C2paSource {
             trust: o.trust.clone(),
+            fetch_remote_manifests: o.fetch_remote_manifests,
         }));
     }
     if want(Layer::Container) {
@@ -358,6 +367,7 @@ fn main() -> Result<()> {
     CompleteEnv::with_factory(Cli::command).complete();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_writer(std::io::stderr)
         .init();
     match Cli::parse().cmd {
         Cmd::Inspect(a) => inspect(a),
@@ -367,6 +377,7 @@ fn main() -> Result<()> {
                 only: None,
                 fingerprints: None,
                 trust: TrustConfig::default(),
+                fetch_remote_manifests: false,
             })?;
             for (layer, id) in reg.ids() {
                 println!("{layer:?}\t{}\t{}", id.name, id.version);
@@ -478,6 +489,7 @@ fn inspect(a: InspectArgs) -> Result<()> {
             custom_anchors: a.trust_anchors.clone(),
             home: None,
         },
+        fetch_remote_manifests: a.fetch_remote_manifests,
     })?;
     let glyphs = Glyphs::detect();
     let mut any_present = false;
@@ -562,6 +574,9 @@ fn survive(a: SurviveArgs) -> Result<()> {
             custom_anchors: a.trust_anchors.clone(),
             home: None,
         },
+        // A survival table measures what the bytes carry; a fetched manifest is not
+        // carried by the file, so survive never fetches.
+        fetch_remote_manifests: false,
     })?;
     let suite = match &a.suite {
         Some(s) => parse_suite(s).map_err(|e| anyhow::anyhow!(e))?,
@@ -729,6 +744,7 @@ fn bench(
         only: None,
         fingerprints: None,
         trust: TrustConfig::default(),
+        fetch_remote_manifests: false,
     })?;
 
     // (source → (label, value)) for every statistic-bearing evidence.
