@@ -176,3 +176,7 @@ For a provider relying on Content Credentials for Article 50 evidence, this is
 the finding of the corpus so far: the evidence has a shelf life the provider is
 unlikely to know about, and a regulator checking a file a month later sees
 `Invalid`.
+- The differential test reports a Valid/Trusted → Invalid change whose only new
+  code is `signingCredential.expired` (nothing broken) as `aged since
+  <collected_at>: re-collect`, not as a disagreement; same split as the Layer 1
+  rationale.

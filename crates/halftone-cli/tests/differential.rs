@@ -9,6 +9,13 @@
 //!
 //! Files are matched by SHA-256, not path. Every disagreement is printed as one row
 //! of a table before the assertion fails, so a run is also the differential log.
+//!
+//! One change is not a disagreement: a manifest that was `Valid` or `Trusted` when
+//! the expectations were collected and now reads `Invalid` because its signing
+//! certificate expired, with nothing else new and nothing broken (D-010). The
+//! ground truth aged, the file did not. Such rows are printed as
+//! `aged since <collected_at>: re-collect` and do not fail the run. A mismatched
+//! hash, a failed claim signature, or any other new code still fails.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -22,6 +29,65 @@ struct Disagreement {
     field: &'static str,
     expected: String,
     got: String,
+}
+
+/// A validation state that was true at collection time and has since changed on
+/// its own because the signing certificate expired (D-010).
+#[derive(Debug)]
+struct Aged {
+    file: String,
+    /// The state recorded at collection time (`Valid` or `Trusted`).
+    expected: String,
+}
+
+/// The one code allowed to be new in an aged row.
+const EXPIRED: &str = "signingCredential.expired";
+
+/// A code that says the content or the signature is broken. Same rule as the
+/// Layer 1 rationale in `halftone-c2pa`: a hash or binding mismatch, or any
+/// `claimSignature.*` code other than `.validated`.
+fn is_broken(code: &str) -> bool {
+    code.ends_with(".mismatch")
+        || (code.starts_with("claimSignature.") && !code.ends_with(".validated"))
+}
+
+/// Whether a changed validation state is certificate expiry and nothing else: the
+/// expectation was `Valid` or `Trusted`, Halftone now says `Invalid`, the only code
+/// Halftone reports that the expectation lacks is `signingCredential.expired`, and
+/// no code Halftone reports is a broken one. Codes the expectation had and Halftone
+/// no longer reports are ignored; trust-list differences are handled elsewhere.
+fn is_aged(
+    exp_state: Option<&str>,
+    exp_codes: &[String],
+    got_state: Option<&str>,
+    got_codes: &[String],
+) -> bool {
+    if !matches!(exp_state, Some("Valid" | "Trusted")) || got_state != Some("Invalid") {
+        return false;
+    }
+    if got_codes.iter().any(|c| is_broken(c)) {
+        return false;
+    }
+    let new: Vec<&String> = got_codes
+        .iter()
+        .filter(|c| !exp_codes.contains(c))
+        .collect();
+    matches!(new.as_slice(), [only] if only.as_str() == EXPIRED)
+}
+
+/// The `code` of every entry in a c2pa `validation_status` array, sorted and deduped.
+fn codes_of(status: &Value) -> Vec<String> {
+    let mut s: Vec<String> = status
+        .as_array()
+        .map(|a| {
+            a.iter()
+                .filter_map(|x| x.get("code").and_then(Value::as_str).map(str::to_string))
+                .collect()
+        })
+        .unwrap_or_default();
+    s.sort();
+    s.dedup();
+    s
 }
 
 /// Corpora to compare. `$HALFTONE_DIFFERENTIAL_CORPUS` names one directory;
@@ -128,6 +194,8 @@ fn evidence<'a>(insp: &'a Value, source: &str) -> Option<&'a Value> {
 }
 
 /// Compare one file. `trust_exact` is whether c2patool ran with the same anchors as ht.
+/// Disagreements go to `out`; validation states that aged by certificate expiry go
+/// to `aged` instead.
 fn compare_file(
     name: &str,
     exp: &Value,
@@ -135,6 +203,7 @@ fn compare_file(
     insp: &Value,
     trust_exact: bool,
     out: &mut Vec<Disagreement>,
+    aged: &mut Vec<Aged>,
 ) {
     let mut push = |field: &'static str, expected: String, got: String| {
         if expected != got {
@@ -263,7 +332,23 @@ fn compare_file(
                 (a, b) => a == b,
             };
             if !accept {
-                push("c2pa.validation_state", show(exp_state), show(state));
+                let exp_codes = str_set(&ct["validation_codes"]);
+                let got_codes = c2pa_ev
+                    .map(|e| codes_of(&e["details"]["validation_status"]))
+                    .unwrap_or_default();
+                if is_aged(
+                    exp_state.as_deref(),
+                    &exp_codes,
+                    state.as_deref(),
+                    &got_codes,
+                ) {
+                    aged.push(Aged {
+                        file: name.to_string(),
+                        expected: exp_state.unwrap_or_default(),
+                    });
+                } else {
+                    push("c2pa.validation_state", show(exp_state), show(state));
+                }
             }
             push(
                 "c2pa.issuer",
@@ -304,6 +389,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         return;
     }
     let mut all: Vec<Disagreement> = Vec::new();
+    let mut total_aged = 0;
     let mut total_files = 0;
     let mut total_compared = 0;
     for dir in &dirs {
@@ -319,6 +405,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             .file_name()
             .map(|f| f.to_string_lossy().into_owned())
             .unwrap_or_default();
+        let collected_at = exp["collected_at"].as_str().unwrap_or("undated");
         // Only hand ht files that exist: one missing file would abort the whole
         // batch. Missing ones are reported as rows instead.
         let mut dis = Vec::new();
@@ -365,6 +452,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             .collect();
 
         let mut compared = 0;
+        let mut aged: Vec<Aged> = Vec::new();
         for (name, e) in files_obj {
             if !dir.join(name).is_file() {
                 continue; // already reported as missing
@@ -382,7 +470,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             match keyed.get(&key) {
                 Some((row, insp)) => {
                     compared += 1;
-                    compare_file(&name, e, row, insp, trust_exact, &mut dis);
+                    compare_file(&name, e, row, insp, trust_exact, &mut dis, &mut aged);
                 }
                 None => dis.push(Disagreement {
                     file: name,
@@ -397,11 +485,17 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             }
         }
         println!(
-            "differential[{label}]: {compared} of {} files compared, {} disagreements (ground truth collected {})",
+            "differential[{label}]: {compared} of {} files compared, {} disagreements (ground truth collected {collected_at})",
             files_obj.len(),
             dis.len(),
-            exp["collected_at"].as_str().unwrap_or("undated")
         );
+        for a in &aged {
+            println!(
+                "differential[{label}]: {}: {} -> Invalid ({EXPIRED}), aged since {collected_at}: re-collect",
+                a.file, a.expected
+            );
+        }
+        total_aged += aged.len();
         total_files += files_obj.len();
         total_compared += compared;
         all.extend(dis);
@@ -412,10 +506,137 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         all.len(),
         render(&all)
     );
+    if total_aged > 0 {
+        println!(
+            "differential: {total_aged} validation state(s) aged by certificate expiry, not counted as disagreements; re-collect those strata with scripts/differential.py"
+        );
+    }
     assert!(
         all.is_empty(),
         "{} disagreement(s):\n{}",
         all.len(),
         render(&all)
     );
+}
+
+// ---- ageing rule: fabricated expectation / result pairs, no corpus needed -------
+
+#[cfg(test)]
+mod aged_rule {
+    use super::*;
+
+    fn v(codes: &[&str]) -> Vec<String> {
+        codes.iter().map(|c| c.to_string()).collect()
+    }
+
+    #[test]
+    fn canva_after_expiry_is_aged() {
+        // D-010 as observed: Valid with untrusted on the 10th, Invalid with
+        // expired + untrusted on the 20th, hash unchanged.
+        assert!(is_aged(
+            Some("Valid"),
+            &v(&["signingCredential.untrusted"]),
+            Some("Invalid"),
+            &v(&["signingCredential.expired", "signingCredential.untrusted"]),
+        ));
+    }
+
+    #[test]
+    fn trusted_after_expiry_is_aged() {
+        assert!(is_aged(
+            Some("Trusted"),
+            &[],
+            Some("Invalid"),
+            &v(&["signingCredential.expired"]),
+        ));
+    }
+
+    #[test]
+    fn codes_the_expectation_had_may_disappear() {
+        assert!(is_aged(
+            Some("Valid"),
+            &v(&["signingCredential.untrusted"]),
+            Some("Invalid"),
+            &v(&["signingCredential.expired"]),
+        ));
+    }
+
+    #[test]
+    fn hash_mismatch_is_not_aged() {
+        assert!(!is_aged(
+            Some("Valid"),
+            &v(&["signingCredential.untrusted"]),
+            Some("Invalid"),
+            &v(&[
+                "assertion.dataHash.mismatch",
+                "signingCredential.expired",
+                "signingCredential.untrusted",
+            ]),
+        ));
+    }
+
+    #[test]
+    fn failed_claim_signature_is_not_aged() {
+        assert!(!is_aged(
+            Some("Valid"),
+            &[],
+            Some("Invalid"),
+            &v(&["claimSignature.missing", "signingCredential.expired"]),
+        ));
+    }
+
+    #[test]
+    fn broken_code_already_in_expectation_still_fails() {
+        // Not new, but broken: never aged.
+        assert!(!is_aged(
+            Some("Valid"),
+            &v(&["assertion.dataHash.mismatch"]),
+            Some("Invalid"),
+            &v(&["assertion.dataHash.mismatch", "signingCredential.expired"]),
+        ));
+    }
+
+    #[test]
+    fn another_new_code_is_not_aged() {
+        assert!(!is_aged(
+            Some("Valid"),
+            &[],
+            Some("Invalid"),
+            &v(&["signingCredential.expired", "signingCredential.revoked"]),
+        ));
+    }
+
+    #[test]
+    fn invalid_without_expiry_is_not_aged() {
+        assert!(!is_aged(
+            Some("Valid"),
+            &v(&["signingCredential.untrusted"]),
+            Some("Invalid"),
+            &v(&["signingCredential.untrusted"]),
+        ));
+    }
+
+    #[test]
+    fn only_valid_or_trusted_to_invalid_counts() {
+        let exp = v(&["signingCredential.expired"]);
+        assert!(!is_aged(Some("Invalid"), &[], Some("Invalid"), &exp));
+        assert!(!is_aged(Some("Valid"), &[], Some("Trusted"), &exp));
+        assert!(!is_aged(None, &[], Some("Invalid"), &exp));
+        assert!(!is_aged(Some("Valid"), &[], None, &exp));
+    }
+
+    #[test]
+    fn codes_of_reads_the_c2pa_shape() {
+        let status = serde_json::json!([
+            {"code": "signingCredential.untrusted", "explanation": "x"},
+            {"code": "signingCredential.expired"},
+            {"code": "signingCredential.expired"},
+            {"explanation": "no code"}
+        ]);
+        assert_eq!(
+            codes_of(&status),
+            v(&["signingCredential.expired", "signingCredential.untrusted"])
+        );
+        assert!(codes_of(&Value::Null).is_empty());
+    }
 }
