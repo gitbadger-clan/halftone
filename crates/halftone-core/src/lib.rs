@@ -18,7 +18,7 @@ pub use evidence::{
     CalibrationRef, Evidence, Inspection, Layer, SourceId, Statistic, Status, ToolInfo,
     SCHEMA_VERSION,
 };
-pub use registry::{EvidenceSource, Registry};
+pub use registry::{now_rfc3339, EvidenceSource, Registry};
 
 /// Errors from evidence sources.
 #[derive(Debug, thiserror::Error)]

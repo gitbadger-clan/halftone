@@ -56,6 +56,11 @@ pub struct ManifestColumns {
     /// was fetched, so no `validation_state` exists.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub remote_manifest_url: Option<String>,
+    /// The manifest was not in the file but fetched from this URL at inspection time
+    /// (`--fetch-remote-manifests`); `validation_state` describes the fetched copy and
+    /// can differ on a later check.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fetched_from: Option<String>,
 }
 
 /// Named columns from the XMP marking source (`marking_metadata`).
@@ -188,6 +193,7 @@ pub fn summarize(insp: &Inspection) -> FileRow {
                 manifest.digital_source_type = str_list(d, "digital_source_type");
                 manifest.declares_ai = d.get("declares_ai").and_then(|v| v.as_bool());
                 manifest.remote_manifest_url = str_field(d, "remote_manifest_url");
+                manifest.fetched_from = str_field(d, "fetched_from");
             }
             SOURCE_MARKING => {
                 marking.digital_source_type = str_list(d, "digital_source_type");
@@ -318,17 +324,20 @@ fn truncate(s: &str, w: usize) -> String {
     }
 }
 
+/// Host part of a URL for display; the whole string when it has no scheme.
+fn host_of(url: &str) -> &str {
+    url.split("://")
+        .nth(1)
+        .and_then(|r| r.split('/').next())
+        .unwrap_or(url)
+}
+
 /// One line of named columns under a row; empty when neither layer said anything.
 fn detail_line(row: &FileRow) -> String {
     let mut parts: Vec<String> = Vec::new();
     let m = &row.manifest;
     if let Some(url) = &m.remote_manifest_url {
-        let host = url
-            .split("://")
-            .nth(1)
-            .and_then(|r| r.split('/').next())
-            .unwrap_or(url);
-        parts.push(format!("manifest remote at {host}, not fetched"));
+        parts.push(format!("manifest remote at {}, not fetched", host_of(url)));
     }
     if let Some(state) = &m.validation_state {
         let mut s = format!("manifest {state}");
@@ -340,6 +349,9 @@ fn detail_line(row: &FileRow) -> String {
         }
         if !m.digital_source_type.is_empty() {
             s.push_str(&format!(" · {}", m.digital_source_type.join(", ")));
+        }
+        if let Some(url) = &m.fetched_from {
+            s.push_str(&format!(" · fetched from {}", host_of(url)));
         }
         parts.push(s);
     }
@@ -565,6 +577,54 @@ mod tests {
         let b = Batch::new(tool(), vec![i]);
         let text = render_matrix(&b, |_| "x");
         assert!(text.contains("manifest remote at cai-manifests.adobe.com, not fetched"));
+    }
+
+    #[test]
+    fn fetched_manifest_is_marked() {
+        let i = insp(
+            "/tmp/ff.png",
+            vec![ev(
+                Layer::Manifest,
+                "c2pa",
+                Status::Present,
+                json!({
+                    "validation_state": "Trusted",
+                    "issuer": "Adobe Inc.",
+                    "fetched_from": "https://cai-manifests.adobe.com/manifests/urn-x"
+                }),
+            )],
+        );
+        let row = summarize(&i);
+        assert_eq!(
+            row.manifest.fetched_from.as_deref(),
+            Some("https://cai-manifests.adobe.com/manifests/urn-x")
+        );
+        assert_eq!(row.manifest.remote_manifest_url, None);
+        let b = Batch::new(tool(), vec![i]);
+        let text = render_matrix(&b, |_| "x");
+        assert!(text.contains("manifest Trusted"), "{text}");
+        assert!(
+            text.contains("fetched from cai-manifests.adobe.com"),
+            "{text}"
+        );
+        assert!(!text.contains("not fetched"), "{text}");
+    }
+
+    #[test]
+    fn embedded_manifest_row_has_no_fetched_from() {
+        let i = insp(
+            "/tmp/g.png",
+            vec![ev(
+                Layer::Manifest,
+                "c2pa",
+                Status::Present,
+                json!({"validation_state": "Trusted"}),
+            )],
+        );
+        let row = summarize(&i);
+        assert_eq!(row.manifest.fetched_from, None);
+        let v = serde_json::to_value(&row).unwrap();
+        assert!(v["manifest"].get("fetched_from").is_none());
     }
 
     #[test]

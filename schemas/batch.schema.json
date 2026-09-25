@@ -41,7 +41,8 @@
               "claim_generator": { "type": "string" },
               "digital_source_type": { "type": "array", "items": { "type": "string" } },
               "declares_ai": { "type": "boolean" },
-              "remote_manifest_url": { "type": "string" }
+              "remote_manifest_url": { "type": "string" },
+              "fetched_from": { "type": "string" }
             }
           },
           "marking": {

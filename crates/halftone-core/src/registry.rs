@@ -99,8 +99,10 @@ impl Registry {
     }
 }
 
-/// UTC timestamp without pulling in `chrono`; good enough for a stamp.
-pub(crate) fn now_rfc3339() -> String {
+/// UTC timestamp (`YYYY-MM-DDTHH:MM:SSZ`) without pulling in `chrono`; good enough
+/// for a stamp. Public so sources can date an observation that depends on when it
+/// was made (a fetched remote manifest).
+pub fn now_rfc3339() -> String {
     let secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
