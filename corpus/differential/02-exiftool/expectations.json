@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
-  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n",
-  "collected_at": "2026-09-24T06:09:46Z",
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
+  "collected_at": "2026-09-26T20:34:29Z",
   "corpus": "corpus/differential/02-exiftool",
   "files": {
     "AFCP.jpg": {
@@ -712,8 +712,10 @@
   "match_by": "sha256",
   "schema": "halftone-differential-expectations/1",
   "tools": {
-    "c2patool": "c2patool 0.27.22",
+    "c2patool": "c2patool 0.28.0",
     "exiftool": "13.55"
   },
-  "trust_anchors": null
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
+  "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
+  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem"
 }

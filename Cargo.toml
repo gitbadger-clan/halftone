@@ -37,8 +37,7 @@ clap_complete = { version = "4.6", features = ["unstable-dynamic"] }
 rayon = "1"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 kamadak-exif = "0.6"
-c2pa = "0.90.20"
-c2pa_cbor = "^0.77.4"
+c2pa = "0.91"
 # Same major as c2pa's own HTTP client, so `ureq::Agent` is the type c2pa implements
 # its resolver trait for. No features of our own: c2pa already enables rustls.
 ureq = { version = "3.4", default-features = false }

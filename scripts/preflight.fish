@@ -47,16 +47,17 @@ end
 ok "no warnings"
 
 # --- 2 ---------------------------------------------------------------------------
-step "lockfile: one c2pa_cbor (0.77.x, D-007), one ureq"
+step "lockfile: one c2pa (0.91.x, D-011), one c2pa_cbor, one ureq"
 set -l tree (cargo tree --workspace --all-features -e normal --prefix none 2>/dev/null)
 or fail "cargo tree"
+set -l c2pa (printf '%s\n' $tree | string match -r '^c2pa v[^ ]+' | sort -u)
+test (count $c2pa) -eq 1; or fail "c2pa versions: $c2pa"
+string match -q 'c2pa v0.91.*' $c2pa; or fail "expected c2pa 0.91.x (D-011), got $c2pa"
 set -l cbor (printf '%s\n' $tree | string match -r '^c2pa_cbor v[^ ]+' | sort -u)
 test (count $cbor) -eq 1; or fail "c2pa_cbor versions: $cbor"
-string match -q 'c2pa_cbor v0.77.*' $cbor; or fail "expected 0.77.x (D-007), got $cbor"
 set -l ureq (printf '%s\n' $tree | string match -r '^ureq v[^ ]+' | sort -u)
 test (count $ureq) -eq 1; or fail "ureq versions: $ureq"
-set -l c2pa (printf '%s\n' $tree | string match -r '^c2pa v[^ ]+' | sort -u)
-ok "$cbor · $ureq · $c2pa"
+ok "$c2pa · $cbor · $ureq"
 
 # --- 3 ---------------------------------------------------------------------------
 step rustfmt

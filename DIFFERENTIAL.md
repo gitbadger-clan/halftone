@@ -101,6 +101,9 @@ of `halftone-c2pa` to make the bad range a build error. The file stays in the co
 as the regression guard. A stapled OCSP response is what a careful signer adds so
 validators need no network; failing the read would have told a client their
 manifest was broken.
+Follow-up 2026-09-25: c2pa 0.91 requires c2pa_cbor 0.78.0, above the floor, so the
+direct dependency and the `use c2pa_cbor as _` pin are removed (D-011).
+`ocsp_with_assertion.jpg` in 01 re-checks the decode on every run.
 
 ### D-008 · 2026-09-09 · c2patool ignored the trust anchors; `Valid` vs `Trusted` on Google-signed files
 
@@ -180,3 +183,31 @@ unlikely to know about, and a regulator checking a file a month later sees
   code is `signingCredential.expired` (nothing broken) as `aged since
   <collected_at>: re-collect`, not as a disagreement; same split as the Layer 1
   rationale.
+
+### D-011 · 2026-09-25 · c2pa 0.91: trust anchors silently dropped; Bing Invalid
+
+c2pa 0.91.0 (c2patool 0.28.0) replaces `trust.trust_anchors` / `trust.user_anchors`
+with typed `trust.anchors` entries (kind manifest / tsa / cawg). Validation reads only
+the new field; the old keys still load through `Settings::with_value`, which Halftone
+used, without migration and without error. On 0.91 Halftone therefore validated with
+no anchors: 10 Google / aggregator rows went Trusted → Valid. Bing (7 rows) went
+Valid → Invalid with `signingCredential.invalid` + `claim.malformed`; c2patool 0.27
+(c2pa 0.90) still says Valid.
+Resolution: `trust.rs` keeps each bundle separate with its kind; `context()` sets
+typed anchors, and a unit test reads them back from the `Context`. The collector
+passes the same two lists as typed anchors (`--tsa-anchors`) and refuses a c2patool
+Bing (7 rows) fails two independent 0.91 checks. (1) `signingCredential.invalid`,
+"certificate missing required EKU": the signer carries only 1.3.6.1.4.1.311.76.59.1.9
+(MS C2PA Signing, critical). c2pa's built-in EKU allow-list includes it, but 0.91's
+`Store::from_context` clears the list and re-adds only `trust.trust_config`.
+(2) `claim.malformed`, "soft binding assertion could not be decoded": new in 0.91;
+Microsoft's `com.microsoft.invismark.1` block `value` is a text string where the CDDL
+declares a byte string (c2pa-rs #2689), the likely cause, unconfirmed because c2pa
+discards the underlying decode error.
+Resolution: Halftone passes an explicit EKU policy (`trust/C2PA-EKU-CONFIG.cfg`, the
+six OIDs of c2pa-rs's default list, recorded in `details.trust.eku_config`); the
+collector passes the same file (`--trust-config`). With it, (1) disappears in both
+tools; (2) stands and is reported as the reference reports it. The `Invalid`
+rationale now separates conformance failures from broken hashes or signatures.
+Open: whether a vendor-private EKU is conformant under the C2PA signer profile.
+Evidence: `scripts/d011-evidence.fish`.

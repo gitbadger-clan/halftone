@@ -18,8 +18,9 @@
 //! from `Reader::json()` so minor API churn in the crate does not break this layer.
 //! The c2pa crate ships **no** trust anchors outside its own tests, and verifies
 //! trust by default, so an unconfigured Reader treats every signer as untrusted.
-//! [`trust::TrustConfig`] supplies the official list (`trust.trust_anchors`) and
-//! any operator anchors (`trust.user_anchors`), and records where each came from.
+//! [`trust::TrustConfig`] supplies the official lists and any operator anchors as
+//! typed c2pa `trust.anchors`, each tagged manifest or TSA ([`AnchorKind`]), and
+//! records where each came from.
 //!
 //! Network: off by default. A file whose only provenance is a reference to a remote
 //! manifest (XMP `dcterms:provenance`, e.g. Adobe Firefly downloads) is reported as
@@ -32,11 +33,8 @@
 //! embedded manifest never touch the network either way. OCSP is never consulted.
 //!
 pub mod source_type;
-// Declared only to pin the floor from DIFFERENTIAL.md D-007; nothing to import.
-#[cfg(feature = "c2pa")]
-use c2pa_cbor as _;
 pub mod trust;
-pub use trust::{InternalList, TrustConfig};
+pub use trust::{AnchorKind, InternalList, TrustConfig};
 
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId};
 
@@ -122,34 +120,58 @@ impl EvidenceSource for C2paSource {
 
 #[cfg(feature = "c2pa")]
 mod imp {
-    use super::trust::ResolvedTrust;
+    use super::trust::{AnchorKind, ResolvedTrust};
     use super::C2paSource;
+    use c2pa::settings::{TrustAnchor, TrustListKind};
     use halftone_core::{Asset, Evidence, EvidenceSource, Status};
     use std::io::Cursor;
 
-    /// Build the validation context. A user PEM bundle is added to the built-in trust
-    /// list via `trust.user_anchors`. If the c2pa settings API moves again, this is the
-    /// only function to touch.
+    /// One typed c2pa anchor per resolved bundle, kind preserved.
+    ///
+    /// c2pa 0.91 reads only `trust.anchors`. The older `trust.trust_anchors` /
+    /// `trust.user_anchors` keys are still accepted by `Settings::with_value` but
+    /// are no longer read by validation, so setting them silently trusts nothing
+    /// (DIFFERENTIAL.md D-011). Typed structs make a future rename a compile error.
+    pub(super) fn anchors(resolved: &ResolvedTrust) -> Vec<TrustAnchor> {
+        resolved
+            .anchors
+            .iter()
+            .map(|a| TrustAnchor {
+                trust_anchors: a.pem.clone(),
+                trust_uri: Some(a.uri.clone()),
+                trust_kind: match a.kind {
+                    AnchorKind::Manifest => TrustListKind::Manifest,
+                    AnchorKind::Tsa => TrustListKind::TSA,
+                },
+                ..Default::default()
+            })
+            .collect()
+    }
+
+    /// Build the validation context. If the c2pa settings API moves again, this and
+    /// [`anchors`] are the only functions to touch.
+    ///
+    /// Anchors go in first; the `with_value` calls after them re-validate the whole
+    /// settings tree, so a bundle c2pa cannot parse is an error here rather than an
+    /// anchor it quietly skips.
     ///
     /// `fetch` is `false` for every first read: a file must not be able to make the
     /// tool call out to a URL it carries unless the operator asked for it, and even
     /// then only after [`super::check_remote_url`]. OCSP is never consulted.
-    fn context(resolved: &ResolvedTrust, fetch: bool) -> Result<c2pa::Context, String> {
-        let mut settings = c2pa::Settings::new()
+    pub(super) fn context(resolved: &ResolvedTrust, fetch: bool) -> Result<c2pa::Context, String> {
+        let mut settings = c2pa::Settings::new();
+        let anchors = anchors(resolved);
+        if !anchors.is_empty() {
+            settings.trust.anchors = Some(anchors);
+        }
+        // Accepted signing-certificate EKUs. c2pa 0.91 clears its built-in list
+        // when the Store is built and re-adds only this (D-011).
+        settings.trust.trust_config = Some(resolved.eku_config.clone());
+        let settings = settings
             .with_value("verify.remote_manifest_fetch", fetch)
             .map_err(|e| e.to_string())?
             .with_value("verify.ocsp_fetch", false)
             .map_err(|e| e.to_string())?;
-        if !resolved.internal_pem.trim().is_empty() {
-            settings = settings
-                .with_value("trust.trust_anchors", resolved.internal_pem.clone())
-                .map_err(|e| e.to_string())?;
-        }
-        if !resolved.custom_pem.trim().is_empty() {
-            settings = settings
-                .with_value("trust.user_anchors", resolved.custom_pem.clone())
-                .map_err(|e| e.to_string())?;
-        }
         let ctx = c2pa::Context::new()
             .with_settings(settings)
             .map_err(|e| e.to_string())?;
@@ -437,12 +459,37 @@ mod imp {
                             }
                         ),
                     )
-                } else {
+                } else if broken {
                     (
                         Status::Inconclusive,
                         format!(
                             "C2PA manifest {who} is present but does not validate: the signature \
                              fails or the content was modified after signing. See validation_status.{ai_note}"
+                        ),
+                    )
+                } else {
+                    // No hash mismatch and no claim-signature failure: the manifest
+                    // fails a conformance rule (a certificate profile, an assertion
+                    // the validator cannot decode). Saying "modified after signing"
+                    // here would accuse the file of something nothing showed (D-011).
+                    let failing: Vec<&str> = codes
+                        .iter()
+                        .copied()
+                        .filter(|c| *c != "signingCredential.untrusted")
+                        .collect();
+                    (
+                        Status::Inconclusive,
+                        format!(
+                            "C2PA manifest {who} is present and no hash mismatch or claim-signature \
+                             failure was reported, but it does not validate: it fails {}. That is \
+                             a conformance failure of the manifest or its signing certificate, \
+                             not evidence that the content changed after signing. See \
+                             validation_status.{ai_note}",
+                            if failing.is_empty() {
+                                "a check that reported no code".to_string()
+                            } else {
+                                failing.join(", ")
+                            }
                         ),
                     )
                 }
@@ -486,6 +533,74 @@ mod imp {
             details["fetched_at"] = serde_json::Value::String(at);
         }
         mk(status, rationale, details)
+    }
+}
+
+#[cfg(all(test, feature = "c2pa"))]
+mod c2pa_settings_tests {
+    use super::trust::{AnchorKind, InternalList, TrustConfig};
+    use c2pa::settings::TrustListKind;
+
+    fn vendored() -> super::trust::ResolvedTrust {
+        TrustConfig {
+            internal: InternalList::Vendored,
+            ..Default::default()
+        }
+        .resolve()
+        .unwrap()
+    }
+
+    #[test]
+    fn anchors_keep_kind_and_uri() {
+        let r = vendored();
+        let a = super::imp::anchors(&r);
+        assert_eq!(a.len(), 2);
+        assert_eq!(a[0].trust_kind, TrustListKind::Manifest);
+        assert_eq!(a[1].trust_kind, TrustListKind::TSA);
+        assert_eq!(a[0].trust_uri.as_deref(), Some(r.anchors[0].uri.as_str()));
+        assert_eq!(r.anchors[0].kind, AnchorKind::Manifest);
+    }
+
+    /// The D-011 regression: anchors must land where c2pa validation reads them.
+    #[test]
+    fn context_carries_the_anchors() {
+        let ctx = super::imp::context(&vendored(), false).unwrap();
+        let got = ctx
+            .settings()
+            .trust
+            .anchors
+            .as_ref()
+            .expect("trust.anchors unset");
+        assert_eq!(got.len(), 2);
+        assert!(got.iter().all(|a| !a.trust_anchors.is_empty()));
+    }
+
+    /// D-011: without trust_config, c2pa 0.91 accepts no vendor EKU.
+    #[test]
+    fn context_carries_the_eku_policy() {
+        let ctx = super::imp::context(&vendored(), false).unwrap();
+        let cfg = ctx
+            .settings()
+            .trust
+            .trust_config
+            .as_deref()
+            .expect("trust_config unset");
+        assert!(cfg.lines().any(|l| l == "1.3.6.1.4.1.311.76.59.1.9"));
+        assert_eq!(cfg, super::trust::VENDORED_EKU_CONFIG);
+    }
+
+    #[test]
+    fn disabled_trust_sets_no_anchors() {
+        let r = TrustConfig {
+            internal: InternalList::Disabled,
+            ..Default::default()
+        }
+        .resolve()
+        .unwrap();
+        let ctx = super::imp::context(&r, false).unwrap();
+        assert!(ctx.settings().trust.anchors.is_none());
+        // The EKU policy is independent of which lists are trusted.
+        assert!(ctx.settings().trust.trust_config.is_some());
     }
 }
 

@@ -16,7 +16,10 @@ expectations file is committed (or regenerated) so the Rust side needs neither t
 
 Usage (uv resolves the interpreter from the inline metadata; no venv needed):
     uv run scripts/differential.py corpus/differential
-    uv run scripts/differential.py corpus/differential --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem
+    uv run scripts/differential.py corpus/differential \
+        --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem \
+        --tsa-anchors crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem \
+        --trust-config crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg
     uv run scripts/differential.py corpus/differential --out /tmp/expectations.json
 
 Network: c2patool is run with ``verify.remote_manifest_fetch = false`` and
@@ -27,7 +30,16 @@ that only references a remote manifest is recorded as ``remote_manifest: <url>``
 Trust: c2patool reports ``Trusted`` only when given the same anchors Halftone uses.
 Pass ``--trust-anchors`` for an exact ``validation_state`` comparison; without it the
 file records ``trust_anchors: null`` and the Rust test accepts ``Trusted`` where
-c2patool said ``Valid``.
+c2patool said ``Valid``. Pass ``--tsa-anchors`` with the TSA list as well: Halftone
+hands c2pa both lists, each tagged with its kind (manifest / tsa), and c2patool must
+see the same two to judge time-stamps the same way (DIFFERENTIAL.md D-011). The
+typed ``[[trust.anchors]]`` settings need c2patool 0.28 (c2pa 0.91) or later.
+
+EKUs: pass ``--trust-config`` with the file Halftone vendors. c2pa 0.91 accepts a
+signing certificate's extended key usage only if it is in ``trust.trust_config``
+(its built-in list is cleared), so without it Microsoft-signed files read
+``signingCredential.invalid`` in c2patool and not in Halftone (D-011). It applies
+with or without trust anchors.
 """
 from __future__ import annotations
 
@@ -45,18 +57,40 @@ from pathlib import Path
 C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n"
 
 
-def c2patool_settings(anchors: Path | None) -> str:
+def c2patool_settings(
+    anchors: Path | None, tsa: Path | None = None, eku: Path | None = None
+) -> str:
     """Settings TOML for c2patool. Trust anchors go in here as PEM text: c2patool
     ignores $C2PATOOL_TRUST_ANCHORS unless the `trust` sub-command is used, so the
     settings file passed with --settings is the one mechanism that works for a
-    plain `c2patool <file>` (DIFFERENTIAL.md D-008)."""
-    if anchors is None:
-        return C2PATOOL_SETTINGS
-    pem = anchors.read_text()
-    return (
-        "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\nverify_trust = true\n\n"
-        '[trust]\ntrust_anchors = """\n' + pem + '"""\n'
-    )
+    plain `c2patool <file>` (DIFFERENTIAL.md D-008).
+
+    Anchors use the typed ``[[trust.anchors]]`` tables c2pa 0.91 reads, one per
+    bundle with its kind, mirroring what Halftone passes (D-011). The legacy
+    ``[trust] trust_anchors`` string still loads in 0.91 but is removed in 0.92."""
+    out = C2PATOOL_SETTINGS
+    if anchors is not None:
+        out = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\nverify_trust = true\n"
+    if eku is not None:
+        # [trust] keys before any [[trust.anchors]] table.
+        out += '\n[trust]\ntrust_config = """\n' + eku.read_text() + '"""\n'
+    for kind, path in (("manifest", anchors), ("tsa", tsa)):
+        if path is None:
+            continue
+        out += (
+            f'\n[[trust.anchors]]\ntrust_kind = "{kind}"\n'
+            f'trust_uri = "differential:{kind}:{path.name}"\n'
+            'trust_anchors = """\n' + path.read_text() + '"""\n'
+        )
+    return out
+
+
+def c2patool_supports_typed_anchors(version: str) -> bool:
+    """``[[trust.anchors]]`` arrived with c2pa 0.91 / c2patool 0.28. An older
+    c2patool drops the unknown table and validates with no anchors at all, which
+    would record Valid for every trusted signer without an error."""
+    m = re.search(r"(\d+)\.(\d+)\.(\d+)", version)
+    return bool(m) and tuple(int(x) for x in m.groups()) >= (0, 28, 0)
 
 def c2patool_env() -> dict[str, str]:
     """Environment for every c2patool call. c2patool also reads
@@ -221,7 +255,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("corpus", type=Path)
     ap.add_argument("--out", type=Path, help="default: <corpus>/expectations.json")
-    ap.add_argument("--trust-anchors", type=Path, help="PEM bundle handed to c2patool")
+    ap.add_argument("--trust-anchors", type=Path, help="PEM bundle handed to c2patool as manifest anchors")
+    ap.add_argument("--tsa-anchors", type=Path, help="PEM bundle handed to c2patool as TSA anchors (needs --trust-anchors)")
+    ap.add_argument("--trust-config", type=Path, help="accepted signing-certificate EKUs (trust.trust_config), one OID per line")
     ap.add_argument("--no-c2pa", action="store_true", help="skip c2patool entirely")
     a = ap.parse_args()
 
@@ -239,8 +275,19 @@ def main() -> int:
         print("c2patool not found on PATH (pass --no-c2pa to skip manifest ground truth)", file=sys.stderr)
         return 2
 
+    if a.tsa_anchors and not a.trust_anchors:
+        print("--tsa-anchors needs --trust-anchors", file=sys.stderr)
+        return 2
+    if a.trust_anchors and c2pa_ver and not c2patool_supports_typed_anchors(c2pa_ver):
+        print(
+            f"{c2pa_ver}: trust anchors need c2patool >= 0.28 (typed [[trust.anchors]]); "
+            "an older one would silently trust nothing",
+            file=sys.stderr,
+        )
+        return 2
+
     settings_file = Path(tempfile.mkstemp(suffix=".toml", prefix="c2patool-")[1])
-    settings_file.write_text(c2patool_settings(a.trust_anchors))
+    settings_file.write_text(c2patool_settings(a.trust_anchors, a.tsa_anchors, a.trust_config))
 
     files: dict[str, dict] = {}
     paths = sorted(p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in IMAGE_EXTS)
@@ -293,7 +340,12 @@ def main() -> int:
         "corpus": repo_relative(corpus),
         "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver},
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
-        "c2patool_settings": C2PATOOL_SETTINGS + ("[trust] trust_anchors = <pem>" if a.trust_anchors else ""),
+        "tsa_anchors": repo_relative(a.tsa_anchors) if a.tsa_anchors else None,
+        "trust_config": repo_relative(a.trust_config) if a.trust_config else None,
+        "c2patool_settings": C2PATOOL_SETTINGS
+        + ("[[trust.anchors]] trust_kind = \"manifest\" <pem>" if a.trust_anchors else "")
+        + ("; [[trust.anchors]] trust_kind = \"tsa\" <pem>" if a.tsa_anchors else "")
+        + ("; [trust] trust_config = <eku oids>" if a.trust_config else ""),
         "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
         "match_by": match_by,
         "files": files,
