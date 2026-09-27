@@ -351,7 +351,16 @@ def main() -> int:
         "files": files,
     }
     settings_file.unlink(missing_ok=True)
-    out_path.write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n")
+    new_text = json.dumps(doc, indent=2, sort_keys=True) + "\n"
+    if out_path.exists():
+        old = json.loads(out_path.read_text())
+        unstamped = lambda d: {k: v for k, v in d.items() if k != "collected_at"}
+        if unstamped(old) == unstamped(doc):
+            print(f"\nunchanged since {old.get('collected_at')}, {out_path} not rewritten")
+            new_text = None
+    if new_text is not None:
+        out_path.write_text(new_text)
+        print(f"\n{len(files)} files -> {out_path}")
     print(f"\n{len(files)} files -> {out_path}")
     if skipped:
         print(f"{len(skipped)} skipped (not a format ht loads):")
