@@ -3,9 +3,9 @@
 #   d008-help.png  c2patool --help, the lines that name the default settings file
 #   d008-diff.png  the differential test summary (files compared, disagreements)
 #
-#   scripts/pub/d008-reply.fish               # print both blocks to the terminal
-#   scripts/pub/d008-reply.fish --png         # also render both PNGs with freeze
-#   scripts/pub/d008-reply.fish --skip-test   # help excerpt only (the test takes ~40 s)
+#   fish scripts/pub/d008-reply.fish               # print both blocks to the terminal
+#   fish scripts/pub/d008-reply.fish --png         # also render both PNGs with freeze
+#   fish scripts/pub/d008-reply.fish --skip-test   # help excerpt only (the test takes ~40 s)
 #
 # Both images are real output of the commands shown; nothing is typed in by hand.
 # The test run needs corpus/differential on disk and ht built with --features c2pa.

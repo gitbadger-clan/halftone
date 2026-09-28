@@ -1,8 +1,8 @@
 #!/usr/bin/env fish
 # Pre-push sanity check for the Halftone workspace. Run from anywhere in the repo.
 #
-#   scripts/preflight.fish            # everything, including one network fetch
-#   scripts/preflight.fish --offline  # skip the step that contacts Adobe
+#   fish scripts/preflight.fish            # everything, including one network fetch
+#   fish scripts/preflight.fish --offline  # skip the step that contacts Adobe
 #
 # Stops at the first failing step and says which one. Order: cheapest first.
 

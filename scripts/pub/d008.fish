@@ -2,9 +2,9 @@
 # The D-008 capture: c2patool with the trust list in the env var (ignored), Halftone
 # with the same list, c2patool with the list in a settings file.
 #
-#   scripts/pub/d008.fish            # print the block to the terminal
-#   scripts/pub/d008.fish --png      # also render scripts/pub/out/d008.png with freeze
-#   scripts/pub/d008.fish --png --out x.png
+#   fish scripts/pub/d008.fish            # print the block to the terminal
+#   fish scripts/pub/d008.fish --png      # also render scripts/pub/out/d008.png with freeze
+#   fish scripts/pub/d008.fish --png --out x.png
 #
 # Every line is a real command run against the real file; nothing is typed in by
 # hand. The trust TOML is generated here the way the collector generates it

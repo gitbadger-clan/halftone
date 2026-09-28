@@ -4,11 +4,11 @@
 # convention. Only web-download* files count (browser-save, copy-image and share
 # routes are survival rows, not writer facts); byte-identical duplicates fold.
 #
-#   scripts/pub/writers.fish corpus/differential/04-generators
-#   scripts/pub/writers.fish corpus/differential/04-generators --md > writers.md
-#   scripts/pub/writers.fish corpus/differential/04-generators --png writers.png   # via freeze
-#   scripts/pub/writers.fish corpus/differential/04-generators --png writers.png --dark
-#   scripts/pub/writers.fish corpus/differential/04-generators --group generator   # one row per generator
+#   fish scripts/pub/writers.fish corpus/differential/04-generators
+#   fish scripts/pub/writers.fish corpus/differential/04-generators --md > writers.md
+#   fish scripts/pub/writers.fish corpus/differential/04-generators --png writers.png   # via freeze
+#   fish scripts/pub/writers.fish corpus/differential/04-generators --png writers.png --dark
+#   fish scripts/pub/writers.fish corpus/differential/04-generators --group generator   # one row per generator
 #
 # Columns: writer · files · manifest (state as evaluated today, or remote / none) ·
 # signer · declared term · ingredients · xmp field · evaluated (date).
@@ -41,7 +41,7 @@ while test $i -le (count $argv)
     set i (math $i + 1)
 end
 if test -z "$dir"; or not test -d "$dir"
-    echo "usage: scripts/pub/writers.fish <directory> [--md] [--png out.png]" >&2
+    echo "usage: fish scripts/pub/writers.fish <directory> [--md] [--png out.png]" >&2
     exit 2
 end
 if test -n "$png"; and not type -q freeze

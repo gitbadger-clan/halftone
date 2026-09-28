@@ -4,7 +4,7 @@
 # Same anchors everywhere; 0.27 gets them as the legacy [trust] string, 0.28 as
 # typed [[trust.anchors]] (0.27 does not read the typed form).
 #
-#   scripts/d011-evidence.fish [file]      # default: a Bing Image Creator download
+#   fish scripts/d011-evidence.fish [file]      # default: a Bing Image Creator download
 #
 # Override the binaries with C2PATOOL_027 / C2PATOOL_028 / HT.
 
