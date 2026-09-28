@@ -2,9 +2,9 @@
 # Rebuild the public differential strata (01 c2pa-rs fixtures, 02 ExifTool images,
 # 03 synthetic), re-collect their ground truth, and run the differential test.
 #
-#   scripts/refresh-public-strata.fish              # pin to upstream HEAD of today
-#   scripts/refresh-public-strata.fish --keep-pins  # reuse the shas in SOURCE.txt
-#   scripts/refresh-public-strata.fish --no-test    # stop after collecting
+#   fish scripts/refresh-public-strata.fish              # pin to upstream HEAD of today
+#   fish scripts/refresh-public-strata.fish --keep-pins  # reuse the shas in SOURCE.txt
+#   fish scripts/refresh-public-strata.fish --no-test    # stop after collecting
 #
 # Ground truth (expectations.json, cases.json) is what gets committed; the files are
 # not. After a run, `git diff corpus/differential` shows exactly what changed in

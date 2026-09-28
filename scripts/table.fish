@@ -3,9 +3,9 @@
 # survival table's first column set, produced from `ht inspect --batch --json` so
 # the numbers come from the same document the report will use.
 #
-#   scripts/table.fish corpus/differential/04-generators
-#   scripts/table.fish corpus/differential/04-generators --tsv > table.tsv
-#   scripts/table.fish some/dir --only manifest        # manifest columns only
+#   fish scripts/table.fish corpus/differential/04-generators
+#   fish scripts/table.fish corpus/differential/04-generators --tsv > table.tsv
+#   fish scripts/table.fish some/dir --only manifest        # manifest columns only
 #
 # Columns: file · manifest state (Trusted / Valid / Invalid / remote / -) · signer ·
 # declared digitalSourceType · ingredient count · actions · xmp (none / present /
@@ -31,7 +31,7 @@ while test $i -le (count $argv)
     set i (math $i + 1)
 end
 if test -z "$dir"; or not test -d "$dir"
-    echo "usage: scripts/table.fish <directory> [--tsv] [--only manifest,container]" >&2
+    echo "usage: fish scripts/table.fish <directory> [--tsv] [--only manifest,container]" >&2
     exit 2
 end
 for tool in ht jq

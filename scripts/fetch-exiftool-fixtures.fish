@@ -4,9 +4,9 @@
 # sniffed MIME type, never by extension: this set deliberately contains mislabeled
 # files. Writes SOURCE.txt with the commit and licence.
 #
-#   scripts/fetch-exiftool-fixtures.fish            # into corpus/differential/02-exiftool
-#   scripts/fetch-exiftool-fixtures.fish --refresh  # re-fetch; keeps expectations.json
-#   scripts/fetch-exiftool-fixtures.fish --commit <full-sha>   # pin upstream (CI); also $EXIFTOOL_FIXTURES_COMMIT
+#   fish scripts/fetch-exiftool-fixtures.fish            # into corpus/differential/02-exiftool
+#   fish scripts/fetch-exiftool-fixtures.fish --refresh  # re-fetch; keeps expectations.json
+#   fish scripts/fetch-exiftool-fixtures.fish --commit <full-sha>   # pin upstream (CI); also $EXIFTOOL_FIXTURES_COMMIT
 #
 # Requires: git ≥ 2.25 (sparse checkout), exiftool. Network: github.com only.
 # The corpus directory is not for redistribution: ExifTool is GPL-1+/Artistic and

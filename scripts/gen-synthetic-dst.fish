@@ -5,8 +5,8 @@
 # scripts/differential.py merges it into expectations.json as `halftone`, and the
 # differential test asserts it alongside the ExifTool/c2patool comparison.
 #
-#   scripts/gen-synthetic-dst.fish              # writes corpus/differential/03-synthetic
-#   scripts/gen-synthetic-dst.fish --refresh    # regenerate; keeps expectations.json
+#   fish scripts/gen-synthetic-dst.fish              # writes corpus/differential/03-synthetic
+#   fish scripts/gen-synthetic-dst.fish --refresh    # regenerate; keeps expectations.json
 #
 # Base images: corpus/differential/00-base/base.{jpg,png,webp}; created via
 # `uv run --with pillow --with numpy` if absent. Requires exiftool ≥ 12 and uv.

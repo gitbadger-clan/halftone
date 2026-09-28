@@ -3,9 +3,9 @@
 # corpus/differential/01-c2pa-rs. Only files Halftone can load are kept, decided by
 # sniffed MIME type, never by extension. Writes SOURCE.txt with the commit and licence.
 #
-#   scripts/fetch-c2pa-fixtures.fish            # into corpus/differential/01-c2pa-rs
-#   scripts/fetch-c2pa-fixtures.fish --refresh  # re-fetch; keeps expectations.json
-#   scripts/fetch-c2pa-fixtures.fish --commit <full-sha>   # pin upstream (CI); also $C2PA_FIXTURES_COMMIT
+#   fish scripts/fetch-c2pa-fixtures.fish            # into corpus/differential/01-c2pa-rs
+#   fish scripts/fetch-c2pa-fixtures.fish --refresh  # re-fetch; keeps expectations.json
+#   fish scripts/fetch-c2pa-fixtures.fish --commit <full-sha>   # pin upstream (CI); also $C2PA_FIXTURES_COMMIT
 #
 # Requires: git ≥ 2.25 (sparse checkout), exiftool. Network: github.com only.
 # The corpus directory is not for redistribution: c2pa-rs is Apache-2.0/MIT, but the
