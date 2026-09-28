@@ -1,0 +1,14 @@
+# Minimal repro for D-011: on c2pa 0.91, a legacy trust key set through
+# Settings::with_value is accepted and then ignored. Standalone crate (empty
+# [workspace]) so it builds outside the Halftone workspace; also the body of the
+# upstream issue.
+[package]
+name = "d011-repro"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+c2pa = "=0.91"
