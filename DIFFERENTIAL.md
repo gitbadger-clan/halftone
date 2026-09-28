@@ -211,3 +211,9 @@ tools; (2) stands and is reported as the reference reports it. The `Invalid`
 rationale now separates conformance failures from broken hashes or signatures.
 Open: whether a vendor-private EKU is conformant under the C2PA signer profile.
 Evidence: `scripts/d011-evidence.fish`.
+Addendum 2026-09-27 · `ocsp.notRevoked` moved buckets. c2pa 0.90.22 logs a
+verified stapled OCSP response as informational; 0.91.0 logs the same code as
+success (`crypto/cose/ocsp.rs`). Our comparison tooling read only failure and
+informational codes, so on 0.91 the code looked dropped on the 23 files
+carrying stapled responses. `scripts/ocsp-extract.py` confirms those responses
+pass every check 0.91 applies. Tooling now records all three buckets.
