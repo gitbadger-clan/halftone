@@ -68,6 +68,12 @@ most 3 HTTPS-only redirects (c2pa's default agent has no timeout and follows 10
 redirects to any scheme). A fetched manifest reports details.fetched_from and
 details.fetched_at, never remote_manifest_url, so the batch row keeps "remote
 reference, not fetched" and "fetched" apart.
+Update 2026-09-27. Measured, not only designed: `scripts/offline-docker.fish` at
+`75e33fb` ran ht over 236 files (all strata plus the C2PA v2.2 samples) in a
+container with no network interface, with every `connect()` traced under a
+positive control. Result: 0 attempts, and identical output with the network
+available. Linux build of this checkout; the macOS binary is not exercised.
+Log: `target/versiondiff/offline-20260927T192556Z-75e33fb.log`.
 
 ### D-005 · 2026-09-08 · Duplicate bytes under two names
 

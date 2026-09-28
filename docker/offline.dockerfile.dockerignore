@@ -1,0 +1,6 @@
+# Build context for docker/offline.dockerfile: sources only. The corpus is
+# private and large; it is mounted at run time, never baked into the image.
+.git
+target
+corpus
+scripts/pub/out
