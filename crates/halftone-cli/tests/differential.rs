@@ -501,10 +501,9 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         all.extend(dis);
     }
     println!(
-        "differential: {total_compared} of {total_files} files across {} corpora, {} disagreements\n{}",
+        "differential: {total_compared} of {total_files} files across {} corpora, {} disagreements",
         dirs.len(),
         all.len(),
-        render(&all)
     );
     if total_aged > 0 {
         println!(
