@@ -4,6 +4,7 @@
 #   fish scripts/pub/d011.fish                 # count + one-file block, printed
 #   fish scripts/pub/d011.fish --png           # also render both blocks with freeze
 #   fish scripts/pub/d011.fish --repro [--png] # also run tools/d011-repro (the with_value no-op)
+#   fish scripts/pub/d011.fish --file PATH     # use this file for the one-file block
 #
 # The bug is reproduced with the reference tool, not re-created from memory: c2patool
 # 0.28 (c2pa 0.91) runs every corpus file twice, once with the vendored anchors (what
@@ -17,11 +18,12 @@
 #   d011-repro.png   cargo test output of the minimal repro               (--repro --png)
 
 set -l root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
-cd $root
+set root (path resolve -- $root) # physical path, same form path resolve gives $pick
 set -l png 0
 set -l repro 0
 set -l c28 ~/.local/c2patool-0.28/bin/c2patool
 set -l ht ""
+set -l pick ""
 while set -q argv[1]
     switch $argv[1]
         case --png
@@ -34,12 +36,30 @@ while set -q argv[1]
         case --ht
             set ht $argv[2]
             set -e argv[1]
+        case --file
+            set pick $argv[2]
+            set -e argv[1]
         case '*'
             echo "unknown argument: $argv[1]" >&2
             exit 2
     end
     set -e argv[1]
 end
+if test -n "$pick"
+    test -f "$pick"; or begin
+        echo "--file: no such file: $pick" >&2
+        exit 2
+    end
+    set -l abs (path resolve -- $pick)
+    # The .tsv lists repo-relative paths. A file outside the repo stays absolute
+    # and gets the "not a Google-signed file that flipped" warning, which is correct.
+    if string match -q -- "$root/*" $abs
+        set pick (string replace -- "$root/" '' $abs)
+    else
+        set pick $abs
+    end
+end
+cd $root
 # Halftone is built from this checkout unless --ht is given: a stale `ht` on PATH
 # reproduced the very bug this post describes (2026-09-28).
 set -l commit (git rev-parse --short HEAD)
@@ -129,7 +149,19 @@ begin
 end >$b1
 
 # 3. one Google file, three commands (the flip, the fix, Halftone today)
-set -l g (tail -n +2 $tsv | awk -F'\t' '$2 ~ /Google/ && $3=="Trusted" && $4=="Valid" {print $1; exit}')
+# Default pick: a flipped Google-signed file whose name says Google. Aggregators
+# resell Google-signed images under their own names and sort first, and an
+# "aggregator-…" path under "# one Google-signed file" invites the wrong question
+# (2026-09-28). Falls back to any flipped Google-signed file.
+set -l flipped (tail -n +2 $tsv | awk -F'\t' '$2 ~ /Google/ && $3=="Trusted" && $4=="Valid" {print $1}')
+set -l g $pick
+if test -z "$g"
+    set -l named (string match -r '.*/google[^/]*$' -- $flipped)
+    set g $named[1]
+    test -n "$g"; or set g $flipped[1]
+else if not contains -- $g $flipped
+    echo "warning: --file $g is not a Google-signed file that flipped; the block's heading will be wrong" >&2
+end
 set -l b2 $tmp/file.txt
 if test -n "$g"
     begin
