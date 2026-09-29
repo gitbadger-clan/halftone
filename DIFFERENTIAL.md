@@ -202,6 +202,7 @@ Valid → Invalid with `signingCredential.invalid` + `claim.malformed`; c2patool
 Resolution: `trust.rs` keeps each bundle separate with its kind; `context()` sets
 typed anchors, and a unit test reads them back from the `Context`. The collector
 passes the same two lists as typed anchors (`--tsa-anchors`) and refuses a c2patool
+older than 0.28. The old keys are removed in 0.92 (scheduled mid-November).
 Bing (7 rows) fails two independent 0.91 checks. (1) `signingCredential.invalid`,
 "certificate missing required EKU": the signer carries only 1.3.6.1.4.1.311.76.59.1.9
 (MS C2PA Signing, critical). c2pa's built-in EKU allow-list includes it, but 0.91's
@@ -223,3 +224,16 @@ success (`crypto/cose/ocsp.rs`). Our comparison tooling read only failure and
 informational codes, so on 0.91 the code looked dropped on the 23 files
 carrying stapled responses. `scripts/ocsp-extract.py` confirms those responses
 pass every check 0.91 applies. Tooling now records all three buckets.
+Addendum 2026-09-29 · signer EKU is conformant (closes "Open" above). Bing
+manifests declare `specVersion` 2.4.0. The leaf carries one critical EKU,
+1.3.6.1.4.1.311.76.59.1.9; Key Usage is critical with digitalSignature and
+nonRepudiation; Basic Constraints `CA:FALSE`. Under C2PA 2.4 this conforms:
+§14.5.1.1 requires a non-empty EKU and digitalSignature, forbids
+anyExtendedKeyUsage, and names no required claim-signing OID; §14.5.1.2 allows at
+most one purpose. The certificate lacks c2pa-kp-claimSigning, so it is outside the
+C2PA Trust List, which covers only that EKU since 2.2 (§14.4.1). It reaches
+Trusted only through an anchor configured for Microsoft's OID, so Valid is the
+correct ceiling with our vendored bundles. The declared 2.4.0 also makes §18.10.2
+(`"value": bstr`) the schema (2) is judged against. Our EKU config is a flat list
+applied to every anchor, broader than the per-anchor association in §14.5.1.2.
+Checked on 7/7 Bing files.
