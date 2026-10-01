@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>",
-  "collected_at": "2026-10-01T15:53:20Z",
+  "collected_at": "2026-10-01T19:53:12Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
@@ -341,7 +341,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
-          "signingCredential.invalid",
+          "signingCredential.expired",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -462,7 +462,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
-          "signingCredential.invalid",
+          "signingCredential.expired",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -497,7 +497,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
-          "signingCredential.invalid",
+          "signingCredential.expired",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -567,7 +567,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
-          "signingCredential.invalid",
+          "signingCredential.expired",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
