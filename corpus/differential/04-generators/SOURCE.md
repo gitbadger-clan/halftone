@@ -55,6 +55,8 @@ For `copy-image`, the receiving application is the writer: name it below.
   image can be saved and copied both from the thumbnail (`-thumb`) and from the
   opened full-size view (`-open`), and the two differ in size. `copy-image` pasted
   into Preview, saved as PNG.
+  - `web-download` from thumbnail and from opened view give byte-identical files
+  (p2, sha256 <first 8>…<last 8>); opened-view copy not kept.
 - Finding: the download button produces a JPEG; the page (both contexts) serves a
   PNG render. Which is the stored original: see `ImageSize` / `FileSize` in
   `expectations.json` and the hash comparison in the log.
@@ -77,18 +79,23 @@ For `copy-image`, the receiving application is the writer: name it below.
 
 ## Adobe Firefly — Image 5 and Image 4 Ultra (firefly.adobe.com)
 
-- Date: 2026-09-09. Plan: free tier, 4 generations per day, which is why p2–p5
-  arrive over several days. Default aspect: 4:3, landscape. Default model on this
-  tier: Firefly Image 5; Image 4 Ultra selectable, used for one p1 as a second
-  variant.
+- Date: 2026-09-09 to 2026-09-11 (Adobe models), 2026-10-01 (opened-view p1,
+  remote-manifest pass, partner models). Plan: free tier, 4 generations per day,
+  which is why prompts arrive over several days. Default aspect: 4:3, landscape.
+  Default model on this tier: Firefly Image 5; Image 4 Ultra selectable, used as
+  a second variant for p1–p2.
 - Browser context actions are not available: right-click Save Image and Copy Image
   are disabled on the canvas. Recorded as `browser-save` / `copy-image`: not offered.
   Adobe funnels every exit through its own controls.
 - Paths offered:
   - `web-download-thumb`: download control on the result card. Image 5: PNG-only
-    dialog, 2304×1792. Image 4 Ultra: JPEG, 2304×1792, no format dialog.
-  - `web-download-open`: download control in the opened full-size view. Not yet
-    exercised on an un-upscaled image (see Pending).
+    dialog, 2304×1792. Image 4 Ultra: JPEG, 2304×1792, no format dialog. Image 5
+    p3–p5 were taken by the same card control but named `web-download`; renamed
+    once the same-day check (Pending) shows whether the suffix carries information.
+  - `web-download-open`: download control in the opened full-size view. Image 5
+    p1 (2026-10-01): PNG 2304×1792, 1,146,991 B vs 4,397,672 B for the card
+    download (2026-09-09); sha256 f6b1d002… vs f5e87bcd…; 27.4% of pixels differ
+    (ImageMagick AE, no fuzz). Route and date are confounded (see Pending).
   - Explicit Upscale (variant `firefly-image-5-upscaled`): the UI's Upscale action
     on p1, downloaded from the opened view. JPEG, 4608×3584, 2× the native size;
     the upscale path switches the output format from PNG to JPEG.
@@ -96,21 +103,58 @@ For `copy-image`, the receiving application is the writer: name it below.
     browser clipboard), from the opened view and from the card. Pasted into macOS
     Preview, saved as PNG at 2304×1792; the 5 MB PNGs are a clipboard bitmap
     re-encoded by Preview, so Preview is the writer of those files.
-- Finding: native card download is PNG 2304×1792; Upscale output is JPEG
-  4608×3584. Compare the two manifests: whether the upscaled file records an
-  upscale action with the original as ingredient, or carries a fresh manifest.
-- Files so far (5): Image 5 p1 via download-thumb (PNG), upscaled via download-open
-  (JPEG), share-copy (PNG); Image 4 Ultra p1 via download-thumb (JPEG),
-  share-copy-thumb (PNG).
-- Pending: p2–p5 Image 5 via card download (one per day); p1 via opened-view
-  download without upscaling, hashed against the card download; `edit-photo`
-  e1–e3 via Generative Fill once `00-base/photo_*.jpg` exist.
-- Not offered / not tested: partner models in the same UI (GPT Image, Flux) —
-  one p1 from one of them would show Adobe signing another provider's output;
-  API (Firefly Services) not on this tier.
-- Expectation to check first: manifest `Trusted` on the vendored list (Adobe's
-  signing certificate is in the C2PA trust list), and whether an IPTC
-  `DigitalSourceType` also appears in XMP alongside the manifest.
+- Finding (formats): native download is PNG 2304×1792 (Image 5) or JPEG (Ultra),
+  format fixed per model; Upscale output is JPEG 4608×3584.
+- Finding (credentials): Adobe-model downloads (Image 5 PNG, Image 4 Ultra JPEG)
+  carry no embedded manifest. XMP holds only a remote-manifest reference at
+  cai-manifests.adobe.com and no IPTC DigitalSourceType. Each download gets its
+  own manifest (card p1 urn-c2pa-db34c8cc…, opened-view p1 urn-c2pa-063e1335…).
+  Fetched 2026-10-01, both are from Adobe Firefly, signed by Adobe Inc.,
+  cryptographically valid, content unchanged, trainedAlgorithmicMedia, but the
+  signer does not chain to the vendored C2PA trust anchors (<which list it is on,
+  once checked>). Offline, an Adobe-model file verifies nothing. The earlier
+  expectation that Adobe's certificate is in the vendored trust list did not hold.
+- Files (11): Image 5 p1–p5 card download (p1–p2 `-thumb`, p3–p5 unsuffixed),
+  p1 opened-view download, p1 upscaled via download-open, p1 share-copy; Image 4
+  Ultra p1–p2 card download, p1 share-copy-thumb.
+- Pending: same-day card re-download of p1 to separate route from date (outside
+  the corpus until it's clear whether it's a new row); TrustMark decode of the
+  card and opened-view p1 (hypothesis: per-download watermark carrying the
+  manifest pointer); which trust list Adobe's signer is on; compare the upscaled
+  and native manifests (upscale action with the original as ingredient, or a
+  fresh manifest); `edit-photo` e1–e3 via Generative Fill once
+  `00-base/photo_*.jpg` exist.
+- Not offered: API (Firefly Services) not on this tier.
+
+### Partner models (collected 2026-10-01)
+
+- Picker lists Adobe models ("Commercially safe": Firefly Image 5, 4 Ultra, 4, 3)
+  and partner models ("Models created by others"). Partner models offered:
+  Gemini 3.1 (Nano Banana 2), GPT Image 2.5 Flare, GPT Image 2, FLUX.1 Kontext
+  [max] (no crown); GPT Image 2.5 Sunburst, GPT Image 1.5, Gemini 3 (Nano Banana
+  Pro), FLUX.2 [pro], GPT Image 1, FLUX1.1 [pro] Ultra Raw (premium).
+- Paths: generation view → Download, named `web-download`. Browser saves as
+  `Firefly_<model label>_<prompt prefix> <number>.png`.
+- `gpt-image-2.5-flare` p1: PNG, 1,975,956 B. Active C2PA manifest from
+  "OpenAI Media Service API", signed by OpenAI OpCo, LLC; chains to a trusted
+  anchor; content hash matches; digitalSourceType trainedAlgorithmicMedia.
+  Bare IHDR/IDAT/IEND + caBX chunk layout. No XMP.
+- `nano-banana-2` p1 (UI label "Gemini 3.1 (Nano Banana 2)"; download names it
+  "Gemini Flash"): PNG, 1,803,493 B. Active C2PA manifest from "Google C2PA Core
+  Generator Library", signed by Google LLC; trusted anchor; hash matches;
+  trainedAlgorithmicMedia. XMP DigitalSourceType trainedAlgorithmicMedia also
+  present (PNG with text chunks).
+- Finding: Firefly delivers partner outputs with the vendor's own manifest
+  active and the content hash intact: Adobe neither re-encodes nor re-signs.
+  c2patool: no Adobe manifest anywhere in the store; issuers are OpenAI OpCo,
+  LLC and Google LLC only. Both files match the vendors' API-path pattern (the
+  Google file carries manifest + XMP like the aggregator row in D-006),
+  consistent with Firefly calling the vendor APIs and passing results through.
+  Only the download file name identifies Firefly. The earlier expectation that a
+  partner p1 "would show Adobe signing another provider's output" did not hold.
+  Contrast: offline, a partner image verifies against trusted anchors; an
+  Adobe-model image does not.
+- Files (2): `gpt-image-2.5-flare` p1, `nano-banana-2` p1 `web-download`.
 
 ## Meta AI — meta.ai (web), modes "instant" and "thinking"
 
@@ -140,9 +184,9 @@ For `copy-image`, the receiving application is the writer: name it below.
 - Files (16): instant p1 via all nine paths; instant p2–p5 via
   `web-download-thumb`; thinking p1 via web-download-thumb, share-download-thumb,
   browser-save-thumb, copy-image-thumb.
-- Pending: the Meta AI app on the Fold — in-app save (`app-save`) and the share
-  sheet (`share`); Meta AI inside WhatsApp, saved from the chat (`whatsapp-save`);
-  `edit-photo` e1–e3 once base photos exist.
+- Pending: Meta AI inside WhatsApp, saved from the chat (`whatsapp-save`);
+  `edit-photo` e1–e3 once base photos exist. The app moved to its own section
+  below (collected on the Pixel 5, not the Fold).
 - Expectation to check: Meta's stated policy is an IPTC `DigitalSourceType` in
   XMP; whether a manifest is present at all; whether the Instagram thumbnail kept
   either.
@@ -204,6 +248,60 @@ For `copy-image`, the receiving application is the writer: name it below.
   signs nothing. Browser-save WebP: nothing. Copy-image: Preview's XMP, no field.
 - Pending: upscale if offered; edit-photo via Ideogram's canvas/inpaint once base
   photos exist.
+
+### Meta AI — Android app (collected 2026-09-30)
+- Device: Pixel 5, Android 14; package com.facebook.stella 290.1.0.42.163; account tier free
+- Default mode in app: instant; model label shown: instant
+- Routes offered: <exact labels>; clipboard routes not collected (receiving app re-encodes)
+- Transfer: `adb pull` from shared storage, sha256 checked on device and host.
+  Clipboard routes not collected: on Android the app you paste into re-encodes
+  the bitmap, so the row would describe the receiving app.
+- Paths offered: download button
+  - `app-save-open`: save control in the opened view. Lands in `Download/` under
+    a CDN-style name `828912701_2030331367622725_5122853495433315818_n.webp`.
+- Finding: the `.webp` file is JPEG bytes (161,244 B, progressive, 4:2:0,
+  optimised Huffman). XMP `DigitalSourceType` = `trainedAlgorithmicMedia`
+  present; no C2PA manifest. Same marking as the web downloads; `jpeg_double`
+  is Inconclusive because Halftone doesn't yet read progressive JPEGs.
+- `share`: Share → Android system share sheet. The app shares text/plain
+  (an 89-character link), not the image; Files by Google receives text and
+  saves nothing. No file produced. The link leads to the web share page,
+  already covered by the web section's `share-*` rows.
+- `copy-image`: Copy puts an image on the clipboard (the app's own input
+    rejects the paste as an image; `dumpsys clipboard` is not readable by the
+    shell on Android 14). Not collected: no byte-exact way to read it, and any
+    paste target would be the writer.
+- Files (6): instant p1–p5 `app-save-open`; thinking p1 `app-save-open`.
+  p3–p5 collected for completeness, though the rule only requires them when
+  the app behaves differently from the web.
+- Finding: all five JPEG under a `.webp` name, XMP present, no manifest;
+  quantization tables identical. Only the save control
+  produces a file: Share sends a link, Copy puts an image only another app can read.
+
+## Meta AI — inside WhatsApp (Android, Pixel 9 Pro Fold)
+
+- Date: 2026-10-01. Device: Pixel 9 Pro Fold, Android 17. WhatsApp 2.26.37.73.
+  Region: CH. adb over wireless debugging.
+- Settings: Enter is send off; Media visibility on; auto-download Wi-Fi all
+  media, mobile data photos, roaming none; auto-download quality Auto;
+  media upload quality Standard.
+- Image generation: offered.
+- Paths:
+  - `whatsapp-autosave`: not produced. Despite media visibility on and Wi-Fi
+    auto-download "All media", the Meta AI image was not written to shared
+    storage on arrival.
+  - `whatsapp-save`: open image → ⋮ → Save. Lands as
+    `WhatsApp Images/IMG-20261001-WA8214.jpg`.
+  - `whatsapp-share-files`: open image → Share → Files by Google → Save to
+    Downloads. Lands as `Download/image.jpg` (generic name). Byte-identical to
+    `whatsapp-save` (sha256 c389b240…276155e); file not kept.
+- Finding: JPEG, 1,030,259 B, standard libjpeg tables at Q100, 4:2:0, baseline.
+  No XMP DigitalSourceType and no C2PA: the trainedAlgorithmicMedia field that
+  every web and app save carries is gone. Both file routes deliver the same
+  bytes, so the re-encode happens before either (bot send pipeline or WhatsApp
+  receive/download; not distinguishable here). Auto-save never wrote the image
+  despite the settings. Invisible watermarking, if Meta applies any, is not
+  readable by Halftone and untested here.
 
 ## Midjourney
 - Not tested: paid-only as of 2026-09-09, no subscription. Row shows "not tested".

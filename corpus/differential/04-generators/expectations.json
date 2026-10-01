@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
-  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-09-26T20:34:40Z",
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>",
+  "collected_at": "2026-10-01T15:53:20Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
@@ -20,7 +20,7 @@
       "sha256": "d3fea3f04c1da0e9ea2bc62fda15fb1ce9ce0c438a80387f75b2a92452bbc7e8",
       "size_bytes": 6053385
     },
-    "adobe-firefly__firefly-image-4-ultra__web-download-thumb__p1__1.jpg": {
+    "adobe-firefly__firefly-image-4-ultra__web-download__p1__1.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-38e41b3e-433d-4f05-a6a8-50b1d214dba4-adobe"
@@ -37,7 +37,7 @@
       "sha256": "d97e26dfa442d9660702792f19b2577bb16b776072593be5b99b529127002b71",
       "size_bytes": 1111847
     },
-    "adobe-firefly__firefly-image-4-ultra__web-download-thumb__p2__2.jpg": {
+    "adobe-firefly__firefly-image-4-ultra__web-download__p2__2.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-3892f470-88e0-4760-bfb5-1213a5b2aa48-adobe"
@@ -54,7 +54,7 @@
       "sha256": "6848348e0e388bfeaee8ec29d13dd915628964dc0b757af34f89d99a880cf4b4",
       "size_bytes": 1529330
     },
-    "adobe-firefly__firefly-image-5-upscaled__web-download-open__p1__1.jpg": {
+    "adobe-firefly__firefly-image-5-upscaled__web-download__p1__1.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-ce43a138-7bec-4ecd-92cb-e986d4d6f647-adobe"
@@ -87,7 +87,24 @@
       "sha256": "4bbc62a9e747e115948c910cc9b664dedff68a6f70a6b0fbfe94a64b7ecf9841",
       "size_bytes": 5704704
     },
-    "adobe-firefly__firefly-image-5__web-download-thumb__p1__1.png": {
+    "adobe-firefly__firefly-image-5__web-download-redownload__p1__1.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-063e1335-3e83-40ed-9a1e-07ad73e047c7-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "f6b1d002589edcb875ca8cb3e70c23424cba1942421b0c962b1ca7a06e049dbb",
+      "size_bytes": 1146991
+    },
+    "adobe-firefly__firefly-image-5__web-download__p1__1.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-db34c8cc-afe7-44a6-9de0-492b2a2c99ea-adobe"
@@ -104,7 +121,7 @@
       "sha256": "f5e87bcd6f4ed8298602a56e2bd0c508e37a94931df2c166feab27c066ae2db6",
       "size_bytes": 4397672
     },
-    "adobe-firefly__firefly-image-5__web-download-thumb__p2__2.png": {
+    "adobe-firefly__firefly-image-5__web-download__p2__2.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-078d8888-ded8-456b-af60-656fe0718aa7-adobe"
@@ -171,6 +188,73 @@
       },
       "sha256": "0bd5663eb4956de1f11ac761ed730b08e0dfd393fb1544250b07b13797cdf3ab",
       "size_bytes": 424261
+    },
+    "adobe-firefly__gpt-image-2.5-flare__web-download__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "OpenAI OpCo, LLC",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.invalid"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "8c277e0262fd140947620bd5f5715c6222d686e9f05e1e444714838850755f1e",
+      "size_bytes": 1975956
+    },
+    "adobe-firefly__nano-banana-2__web-download__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 989372057:989372057",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "bee090b577ec79ff6adf75c43dd25921cba1f69d5797fb7eb35efb25d99c5ee4",
+      "size_bytes": 1803493
     },
     "aggregator-zimage__base__browser-save__p1__1.webp": {
       "c2patool": {
@@ -257,6 +341,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.invalid",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -291,6 +376,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.invalid",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -306,6 +392,22 @@
       },
       "sha256": "ab47cc0a70aaf3232a81788c827c5c324dc88e755a5b60d9b39c10a9f9bb65ac",
       "size_bytes": 398421
+    },
+    "bing-image__mai-image-2.5-flash__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "3d84a292feb7c3180d16e5d1b450d4ab7218b6af35b9b9dbef495122b0cf8f53",
+      "size_bytes": 1240389
     },
     "bing-image__mai-image-2.5-flash__web-download__p1__1.jpg": {
       "c2patool": {
@@ -325,6 +427,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.invalid",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -359,6 +462,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.invalid",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -393,6 +497,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.invalid",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -427,6 +532,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.invalid",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -461,6 +567,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.invalid",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -965,37 +1072,6 @@
       "sha256": "60c0dffc43ad10624814dc2e119f5dc7d4a5930930b81defd7e30fb860f0fdc9",
       "size_bytes": 1981373
     },
-    "google-flow__nano-banana-2__web-download-open__p2__2.jpeg": {
-      "c2patool": {
-        "assertions": [
-          "c2pa.actions.v2"
-        ],
-        "claim_generator": "Google C2PA Core Generator Library 977676112:977676112",
-        "claim_version": 2,
-        "digital_source_type": [
-          "trainedAlgorithmicMedia"
-        ],
-        "digital_source_type_raw": [
-          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
-        ],
-        "issuer": "Google LLC",
-        "present": true,
-        "validation_codes": [],
-        "validation_state": "Trusted"
-      },
-      "exiftool": {
-        "digital_source_type": [],
-        "digital_source_type_raw": [],
-        "iim_originating_program": null,
-        "iim_program_version": null,
-        "mime": "image/jpeg",
-        "xmp_present": false,
-        "xmp_tag_count": 0
-      },
-      "sha256": "e89a209aa0a960145d998e0c15756504404fa1d1aac52e6f2c5e44013f1c3ed8",
-      "size_bytes": 1086943
-    },
     "google-flow__nano-banana-2__web-download-thumb__p1__1.jpeg": {
       "c2patool": {
         "assertions": [
@@ -1462,6 +1538,138 @@
       "sha256": "d40f53d0671269d775e239ca1717244796c9c07c69a169218c5bae834b0045d6",
       "size_bytes": 494415
     },
+    "meta-ai__base__whatsapp-save__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "c389b2402bc131636ee043f2f7fb02ce63bab46fc1ec30d250579260a276155e",
+      "size_bytes": 1030259
+    },
+    "meta-ai__base__whatsapp-save__p5__5.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "64017c0f5876f4b44e35f50ac00cb3fedce6258d08af54f82ff1e21eea4690ee",
+      "size_bytes": 387197
+    },
+    "meta-ai__instant__app-save-open__p1__1.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "b11ec91d761dd53607e1f9dd510c77b84f7174a8d6384b2ba60b6923dc63a314",
+      "size_bytes": 161244
+    },
+    "meta-ai__instant__app-save-open__p2__2.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "1e4a8b791016c14346a44ebd5f534fc85180593fea82a1917b2e4668d82d7d7c",
+      "size_bytes": 503704
+    },
+    "meta-ai__instant__app-save-open__p3__3.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "3ed37e2c4219293321ae3f085d239806c743b3092b8e9ae30515f187513b023c",
+      "size_bytes": 53971
+    },
+    "meta-ai__instant__app-save-open__p4__4.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "d164fcc3736b9e08501c44974b66a40eebb215d77f1e2aac1ace6131eab5707b",
+      "size_bytes": 284636
+    },
+    "meta-ai__instant__app-save-open__p5__5.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "49d82b1bd4e8e819b3fee45745b87e8b8ccd609b6628391be256b8fef18dd2a0",
+      "size_bytes": 78311
+    },
     "meta-ai__instant__browser-save-open__p1__1.webp": {
       "c2patool": {
         "present": false
@@ -1697,6 +1905,26 @@
       },
       "sha256": "2030c72d00e1338a0470302e6e6a925b06d767e20dda881a904b6ee3654fdf3d",
       "size_bytes": 70934
+    },
+    "meta-ai__thinking__app-save-open__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "b46a074e8fa70b890af6647d8d2332ccd037ef65c55873cc2708668a0dea1166",
+      "size_bytes": 165024
     },
     "meta-ai__thinking__browser-save-thumb__p1__1.webp": {
       "c2patool": {
@@ -1990,6 +2218,6 @@
     "exiftool": "13.55"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
-  "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
-  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem"
+  "trust_config": null,
+  "tsa_anchors": null
 }
