@@ -63,3 +63,10 @@ all = "warn"
 lto = "thin"
 codegen-units = 1
 strip = true
+
+[profile.dev.package.image]
+opt-level = 3
+[profile.dev.package.png]
+opt-level = 3
+[profile.dev.package.zune-jpeg]
+opt-level = 3
