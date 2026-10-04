@@ -218,22 +218,104 @@ tools; (2) stands and is reported as the reference reports it. The `Invalid`
 rationale now separates conformance failures from broken hashes or signatures.
 Open: whether a vendor-private EKU is conformant under the C2PA signer profile.
 Evidence: `scripts/d011-evidence.fish`.
+
 Addendum 2026-09-27 · `ocsp.notRevoked` moved buckets. c2pa 0.90.22 logs a
 verified stapled OCSP response as informational; 0.91.0 logs the same code as
 success (`crypto/cose/ocsp.rs`). Our comparison tooling read only failure and
 informational codes, so on 0.91 the code looked dropped on the 23 files
 carrying stapled responses. `scripts/ocsp-extract.py` confirms those responses
 pass every check 0.91 applies. Tooling now records all three buckets.
-Addendum 2026-09-29 · signer EKU is conformant (closes "Open" above). Bing
-manifests declare `specVersion` 2.4.0. The leaf carries one critical EKU,
-1.3.6.1.4.1.311.76.59.1.9; Key Usage is critical with digitalSignature and
-nonRepudiation; Basic Constraints `CA:FALSE`. Under C2PA 2.4 this conforms:
-§14.5.1.1 requires a non-empty EKU and digitalSignature, forbids
-anyExtendedKeyUsage, and names no required claim-signing OID; §14.5.1.2 allows at
-most one purpose. The certificate lacks c2pa-kp-claimSigning, so it is outside the
-C2PA Trust List, which covers only that EKU since 2.2 (§14.4.1). It reaches
-Trusted only through an anchor configured for Microsoft's OID, so Valid is the
-correct ceiling with our vendored bundles. The declared 2.4.0 also makes §18.10.2
-(`"value": bstr`) the schema (2) is judged against. Our EKU config is a flat list
-applied to every anchor, broader than the per-anchor association in §14.5.1.2.
-Checked on 7/7 Bing files.
+
+Addendum 2026-09-29 · Bing's signing certificate conforms to C2PA 2.4. Closes the
+"Open" question above: is a vendor-private EKU conformant? Check (1) above,
+`signingCredential.invalid` "certificate missing required EKU", came from 0.91
+dropping c2pa's built-in EKU list, and Halftone now passes that list explicitly.
+This addendum records whether Microsoft's certificate is acceptable under the spec
+itself, independent of any library default. All seven Bing manifests declare
+`specVersion` 2.4.0 [wrong: that is the validator's version; see 2026-10-02]. The
+leaf carries one critical EKU, 1.3.6.1.4.1.311.76.59.1.9 (MS C2PA Signing); Key
+Usage is critical with digitalSignature and nonRepudiation; Basic Constraints
+`CA:FALSE`. Under C2PA 2.4 this conforms: §14.5.1.1 requires a non-empty EKU and
+digitalSignature, forbids anyExtendedKeyUsage, and names no required claim-signing
+OID; §14.5.1.2 allows at most one purpose. The certificate lacks
+c2pa-kp-claimSigning, so it is outside the C2PA Trust List, which covers only that
+EKU since 2.2 (§14.4.1). It reaches `Trusted` only through an anchor configured for
+Microsoft's OID, so `Valid` is the correct ceiling with our vendored bundles. Our
+EKU config is a flat list applied to every anchor, broader than the per-anchor
+association in §14.5.1.2. Checked on 7/7 Bing files (`c2patool --detailed` for the
+spec version; `c2patool --certs` into `openssl x509 -ext` for the certificate).
+
+Addendum 2026-09-30 · Bing's `claim.malformed` is a misspelled unit in Microsoft's
+soft-binding assertion; the #2689 explanation in check (2) above is wrong. Check
+(2) is the second of Bing's two 0.91 failures: `claim.malformed`, "soft binding
+assertion could not be decoded", on all seven Bing files. This entry named
+Microsoft's text-typed `value` (c2pa-rs #2689) as the likely cause, unconfirmed
+because c2pa discards the decode error. `tools/d011-softbinding` extracts the raw
+assertion bytes, runs the same decode c2pa does (`SoftBinding::from_assertion`, i.e.
+`c2pa_cbor::from_slice`), and prints the error `Claim::verify_soft_binding_alg`
+throws away: `blocks[0].scope.region.region[0].shape.unit`: unknown variant
+`percentage`, expected `pixel` or `percent`. Microsoft scopes the binding to the
+whole image (rectangle, origin 0,0, 100×100) with unit "percentage"; the C2PA 2.4
+region-of-interest CDDL allows only "pixel" and "percent", and the manifest
+declares 2.4.0 [wrong: Bing declares no version; see 2026-10-02], so the assertion
+is non-conformant against the version it claims and c2pa is right to reject it.
+The text-typed `value` is not the cause: c2pa_cbor passes text to serde_bytes,
+which accepts it, and re-encoding the assertion with `value` as a byte string fails
+with the same error. The failure is new in 0.91 because 0.91 is the first version
+to decode soft-binding assertions during validation, not because a field was
+retyped. Checked on 7/7 Bing files.
+
+Addendum 2026-10-02 · Correction: Bing declares no spec version. The 2.4.0 cited
+in the 2026-09-29 and 2026-09-30 addenda is `validation_results.specVersion`,
+c2patool's own version, not a field of the manifest. OpenAI's claim, by contrast,
+declares 2.2.0 at `manifests["urn:c2pa:2b45b18d-1a6d-4c3a-9c7f-fbb47bf22a43"].claim.specVersion` and in its
+claim_generator_info, while its validation_results also say 2.4.0. Bing's manifest
+is claim v2 with fields alg, claim_generator_info, claim_version,
+created_assertions, gathered_assertions, instanceID, signature, and no
+specVersion; generator "Microsoft 1.0" built with c2pa-rs 0.84.1; assertions
+c2pa.actions.v2, c2pa.hash.data, c2pa.soft-binding. Read with a jq path query over
+`c2patool --detailed`, which shows where each version string sits;
+`scripts/d011-evidence.fish` now reads the claim's own field and prints "none
+declared" when it is absent.
+Soft binding: in c2pa-rs 0.84.1, the library Microsoft built with, the
+region-of-interest unit enum has two variants, `Pixel` and `Percent`
+(`src/assertions/region_of_interest.rs`); "percentage" appears only in a doc
+comment ("Use percentage."). Microsoft's "percentage" therefore does not come from
+its own toolkit's types, provided 0.84.1 serialises `Percent` as "percent" as 0.91
+does (open item d). The 2026-09-30 conclusion that c2pa is right to reject the
+assertion rests on that, not on a declared version.
+Open: (a) which rules govern a claim v2 manifest with no declared version (the
+Versioning chapter); (b) whether any 2.x version's region-of-interest CDDL allows
+"percentage"; (c) whether Bing's certificate meets every 2.x signer profile, which
+the 2026-09-29 conclusion "conforms under 2.4" assumed; (d) the serialised names
+of 0.84.1's unit variants.
+
+Addendum 2026-10-02 · Check (1) again, for OpenAI, from an incomplete
+re-collection; headers must now carry the vendored EKU policy. On 2026-10-01
+04-generators was re-collected with `--trust-anchors` only, without
+`--tsa-anchors` and `--trust-config`. c2patool 0.28.0 then reported the first
+OpenAI-signed file in the corpus
+(`adobe-firefly__gpt-image-2.5-flare__web-download__p1__1.png`, claim v2,
+"OpenAI Media Service API", declaring specVersion 2.2.0, passed through by Firefly
+unchanged) as `Invalid`, `signingCredential.invalid`, "certificate missing
+required EKU"; Halftone, with the vendored policy, reported `Trusted`. Same
+mechanism as check (1): without `trust.trust_config`, 0.91 accepts only
+emailProtection, timeStamping and OCSPSigning, and the leaf carries neither. The
+leaf (CN=OpenAI Media Service, O=OpenAI OpCo, LLC; valid 2026-03-23 to
+2027-03-24) has Basic Constraints critical `CA:FALSE`, Key Usage critical
+digitalSignature and nonRepudiation, and two EKUs: 1.3.6.1.4.1.62558.2.1
+(c2pa-kp-claimSigning) and 1.3.6.1.5.5.7.3.36 (id-kp-documentSigning), both in
+`trust/C2PA-EKU-CONFIG.cfg`. Halftone on c2pa 0.91.1 (scratch branch) also says
+`Trusted`, so the patch version is not involved. Unlike Bing, the certificate
+carries c2pa-kp-claimSigning, so it is within the C2PA Trust List's scope.
+Resolution: 04 re-collected 2026-10-02 with all three trust inputs; the OpenAI
+file reads `Trusted` in both tools and 214/214 files agree. Only 04 was affected;
+01–03 (collected 2026-09-26) already carried the EKU file. `differential.rs` now
+reports a header row when c2patool ran without `trust_config` set to
+`crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg`, or with manifest anchors but
+without the TSA list (`header_disagreements`, unit tests in `header_rule`). The
+OpenAI file stays as the regression guard.
+Open: whether two EKUs conform to the C2PA 2.2 signer profile, the version the
+claim declares. The 2026-09-29 addendum reads 2.4 §14.5.1.2 as "at most one
+purpose"; whether that binds the certificate or the validator's per-anchor
+association is to be checked against the 2.2 text.
