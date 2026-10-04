@@ -88,14 +88,14 @@ For `copy-image`, the receiving application is the writer: name it below.
   are disabled on the canvas. Recorded as `browser-save` / `copy-image`: not offered.
   Adobe funnels every exit through its own controls.
 - Paths offered:
-  - `web-download-thumb`: download control on the result card. Image 5: PNG-only
-    dialog, 2304×1792. Image 4 Ultra: JPEG, 2304×1792, no format dialog. Image 5
-    p3–p5 were taken by the same card control but named `web-download`; renamed
-    once the same-day check (Pending) shows whether the suffix carries information.
-  - `web-download-open`: download control in the opened full-size view. Image 5
-    p1 (2026-10-01): PNG 2304×1792, 1,146,991 B vs 4,397,672 B for the card
-    download (2026-09-09); sha256 f6b1d002… vs f5e87bcd…; 27.4% of pixels differ
-    (ImageMagick AE, no fuzz). Route and date are confounded (see Pending).
+  - `web-download-thumb` / `web-download-open`: card and opened-view downloads of
+    the same image have identical pixels and differ in 32 bytes, the UUID of the
+    `dcterms:provenance` remote-manifest URN (p1 variant 2, 2026-10-02:
+    urn-c2pa-c67e06a8… card, urn-c2pa-d7fe5531… opened view). The card returns the
+    stored file with the same URN every time (upscaled p1: byte-identical on
+    2026-09-09, 2026-10-01 and 2026-10-02; variant 2: twice on 2026-10-02). The
+    opened view mints a new remote manifest per download. Context suffix restored
+    for all Firefly Adobe-model downloads.
   - Explicit Upscale (variant `firefly-image-5-upscaled`): the UI's Upscale action
     on p1, downloaded from the opened view. JPEG, 4608×3584, 2× the native size;
     the upscale path switches the output format from PNG to JPEG.
@@ -208,24 +208,42 @@ For `copy-image`, the receiving application is the writer: name it below.
   Eraser on a segment of p3; `magic-edit` = Magic Edit (generative inpaint) on p2.
   Expand (outpaint): not found in this UI on 2026-09-10. Survival rows for
   "generated → edited in Canva → exported", separate from e1–e3.
-- Finding: C2PA manifest signed by Canva (c2pa-rs 0.89.3), `Valid` (signer not on
-  the vendored 2026-08-14 list). One assertion, `c2pa.actions.v2`, one action
-  `c2pa.created` declaring `compositeWithTrainedAlgorithmicMedia`; zero
-  ingredients. The same manifest shape on plain generations, on the editor
-  export, and on the edited variants: Canva's edits are not recorded as actions
-  and the generated image is not an ingredient. The manifest asserts "created in
-  Canva with generative AI" and carries no history. No IPTC field in XMP.
+- Finding: C2PA manifest signed by Canva (c2pa-rs 0.89.3), `Valid` on 2026-09-10
+  (signer not on the vendored 2026-08-14 list); `Invalid` once the certificate
+  expired 2026-09-17 (observed 2026-09-20) with no `c2pa.time-stamp` (see D-010).
+  No IPTC field in XMP.
+- 2026-10-03: Manifest shape confirmed on all 11 signed Canva files (plain p1–p5,
+  editor, JPG, larger, bg-removed, bg-removed-erase, magic-edit) with
+  `c2patool --detailed`: one `c2pa.actions.v2` with one `c2pa.created`,
+  `compositeWithTrainedAlgorithmicMedia`, no parameters, zero ingredients,
+  `allActionsIncluded` omitted. The free-tier p1 carries no claim. Structurally
+  conformant with C2PA 2.4 §18.15.2: `c2pa.created` first and a
+  `digitalSourceType` recorded; ingredients are required only for
+  `c2pa.opened`/`c2pa.placed` (§18.15.4.7) and optional for `c2pa.created`
+  (§18.15.4.5). The term follows CAI's authoring docs; the spec's own example for
+  text-to-media generation uses `trainedAlgorithmicMedia`, and "appropriate value"
+  is neither defined nor validated. The magic-edit inpaint matches IPTC's
+  definition of the term; the plain generations do not, and the two are
+  indistinguishable in the manifest. Edits are not recorded as actions; with
+  `allActionsIncluded` omitted the manifest does not claim to be complete
+  (§18.15.3: unrecorded actions may have been performed). `softwareAgent` is the
+  plain string "Canva AI"; §18.15.4.4 describes a generator-info-map for v2
+  actions, and c2pa-rs accepts both. Closes the magic-edit pending item.
 - Tier: `canva-ai-free` p1 was exported on the free tier before the trial and
   carries no manifest and no XMP; every Pro-tier export carries the manifest.
   Tier-dependent marking is the hypothesis; see Pending.
+  2026-10-04: the corpus test found the free-tier p1 and the Pro editor export
+  (`web-download-editor__p1__1`) pixel-identical (AE 0, full resolution, both
+  1200×1200): same generation, manifest only on the Pro export. Tier and path both
+  differ, so this supports the hypothesis without isolating it; the p2 re-download
+  stays the control.
 - Files (12): free-tier p1; Pro p1 via opened preview, editor, and JPG; p2–p5 via
   opened preview; p3 larger-size; p3 bg-removed and bg-removed-erase; p2
   magic-edit.
 - Pending: after the trial ends, re-download p2 from the same Pro-era design on
   the free tier (`canva-ai-free__web-download__p2__2`) — same generation, same
   control, only the tier differs; share link → served asset; one non-default
-  aspect; e1–e3 on the base photos via Canva's edit tools once they exist;
-  confirm the magic-edit manifest has the same one-action, zero-ingredient shape.
+  aspect; e1–e3 on the base photos via Canva's edit tools once they exist.
 
 ## Ideogram — Ideogram 3 (ideogram.ai), rendering "Medium"
 

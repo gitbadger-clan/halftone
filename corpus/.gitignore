@@ -7,5 +7,6 @@
 !**/cases.json
 !**/SOURCE.md
 !**/PROMPTS.md
+!differential/04-generators/corpus-rules.json
 
 !.gitignore
