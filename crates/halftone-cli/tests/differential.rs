@@ -90,6 +90,36 @@ fn codes_of(status: &Value) -> Vec<String> {
     s
 }
 
+/// Trust inputs Halftone validates with, repo-relative as the collector records them.
+const EKU_CONFIG: &str = "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg";
+const TSA_ANCHORS: &str = "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem";
+
+/// Ground truth collected under other trust inputs than Halftone uses is not
+/// comparable: without the vendored EKU list c2pa 0.91 rejects every vendor EKU
+/// (D-011). Reported as rows, like any other disagreement.
+fn header_disagreements(label: &str, exp: &Value) -> Vec<Disagreement> {
+    let mut out = Vec::new();
+    if exp["tools"]["c2patool"].is_null() {
+        return out; // collected with --no-c2pa: no manifest ground truth to judge
+    }
+    let mut check = |field: &'static str, want: &str, got: &Value| {
+        let got = got.as_str().unwrap_or("null");
+        if got != want {
+            out.push(Disagreement {
+                file: format!("{label}/expectations.json"),
+                field,
+                expected: want.to_string(),
+                got: format!("{got} (re-collect with scripts/differential.py)"),
+            });
+        }
+    };
+    check("header.trust_config", EKU_CONFIG, &exp["trust_config"]);
+    if !exp["trust_anchors"].is_null() {
+        check("header.tsa_anchors", TSA_ANCHORS, &exp["tsa_anchors"]);
+    }
+    out
+}
+
 /// Corpora to compare. `$HALFTONE_DIFFERENTIAL_CORPUS` names one directory;
 /// otherwise every immediate subdirectory of `<repo>/corpus/differential` (one per
 /// stratum) that has an `expectations.json`, plus the root itself if it has one.
@@ -409,6 +439,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         // Only hand ht files that exist: one missing file would abort the whole
         // batch. Missing ones are reported as rows instead.
         let mut dis = Vec::new();
+        dis.extend(header_disagreements(&label, &exp));
         let mut files: Vec<PathBuf> = Vec::new();
         for k in files_obj.keys() {
             let p = dir.join(k);
@@ -637,5 +668,35 @@ mod aged_rule {
             v(&["signingCredential.expired", "signingCredential.untrusted"])
         );
         assert!(codes_of(&Value::Null).is_empty());
+    }
+}
+
+#[cfg(test)]
+mod header_rule {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn missing_eku_config_is_a_row() {
+        let exp = json!({"tools": {"c2patool": "c2patool 0.28.0"},
+                         "trust_anchors": "x.pem", "tsa_anchors": TSA_ANCHORS,
+                         "trust_config": null});
+        let rows = header_disagreements("04-generators", &exp);
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].field, "header.trust_config");
+    }
+
+    #[test]
+    fn complete_header_is_clean() {
+        let exp = json!({"tools": {"c2patool": "c2patool 0.28.0"},
+                         "trust_anchors": "x.pem", "tsa_anchors": TSA_ANCHORS,
+                         "trust_config": EKU_CONFIG});
+        assert!(header_disagreements("01-c2pa-rs", &exp).is_empty());
+    }
+
+    #[test]
+    fn no_c2patool_needs_nothing() {
+        let exp = json!({"tools": {"c2patool": null}, "trust_config": null});
+        assert!(header_disagreements("02-exiftool", &exp).is_empty());
     }
 }

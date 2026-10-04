@@ -259,7 +259,12 @@ def main() -> int:
     ap.add_argument("--tsa-anchors", type=Path, help="PEM bundle handed to c2patool as TSA anchors (needs --trust-anchors)")
     ap.add_argument("--trust-config", type=Path, help="accepted signing-certificate EKUs (trust.trust_config), one OID per line")
     ap.add_argument("--no-c2pa", action="store_true", help="skip c2patool entirely")
+    ap.add_argument("--no-trust", action="store_true",
+                help="collect without trust anchors; the EKU policy (--trust-config) is always passed")
     a = ap.parse_args()
+
+    if a.no_trust:
+        a.trust_anchors = a.tsa_anchors = None
 
     corpus: Path = a.corpus
     if not corpus.is_dir():
@@ -331,6 +336,11 @@ def main() -> int:
 
     from datetime import datetime, timezone
 
+    parts = []
+    if a.trust_anchors: parts.append('[[trust.anchors]] trust_kind = "manifest" <pem>')
+    if a.tsa_anchors: parts.append('[[trust.anchors]] trust_kind = "tsa" <pem>')
+    if a.trust_config: parts.append("[trust] trust_config = <eku oids>")
+
     doc = {
         "schema": "halftone-differential-expectations/1",
         # Validation states are date-dependent when a signer uses short-lived
@@ -342,10 +352,8 @@ def main() -> int:
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
         "tsa_anchors": repo_relative(a.tsa_anchors) if a.tsa_anchors else None,
         "trust_config": repo_relative(a.trust_config) if a.trust_config else None,
-        "c2patool_settings": C2PATOOL_SETTINGS
-        + ("[[trust.anchors]] trust_kind = \"manifest\" <pem>" if a.trust_anchors else "")
-        + ("; [[trust.anchors]] trust_kind = \"tsa\" <pem>" if a.tsa_anchors else "")
-        + ("; [trust] trust_config = <eku oids>" if a.trust_config else ""),
+        "trust_config_sha256": sha256(a.trust_config) if a.trust_config else None,
+        "c2patool_settings": C2PATOOL_SETTINGS + "; ".join(parts),
         "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
         "match_by": match_by,
         "files": files,
@@ -361,7 +369,6 @@ def main() -> int:
     if new_text is not None:
         out_path.write_text(new_text)
         print(f"\n{len(files)} files -> {out_path}")
-    print(f"\n{len(files)} files -> {out_path}")
     if skipped:
         print(f"{len(skipped)} skipped (not a format ht loads):")
         for s_ in skipped:
