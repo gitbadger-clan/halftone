@@ -451,36 +451,39 @@ impl EvidenceSource for QuantTables {
         let fp = s.fingerprint();
         let db_hit = self.db.lookup(&fp);
 
-        let (status, rationale) =
-            match (db_hit, &class) {
-                (Some(w), _) => (
-                    Status::Present,
-                    format!(
-                        "Structure matches a known writer fingerprint: {} ({}). {}",
-                        w.writer,
-                        w.class.describe(),
-                        if w.class == WriterClass::Generator {
-                            "Indicates the export path of a generation tool; the rest of the \
+        let (status, rationale) = match (db_hit, &class) {
+            (Some(w), _) => (
+                Status::Present,
+                format!(
+                    "Structure matches a known writer fingerprint: {} ({}). {}",
+                    w.writer,
+                    w.class.describe(),
+                    if w.class == WriterClass::Generator {
+                        "Indicates the export path of a generation tool; the rest of the \
                          layers should be consulted before treating this as origin."
-                        } else {
-                            "Indicates the encoder path, not authorship."
-                        }
-                    ),
+                    } else {
+                        "Indicates the encoder path, not authorship."
+                    }
                 ),
-                (
-                    None,
-                    EncoderClass::LibjpegStandard {
-                        quality,
-                        chroma_matches,
-                    },
-                ) => (
-                    Status::Present,
-                    format!(
+            ),
+            (
+                None,
+                EncoderClass::LibjpegStandard {
+                    quality,
+                    chroma_matches,
+                },
+            ) => (
+                Status::Present,
+                format!(
                     "Standard libjpeg tables at quality {quality}{} with {sub} subsampling and \
                      {} Huffman tables: a software (re-)encode from the libjpeg/PIL/OpenCV \
                      family, not a camera-native JPEG. Common to edited photos, screenshots, \
                      web downloads and generator exports alike; not evidence of origin on its own.",
-                    if *chroma_matches { "" } else { " (chroma table modified)" },
+                    if *chroma_matches {
+                        ""
+                    } else {
+                        " (chroma table modified)"
+                    },
                     match huff {
                         HuffmanClass::Standard => "default",
                         HuffmanClass::Optimized => "optimised",
@@ -488,26 +491,28 @@ impl EvidenceSource for QuantTables {
                         HuffmanClass::Missing => "missing",
                     }
                 ),
-                ),
-                (None, EncoderClass::Adobe) => (
-                    Status::Present,
-                    format!(
-                        "Adobe APP14 marker with {sub} subsampling: saved or exported by an Adobe \
+            ),
+            (None, EncoderClass::Adobe) => (
+                Status::Present,
+                format!(
+                    "Adobe APP14 marker with {sub} subsampling: saved or exported by an Adobe \
                      application. Indicates editing/re-encoding, not origin."
-                    ),
                 ),
-                (None, EncoderClass::NonStandard) => {
-                    (
-                        Status::Absent,
-                        format!(
+            ),
+            (None, EncoderClass::NonStandard) => (
+                Status::Absent,
+                format!(
                     "Non-standard quantization tables with {sub} subsampling and {} Huffman \
                      tables: consistent with a camera or proprietary encoder rather than a \
                      libjpeg-family re-encode. Not in the writer fingerprint DB.",
-                    if huff == HuffmanClass::Standard { "default" } else { "optimised" }
+                    if huff == HuffmanClass::Standard {
+                        "default"
+                    } else {
+                        "optimised"
+                    }
                 ),
-                    )
-                }
-            };
+            ),
+        };
 
         Ok(Evidence {
             layer: self.layer(),

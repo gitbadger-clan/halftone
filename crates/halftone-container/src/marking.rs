@@ -44,7 +44,7 @@
 //! (`<… rdf:resource="…"/>`), with any namespace prefix. Whether the prefix is bound
 //! to the IPTC Extension namespace is recorded, not required.
 
-use halftone_core::dst::{code_of, lookup, Term, TermKind, IPTC_EXT_NS, VOCABULARY_VERSION};
+use halftone_core::dst::{IPTC_EXT_NS, Term, TermKind, VOCABULARY_VERSION, code_of, lookup};
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
 use serde::Serialize;
 
@@ -707,8 +707,7 @@ mod tests {
 
     #[test]
     fn element_form_with_other_prefix_and_bare_term() {
-        let packet =
-            "<rdf:Description xmlns:iptcExt=\"http://iptc.org/std/Iptc4xmpExt/2008-02-29/\">\
+        let packet = "<rdf:Description xmlns:iptcExt=\"http://iptc.org/std/Iptc4xmpExt/2008-02-29/\">\
                       <iptcExt:DigitalSourceType>compositeWithTrainedAlgorithmicMedia\
                       </iptcExt:DigitalSourceType></rdf:Description>";
         let ev = assess(jpeg_with_segments(&[app1_xmp(packet)]));

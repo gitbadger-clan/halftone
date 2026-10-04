@@ -99,7 +99,12 @@ pub const RULES: &[PngRule] = &[
         none_of: &["iDOT"],
         any_text: &["XML:com.adobe.xmp"],
         icc_contains: None,
-        xmp_contains_any: &["CreatorTool=\"Adobe", "<xmp:CreatorTool>Adobe", "Adobe Photoshop", "Adobe Lightroom"],
+        xmp_contains_any: &[
+            "CreatorTool=\"Adobe",
+            "<xmp:CreatorTool>Adobe",
+            "Adobe Photoshop",
+            "Adobe Lightroom",
+        ],
         notes: "Adobe writers name themselves in xmp:CreatorTool inside the iTXt XMP packet.",
     },
     PngRule {
@@ -129,7 +134,9 @@ pub const RULES: &[PngRule] = &[
         class: WriterClass::Library,
         confidence: Confidence::Verified,
         all_of: &[],
-        none_of: &["pHYs", "gAMA", "sRGB", "cHRM", "iCCP", "iDOT", "tEXt", "iTXt", "zTXt", "eXIf"],
+        none_of: &[
+            "pHYs", "gAMA", "sRGB", "cHRM", "iCCP", "iDOT", "tEXt", "iTXt", "zTXt", "eXIf",
+        ],
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
@@ -253,30 +260,38 @@ mod tests {
                 .unwrap()
                 .starts_with("Stable Diffusion")
         );
-        assert!(name(&info(
-            &["IHDR", "tEXt", "tEXt", "IDAT", "IEND"],
-            &["prompt", "workflow"]
-        ))
-        .unwrap()
-        .starts_with("ComfyUI"));
-        assert!(name(&info(
-            &["IHDR", "iDOT", "pHYs", "iCCP", "IDAT", "IEND"],
-            &[]
-        ))
-        .unwrap()
-        .starts_with("Apple"));
-        assert!(name(&info(
-            &["IHDR", "sRGB", "gAMA", "pHYs", "IDAT", "IEND"],
-            &[]
-        ))
-        .unwrap()
-        .starts_with("Windows"));
-        assert!(name(&info(
-            &["IHDR", "gAMA", "cHRM", "tEXt", "IDAT", "IEND"],
-            &["Software"]
-        ))
-        .unwrap()
-        .starts_with("libpng"));
+        assert!(
+            name(&info(
+                &["IHDR", "tEXt", "tEXt", "IDAT", "IEND"],
+                &["prompt", "workflow"]
+            ))
+            .unwrap()
+            .starts_with("ComfyUI")
+        );
+        assert!(
+            name(&info(
+                &["IHDR", "iDOT", "pHYs", "iCCP", "IDAT", "IEND"],
+                &[]
+            ))
+            .unwrap()
+            .starts_with("Apple")
+        );
+        assert!(
+            name(&info(
+                &["IHDR", "sRGB", "gAMA", "pHYs", "IDAT", "IEND"],
+                &[]
+            ))
+            .unwrap()
+            .starts_with("Windows")
+        );
+        assert!(
+            name(&info(
+                &["IHDR", "gAMA", "cHRM", "tEXt", "IDAT", "IEND"],
+                &["Software"]
+            ))
+            .unwrap()
+            .starts_with("libpng")
+        );
     }
 
     #[test]

@@ -16,7 +16,7 @@
 //! This module reads the `serde_json::Value` produced by `c2pa::Reader::json()` and
 //! depends on nothing else, so it compiles and is tested without the `c2pa` feature.
 
-use halftone_core::dst::{code_of, lookup, TermKind};
+use halftone_core::dst::{TermKind, code_of, lookup};
 use serde::Serialize;
 
 /// One `digitalSourceType` occurrence found in a manifest.

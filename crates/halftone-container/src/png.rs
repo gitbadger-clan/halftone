@@ -187,7 +187,7 @@ fn parse_itxt(data: &[u8]) -> Option<TextEntry> {
     // rest = [compression_flag, compression_method, lang\0, translated_keyword\0, text...]
     let comp_flag = *rest.first()?;
     let mut p = 2; // skip compression flag + method
-                   // Skip the language tag and translated keyword (both NUL-terminated).
+    // Skip the language tag and translated keyword (both NUL-terminated).
     for _ in 0..2 {
         let off = rest.get(p..)?.iter().position(|&c| c == 0)?;
         p += off + 1;
@@ -293,10 +293,16 @@ impl EvidenceSource for PngWriter {
                 match (editor, db_hit, &rule) {
                     (Some(ed), _, _) => (
                         Status::Inconclusive,
-                        format!("Embedded metadata names an editor ({ed}); no generation metadata."),
+                        format!(
+                            "Embedded metadata names an editor ({ed}); no generation metadata."
+                        ),
                     ),
                     (None, Some(w), _) => (
-                        if w.class == WriterClass::Generator { Status::Present } else { Status::Inconclusive },
+                        if w.class == WriterClass::Generator {
+                            Status::Present
+                        } else {
+                            Status::Inconclusive
+                        },
                         format!(
                             "PNG structure matches a known writer fingerprint: {} ({}). No \
                              self-identifying metadata; PNG is never camera-native, so this is an \

@@ -12,7 +12,7 @@
 
 use ed25519_dalek::{Signer, SigningKey};
 use halftone_packs::index::{
-    Artifact, Index, PackArtifact, TrustFile, TrustListArtifact, INDEX_SCHEMA,
+    Artifact, INDEX_SCHEMA, Index, PackArtifact, TrustFile, TrustListArtifact,
 };
 use halftone_packs::manifest::PackManifest;
 use halftone_packs::store::now_rfc3339;

@@ -184,10 +184,10 @@ impl EvidenceSource for DoubleCompression {
             Err(e) => {
                 return Ok(inconclusive(
                     format!(
-                    "Coefficient extraction not possible ({e}); double-compression test skipped."
-                ),
+                        "Coefficient extraction not possible ({e}); double-compression test skipped."
+                    ),
                     serde_json::json!({ "error": e }),
-                ))
+                ));
             }
         };
         let luma = match coeffs.luma() {

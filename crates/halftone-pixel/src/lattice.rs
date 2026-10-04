@@ -186,7 +186,7 @@ impl EvidenceSource for LatticeSource {
                 return Ok(inconclusive(
                     format!("Could not decode image ({e}); lattice test skipped."),
                     serde_json::json!({ "error": e }),
-                ))
+                ));
             }
         };
         if plane.w.min(plane.h) < MIN_DIM {

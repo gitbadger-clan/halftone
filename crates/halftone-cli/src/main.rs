@@ -414,9 +414,9 @@ fn main() -> Result<()> {
 }
 
 fn packs_update(a: UpdateArgs) -> Result<()> {
-    use halftone_packs::index::{parse_keys, OFFICIAL_PUBLISHER_KEYS_HEX};
+    use halftone_packs::index::{OFFICIAL_PUBLISHER_KEYS_HEX, parse_keys};
     use halftone_packs::store::Store;
-    use halftone_packs::update::{run, Only, UpdateOptions};
+    use halftone_packs::update::{Only, UpdateOptions, run};
 
     let mut keys: Vec<String> = OFFICIAL_PUBLISHER_KEYS_HEX
         .iter()
@@ -557,9 +557,9 @@ fn inspect(a: InspectArgs) -> Result<()> {
 }
 
 fn survive(a: SurviveArgs) -> Result<()> {
-    use halftone_bench::distort::{parse_suite, Distortion};
+    use halftone_bench::distort::{Distortion, parse_suite};
     use halftone_bench::survive::{
-        dedup_inputs, match_captured, render_aggregate, render_long, run, SurviveConfig,
+        SurviveConfig, dedup_inputs, match_captured, render_aggregate, render_long, run,
     };
 
     let reg = registry(&RegistryOpts {
@@ -877,11 +877,7 @@ fn bench(
 fn median_of(v: &[f64]) -> f64 {
     let mut s = v.to_vec();
     s.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-    if s.is_empty() {
-        0.0
-    } else {
-        s[s.len() / 2]
-    }
+    if s.is_empty() { 0.0 } else { s[s.len() / 2] }
 }
 
 fn hex_lower(b: &[u8]) -> String {

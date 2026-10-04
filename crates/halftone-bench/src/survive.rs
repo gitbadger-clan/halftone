@@ -17,10 +17,10 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use halftone_core::{summarize, Asset, Batch, FileRow, Inspection, Registry, ToolInfo};
+use halftone_core::{Asset, Batch, FileRow, Inspection, Registry, ToolInfo, summarize};
 use rayon::prelude::*;
 
-use crate::distort::{decode, Decoded, Distortion};
+use crate::distort::{Decoded, Distortion, decode};
 
 /// Error from a survival run.
 #[derive(Debug, thiserror::Error)]
@@ -698,10 +698,12 @@ mod tests {
         };
         let batch = run(&registry(), tool(), std::slice::from_ref(&src), &[], &cfg).unwrap();
         assert_eq!(batch.summary.len(), 4);
-        assert!(batch
-            .summary
-            .iter()
-            .all(|r| r.source.as_deref() == Some(src.to_str().unwrap())));
+        assert!(
+            batch
+                .summary
+                .iter()
+                .all(|r| r.source.as_deref() == Some(src.to_str().unwrap()))
+        );
         let f = fates(&batch);
         assert_eq!(f.len(), 1);
         let cells: BTreeMap<_, _> = f[0].1.iter().cloned().collect();
@@ -712,12 +714,14 @@ mod tests {
             assert_eq!(cells[t].xmp, Fate::Stripped, "{t}");
         }
         // --keep wrote reproducible derivatives with the expected names.
-        assert!(dir
-            .join("out/gen__model__web-download__p1__1__jpeg_q80.jpg")
-            .is_file());
-        assert!(dir
-            .join("out/gen__model__web-download__p1__1__none.png")
-            .is_file());
+        assert!(
+            dir.join("out/gen__model__web-download__p1__1__jpeg_q80.jpg")
+                .is_file()
+        );
+        assert!(
+            dir.join("out/gen__model__web-download__p1__1__none.png")
+                .is_file()
+        );
         let text = render_aggregate(&batch);
         assert!(text.contains("gen__model"));
         assert!(text.contains("M✓ X✓"));

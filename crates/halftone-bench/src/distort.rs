@@ -177,7 +177,7 @@ impl Distortion {
             Self::Captured(_) => {
                 return Err(DistortError::Param(
                     "captured transforms are files, not computations",
-                ))
+                ));
             }
             _ => {}
         }
@@ -484,12 +484,16 @@ mod tests {
             .unwrap();
         let ci = decode(&c.bytes).unwrap().image;
         assert_eq!((ci.width(), ci.height()), (90, 54));
-        assert!(Distortion::Resize(0.0)
-            .apply_decoded(Some(&dec), &src)
-            .is_err());
-        assert!(Distortion::Crop(1.0)
-            .apply_decoded(Some(&dec), &src)
-            .is_err());
+        assert!(
+            Distortion::Resize(0.0)
+                .apply_decoded(Some(&dec), &src)
+                .is_err()
+        );
+        assert!(
+            Distortion::Crop(1.0)
+                .apply_decoded(Some(&dec), &src)
+                .is_err()
+        );
     }
 
     #[test]
@@ -575,9 +579,11 @@ mod tests {
     #[test]
     fn garbage_input_is_an_error_not_a_panic() {
         assert!(decode(b"not an image").is_err());
-        assert!(Distortion::Jpeg(80)
-            .apply(&[0xFF, 0xD8, 0xFF, 0x00])
-            .is_err());
+        assert!(
+            Distortion::Jpeg(80)
+                .apply(&[0xFF, 0xD8, 0xFF, 0x00])
+                .is_err()
+        );
         assert!(Distortion::None.apply(b"nope").is_err());
     }
 }

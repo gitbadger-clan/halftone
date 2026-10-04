@@ -3,7 +3,7 @@
 
 use ed25519_dalek::{Signer, SigningKey};
 use halftone_packs::store::Store;
-use halftone_packs::update::{run, Action, Only, UpdateOptions};
+use halftone_packs::update::{Action, Only, UpdateOptions, run};
 use sha2::{Digest, Sha256};
 use std::path::{Path, PathBuf};
 

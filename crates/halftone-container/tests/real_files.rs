@@ -39,9 +39,11 @@ fn decoder_handles_baseline_variants_and_rejects_progressive() {
             .count();
         assert!(zero < 5, "{f}: {zero} empty blocks");
     }
-    assert!(jpeg::coeffs::decode(&fixture("single_q88_prog.jpg").bytes)
-        .unwrap_err()
-        .contains("progressive"));
+    assert!(
+        jpeg::coeffs::decode(&fixture("single_q88_prog.jpg").bytes)
+            .unwrap_err()
+            .contains("progressive")
+    );
 }
 
 #[test]

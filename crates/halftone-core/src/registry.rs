@@ -2,7 +2,7 @@
 
 use std::time::Instant;
 
-use crate::{Asset, Evidence, Inspection, Layer, SourceId, ToolInfo, SCHEMA_VERSION};
+use crate::{Asset, Evidence, Inspection, Layer, SCHEMA_VERSION, SourceId, ToolInfo};
 
 /// One evidence source. Implementations live in the layer crates.
 ///

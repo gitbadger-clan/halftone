@@ -12,13 +12,13 @@ pub mod dst;
 pub mod evidence;
 pub mod registry;
 
-pub use asset::{sha256_hex, Asset, AssetInfo, Modality};
-pub use batch::{render_matrix, summarize, Batch, FileRow};
+pub use asset::{Asset, AssetInfo, Modality, sha256_hex};
+pub use batch::{Batch, FileRow, render_matrix, summarize};
 pub use evidence::{
-    CalibrationRef, Evidence, Inspection, Layer, SourceId, Statistic, Status, ToolInfo,
-    SCHEMA_VERSION,
+    CalibrationRef, Evidence, Inspection, Layer, SCHEMA_VERSION, SourceId, Statistic, Status,
+    ToolInfo,
 };
-pub use registry::{now_rfc3339, EvidenceSource, Registry};
+pub use registry::{EvidenceSource, Registry, now_rfc3339};
 
 /// Errors from evidence sources.
 #[derive(Debug, thiserror::Error)]

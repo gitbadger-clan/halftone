@@ -120,8 +120,8 @@ impl EvidenceSource for C2paSource {
 
 #[cfg(feature = "c2pa")]
 mod imp {
-    use super::trust::{AnchorKind, ResolvedTrust};
     use super::C2paSource;
+    use super::trust::{AnchorKind, ResolvedTrust};
     use c2pa::settings::{TrustAnchor, TrustListKind};
     use halftone_core::{Asset, Evidence, EvidenceSource, Status};
     use std::io::Cursor;
@@ -214,7 +214,7 @@ mod imp {
                          evaluated: {e}"
                     ),
                     serde_json::json!({ "error": e }),
-                )
+                );
             }
         };
         if resolved.is_empty() {
@@ -229,7 +229,7 @@ mod imp {
                     Status::Inconclusive,
                     format!("c2pa settings rejected the trust configuration: {e}"),
                     serde_json::json!({ "error": e, "trust": resolved.details() }),
-                )
+                );
             }
         };
 
@@ -260,7 +260,7 @@ mod imp {
                             Status::Inconclusive,
                             format!("c2pa settings rejected the fetch configuration: {e}"),
                             serde_json::json!({ "error": e, "remote_manifest_url": url }),
-                        )
+                        );
                     }
                 };
                 match c2pa::Reader::from_context(ctx)
@@ -284,7 +284,7 @@ mod imp {
                                 "fetch_error": why,
                                 "fetched_at": fetched_at,
                             }),
-                        )
+                        );
                     }
                     Err(e) => {
                         return mk(
@@ -298,7 +298,7 @@ mod imp {
                                 "fetched_at": fetched_at,
                                 "error": e.to_string(),
                             }),
-                        )
+                        );
                     }
                 }
             }
@@ -308,7 +308,7 @@ mod imp {
                     "No C2PA manifest. Most files have none; this says nothing about origin."
                         .into(),
                     serde_json::Value::Null,
-                )
+                );
             }
             Err(c2pa::Error::RemoteManifestUrl(url)) => {
                 return mk(
@@ -321,14 +321,14 @@ mod imp {
                          verified here."
                     ),
                     serde_json::json!({ "remote_manifest_url": url }),
-                )
+                );
             }
             Err(e) => {
                 return mk(
                     Status::Inconclusive,
                     format!("A manifest container is present but could not be read: {e}"),
                     serde_json::json!({ "error": e.to_string() }),
-                )
+                );
             }
         };
 

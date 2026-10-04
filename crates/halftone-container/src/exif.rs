@@ -232,7 +232,11 @@ impl EvidenceSource for ExifConsistency {
                         "Make '{make}' claims a camera, but the MakerNote is absent{} and the file \
                          was re-encoded by a software JPEG encoder — inconsistent with a \
                          camera-native capture (re-saved or transplanted EXIF).",
-                        if m.has_thumbnail { "" } else { ", no embedded thumbnail" }
+                        if m.has_thumbnail {
+                            ""
+                        } else {
+                            ", no embedded thumbnail"
+                        }
                     ),
                 )
             } else {

@@ -15,9 +15,9 @@
 //!   verification path, so a bundle carried in on a USB stick is checked exactly
 //!   like a download.
 
-use crate::index::{verify_detached, Artifact, Index, PackArtifact, TrustListArtifact};
+use crate::index::{Artifact, Index, PackArtifact, TrustListArtifact, verify_detached};
 use crate::manifest::{PackManifest, Tier};
-use crate::store::{now_rfc3339, write_atomic, InstalledPack, InstalledTrust, Store};
+use crate::store::{InstalledPack, InstalledTrust, Store, now_rfc3339, write_atomic};
 use ed25519_dalek::VerifyingKey;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;

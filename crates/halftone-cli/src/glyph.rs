@@ -27,11 +27,7 @@ impl Glyphs {
             .find(|v| !v.is_empty())
             .map(|v| v.to_ascii_lowercase().contains("utf"))
             .unwrap_or(cfg!(not(windows)));
-        if utf8 {
-            Self::Unicode
-        } else {
-            Self::Ascii
-        }
+        if utf8 { Self::Unicode } else { Self::Ascii }
     }
 }
 

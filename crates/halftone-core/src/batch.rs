@@ -15,7 +15,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{Inspection, Layer, Status, ToolInfo, SCHEMA_VERSION};
+use crate::{Inspection, Layer, SCHEMA_VERSION, Status, ToolInfo};
 
 /// Source name of the manifest layer, as registered by the CLI.
 pub const SOURCE_C2PA: &str = "c2pa";
@@ -524,9 +524,11 @@ mod tests {
         assert_eq!(b.created_at.len(), 20);
         let js = serde_json::to_value(&b).unwrap();
         assert_eq!(js["summary"][0]["manifest"]["validation_state"], "Trusted");
-        assert!(js["summary"][1]["manifest"]
-            .get("validation_state")
-            .is_none());
+        assert!(
+            js["summary"][1]["manifest"]
+                .get("validation_state")
+                .is_none()
+        );
         let back: Batch = serde_json::from_value(js).unwrap();
         assert_eq!(back.summary, b.summary);
     }
