@@ -1,0 +1,18 @@
+[package]
+name = "d011-softbinding"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "D-011: print the decode error c2pa 0.91 discards on soft-binding assertions"
+
+# Standalone: not a member of the Halftone workspace, like tools/d011-repro.
+[workspace]
+
+[dependencies]
+# Exactly the versions D-011 is about. c2pa_cbor must match the workspace
+# Cargo.lock, since the decoder is what's under test (compare with
+# `grep -A1 'name = "c2pa_cbor"' Cargo.lock` at the repo root).
+c2pa = "=0.91.1"
+c2pa_cbor = "=0.78.0"
+serde_path_to_error = "0.1.20"
+anyhow = "1"
