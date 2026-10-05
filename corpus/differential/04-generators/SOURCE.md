@@ -54,7 +54,7 @@ file against the directory.
 - Withdrawn 2026-10-02: "the page image is a single watermarked JPEG served
   regardless of the toggle; the opt-out applies only to the download button".
   The two files it rested on (wm-off browser-save and copy-image p1) were
-  byte-identical to the wm-on p1 page image and a different picture from the
+  byte-identical to their wm-on p1 counterparts and a different picture from the
   wm-off p1 download (aspect 0.556 vs 1.0): they were saved from the wm-on
   generation. Removed. No page image of a wm-off generation has been collected.
 - Files (9): `glm-wm-off` p1–p5 download; `glm-wm-on` p1–p2 download and
