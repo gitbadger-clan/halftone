@@ -39,10 +39,16 @@ jobs:
         id: fixtures
         uses: actions/cache@v6
         with:
+          # Only the fetched files belong in the cache. Ground truth is committed
+          # and must come from the checkout, never from an older run's archive.
           path: |
             corpus/differential/01-c2pa-rs
             corpus/differential/02-exiftool
-          key: fixtures-${{ env.C2PA_FIXTURES_COMMIT }}-${{ env.EXIFTOOL_FIXTURES_COMMIT }}
+            !corpus/differential/*/expectations.json
+            !corpus/differential/*/cases.json
+            !corpus/differential/*/SOURCE.txt
+          # v2: the v1 archive (2026-09-24) carried that day's expectations.json.
+          key: fixtures-v2-${{ env.C2PA_FIXTURES_COMMIT }}-${{ env.EXIFTOOL_FIXTURES_COMMIT }}
 
       - name: Fetch public fixtures (pinned)
         if: steps.fixtures.outputs.cache-hit != 'true'
@@ -65,6 +71,10 @@ jobs:
             test "$n" -gt 0 || { echo "corpus/differential/$d has no image files; fetch/generate step failed"; exit 1; }
             echo "$d: $n files"
           done
+
+      - name: Committed ground truth wins over the cache
+        # A cache restore unpacks over the checkout; put the tracked files back.
+        run: git checkout -- corpus/differential
 
       - name: Differential test
         run: cargo test -p halftone-cli --features c2pa --test differential -- --ignored --nocapture
