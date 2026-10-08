@@ -57,11 +57,6 @@ function ht-new --description 'Phone: files saved since ht-mark'
     __ht_phone_new
 end
 
-function ht-latest --description 'Phone: newest images by MediaStore date_added'
-    adb shell content query --uri content://media/external/images/media \
-        --projection _data:date_added:mime_type --sort '"date_added DESC"' | head -5
-end
-
 function ht-pull --argument-names remote name --description 'Phone: pull into the stratum, sha256-checked'
     if test -z "$remote" -o -z "$name"
         echo "usage: ht-pull <remote path> <name>"
@@ -84,27 +79,64 @@ function ht-pull --argument-names remote name --description 'Phone: pull into th
     ht-mark
 end
 
-function ht-grab --argument-names stem --description 'Phone: pull the one new image as <stem>.<delivered ext> and inspect it'
+function ht-grab --description 'Phone: pull the one new image as <stem>.<delivered ext> and inspect it; -f replaces an existing file'
+    set -l force 0
+    if contains -- $argv[1] -f --force
+        set force 1
+        set -e argv[1]
+    end
+    set -l stem $argv[1]
     if test -z "$stem"
-        echo "usage: ht-grab <name-without-extension>"
+        echo "usage: ht-grab [-f] <name-without-extension>"
         return 1
     end
     # (?:…): a capturing group would make fish print the extension as an extra line.
-    set -l files (__ht_phone_new | string match -r -i '.*\.(?:jpe?g|png|webp|gif|heic|heif|avif)$')
+    set -l all (__ht_phone_new | string match -r -i '.*\.(?:jpe?g|png|webp|gif|heic|heif|avif)$')
+    # Hidden names are not finished photos: .trashed-… (in the bin),
+    # .pending-… (still being written), .thumbnails/… (the gallery's cache).
+    set -l files (string match -v -r '/\.' -- $all)
+    set -l pending (string match -r '.*/\.pending-.*' -- $all)
     switch (count $files)
         case 0
-            echo "no new image since ht-mark (check the save, or run ht-latest)"
+            if test (count $pending) -gt 0
+                echo "a photo is still being written ($pending[1]); wait a moment and run ht-grab again"
+            else
+                echo "no new image since ht-mark (check the save, or run ht-latest)"
+            end
             return 1
         case 1
+            set -l dir (__ht_stratum); or return 1
             set -l ext (string match -r '[^.]+$' -- $files[1])
+            # Only now, with the new photo found, move any old file of this name aside.
+            set -l old $dir/$stem.*
+            if test (count $old) -gt 0
+                if test $force -eq 0
+                    echo "exists: $old[1] (use ht-grab -f $stem to replace it)"
+                    return 1
+                end
+                set -l bin /tmp/ht-replaced
+                mkdir -p $bin
+                for o in $old
+                    set -l kept $bin/(date +%Y%m%d-%H%M%S)-(basename $o)
+                    mv $o $kept
+                    echo "replaced: $o (old copy: $kept)"
+                end
+            end
             echo "found $files[1]"
             ht-pull $files[1] $stem.$ext; or return 1
-            ht inspect (__ht_stratum)/$stem.$ext
+            ht inspect $dir/$stem.$ext
         case '*'
             echo "more than one new image since ht-mark; pull the right one with ht-pull:"
             printf '  %s\n' $files
             return 1
     end
+end
+
+function ht-latest --description 'Phone: newest images by MediaStore date_added, excluding trashed and unfinished'
+    adb shell content query --uri content://media/external/images/media \
+        --projection _data:date_added:mime_type \
+        --where '"is_trashed=0 AND is_pending=0"' \
+        --sort '"date_added DESC"' | head -5
 end
 
 function ht-type --description 'Phone: type text into the focused field; -s presses Enter after'
