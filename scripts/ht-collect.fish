@@ -59,6 +59,29 @@ function ht-mark --description 'Phone: mark the start of a capture'
     adb shell touch /storage/emulated/0/Download/ht-marker
 end
 
+function ht-use --argument-names want --description 'Select the adb device whose model contains <want>, e.g. fold or pixel_5'
+    if test -z "$want"
+        adb devices -l
+        echo "usage: ht-use <part of the model name>"
+        return 1
+    end
+    set -l hits (adb devices -l | string match -i "* device *model:*$want*")
+    switch (count $hits)
+        case 0
+            echo "no ready device whose model matches '$want':"
+            adb devices -l
+            return 1
+        case 1
+            set -gx ANDROID_SERIAL (string split -f1 ' ' -- $hits[1])
+            echo "ANDROID_SERIAL=$ANDROID_SERIAL"
+        case '*'
+            echo "several connections match '$want' (same phone over USB and wireless?);"
+            echo "drop one with: adb disconnect <serial>"
+            printf '  %s\n' $hits
+            return 1
+    end
+end
+
 function __ht_phone_new --description 'Phone: files newer than the marker'
     adb shell test -e /storage/emulated/0/Download/ht-marker
     or begin
