@@ -44,6 +44,15 @@ function __ht_stratum --description 'Absolute path of the stratum named by $HT_S
     echo $dir
 end
 
+function ht-layout --description 'Per image: size, container parts, c2pa status'
+    for f in $argv
+        string match -q -r -i '\.(?:jpe?g|png|webp|heic|heif|avif)$' -- $f; or continue
+        set -l parts (exiftool -s3 -XMP-GContainer:DirectoryItemSemantic $f)
+        test -n "$parts"; or set parts "single JPEG"
+        set -l c2pa (ht inspect --json --only manifest $f | jq -r '.evidence[] | select(.source.name == "c2pa") | .status')
+        printf '%-50s %9d B  %-30s c2pa=%s\n' (basename $f) (stat -f %z $f) "$parts" $c2pa
+    end
+end
 # ---- phone ----------------------------------------------------------------------
 
 function ht-mark --description 'Phone: mark the start of a capture'
