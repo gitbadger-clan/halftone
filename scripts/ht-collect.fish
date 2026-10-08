@@ -1,28 +1,35 @@
-# ht-collect.fish — corpus collection helpers for corpus/differential/04-generators.
+# ht-collect.fish — corpus collection helpers for corpus/differential/<stratum>.
 #
-# Phone (adb; set ANDROID_SERIAL when more than one device is connected):
-#   ht-mark                     start a capture: marker file on the phone
-#   ht-type [-s] "prompt"       type into the focused field (-s: press Enter after)
-#   ht-send                     tap the app's Send button (when Enter adds a newline)
-#   ht-new                      files saved on the phone since ht-mark
-#   ht-latest                   newest images by MediaStore date (ignores the marker)
-#   ht-pull <remote> <name>     pull byte-exact into the stratum, sha256-checked, re-mark
-#   ht-grab <stem>              the one new image: ht-pull as <stem>.<ext> + ht inspect
+# Every command that writes into the corpus needs the target stratum:
+#   set -gx HT_STRATUM 06-phones      # or 04-generators, 00-base, 05-fold, 07-editors
+# Without it they refuse: a missing value once filed phone shots under 04.
+#
+# Phone (adb; one phone per terminal):
+#   ht-use <model part>          select the phone for this terminal (sets ANDROID_SERIAL)
+#   ht-mark                      start a capture: marker file on the phone
+#   ht-type [-s] "prompt"        type into the focused field (-s: press Enter after)
+#   ht-send                      tap the app's Send button
+#   ht-new                       files saved since ht-mark (unfiltered, for diagnosis)
+#   ht-latest                    newest finished images (trashed and pending excluded)
+#   ht-pull <remote> <name.ext>  pull byte-exact, sha256-checked, re-mark
+#   ht-grab [-f] <stem>          the one new image as <stem>.<delivered ext>, inspected;
+#                                -f replaces an existing file, keeping the old copy
 #
 # Desktop (browser downloads into ~/Downloads):
-#   ht-dmark                    start a capture: marker for ~/Downloads
-#   ht-take <stem>              the one new download: move into the stratum + ht inspect
-#   ht-tmp <path>               the one new download: move to <path>, outside the corpus
+#   ht-dmark                     start a capture: marker for ~/Downloads
+#   ht-take <stem>               the one new download into the stratum, inspected
+#   ht-tmp <path>                the one new download to <path>, outside the corpus
 #
-# Files keep the extension they were delivered with (SOURCE.md naming rule). Every
-# "the one new …" command refuses when there are zero or several candidates and lists
-# them instead of guessing.
+# Check:
+#   ht-layout <files…>           per image: size, container parts, c2pa status
 #
-# Install (once, from the repo root, in an interactive fish):
+# Files replaced by ht-grab -f are kept in ~/.local/state/halftone/replaced/.
+# Files keep the extension they were delivered with (SOURCE.md naming rule).
+#
+# Install or update (repo root, after every edit; overwrites saved copies):
 #   source scripts/ht-collect.fish
-#   funcsave ht-mark ht-type ht-send ht-new ht-latest ht-pull ht-grab ht-dmark ht-take ht-tmp \
-#       __ht_stratum __ht_phone_new __ht_desk_new
-# funcsave overwrites earlier versions in ~/.config/fish/functions.
+#   funcsave ht-use ht-mark ht-type ht-send ht-new ht-latest ht-pull ht-grab \
+#       ht-dmark ht-take ht-tmp ht-layout __ht_stratum __ht_phone_new __ht_desk_new
 
 # ---- shared ---------------------------------------------------------------------
 
@@ -159,7 +166,7 @@ function ht-grab --description 'Phone: pull the one new image as <stem>.<deliver
                     echo "exists: $old[1] (use ht-grab -f $stem to replace it)"
                     return 1
                 end
-                set -l bin /tmp/ht-replaced
+                set -l bin ~/.local/state/halftone/replaced
                 mkdir -p $bin
                 for o in $old
                     set -l kept $bin/(date +%Y%m%d-%H%M%S)-(basename $o)
