@@ -26,13 +26,22 @@
 
 # ---- shared ---------------------------------------------------------------------
 
-function __ht_stratum --description 'Absolute path of corpus/differential/04-generators'
+function __ht_stratum --description 'Absolute path of the stratum named by $HT_STRATUM (required)'
     set -l root (git rev-parse --show-toplevel 2>/dev/null)
     or begin
         echo "run inside the halftone repo" >&2
         return 1
     end
-    echo $root/corpus/differential/04-generators
+    if not set -q HT_STRATUM; or test -z "$HT_STRATUM"
+        echo "HT_STRATUM is not set: e.g. set -gx HT_STRATUM 06-phones" >&2
+        return 1
+    end
+    set -l dir $root/corpus/differential/$HT_STRATUM
+    test -d $dir; or begin
+        echo "no such stratum folder: $dir" >&2
+        return 1
+    end
+    echo $dir
 end
 
 # ---- phone ----------------------------------------------------------------------
