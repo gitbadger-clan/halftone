@@ -1,0 +1,236 @@
+{
+  "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
+  "collected_at": "2026-10-07T08:04:46Z",
+  "corpus": "corpus/differential/07-editors",
+  "files": {
+    "exiftool__gps-strip__pixel5-default__s03__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "44427c26fb97a41c5ab1df5fca1dfbde02a2dd2b26ea12b13e3cf1a0252f4175",
+      "size_bytes": 2183531
+    },
+    "exiftool__gps-strip__pixel5-motion-raw-jpeg__s02__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 8
+      },
+      "sha256": "4b46403470b4367b091e7f3f3cc3c27853e8cfe45e7785d2fc6f918d03263094",
+      "size_bytes": 8794623
+    },
+    "exiftool__gps-strip__pixel5-motion__s04__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 8
+      },
+      "sha256": "c2e9844e44a65e01c9fb41b955e44f717f7a023211e2ec4b9c3fad93a34a08ef",
+      "size_bytes": 8868065
+    },
+    "exiftool__gps-strip__pixel5-raw-jpeg__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "0ed031250f446437c6a43a10d225e93e782fc2ab91ab459baa6868a2f95139cc",
+      "size_bytes": 2455606
+    },
+    "exiftool__gps-strip__pixel5-uhdr-off-motion__s05__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 7
+      },
+      "sha256": "2d5ad7269187282b998edff9c3982b630130f0d08767963a41f7bf0ab2eaec59",
+      "size_bytes": 6211663
+    },
+    "exiftool__gps-strip__pixel5-uhdr-off-motion__s06__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 7
+      },
+      "sha256": "f62eeb99073e3a15249208a75b7bde30e32e8b67282bda2e00bf10fc725d6a08",
+      "size_bytes": 6546156
+    },
+    "exiftool__gps-strip__pixel5-uhdr-off__s07__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "c5bf17e7048c4ebcb62db833da95c5011e19fb87fa9cd44b69f1331825f6d90f",
+      "size_bytes": 2821868
+    },
+    "exiftool__gps-strip__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [
+          "assertion.dataHash.mismatch",
+          "assertion.dataHash.mismatch"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "2a04631b6252f680a7cebbd5d21aa05db154b5937ba3cd1a967007fa63111a33",
+      "size_bytes": 2267997
+    },
+    "exiftool__gps-strip__pixel9fold-motion__s02__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [
+          "assertion.dataHash.mismatch",
+          "assertion.dataHash.mismatch"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 9
+      },
+      "sha256": "5b293eb748fdfb78b9c9a5f173699d60fbb5531384704f4351b064d8b0b49fe7",
+      "size_bytes": 6524564
+    },
+    "exiftool__gps-strip__pixel9fold-uhdr-off__s03__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [
+          "assertion.dataHash.mismatch",
+          "assertion.dataHash.mismatch"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "2d3f7a7f5ebdfa28e25897790cb2519a72caccf4978dd0fa6a96153be985652f",
+      "size_bytes": 2222418
+    }
+  },
+  "match_by": "sha256",
+  "schema": "halftone-differential-expectations/1",
+  "tools": {
+    "c2patool": "c2patool 0.28.0",
+    "exiftool": "13.55"
+  },
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
+  "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
+  "trust_config_sha256": "c1f1b183e854cd6f5784f0eb687fd5da691c51f8aec67dfd7b3e42368f840afa",
+  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem"
+}
