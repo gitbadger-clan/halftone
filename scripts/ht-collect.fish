@@ -48,11 +48,15 @@ function ht-layout --description 'Per image: size, container parts, c2pa status'
     for f in $argv
         string match -q -r -i '\.(?:jpe?g|png|webp|heic|heif|avif)$' -- $f; or continue
         set -l parts (exiftool -s3 -XMP-GContainer:DirectoryItemSemantic $f)
-        test -n "$parts"; or set parts "single JPEG"
-        set -l c2pa (ht inspect --json --only manifest $f | jq -r '.evidence[] | select(.source.name == "c2pa") | .status')
-        printf '%-50s %9d B  %-30s c2pa=%s\n' (basename $f) (stat -f %z $f) "$parts" $c2pa
+        if test -z "$parts"
+            string match -q -r -i '\.jpe?g$' -- $f; and set parts "single JPEG"; or set parts "no container"
+        end
+        set -l c2pa (ht inspect --json --only manifest $f 2>/dev/null | jq -r '.evidence[] | select(.source.name == "c2pa") | .status')
+        test -n "$c2pa"; or set c2pa "?"
+        printf '%-50s %9s B  %-30s c2pa=%s\n' (basename $f) (wc -c < $f | string trim) "$parts" $c2pa
     end
 end
+
 # ---- phone ----------------------------------------------------------------------
 
 function ht-mark --description 'Phone: mark the start of a capture'
