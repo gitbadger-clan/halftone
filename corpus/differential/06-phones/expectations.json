@@ -1,0 +1,307 @@
+{
+  "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
+  "collected_at": "2026-10-08T12:53:15Z",
+  "corpus": "corpus/differential/06-phones",
+  "files": {
+    "pixel5__default__adb-pull__s03__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "756f2cec6ad1b6288cec315a3269cbd07321d759733b7b695d6a6af42bbbc537",
+      "size_bytes": 2148738
+    },
+    "pixel5__motion-raw-jpeg__adb-pull__s02__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 8
+      },
+      "sha256": "d5616810a8a92352e4aaad8376e63977e9489ec3d122a15cc397166297e5c0ac",
+      "size_bytes": 9011259
+    },
+    "pixel5__motion__adb-pull__s04__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 8
+      },
+      "sha256": "c1400392fd6a7806f9b7132ffd2ec4adc8bdf95e608b54f0536ee0289801be06",
+      "size_bytes": 8820339
+    },
+    "pixel5__raw-jpeg__adb-pull__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "5f96990caf55c133c853e3ef2011b5b0af6381504570618b4b534c1c5de7f080",
+      "size_bytes": 2676180
+    },
+    "pixel5__uhdr-off-motion__adb-pull__s05__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 7
+      },
+      "sha256": "af3759a6f88f38d3128e0cb791365b9fa0b3b3376d435398049b841ef89f9287",
+      "size_bytes": 6042890
+    },
+    "pixel5__uhdr-off__adb-pull__s07__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "bef98197c2d0a0a23a5dcaccd326ad1eb7fec2e47f296e1e995a847df66a8479",
+      "size_bytes": 2085302
+    },
+    "pixel9fold__default__adb-pull__s01__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "7840ac112940c6cdd81b20ae69215520b425a722190c278c898fbfc55a4c3e9d",
+      "size_bytes": 2497313
+    },
+    "pixel9fold__default__adb-pull__s03__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "d77057d6c2b9ba3f56615d2abdac80f125cd24feec7c42960e8ceaffd58194ab",
+      "size_bytes": 1924159
+    },
+    "pixel9fold__motion__adb-pull__s02__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 9
+      },
+      "sha256": "54224174f1b39901c48efbf8678146f58904385a586eb25e6b1c4f95363f07a0",
+      "size_bytes": 5353659
+    },
+    "pixel9fold__raw-jpeg__adb-pull__s01__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "9cdc919c136a403f531f5e947850892a4023d1b39b553471d6e05a1e8f98354f",
+      "size_bytes": 2392880
+    },
+    "pixel9fold__uhdr-off-motion__adb-pull__s05__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 8
+      },
+      "sha256": "fe64c5f1ce5aca97fc2a3631607cab5c8b52a73175573b3f7e08904b18a8bd4f",
+      "size_bytes": 6794442
+    },
+    "pixel9fold__uhdr-off__adb-pull__s07__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "118dadfec373015b91812d1a12c2b7c7c9373b9b65ca9dce7125d8b10eda2331",
+      "size_bytes": 1924726
+    }
+  },
+  "match_by": "sha256",
+  "schema": "halftone-differential-expectations/1",
+  "tools": {
+    "c2patool": "c2patool 0.28.0",
+    "exiftool": "13.55"
+  },
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
+  "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
+  "trust_config_sha256": "c1f1b183e854cd6f5784f0eb687fd5da691c51f8aec67dfd7b3e42368f840afa",
+  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem"
+}
