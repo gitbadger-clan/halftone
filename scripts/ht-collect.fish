@@ -23,7 +23,7 @@
 # Check:
 #   ht-layout <files…>           per image: size, container parts, c2pa status
 #
-# Files replaced by ht-grab -f are kept in ~/.local/state/halftone/replaced/.
+# Files replaced by ht-grab -f are kept in /tmp/ht-replaced/.
 # Files keep the extension they were delivered with (SOURCE.md naming rule).
 #
 # Install or update (repo root, after every edit; overwrites saved copies):
@@ -166,7 +166,7 @@ function ht-grab --description 'Phone: pull the one new image as <stem>.<deliver
                     echo "exists: $old[1] (use ht-grab -f $stem to replace it)"
                     return 1
                 end
-                set -l bin ~/.local/state/halftone/replaced
+                set -l bin /tmp/ht-replaced
                 mkdir -p $bin
                 for o in $old
                     set -l kept $bin/(date +%Y%m%d-%H%M%S)-(basename $o)
