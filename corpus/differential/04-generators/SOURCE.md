@@ -260,8 +260,11 @@ file against the directory.
   JPEG through every download control and one lossy WebP render of the same
   1920×1280 pixels to the page — re-encoded, not downscaled. Duplicates removed
   2026-10-02; one file per distinct output kept.
-- Finding (marking): downloads carry XMP DigitalSourceType trainedAlgorithmicMedia
-  and no C2PA manifest.
+- Finding (marking): downloads carry XMP DigitalSourceType
+  trainedAlgorithmicMedia and no C2PA manifest. The page WebPs (browser-save,
+  both modes) keep the field too; the copy-image PNGs (Preview as writer) lose
+  it. The Instagram-served thumbnail (27 KB, cropped, re-encoded) kept it.
+- Pending: `edit-photo` e1–e3 once base photos exist.
 - Files (11): instant p1 web-download-thumb, browser-save-open, copy-image-open,
   share-instagram-browser-save; instant p2–p5 web-download-thumb; thinking p1
   web-download-thumb, browser-save-thumb, copy-image-thumb.
@@ -344,10 +347,11 @@ file against the directory.
   Expand (outpaint): not found in this UI on 2026-09-10. Survival rows for
   "generated → edited in Canva → exported", separate from e1–e3. `larger` p3 and
   `magic-edit` p2 are listed as derived from their sources.
-- Finding: C2PA manifest signed by Canva (c2pa-rs 0.89.3), `Valid` on 2026-09-10
-  (signer not on the vendored 2026-08-14 list); `Invalid` once the certificate
-  expired 2026-09-17 (observed 2026-09-20) with no `c2pa.time-stamp` (see D-010).
-  No IPTC field in XMP.
+- Finding: C2PA manifest signed by Canva (c2pa-rs 0.89.3). Date-dependent:
+  `Valid` on 2026-09-10 (signer not on the vendored 2026-08-14 list); `Invalid`
+  since the signing certificate expired on 2026-09-17 (first observed
+  2026-09-20, unchanged in the 2026-10-04 collection), because the manifest
+  carries no `c2pa.time-stamp` (DIFFERENTIAL.md D-010). No IPTC field in XMP.
 - 2026-10-03: Manifest shape confirmed on all 11 signed Canva files (plain p1–p5,
   editor, JPG, larger, bg-removed, bg-removed-erase, magic-edit) with
   `c2patool --detailed`: one `c2pa.actions.v2` with one `c2pa.created`,
