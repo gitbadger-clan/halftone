@@ -319,3 +319,32 @@ Open: whether two EKUs conform to the C2PA 2.2 signer profile, the version the
 claim declares. The 2026-09-29 addendum reads 2.4 §14.5.1.2 as "at most one
 purpose"; whether that binds the certificate or the validator's per-anchor
 association is to be checked against the 2.2 text.
+
+## D-012 — Bing time-stamps untrusted under the vendored TSA list; expiry judged at validation time (2026-10-10)
+
+- Files: the six signed Bing downloads in 04-generators (p1–p5, 1:1 p2).
+- Observed: `signingCredential.expired` on all six. The four signed by
+  certificate …00007D (notAfter 2026-10-01) first in the 2026-10-04
+  collection; p1 and p4, signed by …000096 (notAfter 2026-10-09 18:27:37Z),
+  first in the collection after that date. Signature times 2026-09-09
+  19:24–19:50Z, inside both certificates' validity.
+- Codes: `timeStamp.validated` (success), `timeStamp.untrusted`
+  (informational: "Microsoft C2PA TimeStamping"), `signingCredential.expired`
+  and `signingCredential.untrusted` (failure), plus D-011's `claim.malformed`.
+- Cause: the TSA is not on the vendored C2PA TSA trust list (2026-08-14,
+  22 certificates, none Microsoft's). An untrusted time-stamp does not anchor
+  the signing time, so c2pa (0.91.x) checks the certificate against the
+  validation date. Counterfactual (c2patool, collector trust inputs, only
+  `verify.verify_timestamp_trust` changed): `true` reproduces
+  `signingCredential.expired`; `false` removes it, leaving
+  `signingCredential.untrusted` and D-011's `claim.malformed`. Without the
+  EKU config the certificate instead reads `signingCredential.invalid`
+  (D-011, Microsoft's private EKU).
+- Contrast with D-010: Canva carries no time-stamp, so its expiry is inherent
+  to the file. Bing's depends on the verifier's TSA list: a list that includes
+  Microsoft's TSA should judge these files as of 2026-09-09.
+- Halftone: <agrees with c2patool on all six | differs: …>. The rationale must
+  say the content hash matches and the certificate expired after signing; an
+  expired credential is not evidence of alteration.
+- Open: whether a newer C2PA TSA trust list includes Microsoft's TSA; if so,
+  re-vendoring flips these rows.
