@@ -14,21 +14,26 @@
 #   ht-pull <remote> <name.ext>  pull byte-exact, sha256-checked, re-mark
 #   ht-grab [-f] <stem>          the one new image as <stem>.<delivered ext>, inspected;
 #                                -f replaces an existing file, keeping the old copy
+#   ht-range [-o dir] <day> [...] every image taken in a time window, numbered
+#                                image1, image2, … (outside the corpus; see the function)
 #
 # Desktop (browser downloads into ~/Downloads):
 #   ht-dmark                     start a capture: marker for ~/Downloads
-#   ht-take <stem>               the one new download into the stratum, inspected
+#   ht-take [-f] <stem>          the one new download into the stratum, inspected;
+#                                -f replaces an existing file, keeping the old copy
 #   ht-tmp <path>                the one new download to <path>, outside the corpus
 #
 # Check:
 #   ht-layout <files…>           per image: size, container parts, c2pa status
 #
-# Files replaced by ht-grab -f are kept in /tmp/ht-replaced/.
+# Files replaced by ht-grab -f and ht-take -f are kept in /tmp/ht-replaced/
+# (cleared on restart).
 # Files keep the extension they were delivered with (SOURCE.md naming rule).
 #
 # Install or update (repo root, after every edit; overwrites saved copies):
 #   source scripts/ht-collect.fish
 #   funcsave ht-use ht-mark ht-type ht-send ht-new ht-latest ht-pull ht-grab \
+#       ht-range ht-dmark ht-take ht-tmp ht-layout __ht_stratum __ht_phone_new __ht_desk_new
 #       ht-dmark ht-take ht-tmp ht-layout __ht_stratum __ht_phone_new __ht_desk_new
 
 # ---- shared ---------------------------------------------------------------------
@@ -310,4 +315,108 @@ function ht-tmp --argument-names dest --description 'Desktop: move the one new d
     mv $files[1] $target; or return 1
     echo "ok  $target  "(file -b --mime-type $target)
     ht-dmark
+end
+
+function ht-range --description 'Phone: pull every image taken in a time window as image1.<ext>, image2.<ext>, … (outside the corpus)'
+    # ht-range [-o dir] YYYY-MM-DD                     the whole day
+    # ht-range [-o dir] YYYY-MM-DD HH:MM               from HH:MM to the end of that day
+    # ht-range [-o dir] YYYY-MM-DD HH:MM HH:MM         between two times that day
+    # ht-range [-o dir] YYYY-MM-DD HH:MM +45m | +2h    from HH:MM for a duration
+    #
+    # Times are local, matched against the capture time Android records
+    # (MediaStore datetaken); trashed and unfinished files are excluded.
+    # Default destination: ~/halftone-candidates/<date>/, deliberately outside the
+    # corpus so candidates are never collected. Numbering continues after any
+    # imageN already there; index.tsv records imageN → phone path → capture time.
+    # Files are pulled byte-exact and sha256-checked; ht-mark is not touched.
+    # A failed pull or hash mismatch still uses up its imageN, so numbering can
+    # have gaps; a mismatched file stays on disk without an index.tsv row.
+    argparse 'o/out=' -- $argv; or return 1
+    set -l day $argv[1]
+    if not string match -qr '^\d{4}-\d{2}-\d{2}$' -- "$day"
+        echo 'usage: ht-range [-o dir] YYYY-MM-DD [HH:MM [HH:MM | +N(m|h)]]'
+        return 1
+    end
+
+    # Window [start, end) in epoch seconds, local time.
+    set -l t0 00:00
+    set -q argv[2]; and set t0 $argv[2]
+    set -l start (date -j -f '%Y-%m-%d %H:%M' "$day $t0" +%s 2>/dev/null)
+    or begin
+        echo "not a time: $t0 (use HH:MM)"
+        return 1
+    end
+    set -l end
+    if set -q argv[3]
+        set -l spec $argv[3]
+        if string match -qr '^\+\d+[mh]$' -- $spec
+            set -l num (string match -r '\d+' -- $spec)
+            if test (string sub -s -1 -- $spec) = h
+                set end (math $start + $num '*' 3600)
+            else
+                set end (math $start + $num '*' 60)
+            end
+        else
+            set end (date -j -f '%Y-%m-%d %H:%M' "$day $spec" +%s 2>/dev/null)
+            or begin
+                echo "not a time or duration: $spec (use HH:MM, +45m or +2h)"
+                return 1
+            end
+        end
+    else
+        # To midnight; via the next calendar day so DST days stay correct.
+        set -l next (date -j -v+1d -f '%Y-%m-%d' "$day" +%Y-%m-%d)
+        set end (date -j -f '%Y-%m-%d %H:%M' "$next 00:00" +%s)
+    end
+    if test $end -le $start
+        echo "the window ends before it starts"
+        return 1
+    end
+
+    # datetaken is in milliseconds.
+    set -l where "datetaken >= "$start"000 AND datetaken < "$end"000 AND is_trashed=0 AND is_pending=0"
+    set -l rows (adb shell content query --uri content://media/external/images/media \
+        --projection _data:datetaken --where "\"$where\"" --sort '"datetaken ASC"')
+    set -l hits (string replace -rf '^Row: \d+ _data=(.*), datetaken=(\d+)$' '$1|$2' -- $rows)
+    if test (count $hits) -eq 0
+        echo "no images taken between "(date -r $start '+%Y-%m-%d %H:%M')" and "(date -r $end '+%Y-%m-%d %H:%M')
+        return 1
+    end
+
+    set -l dest ~/halftone-candidates/$day
+    set -q _flag_out; and set dest $_flag_out
+    mkdir -p $dest; or return 1
+
+    # Continue after the highest imageN already in the folder.
+    set -l n 0
+    for e in $dest/image*.*
+        set -l k (string match -r '^image(\d+)\.' -- (basename $e))[2]
+        if test -n "$k"; and test $k -gt $n
+            set n $k
+        end
+    end
+
+    set -l pulled 0
+    for h in $hits
+        set -l parts (string split '|' -- $h)
+        set -l p $parts[1]
+        set -l taken (date -r (math -s0 $parts[2] / 1000) '+%Y-%m-%d %H:%M:%S')
+        set n (math $n + 1)
+        set -l ext (string match -r '[^.]+$' -- $p)
+        set -l dst $dest/image$n.$ext
+        if not adb pull $p $dst >/dev/null
+            echo "FAILED   $p"
+            continue
+        end
+        set -l a (adb shell sha256sum "'$p'" | string split -f1 ' ')
+        set -l b (shasum -a 256 $dst | string split -f1 ' ')
+        if test "$a" != "$b"
+            echo "HASH MISMATCH  $dst" >&2
+            continue
+        end
+        printf '%s\t%s\t%s\n' image$n.$ext $p $taken >>$dest/index.tsv
+        printf 'image%-4s %s  %s\n' $n.$ext $taken (basename $p)
+        set pulled (math $pulled + 1)
+    end
+    echo "$pulled image(s) → $dest"
 end
