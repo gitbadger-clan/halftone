@@ -138,7 +138,7 @@ function ht-grab --description 'Phone: pull the one new image as <stem>.<deliver
         set -e argv[1]
     end
     set -l stem $argv[1]
-    if test -z "$stem"
+    if test -z "$stem"; or string match -q -- '-*' $stem
         echo "usage: ht-grab [-f] <name-without-extension>"
         return 1
     end
@@ -241,9 +241,15 @@ function __ht_desk_new --description 'Desktop: finished image downloads newer th
         | string match -r -i '.*\.(?:jpe?g|png|webp|gif|heic|heif|avif)$'
 end
 
-function ht-take --argument-names stem --description 'Desktop: move the one new download into the stratum as <stem>.<delivered ext> and inspect it'
-    if test -z "$stem"
-        echo "usage: ht-take <name-without-extension>"
+function ht-take --description 'Desktop: move the one new download into the stratum as <stem>.<delivered ext> and inspect it; -f replaces an existing file'
+    set -l force 0
+    if contains -- $argv[1] -f --force
+        set force 1
+        set -e argv[1]
+    end
+    set -l stem $argv[1]
+    if test -z "$stem"; or string match -q -- '-*' $stem
+        echo "usage: ht-take [-f] <name-without-extension>"
         return 1
     end
     set -l files (__ht_desk_new)
@@ -255,9 +261,21 @@ function ht-take --argument-names stem --description 'Desktop: move the one new 
             set -l dir (__ht_stratum); or return 1
             set -l ext (string match -r '[^.]+$' -- $files[1])
             set -l dst $dir/$stem.$ext
-            if test -e $dst
-                echo "exists: $dst"
-                return 1
+            # Only now, with the new download found, deal with any old file of this
+            # name, under any extension, so one name never holds two versions.
+            set -l old $dir/$stem.*
+            if test (count $old) -gt 0
+                if test $force -eq 0
+                    echo "exists: $old[1] (use ht-take -f $stem to replace it)"
+                    return 1
+                end
+                set -l bin /tmp/ht-replaced
+                mkdir -p $bin
+                for o in $old
+                    set -l kept $bin/(date +%Y%m%d-%H%M%S)-(basename $o)
+                    mv $o $kept
+                    echo "replaced: $o (old copy: $kept)"
+                end
             end
             echo "found $files[1]"
             mv $files[1] $dst; or return 1
