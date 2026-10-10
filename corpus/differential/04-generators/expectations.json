@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-04T15:42:51Z",
+  "collected_at": "2026-10-10T19:42:03Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
@@ -407,6 +407,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.expired",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -511,6 +512,7 @@
         "present": true,
         "validation_codes": [
           "signingCredential.untrusted",
+          "signingCredential.expired",
           "claim.malformed"
         ],
         "validation_state": "Invalid"
@@ -644,6 +646,78 @@
       "sha256": "3275f1cb1694bb51dc52016e7ce42eab9da6dcfd76e741ec23f3ec1d8eb1f857",
       "size_bytes": 1361613
     },
+    "canva__canva-ai-free__web-download__p1__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "86e812000bcfa1e8e3b3d69737de1b692f5cecb952bb88ba70054c56ed29a079",
+      "size_bytes": 3338204
+    },
+    "canva__canva-ai-free__web-download__p2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "246ae99fc066d327b9772acf07377f61f459ce4a83b0245d11839f43b157e199",
+      "size_bytes": 3730290
+    },
     "canva__canva-ai-larger__web-download__p3__3.png": {
       "c2patool": {
         "assertions": [
@@ -677,6 +751,114 @@
       "sha256": "1263eecf0cf6ca8004d8f0ccd8615b5f07c96a3a5b7d7dc5a89013c901ed43c2",
       "size_bytes": 413136
     },
+    "canva__canva-ai-magic-edit__edit-photo__e1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "5c82aaec39567b28e6fb9a57510a8dbf3e3d2d9886d05508b4ced4cb904dc69a",
+      "size_bytes": 2581535
+    },
+    "canva__canva-ai-magic-edit__edit-photo__e1__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "72842b0e794b8b4ebe096f6147d9f89055718a4368a93140020afcd8709d0054",
+      "size_bytes": 10168731
+    },
+    "canva__canva-ai-magic-edit__edit-photo__e2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "0fc6e25b3bf3d81d261a01f85fe866e180bc20edf0514489b89e8d1b7a0e8a25",
+      "size_bytes": 5344622
+    },
     "canva__canva-ai-magic-edit__web-download__p2__2.png": {
       "c2patool": {
         "assertions": [
@@ -709,6 +891,150 @@
       },
       "sha256": "dc74e47ee33a5f7423fb598bf1a4a6e918b495431742d199ed762819d52dcaed",
       "size_bytes": 3671213
+    },
+    "canva__canva-ai-magic-expand__edit-photo__e3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "af13e8ef952a52964e99ff006d45466f5b2a5c465be508eda72e0e118969418b",
+      "size_bytes": 25654032
+    },
+    "canva__canva-ai__edit-photo__e1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "fa3f7778ee66a7f6957a74c58f7a5227f128eef7092b0bacee6c4248d7c6f002",
+      "size_bytes": 2389612
+    },
+    "canva__canva-ai__edit-photo__e2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "547afd7a5b0e2ff1fb32a785a078485ad022dce344b37a553ace303cb34e50ad",
+      "size_bytes": 1740524
+    },
+    "canva__canva-ai__edit-photo__e3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "issuer": "Canva",
+        "present": true,
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "9ad108b1ba376ba6064b6ba37b8fb4279fb9afcf790d067f9a4bec2c3ec3d174",
+      "size_bytes": 3231551
     },
     "canva__canva-ai__web-download-editor__p1__1.png": {
       "c2patool": {

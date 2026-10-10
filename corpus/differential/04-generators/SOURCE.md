@@ -136,12 +136,26 @@ file against the directory.
 - XMP DigitalSourceType: none on any Bing file (2026-10-04 collection).
 - Files (7): p1 download; p1 copy-image as `__p1__2` (copied from a regenerated
   image, 12.1 dB against p1__1); p2–p5 download; p2 at 1:1.
-- Pending: download of the p1__2 generation, so the copy route has a
-  same-generation partner (marking kept or lost through the clipboard);
-  re-collect after 2026-10-09, when p1's certificate expires (p1 and p4 should
-  then read `expired` too, if the signature time is not used); which TSA signed
-  the Bing timestamps and whether it is in `C2PA-TSA-TRUST-LIST.pem`; the
-  certificate serials of p3, p5 and the 1:1 p2.
+- Finding (expiry): `signingCredential.expired` on all six signed downloads
+  since 2026-10-09. One download session (2026-09-09, 19:24–19:50 UTC) was
+  signed by two Microsoft leaf certificates, each valid for one year: serial
+  33000000…00007D (p2, p3, p5, 1:1 p2; notAfter 2026-10-01 17:43:59Z) and
+  33000000…000096 (p1, p4; notAfter 2026-10-09 18:27:37Z). Every signature
+  carries an RFC 3161 time-stamp inside its certificate's validity
+  (`timeStamp.validated`, "Microsoft C2PA TimeStamping"), but that TSA is not
+  on the vendored C2PA TSA list (22 certificates, none Microsoft's), so c2pa
+  reports `timeStamp.untrusted` and judges expiry against the validation
+  date: the …00007D files read `expired` from the 2026-10-04 collection, the
+  …000096 files from the first collection after 2026-10-09, as predicted on
+  2026-10-06. Content hash matches on all six; `claim.malformed` (soft-binding,
+  D-011) unchanged. Unlike Canva (D-010), Bing time-stamps its signatures; the
+  files read `expired` because of the TSA trust list, not a missing
+  time-stamp. DIFFERENTIAL.md D-012.
+- Pending: download of the p1__2 generation, if it is still in the Bing
+  history, so the copy route has a same-generation partner (marking kept or
+  lost through the clipboard). A download now would also show whether Bing
+  signs at download (new certificate and signature time) or serves the
+  September manifest.
 
 ## Adobe Firefly — Image 5 and Image 4 Ultra (firefly.adobe.com)
 
@@ -331,27 +345,29 @@ file against the directory.
 
 ## Canva — Canva AI image generator (canva.com)
 
-- Date: 2026-09-10. Plan: Pro trial (one free-tier file predates it, see below).
+- Date: 2026-09-10 to 2026-10-10. Plan: Pro trial from 2026-09-10 (one
+  free-tier file predates it, see below), cancelled 2026-10-10 09:43;
+  account on Free from 09:43 2026-10-10.
   Model as shown in the UI: not stated → variant `canva-ai`. Default aspect: 1:1.
 - Purpose in the corpus: agency tooling. Canva is a C2PA member; whether its
   export writes a manifest, and whether its own edits keep one, is the row.
 - Paths: all downloads taken from the opened preview (`web-download`). The
   download dialog offers PNG (default) and JPG (`web-download-jpg`), plus a
   "larger size" option (variant `canva-ai-larger`, an export-time upscale). The
-  editor-canvas export after "Edit image" is `web-download-editor`. The
-  result-card download was not exercised. Right-click Save / Copy on the canvas:
-  not available.
-- Edits (variant token), all on Canva's own generations: `bg-removed` =
-  Background Remover on p3; `bg-removed-erase` = Background Remover then Magic
-  Eraser on a segment of p3; `magic-edit` = Magic Edit (generative inpaint) on p2.
-  Expand (outpaint): not found in this UI on 2026-09-10. Survival rows for
-  "generated → edited in Canva → exported", separate from e1–e3. `larger` p3 and
-  `magic-edit` p2 are listed as derived from their sources.
-- Finding: C2PA manifest signed by Canva (c2pa-rs 0.89.3). Date-dependent:
+  editor-canvas export after "Edit image" is `web-download-editor`; edit rows
+  are exported from the editor via Share → Download (PNG, 1×). The tier at
+  export goes in the variant (`canva-ai-free`). The result-card download was
+  not exercised. Right-click Save / Copy on the canvas: not available.
+- Finding: C2PA manifest signed by Canva (c2pa-rs 0.89.3), built at export,
+  not at generation (see the p2 re-download under Tier). Date-dependent:
   `Valid` on 2026-09-10 (signer not on the vendored 2026-08-14 list); `Invalid`
   since the signing certificate expired on 2026-09-17 (first observed
   2026-09-20, unchanged in the 2026-10-04 collection), because the manifest
-  carries no `c2pa.time-stamp` (DIFFERENTIAL.md D-010). No IPTC field in XMP.
+  carries no `c2pa.time-stamp` (DIFFERENTIAL.md D-010). XMP: no IPTC field in
+  the September downloads; downloads from October on carry
+  XMP-iptcExt:DigitalSourceType = compositeWithTrainedAlgorithmicMedia, on
+  plain generations and edits alike, so Canva added the field between
+  September and October.
 - 2026-10-03: Manifest shape confirmed on all 11 signed Canva files (plain p1–p5,
   editor, JPG, larger, bg-removed, bg-removed-erase, magic-edit) with
   `c2patool --detailed`: one `c2pa.actions.v2` with one `c2pa.created`,
@@ -369,23 +385,58 @@ file against the directory.
   (§18.15.3: unrecorded actions may have been performed). `softwareAgent` is the
   plain string "Canva AI"; §18.15.4.4 describes a generator-info-map for v2
   actions, and c2pa-rs accepts both. Closes the magic-edit pending item.
+- Edits (E1–E3, 2026-10-09, Pro trial), three routes, all with the base
+  photo uploaded as a file from 00-base:
+  - Canva AI chat (`canva-ai`): prompt verbatim; the chat chose the
+    operation and names no tool.
+  - Magic Edit (`canva-ai-magic-edit`): E1 (page 1200×1600 and native
+    3000×4000), E2. E3 not possible: Magic Edit works inside the frame and
+    returned the image unchanged; not filed.
+  - Magic Expand (`canva-ai-magic-expand`): E3, photo centred on a wider
+    page and expanded to its edges. Deviation: Expand takes no text prompt.
+  Finding, identical across all three routes: the camera's C2PA manifest is
+  replaced by Canva's (issuer Canva) with zero ingredients, so the camera
+  original is not recorded; `compositeWithTrainedAlgorithmicMedia` in both
+  the manifest and XMP. Camera EXIF (make, model, capture time) not carried
+  over. Valid when collected, `signingCredential.untrusted` only; new signing
+  certificate (serial 167403…226101; September files 129430…675375), no
+  signature time (D-010), so expected to turn `Invalid` like the September
+  rows.
 - Tier: `canva-ai-free` p1 was exported on the free tier before the trial and
   carries no manifest and no XMP; every Pro-tier export carries the manifest.
-  Tier-dependent marking is the hypothesis; see Pending.
   2026-10-04: the corpus test found the free-tier p1 and the Pro editor export
   (`web-download-editor__p1__1`) pixel-identical (AE 0, full resolution, both
-  1200×1200): same generation, manifest only on the Pro export. Tier and path both
-  differ, so this supports the hypothesis without isolating it; the p2 re-download
-  stays the control. Listed under `known_duplicates` in corpus-rules.
+  1200×1200): same generation, manifest only on the Pro export. Listed under
+  `known_duplicates` in corpus-rules.
+  2026-10-10, the control: p2 re-downloaded on Free (11:03, after the
+  cancellation) from the same Pro-era design
+  (`canva-ai-free__web-download__p2__2`). It carries a fresh Canva manifest,
+  valid when collected (`signingCredential.untrusted` only, certificate
+  167403…226101, the same as the October edits), plus the XMP field. So
+  Canva signs at export, and the export tier does not decide marking now;
+  the September downloads from this design are `Invalid` because their
+  certificate expired. Pixels: not the September plain p2 (PSNR 13.0 dB,
+  16.8 % of pixels differing, nearly all by more than 1 %); against the
+  September Magic Edit of p2 (`canva-ai-magic-edit__web-download__p2__2`),
+  PSNR 13.11 dB. The re-download matches neither September file from this
+  design, so the export is a different image from anything downloaded in
+  September; why (the design changed after September, or Canva re-rendered
+  on export) is not known. It shows that a Free export is signed and carries
+  the XMP field; it is not a same-pixels control, so it does not isolate the
+  tier from the date. Still open: why the September
+  free-tier p1 carried nothing, either the tier it was generated on or a
+  change at Canva since September. A fresh free-tier generation decides it
+  (see Pending).
 - p1 generation 2 (Pro): opened-preview PNG `__p1__2` and its JPG export
   `web-download-jpg__p1__2` (57.6 dB, same image).
-- Files (12): free-tier p1; Pro p1 editor export (generation 1); Pro p1 PNG and
+- Files (20): free-tier p1; Pro p1 editor export (generation 1); Pro p1 PNG and
   JPG (generation 2); p2–p5 via opened preview; p3 larger-size; p3 bg-removed and
-  bg-removed-erase; p2 magic-edit.
-- Pending: after the trial ends, re-download p2 from the same Pro-era design on
-  the free tier (`canva-ai-free__web-download__p2__2`) — same generation, same
-  control, only the tier differs; share link → served asset; one non-default
-  aspect; e1–e3 on the base photos via Canva's edit tools once they exist.
+  bg-removed-erase; p2 magic-edit; edits E1–E3 via chat (3), Magic Edit (3),
+  Magic Expand (1); p2 free-tier re-download.
+- Pending: a fresh free-tier generation of p1
+  (`canva-ai-free__web-download__p1__3`) to separate generation tier from
+  date. Not done during the trial, and on Free they would now test Free, not
+  Pro: share link → served asset, one non-default aspect, result-card download.
 
 ## Ideogram — Ideogram 3 and v4 (ideogram.ai)
 
