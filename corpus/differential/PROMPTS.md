@@ -45,28 +45,37 @@ non-photo negative per generator.
 
 ## Edit prompts (image-to-image, on your own phone photos)
 
-Shoot the three base photos once on the Fold, plain camera, no HDR effects, and reuse
-them for every generator that offers editing. Keep the originals in
-`corpus/differential/00-base/photo_{bowl,path,flask}.jpg`.
+Base photos: `00-base/photo_{bowl,flask,path}.jpg`, Pixel 9 Pro Fold, Ultra HDR
+off, Top Shot off, location off, signed by the camera (see `00-base/SOURCE.md`).
+The same three files are the input for every tool that offers editing.
 
-E1 · inpaint, object replacement (photo_bowl)
+E1 · inpaint, object replacement (photo_bowl: glass bowl of green apples)
 ```
-Replace the lemons in the bowl with green apples. Keep everything else unchanged.
-```
-
-E2 · background change (photo_flask)
-```
-Change the background to a wooden workbench with soft daylight. Keep the flask exactly as it is.
+Replace the green apples in the bowl with lemons. Keep everything else unchanged.
 ```
 
-E3 · outpaint / extend (photo_path)
+E2 · background change (photo_flask: flask on a wooden grid board, white wall)
 ```
-Extend the image to the left and right to show more of the forest, matching the light and mist.
+Place the flask on a grey slate surface in front of a plain dark green wall, soft daylight. Keep the flask exactly as it is.
 ```
+
+E3 · outpaint / extend (photo_path: aisle between vine rows, overcast)
+```
+Extend the image to the left and right to show more of the vineyard, matching the light and the overcast sky.
+```
+
+Revised 2026-10-09, before any edit row existed: the earlier E1–E3 described a
+bowl of lemons, a flask in front of an unspecified background, and a forest path,
+none of which match the base photos as shot. Edit type per prompt unchanged.
 
 Expected declaration for E1–E3 is `compositeWithTrainedAlgorithmicMedia`; a
 generator that writes `trainedAlgorithmicMedia` for an edit of a real photo is a
 finding, not a bug in Halftone.
+
+Brush- or selection-based tools (Magic Edit, Generative Fill): select the object
+(E1) or the background (E2), and still enter the prompt verbatim. If a tool only
+accepts a short phrase, record the exact text used in SOURCE.md; that is a
+deviation, not a new prompt.
 
 ## Local models (SD 1.5 / SDXL / Flux), for reproducibility
 

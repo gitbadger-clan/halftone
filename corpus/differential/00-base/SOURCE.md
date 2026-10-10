@@ -19,4 +19,6 @@ third-party generators. Not committed.
   worktop, induction hob behind. Ultra HDR off: single JPEG. For E1.
 - `photo_flask.jpg`: 2026-10-08. Black steel flask on a wooden grid board,
   white wall behind. Ultra HDR off: single JPEG. For E2.
-- `photo_path.jpg`: pending. An outdoor path with trees on both sides. For E3.
+- `photo_path.jpg`: 2026-10-09. Grass aisle between vine rows, framed by two
+  wooden posts, trellis wires across the frame, overcast sky; single JPEG,
+  signed. For E3.
