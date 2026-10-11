@@ -423,20 +423,24 @@ file against the directory.
   September; why (the design changed after September, or Canva re-rendered
   on export) is not known. It shows that a Free export is signed and carries
   the XMP field; it is not a same-pixels control, so it does not isolate the
-  tier from the date. Still open: why the September
-  free-tier p1 carried nothing, either the tier it was generated on or a
-  change at Canva since September. A fresh free-tier generation decides it
-  (see Pending).
+  tier from the date.
+  2026-10-10: a fresh free-tier generation of p1
+  (`canva-ai-free__web-download__p1__3`, generated and downloaded on Free)
+  carries the Canva manifest (`compositeWithTrainedAlgorithmicMedia`, valid
+  when collected, `signingCredential.untrusted` only) and the XMP field. So
+  the unmarked September free-tier p1 most likely reflects a change at Canva
+  between September and October, not the tier; the one variable this does
+  not isolate is account history (the September file came from an account
+  never on Pro, p1__3 from one back on Free after a trial). Every Canva
+  export collected in October, Free or Pro, generation or edit, carries both.
 - p1 generation 2 (Pro): opened-preview PNG `__p1__2` and its JPG export
   `web-download-jpg__p1__2` (57.6 dB, same image).
-- Files (20): free-tier p1; Pro p1 editor export (generation 1); Pro p1 PNG and
+- Files (21): free-tier p1; Pro p1 editor export (generation 1); Pro p1 PNG and
   JPG (generation 2); p2–p5 via opened preview; p3 larger-size; p3 bg-removed and
   bg-removed-erase; p2 magic-edit; edits E1–E3 via chat (3), Magic Edit (3),
-  Magic Expand (1); p2 free-tier re-download.
-- Pending: a fresh free-tier generation of p1
-  (`canva-ai-free__web-download__p1__3`) to separate generation tier from
-  date. Not done during the trial, and on Free they would now test Free, not
-  Pro: share link → served asset, one non-default aspect, result-card download.
+  Magic Expand (1); p2 free-tier re-download; p1 fresh free-tier generation.
+- Pending (not done during the trial; on Free they now test Free, not Pro): share
+  link → served asset, one non-default aspect, result-card download.
 
 ## Ideogram — Ideogram 3 and v4 (ideogram.ai)
 
