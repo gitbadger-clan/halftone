@@ -343,8 +343,11 @@ association is to be checked against the 2.2 text.
 - Contrast with D-010: Canva carries no time-stamp, so its expiry is inherent
   to the file. Bing's depends on the verifier's TSA list: a list that includes
   Microsoft's TSA should judge these files as of 2026-09-09.
-- Halftone: <agrees with c2patool on all six | differs: …>. The rationale must
-  say the content hash matches and the certificate expired after signing; an
-  expired credential is not evidence of alteration.
+- Halftone: agrees with c2patool on all six (differential 2026-10-10:
+  236 of 236 files, 0 disagreements; 04 ground truth 2026-10-10T19:42:03Z).
+  Status `Inconclusive`; the rationale says the content hash still matches,
+  the certificate has expired and no trusted time-stamp places the signature
+  inside its validity, so acceptance depends on the date of checking. It
+  makes no claim of alteration.
 - Open: whether a newer C2PA TSA trust list includes Microsoft's TSA; if so,
   re-vendoring flips these rows.
