@@ -2,8 +2,12 @@
 //! ExifTool and c2patool ground truth collected by `scripts/differential.py`.
 //!
 //! Corpus location: `$HALFTONE_DIFFERENTIAL_CORPUS`, else `<repo>/corpus/differential`.
-//! The directory must contain `expectations.json`; if it does not exist the test
-//! prints a notice and passes, so CI without the corpus stays green. Set
+//! A relative `$HALFTONE_DIFFERENTIAL_CORPUS` is resolved against the repo root, not
+//! the working directory: cargo runs integration tests from the package directory
+//! (`crates/halftone-cli`). A corpus named that way must have `expectations.json`,
+//! or the test fails: an explicit request that compares nothing is not a pass.
+//! Without the variable, a missing corpus prints a notice and passes, so CI
+//! without the corpus stays green. Set
 //! `HALFTONE_DIFFERENTIAL_BATCH=<file>` to compare a previously produced
 //! `ht inspect --batch --json` document instead of running the binary.
 //!
@@ -120,23 +124,30 @@ fn header_disagreements(label: &str, exp: &Value) -> Vec<Disagreement> {
     out
 }
 
+/// The workspace root, two levels above this package.
+fn repo_root() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..")
+}
+
 /// Corpora to compare. `$HALFTONE_DIFFERENTIAL_CORPUS` names one directory;
 /// otherwise every immediate subdirectory of `<repo>/corpus/differential` (one per
 /// stratum) that has an `expectations.json`, plus the root itself if it has one.
 fn corpora() -> Vec<PathBuf> {
     if let Some(d) = std::env::var_os("HALFTONE_DIFFERENTIAL_CORPUS") {
         let d = PathBuf::from(d);
-        return if d.join("expectations.json").is_file() {
-            vec![d]
+        let d = if d.is_relative() {
+            repo_root().join(d)
         } else {
-            Vec::new()
+            d
         };
+        assert!(
+            d.join("expectations.json").is_file(),
+            "HALFTONE_DIFFERENTIAL_CORPUS names {}, which has no expectations.json",
+            d.display()
+        );
+        return vec![d];
     }
-    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("..")
-        .join("..")
-        .join("corpus")
-        .join("differential");
+    let root = repo_root().join("corpus").join("differential");
     let mut out = Vec::new();
     if root.join("expectations.json").is_file() {
         out.push(root.clone());
