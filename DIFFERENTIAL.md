@@ -164,8 +164,9 @@ On 2026-09-10 both tools read `Valid` (`signingCredential.untrusted` only). On
 2026-09-20 both read `Invalid` with `signingCredential.expired` +
 `signingCredential.untrusted`. The signing certificate (`O=Canva, CN=Canva
 Signing`) is valid 2026-09-09T23:52:03Z to 2026-09-17T23:52:03Z — eight days —
-and the manifest carries a single `c2pa.actions.v2` assertion and no
-`c2pa.time-stamp`, so nothing fixes the signing time inside that window. The
+and the manifest carries a single `c2pa.actions.v2` assertion and its signature
+no time-stamp, so nothing fixes the signing time inside that window (cause
+corrected, see addendum 2026-10-12). The
 content hash still matches; the file is unchanged. Google, Microsoft and Ideogram
 rows are unchanged on the same day.
 Not a tool disagreement (Halftone and c2patool agree on both dates) but a
@@ -189,6 +190,24 @@ unlikely to know about, and a regulator checking a file a month later sees
   code is `signingCredential.expired` (nothing broken) as `aged since
   <collected_at>: re-collect`, not as a disagreement; same split as the Layer 1
   rationale.
+Addendum 2026-10-12 · The missing time-stamp is in the signature, not an
+assertion. A time-stamp that fixes the signing time is a token in the COSE
+signature's unprotected header (`sigTst` / `sigTst2`); c2pa reports it through
+`validation_results.activeManifest` as `timeStamp.validated` / `.trusted`
+(success) or `timeStamp.untrusted` (informational), never in the failures-only
+`validation_status`. The `c2pa.time-stamp` assertion is a different structure:
+it holds time-stamps for other manifests, keyed by manifest id, and its absence
+says nothing about the active signature. The original cause sentence named the
+assertion; the conclusion stands. `scripts/cert-shelf-life.sh` on all 20 signed
+Canva files (2026-10-12, `cert-shelf-life-canva-2026-10-12.json`): no
+`timeStamp.*` code on any of them, September or October, any route.
+Consequence for Layer 1: the expired-certificate rationale decides its
+time-stamp clause by looking for the `c2pa.time-stamp` assertion
+(`has_timestamp` in `crates/halftone-c2pa/src/lib.rs`). It reads correctly for
+Canva (no time-stamp) and Bing (time-stamp untrusted, D-012) by coincidence, and
+would be wrong for a file whose signature carries a trusted time-stamp but no
+such assertion, or the reverse. Open: derive time-stamp status from the
+`timeStamp.*` codes instead; planned with the certificate shelf-life fields.
 
 ### D-011 · 2026-09-25 · c2pa 0.91: trust anchors silently dropped; Bing Invalid
 
@@ -320,7 +339,7 @@ claim declares. The 2026-09-29 addendum reads 2.4 §14.5.1.2 as "at most one
 purpose"; whether that binds the certificate or the validator's per-anchor
 association is to be checked against the 2.2 text.
 
-## D-012 — Bing time-stamps untrusted under the vendored TSA list; expiry judged at validation time (2026-10-10)
+### D-012 — Bing time-stamps untrusted under the vendored TSA list; expiry judged at validation time (2026-10-10)
 
 - Files: the six signed Bing downloads in 04-generators (p1–p5, 1:1 p2).
 - Observed: `signingCredential.expired` on all six. The four signed by
@@ -351,3 +370,63 @@ association is to be checked against the 2.2 text.
   makes no claim of alteration.
 - Open: whether a newer C2PA TSA trust list includes Microsoft's TSA; if so,
   re-vendoring flips these rows.
+  Addendum 2026-10-12 · Open item checked. Upstream trust-list HEAD is still
+  c2pa-org/conformance-public@99927caef670 (2026-08-14), the vendored snapshot;
+  the upstream TSA list is byte-identical (22 certificates, none naming
+  Microsoft). Re-collecting 04 with it leaves the six Bing rows unchanged:
+  `timeStamp.untrusted`, `signingCredential.expired`. No re-vendoring; recheck at the
+  next upstream sync.
+Addendum 2026-10-13 · Two Microsoft signing certificates, two dates. With the
+per-file certificate fields (schema 1.2.0), the six signed Bing web-downloads
+split across two leaf certificates:
+- 330000007D3B58D0D7100B5FFC00000000007D, not_after 2026-10-01T17:43:59Z:
+  1x1 p2, p2, p3, p5
+- 33000000968FBE4D3E4A1DF8DF000000000096, valid 2025-10-09T18:27:37Z to
+  2026-10-09T18:27:37Z: p1, p4
+All six carry Microsoft's time-stamp (`timeStamp.validated` +
+`timeStamp.untrusted`); p1's token states 2026-09-09T19:24:33+00:00, inside its
+certificate's window. Under the vendored TSA list nothing fixes the signing time,
+so the first four read `signingCredential.expired` from 2026-10-01T17:43:59Z and
+the other two from 2026-10-09T18:27:37Z; these replace the single predicted date
+(2026-10-06). A verifier that trusts Microsoft's TSA judges each certificate at
+its token's time instead. Oracle: `scripts/cert-shelf-life.sh` and `ht` agree on
+serial, not_after and time-stamp status for all six, and for all 20 signed Canva
+files (2026-10-13). Microsoft serials share a long `33000000…` prefix: cite them
+in full or as prefix..suffix, never by the first six characters.
+
+### D-013 · 2026-10-14 · Active-manifest-only reading understates a generative edit
+
+- File: `04-generators/google-flow__nano-banana-2.1__edit-photo__e2__2.jpg`.
+- Chain: transcode (active; `algorithmicallyEnhanced`) → parentOf → generation
+  (`trainedAlgorithmicMedia`, SynthID) → inputTo → upload transcode →
+  parentOf → Pixel camera capture (`computationalCapture`). All Google LLC,
+  trusted.
+- Halftone: the c2pa source reports the manifest as trusted (signer chains to
+  the vendored list, content hash matches) and says the signer asserts a
+  non-generative source (`algorithmicallyEnhanced`). c2patool agrees on
+  validation; the differential compares status and codes, not source types,
+  so it reports no disagreement.
+- Cause: the c2pa source reads `digitalSourceType` from the active manifest's
+  actions only.
+- Required: follow the `parentOf` lineage from the active manifest and report
+  a generative type declared anywhere in it, naming the layer ("an ingredient
+  manifest one step back declares trainedAlgorithmicMedia; the active
+  manifest records only a transcode"). `inputTo` and `componentOf`
+  ingredients are inputs, not lineage: report them as context (here, a
+  camera capture used as input), not as the file's source type.
+- Fixtures: E2 (generative only in lineage), its re-download and E1
+  (generative in the active manifest, camera as `inputTo`).
+- Status: open.
+
+Addendum 2026-10-14 · The extra layer is per download. A second download of
+the same E2 result from the same view
+(`google-flow__nano-banana-2.1__edit-photo-redownload__e2__2.jpg`) carries 3
+manifests, with the generation (`trainedAlgorithmicMedia`, SynthID) as the
+active manifest, and differs from the first in 0.63 % of pixels (PSNR
+40.6 dB). Both files share the generation (…4c0148722cca) and upload
+(…46f4526fcec1) manifests and the camera capture of `photo_flask.jpg`
+(…4665cbaddaa9); the first download adds one manifest on top
+(…4ad6861a347d), a whole-image re-encode. Two copies of one Flow result
+therefore get opposite source-type readings under the active-manifest-only
+rule. All three files are fixtures: the chain walk must report the same
+generative finding for both E2 downloads and for E1.

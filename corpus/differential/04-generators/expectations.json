@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-10T19:42:03Z",
+  "collected_at": "2026-10-14T13:00:28Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
@@ -221,6 +221,16 @@
         ],
         "issuer": "OpenAI OpCo, LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -252,6 +262,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-26T23:01:50Z",
+          "not_before": "2026-03-03T23:01:51Z",
+          "serial": "A8217339845F2710405E1E53822004AEF82E49"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -319,6 +339,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-26T23:01:50Z",
+          "not_before": "2026-03-03T23:01:51Z",
+          "serial": "A8217339845F2710405E1E53822004AEF82E49"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -354,6 +384,16 @@
         ],
         "issuer": "Microsoft Corporation",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-01T17:43:59Z",
+          "not_before": "2025-10-01T17:43:59Z",
+          "serial": "330000007D3B58D0D7100B5FFC00000000007D"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired",
@@ -405,6 +445,16 @@
         ],
         "issuer": "Microsoft Corporation",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-09T18:27:37Z",
+          "not_before": "2025-10-09T18:27:37Z",
+          "serial": "33000000968FBE4D3E4A1DF8DF000000000096"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired",
@@ -440,6 +490,16 @@
         ],
         "issuer": "Microsoft Corporation",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-01T17:43:59Z",
+          "not_before": "2025-10-01T17:43:59Z",
+          "serial": "330000007D3B58D0D7100B5FFC00000000007D"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired",
@@ -475,6 +535,16 @@
         ],
         "issuer": "Microsoft Corporation",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-01T17:43:59Z",
+          "not_before": "2025-10-01T17:43:59Z",
+          "serial": "330000007D3B58D0D7100B5FFC00000000007D"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired",
@@ -510,6 +580,16 @@
         ],
         "issuer": "Microsoft Corporation",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-09T18:27:37Z",
+          "not_before": "2025-10-09T18:27:37Z",
+          "serial": "33000000968FBE4D3E4A1DF8DF000000000096"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired",
@@ -545,6 +625,16 @@
         ],
         "issuer": "Microsoft Corporation",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-01T17:43:59Z",
+          "not_before": "2025-10-01T17:43:59Z",
+          "serial": "330000007D3B58D0D7100B5FFC00000000007D"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired",
@@ -579,6 +669,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -612,6 +709,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -661,6 +765,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:53:55Z",
+          "not_before": "2026-10-07T23:53:55Z",
+          "serial": "1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -697,6 +808,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:53:55Z",
+          "not_before": "2026-10-07T23:53:55Z",
+          "serial": "1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -733,6 +851,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -766,6 +891,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:52:11Z",
+          "not_before": "2026-10-07T23:52:11Z",
+          "serial": "693A9EF0575A9E62DEED4BBAA0B200D133C71ABB"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -802,6 +934,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:52:11Z",
+          "not_before": "2026-10-07T23:52:11Z",
+          "serial": "693A9EF0575A9E62DEED4BBAA0B200D133C71ABB"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -838,6 +977,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:52:11Z",
+          "not_before": "2026-10-07T23:52:11Z",
+          "serial": "693A9EF0575A9E62DEED4BBAA0B200D133C71ABB"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -874,6 +1020,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -907,6 +1060,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:52:11Z",
+          "not_before": "2026-10-07T23:52:11Z",
+          "serial": "693A9EF0575A9E62DEED4BBAA0B200D133C71ABB"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -943,6 +1103,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:53:55Z",
+          "not_before": "2026-10-07T23:53:55Z",
+          "serial": "1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -979,6 +1146,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:53:55Z",
+          "not_before": "2026-10-07T23:53:55Z",
+          "serial": "1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1015,6 +1189,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-15T23:53:55Z",
+          "not_before": "2026-10-07T23:53:55Z",
+          "serial": "1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1051,6 +1232,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -1084,6 +1272,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -1117,6 +1312,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -1150,6 +1352,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -1183,6 +1392,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -1216,6 +1432,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -1249,6 +1472,13 @@
         ],
         "issuer": "Canva",
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.expired"
@@ -1283,6 +1513,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -1313,6 +1553,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -1327,6 +1577,169 @@
       },
       "sha256": "25b2ed027c7b0b8d49945b7fbef50d423ce0a31850c08569d21c555bedd32cd1",
       "size_bytes": 4527819
+    },
+    "google-flow__nano-banana-2.1__edit-photo-redownload__e2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 997802536:998148053",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "004f7e6d85be8fafa0754b68b441306097d7183615b54b68cea85a2754dd9574",
+      "size_bytes": 613856
+    },
+    "google-flow__nano-banana-2.1__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 997802536:998148053",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "57fe5c3a7656fe32ba8ce9d4fb2a10fdcde37b81b6c34387c6fd9428f6a75c11",
+      "size_bytes": 624166
+    },
+    "google-flow__nano-banana-2.1__edit-photo__e2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 997926433:997926433",
+        "claim_version": 2,
+        "digital_source_type": [
+          "algorithmicallyEnhanced"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicallyEnhanced"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-07-22T21:05:27Z",
+          "not_before": "2026-07-27T21:05:28Z",
+          "serial": "1F31B08D2302A402392A5BD988A9EB7525E282"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "77e3502801a1c8373798bf047dbaac2ee0d9e30b146e166b224a966ce34bfc48",
+      "size_bytes": 135734
+    },
+    "google-flow__nano-banana-2.1__edit-photo__e3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 997802536:998148053",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "1df686a0db083a5ea1a7b801fce4ffe7686b91607cb7a70ff583c8c40fbed257",
+      "size_bytes": 852480
     },
     "google-flow__nano-banana-2__browser-save-open__p1__1.png": {
       "c2patool": {
@@ -1392,6 +1805,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -1423,6 +1846,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -1454,6 +1887,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -1485,6 +1928,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -1516,6 +1969,16 @@
         ],
         "issuer": "Google LLC",
         "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [],
         "validation_state": "Trusted"
       },
@@ -1530,6 +1993,88 @@
       },
       "sha256": "89ddf2c207d598f74e720577ef6ed004aeb9c693d9c9874c8570d72b0ed6473e",
       "size_bytes": 586921
+    },
+    "google-flow__nano-banana-lite__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 997802536:998148053",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d94c531f922c6227c3abf8f02668bf206964f6434c3ab364bbc3716a7bda6ad2",
+      "size_bytes": 610154
+    },
+    "google-flow__nano-banana-pro__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 997802536:998148053",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "issuer": "Google LLC",
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "00662f5204178f7c30ea4fc5a3abf4fa9c4e82cb8dc1b5eff61fdd8103e71ad7",
+      "size_bytes": 609250
     },
     "ideogram__ideogram-v4__copy-image__p1__1.png": {
       "c2patool": {
@@ -1563,6 +2108,13 @@
         ],
         "issuer": "Ideogram, Inc.",
         "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1596,6 +2148,13 @@
         ],
         "issuer": "Ideogram, Inc.",
         "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1693,6 +2252,13 @@
         ],
         "issuer": "Ideogram, Inc.",
         "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1726,6 +2292,13 @@
         ],
         "issuer": "Ideogram, Inc.",
         "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1759,6 +2332,13 @@
         ],
         "issuer": "Ideogram, Inc.",
         "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1792,6 +2372,13 @@
         ],
         "issuer": "Ideogram, Inc.",
         "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -1825,6 +2412,13 @@
         ],
         "issuer": "Ideogram, Inc.",
         "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -2355,7 +2949,8 @@
   "schema": "halftone-differential-expectations/1",
   "tools": {
     "c2patool": "c2patool 0.28.0",
-    "exiftool": "13.55"
+    "exiftool": "13.55",
+    "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
   "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",

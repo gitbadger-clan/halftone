@@ -64,10 +64,11 @@ file against the directory.
   is what tests whether the toggle reaches the page image.
 - Not offered: API access on this tier, edit of an uploaded photo, upscale.
 
-## Google Flow — Nano Banana 2 (flow.google, formerly ImageFX)
+## Google Flow — Nano Banana (flow.google, formerly ImageFX)
 
-- Date: 2026-09-09. Plan: free (free tier serves Nano Banana 2; paid tiers serve
-  other variants, which would be a different `variant` token).
+- Date: 2026-09-09 (generations); 2026-10-14 (edits). Plan: free on
+  2026-09-09 (Nano Banana 2 only); on 2026-10-14 the model picker offered
+  Nano Banana 2.1, Pro and Lite on the <free | paid> plan.
 - ImageFX was retired 2026-04-30 and folded into Flow; `imagefx` is not a valid
   generator token in this corpus.
 - Paths: the download button is on the thumbnail card (`web-download-thumb`); the
@@ -86,10 +87,46 @@ file against the directory.
   did not produce a 1:1 file, and whether the setting applied is not recorded;
   `nano-banana-2-upscaled` = Upscale of p2, listed as derived from the p2
   download (37.3 dB).
-- Files (10): p1 via browser-save-open, copy-image-open, copy-image-thumb,
-  web-download-thumb; p2–p5 web-download-thumb; p3 1:1; p2 upscaled.
-- Pending: `edit-photo` e1–e3 once `00-base/photo_*.jpg` exist (Flow edits uploaded
-  images with Nano Banana).
+- Edits (E1–E3, 2026-10-14): base photo uploaded as a file from 00-base,
+  prompt verbatim, downloaded from the opened edit view (Flow's download
+  button, default size). Model `nano-banana-2.1` for E1–E3; E1 also on
+  `nano-banana-pro` and `nano-banana-lite`, same manifest shape on all three,
+  so E2–E3 were not repeated. For E2 and E3 Flow replied that the edit was not
+  possible at the current aspect and proposed another; answered "yes" both
+  times, and Flow changed the frame itself. E2's output kept the photo's 3:4
+  (896×1200, as E1); E3's is 1376×768 (16:9). No XMP DigitalSourceType, no
+  camera EXIF. Each chain contains the camera manifest of the uploaded base
+  photo (E1 …4969aa2caf8f `photo_bowl`, E2 …4665cbaddaa9 `photo_flask`, E3
+  …4c914b5479b0 `photo_path`), which confirms the input.
+  Finding: Flow keeps the camera provenance chain, every manifest signed by
+  Google LLC and trusted: camera capture (`c2pa.created`,
+  `computationalCapture`, "Created by Pixel Camera.") → upload (`c2pa.opened`
+  + `c2pa.transcoded`, `algorithmicallyEnhanced`, capture as `parentOf`) →
+  generation (`c2pa.created`, `trainedAlgorithmicMedia`, "Created by Google
+  Generative AI.", plus `c2pa.edited` "Applied imperceptible SynthID
+  watermark.", upload as `inputTo`). The edit is recorded as a new creation
+  that took the photo as input, not as an edit of a parent; SynthID is
+  declared in the manifest. None of the five uses
+  `compositeWithTrainedAlgorithmicMedia`. Contrast with Canva, which replaces
+  the camera manifest (zero ingredients).
+  E2's first download carries one more layer: `c2pa.opened` +
+  `c2pa.transcoded` (`algorithmicallyEnhanced`) with the generation as
+  `parentOf`, 4 manifests against 3. A second download of the same result
+  (`edit-photo-redownload__e2__2`, 2026-10-14, same opened view, 896×1200)
+  carries 3 manifests without the extra layer and differs in 0.63 % of pixels
+  (PSNR 40.6 dB, differences spread across the whole image, consistent with
+  one extra JPEG re-encode). Both share the generation and upload manifests,
+  so the layer came with the first download, not with the edit; what differed
+  between the two downloads is not known. The first download's active
+  manifest therefore declares only `algorithmicallyEnhanced`, with the
+  generative step one ingredient down (DIFFERENTIAL.md D-013).
+- Files (16): p1 via browser-save-open, copy-image-open, copy-image-thumb,
+  web-download-thumb; p2–p5 web-download-thumb; p3 1:1; p2 upscaled; edits
+  E1–E3 on nano-banana-2.1, E1 on nano-banana-pro and nano-banana-lite; E2
+  re-download.
+- Pending: optional control, the unedited upload downloaded back from Flow
+  (what Flow writes for an upload alone; the chain shows it as `c2pa.opened` +
+  `c2pa.transcoded`).
 
 ## aggregator-zimage (third-party reseller UI)
 
@@ -362,8 +399,10 @@ file against the directory.
   not at generation (see the p2 re-download under Tier). Date-dependent:
   `Valid` on 2026-09-10 (signer not on the vendored 2026-08-14 list); `Invalid`
   since the signing certificate expired on 2026-09-17 (first observed
-  2026-09-20, unchanged in the 2026-10-04 collection), because the manifest
-  carries no `c2pa.time-stamp` (DIFFERENTIAL.md D-010). XMP: no IPTC field in
+  2026-09-20, unchanged in the 2026-10-04 collection), because the signature
+  carries no time-stamp (no `sigTst`/`sigTst2` token in the COSE header, no
+  `timeStamp.*` code in `validation_results`), so a verifier judges the
+  certificate at the time it checks (DIFFERENTIAL.md D-010). XMP: no IPTC field in
   the September downloads; downloads from October on carry
   XMP-iptcExt:DigitalSourceType = compositeWithTrainedAlgorithmicMedia, on
   plain generations and edits alike, so Canva added the field between
@@ -398,10 +437,15 @@ file against the directory.
   replaced by Canva's (issuer Canva) with zero ingredients, so the camera
   original is not recorded; `compositeWithTrainedAlgorithmicMedia` in both
   the manifest and XMP. Camera EXIF (make, model, capture time) not carried
-  over. Valid when collected, `signingCredential.untrusted` only; new signing
-  certificate (serial 167403…226101; September files 129430…675375), no
-  signature time (D-010), so expected to turn `Invalid` like the September
-  rows.
+    over. Valid when collected, `signingCredential.untrusted` only; two new
+  signing certificates, issued 104 s apart on 2026-10-07, each valid 8 days:
+  the chat route on serial 167403…226101 (hex 1D529F…C0CEF5, not_after
+  2026-10-15T23:53:55Z), Magic Edit and Magic Expand on 600751…481979 (hex
+  693A9E…C71ABB, not_after 2026-10-15T23:52:11Z); September files
+  129430…675375 (hex 615F57…21862F). No time-stamp on either (D-010;
+  `scripts/cert-shelf-life.sh`, 2026-10-12), so expected to turn `Invalid`
+  like the September rows. Serials: decimal as c2pa prints them, hex as
+  `openssl x509 -serial` prints them.
 - Tier: `canva-ai-free` p1 was exported on the free tier before the trial and
   carries no manifest and no XMP; every Pro-tier export carries the manifest.
   2026-10-04: the corpus test found the free-tier p1 and the Pro editor export
@@ -412,7 +456,8 @@ file against the directory.
   cancellation) from the same Pro-era design
   (`canva-ai-free__web-download__p2__2`). It carries a fresh Canva manifest,
   valid when collected (`signingCredential.untrusted` only, certificate
-  167403…226101, the same as the October edits), plus the XMP field. So
+  167403…226101, the same as the chat-route edits, not Magic Edit or
+  Expand), plus the XMP field. So
   Canva signs at export, and the export tier does not decide marking now;
   the September downloads from this design are `Invalid` because their
   certificate expired. Pixels: not the September plain p2 (PSNR 13.0 dB,
@@ -427,7 +472,8 @@ file against the directory.
   2026-10-10: a fresh free-tier generation of p1
   (`canva-ai-free__web-download__p1__3`, generated and downloaded on Free)
   carries the Canva manifest (`compositeWithTrainedAlgorithmicMedia`, valid
-  when collected, `signingCredential.untrusted` only) and the XMP field. So
+  when collected, `signingCredential.untrusted` only, certificate
+  167403…226101, no time-stamp) and the XMP field. So
   the unmarked September free-tier p1 most likely reflects a change at Canva
   between September and October, not the tier; the one variable this does
   not isolate is account history (the September file came from an account
