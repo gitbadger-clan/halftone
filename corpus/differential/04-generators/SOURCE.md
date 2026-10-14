@@ -68,7 +68,7 @@ file against the directory.
 
 - Date: 2026-09-09 (generations); 2026-10-14 (edits). Plan: free on
   2026-09-09 (Nano Banana 2 only); on 2026-10-14 the model picker offered
-  Nano Banana 2.1, Pro and Lite on the <free | paid> plan.
+  Nano Banana 2.1, Pro and Lite on the Google AI Pro plan.
 - ImageFX was retired 2026-04-30 and folded into Flow; `imagefx` is not a valid
   generator token in this corpus.
 - Paths: the download button is on the thumbnail card (`web-download-thumb`); the

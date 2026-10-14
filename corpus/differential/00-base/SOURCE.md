@@ -22,3 +22,7 @@ third-party generators. Not committed.
 - `photo_path.jpg`: 2026-10-09. Grass aisle between vine rows, framed by two
   wooden posts, trellis wires across the frame, overcast sky; single JPEG,
   signed. For E3.
+- Verifying edit rows: an edit that keeps the provenance chain carries the
+  uploaded photo's camera manifest; its ID proves which base photo went in
+  (`photo_bowl` …4969aa2caf8f, `photo_flask` …4665cbaddaa9, `photo_path`
+  …4c914b5479b0; last 12 characters of the active manifest's URN).
