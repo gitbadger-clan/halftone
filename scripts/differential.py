@@ -40,6 +40,18 @@ signing certificate's extended key usage only if it is in ``trust.trust_config``
 (its built-in list is cleared), so without it Microsoft-signed files read
 ``signingCredential.invalid`` in c2patool and not in Halftone (D-011). It applies
 with or without trust anchors.
+
+Signing certificate and time-stamp (D-010, D-012): for every signed file the
+collector records the signer certificate's serial and validity window as
+``openssl x509`` reads them from ``c2patool --certs`` (an X.509 parser independent
+of Halftone's), cross-checked against the serial c2patool reports, and the
+signature's time-stamp status derived from c2patool's ``timeStamp.*`` codes in
+``validation_results`` (success and informational codes; the failures-only
+``validation_status`` never holds them). Neither depends on the date of collection,
+only on the file and the TSA list. The status uses the same names and precedence as
+Halftone and ``scripts/cert-shelf-life.sh``, so for the status the check is of how
+Halftone reads c2pa's codes, not of c2pa itself; the certificate fields are a true
+second reading. Needs ``openssl`` (or LibreSSL) on PATH unless ``--no-c2pa``.
 """
 from __future__ import annotations
 
@@ -221,17 +233,95 @@ def c2patool_facts(p: Path, settings: Path) -> dict:
         c = code_of(v)
         if c not in codes:
             codes.append(c)
+    sig = active.get("signature_info") or {}
+    ts_codes = time_stamp_codes(js)
     return {
         "present": True,
         "validation_state": js.get("validation_state"),
         "validation_codes": [s.get("code") for s in js.get("validation_status") or []],
-        "issuer": (active.get("signature_info") or {}).get("issuer"),
+        "issuer": sig.get("issuer"),
         "claim_generator": gen,
         "claim_version": active.get("claim_version"),
         "assertions": [a.get("label") for a in active.get("assertions", [])],
         "digital_source_type_raw": raw,
         "digital_source_type": codes,
+        "time_stamp_codes": ts_codes,
+        "time_stamp": time_stamp_status(ts_codes) if ts_codes is not None else None,
+        "signing_cert": (
+            signing_cert_facts(p, settings, sig.get("cert_serial_number")) if sig else None
+        ),
     }
+
+
+def time_stamp_codes(js: dict) -> list[str] | None:
+    """Every ``timeStamp.*`` code c2patool reports for the active manifest, from all
+    three buckets of ``validation_results``, sorted and deduplicated. ``None`` when
+    the output has no ``validation_results`` (status unknown, nothing claimed)."""
+    active = (js.get("validation_results") or {}).get("activeManifest")
+    if not isinstance(active, dict):
+        return None
+    codes = {
+        s.get("code")
+        for bucket in ("success", "informational", "failure")
+        for s in active.get(bucket) or []
+        if isinstance(s, dict) and str(s.get("code", "")).startswith("timeStamp.")
+    }
+    return sorted(codes)
+
+
+def time_stamp_status(codes: list[str]) -> str:
+    """Same names and precedence as ``TimeStampStatus`` in halftone-c2pa and
+    ``scripts/cert-shelf-life.sh``: trusted, untrusted, any code other than
+    ``timeStamp.validated`` (failed), ``timeStamp.validated`` alone, none."""
+    if "timeStamp.trusted" in codes:
+        return "trusted"
+    if "timeStamp.untrusted" in codes:
+        return "untrusted"
+    if any(c != "timeStamp.validated" for c in codes):
+        return "failed"
+    return "validated_only" if codes else "none"
+
+
+def openssl_date(raw: str) -> str:
+    """``Oct  7 23:53:55 2026 GMT`` (OpenSSL and LibreSSL alike) as RFC 3339 UTC."""
+    from datetime import datetime
+
+    d = datetime.strptime(" ".join(raw.split()), "%b %d %H:%M:%S %Y GMT")
+    return d.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def signing_cert_facts(p: Path, settings: Path, c2pa_serial: str | None) -> dict:
+    """Serial and validity window of the certificate that signed the active manifest,
+    read by ``openssl x509`` from the first certificate ``c2patool --certs`` prints.
+    The serial must equal the decimal one c2patool reports for the signature, so a
+    chain in another order cannot record another certificate's window."""
+    try:
+        rc, chain, err = run(["c2patool", "--settings", str(settings), str(p), "--certs"], env=C2PATOOL_ENV)
+    except FileNotFoundError:
+        return {"error": "c2patool not found"}
+    if rc != 0 or "BEGIN CERTIFICATE" not in chain:
+        return {"error": f"c2patool --certs: {(err or chain).strip()[:200] or f'exit {rc}'}"}
+    proc = subprocess.run(
+        ["openssl", "x509", "-noout", "-serial", "-startdate", "-enddate"],
+        input=chain, capture_output=True, text=True,
+    )
+    if proc.returncode != 0:
+        return {"error": f"openssl x509: {proc.stderr.strip()[:200]}"}
+    fields = dict(
+        line.split("=", 1) for line in proc.stdout.splitlines() if "=" in line
+    )
+    try:
+        serial = fields["serial"].strip().upper()
+        facts = {
+            "serial": serial,
+            "not_before": openssl_date(fields["notBefore"]),
+            "not_after": openssl_date(fields["notAfter"]),
+        }
+    except (KeyError, ValueError) as e:
+        return {"error": f"unreadable openssl output ({e}): {proc.stdout.strip()[:200]}"}
+    if c2pa_serial is not None and str(int(serial, 16)) != str(c2pa_serial):
+        return {"error": f"first certificate (serial {serial}) is not the signer c2patool reports ({c2pa_serial})"}
+    return facts
 
 
 def repo_relative(p: Path) -> str:
@@ -278,6 +368,11 @@ def main() -> int:
     c2pa_ver = None if a.no_c2pa else tool_version(["c2patool", "--version"])
     if not a.no_c2pa and not c2pa_ver:
         print("c2patool not found on PATH (pass --no-c2pa to skip manifest ground truth)", file=sys.stderr)
+        return 2
+    # Second reading of the signing certificate (serial, validity window).
+    openssl_ver = None if a.no_c2pa else tool_version(["openssl", "version"])
+    if not a.no_c2pa and not openssl_ver:
+        print("openssl not found on PATH (needed for the signing-certificate ground truth)", file=sys.stderr)
         return 2
 
     if a.tsa_anchors and not a.trust_anchors:
@@ -348,7 +443,7 @@ def main() -> int:
         # reader of this file needs to know when the states were true.
         "collected_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "corpus": repo_relative(corpus),
-        "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver},
+        "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver, "openssl": openssl_ver},
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
         "tsa_anchors": repo_relative(a.tsa_anchors) if a.tsa_anchors else None,
         "trust_config": repo_relative(a.trust_config) if a.trust_config else None,

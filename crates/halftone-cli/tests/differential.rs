@@ -20,6 +20,13 @@
 //! ground truth aged, the file did not. Such rows are printed as
 //! `aged since <collected_at>: re-collect` and do not fail the run. A mismatched
 //! hash, a failed claim signature, or any other new code still fails.
+//!
+//! Signing certificate and time-stamp (D-010, D-012): the signer certificate's
+//! serial and validity window are compared with what `openssl x509` read in the
+//! collector, and the time-stamp status with the one derived from c2patool's
+//! `timeStamp.*` codes. Neither ages with the date, so they are compared even on an
+//! aged row. Expectations collected before the collector recorded them have no such
+//! keys and are not compared.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -406,6 +413,50 @@ fn compare_file(
                 show(str_set(&ct["digital_source_type"])),
                 show(str_set(&row["manifest"]["digital_source_type"])),
             );
+
+            // ---- signing certificate and time-stamp (D-010, D-012) ------------------
+            if ct.get("signing_cert").is_some() {
+                let cert = &ct["signing_cert"];
+                let got_serial = opt_str(&row["manifest"]["signing_cert_serial"]);
+                match cert.get("error").and_then(Value::as_str) {
+                    // The collector could not read the certificate. Only a row when
+                    // Halftone did read one: then the two readings differ.
+                    Some(e) => {
+                        if got_serial.is_some() {
+                            push(
+                                "c2pa.signing_cert.serial",
+                                format!("unread by the collector: {e}"),
+                                show(got_serial),
+                            );
+                        }
+                    }
+                    None => {
+                        let got_cert = c2pa_ev.map(|e| &e["details"]["signing_cert"]);
+                        push(
+                            "c2pa.signing_cert.serial",
+                            show(opt_str(&cert["serial"])),
+                            show(got_serial),
+                        );
+                        push(
+                            "c2pa.signing_cert.not_before",
+                            show(opt_str(&cert["not_before"])),
+                            show(got_cert.and_then(|c| opt_str(&c["not_before"]))),
+                        );
+                        push(
+                            "c2pa.signing_cert.not_after",
+                            show(opt_str(&cert["not_after"])),
+                            show(opt_str(&row["manifest"]["signing_cert_not_after"])),
+                        );
+                    }
+                }
+            }
+            if ct.get("time_stamp").is_some() {
+                push(
+                    "c2pa.time_stamp",
+                    show(opt_str(&ct["time_stamp"])),
+                    show(opt_str(&row["manifest"]["time_stamp"])),
+                );
+            }
         }
     }
 }
@@ -709,5 +760,128 @@ mod header_rule {
     fn no_c2patool_needs_nothing() {
         let exp = json!({"tools": {"c2patool": null}, "trust_config": null});
         assert!(header_disagreements("02-exiftool", &exp).is_empty());
+    }
+}
+
+// ---- signing certificate and time-stamp: fabricated rows, no corpus needed -----
+
+#[cfg(test)]
+mod shelf_life_rule {
+    use super::*;
+    use serde_json::json;
+
+    const CANVA: &str = "1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5";
+    const NOT_BEFORE: &str = "2026-10-07T23:53:55Z";
+    const NOT_AFTER: &str = "2026-10-15T23:53:55Z";
+
+    fn canva_cert() -> Value {
+        json!({"serial": CANVA, "not_before": NOT_BEFORE, "not_after": NOT_AFTER})
+    }
+
+    /// Expectation for an October Canva file, with the given certificate and status.
+    fn expectation(cert: Value, ts: Value) -> Value {
+        json!({
+            "exiftool": {"error": "not under test"},
+            "c2patool": {
+                "present": true,
+                "validation_state": "Valid",
+                "validation_codes": ["signingCredential.untrusted"],
+                "issuer": "Canva",
+                "claim_generator": "c2pa-rs 0.89.3",
+                "digital_source_type": [],
+                "signing_cert": cert,
+                "time_stamp": ts
+            }
+        })
+    }
+
+    /// Halftone's summary row and inspection for the same file.
+    fn halftone(serial: Option<&str>, not_after: &str, ts: &str) -> (Value, Value) {
+        let row = json!({"manifest": {
+            "validation_state": "Valid",
+            "issuer": "Canva",
+            "claim_generator": "c2pa-rs 0.89.3",
+            "digital_source_type": [],
+            "signing_cert_serial": serial,
+            "signing_cert_not_after": not_after,
+            "time_stamp": ts
+        }});
+        let insp = json!({"evidence": [{
+            "source": {"name": "c2pa"},
+            "status": "inconclusive",
+            "rationale": "fabricated",
+            "details": {
+                "validation_status": [],
+                "signing_cert": {"serial": serial, "not_before": NOT_BEFORE, "not_after": not_after}
+            }
+        }]});
+        (row, insp)
+    }
+
+    fn fields(exp: &Value, ht: &(Value, Value)) -> Vec<&'static str> {
+        let mut out = Vec::new();
+        let mut aged = Vec::new();
+        compare_file(
+            "04-generators/x.png",
+            exp,
+            &ht.0,
+            &ht.1,
+            true,
+            &mut out,
+            &mut aged,
+        );
+        out.iter().map(|d| d.field).collect()
+    }
+
+    #[test]
+    fn agreement_is_clean() {
+        let exp = expectation(canva_cert(), json!("none"));
+        assert!(fields(&exp, &halftone(Some(CANVA), NOT_AFTER, "none")).is_empty());
+    }
+
+    #[test]
+    fn a_different_certificate_is_a_row() {
+        let exp = expectation(canva_cert(), json!("none"));
+        let got = fields(
+            &exp,
+            &halftone(
+                Some("693A9EF0575A9E62DEED4BBAA0B200D133C71ABB"),
+                "2026-10-15T23:52:11Z",
+                "none",
+            ),
+        );
+        assert_eq!(
+            got,
+            ["c2pa.signing_cert.serial", "c2pa.signing_cert.not_after"]
+        );
+    }
+
+    #[test]
+    fn a_different_status_is_a_row() {
+        // D-012: Bing's time-stamp is untrusted, not absent.
+        let exp = expectation(canva_cert(), json!("untrusted"));
+        assert_eq!(
+            fields(&exp, &halftone(Some(CANVA), NOT_AFTER, "none")),
+            ["c2pa.time_stamp"]
+        );
+    }
+
+    #[test]
+    fn expectations_without_the_fields_are_not_compared() {
+        let mut exp = expectation(canva_cert(), json!("none"));
+        let ct = exp["c2patool"].as_object_mut().unwrap();
+        ct.remove("signing_cert");
+        ct.remove("time_stamp");
+        assert!(fields(&exp, &halftone(Some(CANVA), NOT_AFTER, "untrusted")).is_empty());
+    }
+
+    #[test]
+    fn collector_error_is_a_row_only_when_halftone_read_a_certificate() {
+        let exp = expectation(json!({"error": "c2patool --certs: exit 1"}), json!("none"));
+        assert_eq!(
+            fields(&exp, &halftone(Some(CANVA), NOT_AFTER, "none")),
+            ["c2pa.signing_cert.serial"]
+        );
+        assert!(fields(&exp, &halftone(None, NOT_AFTER, "none")).is_empty());
     }
 }
