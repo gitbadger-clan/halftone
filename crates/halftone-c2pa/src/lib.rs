@@ -12,6 +12,16 @@
 //!   trusted, the hard binding is broken (bytes changed after signing), or it can't be
 //!   parsed. The reason codes are in `details.validation_status`.
 //!
+//! Shelf life ([`shelf_life`], DIFFERENTIAL.md D-010, D-012): for every manifest with
+//! a signature, `details.signing_cert` carries the signer certificate's serial and
+//! validity window and `details.time_stamp` the time-stamp status under the loaded
+//! TSA list, read from c2pa's `validation_results` (`timeStamp.*` codes are success
+//! or informational, never in `validation_status`). When no trusted time-stamp
+//! fixes the signing time, the rationale of a `Trusted` or `Valid` manifest names
+//! the time after which a check reports the certificate expired. The verdict does
+//! not change; the date belongs to the verifier, not the file. `details.signed_at`
+//! is the time the time-stamp token states, trusted or not.
+//!
 //! Implementation (c2pa 0.90): settings live in an explicit [`c2pa::Context`] — no
 //! thread-local state — built once per assessment, then
 //! `Reader::from_context(ctx).with_stream(mime, bytes)`. Everything after that is read
@@ -32,6 +42,7 @@
 //! says the result depends on that server and the time of checking. Files with an
 //! embedded manifest never touch the network either way. OCSP is never consulted.
 //!
+pub mod shelf_life;
 pub mod source_type;
 pub mod trust;
 pub use trust::{AnchorKind, InternalList, TrustConfig};
@@ -121,6 +132,7 @@ impl EvidenceSource for C2paSource {
 #[cfg(feature = "c2pa")]
 mod imp {
     use super::C2paSource;
+    use super::shelf_life::{self, SigningCert, TimeStampStatus};
     use super::trust::{AnchorKind, ResolvedTrust};
     use c2pa::settings::{TrustAnchor, TrustListKind};
     use halftone_core::{Asset, Evidence, EvidenceSource, Status};
@@ -397,6 +409,64 @@ mod imp {
             .cloned()
             .unwrap_or(serde_json::Value::Null);
 
+        // Time-stamp codes of the active manifest, from all three buckets of
+        // validation_results: c2pa files `timeStamp.validated` / `.trusted` as success
+        // and `timeStamp.untrusted` as informational, so validation_status (failures
+        // only) never holds them. `None` when c2pa reported no results: then the
+        // status is unknown and nothing is claimed about it.
+        let time_stamp_codes: Option<Vec<String>> = reader
+            .validation_results()
+            .and_then(|r| r.active_manifest())
+            .map(|s| {
+                let mut codes: Vec<String> = s
+                    .success()
+                    .iter()
+                    .chain(s.informational())
+                    .chain(s.failure())
+                    .map(|v| v.code())
+                    .filter(|c| c.starts_with("timeStamp."))
+                    .map(str::to_string)
+                    .collect();
+                codes.sort_unstable();
+                codes.dedup();
+                codes
+            });
+        let time_stamp: Option<TimeStampStatus> = time_stamp_codes
+            .as_ref()
+            .map(|c| TimeStampStatus::from_codes(c.iter().map(String::as_str)));
+
+        // The signer's certificate, leaf first in the chain c2pa read. Its serial must
+        // match the one c2pa reports for the signature, so a chain in another order
+        // cannot report another certificate's window.
+        let c2pa_serial = active
+            .get("signature_info")
+            .and_then(|s| s.get("cert_serial_number"))
+            .and_then(|v| v.as_str());
+        let signing_cert: Result<Option<SigningCert>, String> =
+            match reader.active_manifest().and_then(|m| m.signature_info()) {
+                None => Ok(None),
+                Some(si) => {
+                    shelf_life::leaf_from_pem(si.cert_chain()).and_then(|c| match c2pa_serial {
+                        Some(d) if d != c.serial_decimal => Err(format!(
+                            "the first certificate in the chain (serial {}) is not the \
+                             signer c2pa reports (serial {d})",
+                            c.serial
+                        )),
+                        _ => Ok(Some(c)),
+                    })
+                }
+            };
+        let (signing_cert, signing_cert_error) = match signing_cert {
+            Ok(c) => (c, None),
+            Err(e) => (None, Some(e)),
+        };
+        let shelf_note = match (&signing_cert, time_stamp) {
+            (Some(c), Some(ts)) => {
+                shelf_life::validity_note(c, ts, signed_at.as_deref()).unwrap_or_default()
+            }
+            _ => String::new(),
+        };
+
         let who = match (&claim_generator, &issuer) {
             (Some(g), Some(i)) => format!("from {g}, signed by {i}"),
             (Some(g), None) => format!("from {g}, signer unknown"),
@@ -410,7 +480,8 @@ mod imp {
                 Status::Present,
                 format!(
                     "Valid C2PA manifest {who}; signer chains to a trusted anchor and the \
-                     content hash matches, so the file is unchanged since signing.{ai_note}"
+                     content hash matches, so the file is unchanged since signing.\
+                     {shelf_note}{ai_note}"
                 ),
             ),
             c2pa::ValidationState::Valid => (
@@ -418,7 +489,8 @@ mod imp {
                 format!(
                     "C2PA manifest {who} is cryptographically valid and the content is \
                      unchanged since signing, but the signer does not chain to any configured \
-                     trust anchor (see details.trust for which lists were used).{ai_note}"
+                     trust anchor (see details.trust for which lists were used).\
+                     {shelf_note}{ai_note}"
                 ),
             ),
             c2pa::ValidationState::Invalid => {
@@ -441,22 +513,25 @@ mod imp {
                     c.ends_with(".mismatch")
                         || c.starts_with("claimSignature.") && !c.ends_with(".validated")
                 });
-                let has_timestamp = assertion_labels.iter().any(|l| l == "c2pa.time-stamp");
                 if expired && !broken {
+                    // Why nothing placed the signature inside the window comes from the
+                    // time-stamp codes, not from a `c2pa.time-stamp` assertion: that
+                    // assertion time-stamps other manifests (D-010 addendum).
+                    let phrase = shelf_life::expired_phrase(signing_cert.as_ref(), time_stamp);
+                    let alternative = if time_stamp == Some(TimeStampStatus::Untrusted) {
+                        shelf_life::tsa_alternative(signed_at.as_deref())
+                    } else {
+                        String::new()
+                    };
                     (
                         Status::Inconclusive,
                         format!(
                             "C2PA manifest {who} is present and its content hash still matches, \
-                             but the signing certificate has expired{}. The signature cannot be \
+                             but the signing certificate {phrase}. The signature cannot be \
                              placed inside the certificate's validity window, so it no longer \
                              validates; it may have validated when the file was made. Whether a \
-                             reader accepts it now depends on the date of checking. See \
-                             validation_status.{ai_note}",
-                            if has_timestamp {
-                                ""
-                            } else {
-                                " and the manifest carries no trusted time-stamp"
-                            }
+                             reader accepts it now depends on the date of checking.{alternative} \
+                             See validation_status.{ai_note}"
                         ),
                     )
                 } else if broken {
@@ -525,7 +600,15 @@ mod imp {
             "digital_source_type_hits": source_type.hits,
             "vocabulary_version": halftone_core::dst::VOCABULARY_VERSION,
             "trust": resolved.details(),
+            "signing_cert": signing_cert,
+            "time_stamp": time_stamp.map(|ts| serde_json::json!({
+                "status": ts.as_str(),
+                "codes": time_stamp_codes,
+            })),
         });
+        if let Some(e) = signing_cert_error {
+            details["signing_cert_error"] = serde_json::Value::String(e);
+        }
         // Only present when the manifest came over the network, so an embedded
         // manifest's details are unchanged from earlier versions.
         if let Some((url, at)) = fetched_from {

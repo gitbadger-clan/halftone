@@ -42,7 +42,9 @@ c2pa = "0.91"
 # its resolver trait for. No features of our own: c2pa already enables rustls.
 ureq = { version = "3.4", default-features = false }
 ed25519-dalek = "3"
-
+# Same version as c2pa's own dependency, so the build has one copy. Used only to
+# read the signing certificate's serial and validity window (halftone-c2pa).
+x509-parser = "0.18"
 
 # Reserved: no crate uses these yet. Uncomment here together with the crate-level line.
 # ort = "2.0.0-rc.9"     # blind FeatureProbe encoder + head; mark AudioSeal/VideoSeal (check for a newer 2.0 first)

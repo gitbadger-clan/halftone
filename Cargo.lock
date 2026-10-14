@@ -1301,6 +1301,7 @@ dependencies = [
  "sha2 0.11.0",
  "tracing",
  "ureq",
+ "x509-parser",
 ]
 
 [[package]]
