@@ -61,6 +61,20 @@ pub struct ManifestColumns {
     /// can differ on a later check.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fetched_from: Option<String>,
+    /// Serial of the certificate that signed the active manifest, uppercase hex as
+    /// `openssl x509 -serial` prints it. Files signed with the same certificate share
+    /// a validity window.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub signing_cert_serial: Option<String>,
+    /// End of that certificate's validity window (RFC 3339). Without a trusted
+    /// time-stamp, a check after this time reports the certificate expired.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub signing_cert_not_after: Option<String>,
+    /// Time-stamp status of the signature under the TSA list this run loaded:
+    /// `trusted`, `untrusted`, `failed`, `validated_only` or `none`. Another TSA list
+    /// can give another answer.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub time_stamp: Option<String>,
 }
 
 /// Named columns from the XMP marking source (`marking_metadata`).
@@ -194,6 +208,9 @@ pub fn summarize(insp: &Inspection) -> FileRow {
                 manifest.declares_ai = d.get("declares_ai").and_then(|v| v.as_bool());
                 manifest.remote_manifest_url = str_field(d, "remote_manifest_url");
                 manifest.fetched_from = str_field(d, "fetched_from");
+                manifest.signing_cert_serial = nested_str(d, "signing_cert", "serial");
+                manifest.signing_cert_not_after = nested_str(d, "signing_cert", "not_after");
+                manifest.time_stamp = nested_str(d, "time_stamp", "status");
             }
             SOURCE_MARKING => {
                 marking.digital_source_type = str_list(d, "digital_source_type");
@@ -225,6 +242,13 @@ pub fn summarize(insp: &Inspection) -> FileRow {
 
 fn str_field(d: &serde_json::Value, key: &str) -> Option<String> {
     d.get(key).and_then(|v| v.as_str()).map(str::to_string)
+}
+
+fn nested_str(d: &serde_json::Value, outer: &str, key: &str) -> Option<String> {
+    d.get(outer)
+        .and_then(|o| o.get(key))
+        .and_then(|v| v.as_str())
+        .map(str::to_string)
 }
 
 fn str_list(d: &serde_json::Value, key: &str) -> Vec<String> {
@@ -479,6 +503,38 @@ mod tests {
         assert_eq!(row.marking.manifest_container_present, Some(true));
         assert_eq!(row.statuses.len(), 4);
         assert_eq!(row.statuses[2].layer, Layer::Container);
+    }
+
+    #[test]
+    fn row_projects_the_signing_window() {
+        let i = insp(
+            "/tmp/canva.png",
+            vec![ev(
+                Layer::Manifest,
+                "c2pa",
+                Status::Inconclusive,
+                json!({
+                    "validation_state": "Valid",
+                    "signing_cert": {
+                        "serial": "1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5",
+                        "serial_decimal": "167403281942339131879710527931510703633591226101",
+                        "not_before": "2026-10-07T23:53:55Z",
+                        "not_after": "2026-10-15T23:53:55Z"
+                    },
+                    "time_stamp": { "status": "none", "codes": [] }
+                }),
+            )],
+        );
+        let row = summarize(&i);
+        assert_eq!(
+            row.manifest.signing_cert_serial.as_deref(),
+            Some("1D529F6E94B0FF2F728E5A20F5E91098A3C0CEF5")
+        );
+        assert_eq!(
+            row.manifest.signing_cert_not_after.as_deref(),
+            Some("2026-10-15T23:53:55Z")
+        );
+        assert_eq!(row.manifest.time_stamp.as_deref(), Some("none"));
     }
 
     #[test]

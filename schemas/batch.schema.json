@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://halftone.gitbadger.com/schemas/batch/1.1.0",
+  "$id": "https://halftone.gitbadger.com/schemas/batch/1.2.0",
   "title": "Halftone Batch",
   "description": "One document for a set of inspected files: full inspections plus a per-file summary row projected from the evidence. No aggregate score.",
   "type": "object",
   "required": ["schema_version", "tool", "summary", "inspections", "created_at"],
   "properties": {
-    "schema_version": { "const": "1.1.0" },
+    "schema_version": { "const": "1.2.0" },
     "tool": { "type": "object", "required": ["name", "version"] },
     "summary": {
       "type": "array",
@@ -42,7 +42,10 @@
               "digital_source_type": { "type": "array", "items": { "type": "string" } },
               "declares_ai": { "type": "boolean" },
               "remote_manifest_url": { "type": "string" },
-              "fetched_from": { "type": "string" }
+              "fetched_from": { "type": "string" },
+              "signing_cert_serial": { "type": "string", "description": "signer certificate serial, uppercase hex as `openssl x509 -serial` prints it" },
+              "signing_cert_not_after": { "type": "string", "format": "date-time", "description": "end of the signer certificate's validity window" },
+              "time_stamp": { "enum": ["trusted", "untrusted", "failed", "validated_only", "none"], "description": "signature time-stamp status under the TSA list the run loaded" }
             }
           },
           "marking": {
@@ -58,7 +61,7 @@
     },
     "inspections": {
       "type": "array",
-      "items": { "$ref": "https://halftone.gitbadger.com/schemas/verdict/1.1.0" }
+      "items": { "$ref": "https://halftone.gitbadger.com/schemas/verdict/1.2.0" }
     },
     "created_at": { "type": "string", "format": "date-time" }
   }
