@@ -105,11 +105,20 @@ impl Registry {
 pub fn now_rfc3339() -> String {
     let secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_secs())
+        .map(|d| d.as_secs() as i64)
         .unwrap_or(0);
-    // Civil-from-days (Howard Hinnant). Correct for all dates after 1970.
-    let days = (secs / 86_400) as i64;
-    let (h, m, s) = ((secs / 3600) % 24, (secs / 60) % 60, secs % 60);
+    rfc3339_from_unix(secs)
+}
+
+/// A Unix time in seconds as `YYYY-MM-DDTHH:MM:SSZ`, the format of [`now_rfc3339`].
+/// Public so sources can report times read from a file (a certificate's validity
+/// window) in the same format as their own stamps.
+pub fn rfc3339_from_unix(secs: i64) -> String {
+    // Civil-from-days (Howard Hinnant). Euclidean division keeps times before 1970
+    // correct as well.
+    let days = secs.div_euclid(86_400);
+    let rem = secs.rem_euclid(86_400);
+    let (h, m, s) = (rem / 3600, (rem / 60) % 60, rem % 60);
     let z = days + 719_468;
     let era = z.div_euclid(146_097);
     let doe = z.rem_euclid(146_097);
@@ -213,5 +222,14 @@ mod tests {
         let t = now_rfc3339();
         assert_eq!(t.len(), 20);
         assert!(t.ends_with('Z'));
+    }
+
+    #[test]
+    fn unix_times_format_as_utc() {
+        assert_eq!(rfc3339_from_unix(0), "1970-01-01T00:00:00Z");
+        // Leap day, and the end of the October Canva signing window (D-010).
+        assert_eq!(rfc3339_from_unix(951_782_400), "2000-02-29T00:00:00Z");
+        assert_eq!(rfc3339_from_unix(1_792_108_435), "2026-10-15T23:53:55Z");
+        assert_eq!(rfc3339_from_unix(-1), "1969-12-31T23:59:59Z");
     }
 }
