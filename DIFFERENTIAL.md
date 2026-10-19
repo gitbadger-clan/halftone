@@ -416,7 +416,16 @@ in full or as prefix..suffix, never by the first six characters.
   camera capture used as input), not as the file's source type.
 - Fixtures: E2 (generative only in lineage), its re-download and E1
   (generative in the active manifest, camera as `inputTo`).
-- Status: open.
+- Status: resolved 19-10-2026, 19428a9884547fccf16046e29ae1538985603f4a.
+`crates/halftone-c2pa/src/lineage.rs`
+  walks the `parentOf` lineage from the active manifest; `details.declares_ai`
+  is true when any lineage manifest declares a generative term,
+  `details.declares_ai_active` keeps the active manifest's own answer, and
+  `details.lineage` lists every step and input. `inputTo` / `componentOf`
+  chains are reported as context only. `digital_source_type` stays the active
+  manifest's codes, as compared with c2patool. Rationale for single-manifest
+  files unchanged. Acceptance: all three Flow fixtures report `declares_ai`
+  (`flow_edits_are_generative_whichever_download`, ignored test).
 
 Addendum 2026-10-14 · The extra layer is per download. A second download of
 the same E2 result from the same view
