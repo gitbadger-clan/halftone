@@ -185,6 +185,12 @@ struct InspectArgs {
     /// then depends on that server and the time of checking, and says so.
     #[arg(long)]
     fetch_remote_manifests: bool,
+    /// Print the provenance chain recorded in the C2PA store under each file,
+    /// oldest first: who signed each step, with which tool, when, and what it says
+    /// was done. Human output only; with --json the chain is in the c2pa source's
+    /// details.lineage.
+    #[arg(long)]
+    provenance: bool,
 }
 
 #[derive(Args)]
@@ -523,14 +529,38 @@ fn inspect(a: InspectArgs) -> Result<()> {
                     && e.rationale == "source does not support this asset"
             };
             let skipped = insp.evidence.iter().filter(unsupported).count();
+            if a.provenance {
+                if let Some(l) = insp
+                    .evidence
+                    .iter()
+                    .find(|e| e.source.name == "c2pa")
+                    .and_then(|e| e.details.get("lineage"))
+                {
+                    print!("{}", halftone_c2pa::lineage::render_timeline(l));
+                }
+            }
             for e in insp.evidence.iter().filter(|e| !unsupported(e)) {
+                // With --provenance the block above already tells the source-type story
+                // in plain words; the c2pa line keeps its signature result and points there.
+                let rationale = match e.details.get("source_type_note").and_then(|v| v.as_str()) {
+                    Some(note)
+                        if a.provenance && !note.is_empty() && e.rationale.contains(note) =>
+                    {
+                        e.rationale.replacen(
+                            note,
+                            " What the records say happened: see the provenance block above.",
+                            1,
+                        )
+                    }
+                    _ => e.rationale.clone(),
+                };
                 println!(
                     "  {} {:<13} {:<9} {:<17} {}",
                     e.status.glyph(glyphs),
                     format!("{:?}", e.status),
                     format!("{:?}", e.layer),
                     e.source.name,
-                    e.rationale
+                    rationale
                 );
             }
             if skipped > 0 {
