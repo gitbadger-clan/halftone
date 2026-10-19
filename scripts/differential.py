@@ -67,7 +67,34 @@ import atexit, shutil
 from pathlib import Path
 
 C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n"
+# The two generative terms of halftone-core's dst.rs; update with VOCABULARY_VERSION.
+GENERATIVE = {"trainedAlgorithmicMedia", "compositeWithTrainedAlgorithmicMedia"}
 
+
+def lineage(store: dict) -> dict:
+    """Mirror of halftone-c2pa lineage.rs (DIFFERENTIAL.md D-013): follow parentOf
+    from the active manifest; return the codes declared behind it (depth >= 1) and
+    the depth of the nearest generative manifest (None if none). inputTo and
+    componentOf ingredients are not lineage and are ignored. Codes are read with
+    walk_dst and code_of, the same rule as the active manifest's."""
+    manifests = store.get("manifests") or {}
+    label, depth, seen = store.get("active_manifest"), 0, set()
+    parent_codes: list[str] = []
+    generative_depth = None
+    while label and label not in seen and label in manifests and depth < 16:
+        seen.add(label)
+        m = manifests[label]
+        raw: list[str] = []
+        walk_dst(m.get("assertions", []), raw)
+        codes = list(dict.fromkeys(code_of(v) for v in raw))
+        if generative_depth is None and GENERATIVE & set(codes):
+            generative_depth = depth
+        if depth >= 1:
+            parent_codes += [c for c in codes if c not in parent_codes]
+        label = next((i.get("active_manifest") for i in m.get("ingredients") or []
+                      if i.get("relationship") == "parentOf" and i.get("active_manifest")), None)
+        depth += 1
+    return {"lineage_digital_source_type": parent_codes, "generative_depth": generative_depth}
 
 def c2patool_settings(
     anchors: Path | None, tsa: Path | None = None, eku: Path | None = None
@@ -245,6 +272,7 @@ def c2patool_facts(p: Path, settings: Path) -> dict:
         "assertions": [a.get("label") for a in active.get("assertions", [])],
         "digital_source_type_raw": raw,
         "digital_source_type": codes,
+        **lineage(js),
         "time_stamp_codes": ts_codes,
         "time_stamp": time_stamp_status(ts_codes) if ts_codes is not None else None,
         "signing_cert": (

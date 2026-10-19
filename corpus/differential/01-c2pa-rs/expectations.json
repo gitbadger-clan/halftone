@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-02T08:18:53Z",
+  "collected_at": "2026-10-14T18:49:55Z",
   "corpus": "corpus/differential/01-c2pa-rs",
   "files": {
     "C.jpg": {
@@ -18,8 +18,20 @@
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia"
         ],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -47,8 +59,20 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -75,8 +99,20 @@
         "claim_version": 2,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -108,8 +144,20 @@
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia"
         ],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.untrusted",
@@ -139,8 +187,19 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "failed",
+        "time_stamp_codes": [
+          "timeStamp.malformed"
+        ],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -172,8 +231,20 @@
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia"
         ],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.untrusted"
@@ -207,8 +278,20 @@
         "digital_source_type_raw": [
           " http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
         ],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:40Z",
+          "not_before": "2022-06-10T18:46:40Z",
+          "serial": "7024E6247605F1D65F1B477551D4FAFCB5ED91E6"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "cawg.x509.credential.untrusted"
@@ -237,8 +320,19 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "failed",
+        "time_stamp_codes": [
+          "timeStamp.mismatch"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "claimSignature.mismatch"
@@ -299,8 +393,20 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "assertion.dataHash.mismatch"
@@ -329,8 +435,20 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "ingredient.manifest.missing",
           "signingCredential.untrusted",
@@ -361,8 +479,20 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:40Z",
+          "not_before": "2022-06-10T18:46:40Z",
+          "serial": "7024E6247605F1D65F1B477551D4FAFCB5ED91E6"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted"
         ],
@@ -443,8 +573,20 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "Adobe Inc.",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2023-03-01T23:59:59Z",
+          "not_before": "2022-03-01T00:00:00Z",
+          "serial": "585FA453DF91A4841077579E27111ADB"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.untrusted",
@@ -495,8 +637,20 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.untrusted"
@@ -612,8 +766,20 @@
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia",
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "generative_depth": 0,
         "issuer": "Adobe Inc.",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2025-10-15T23:59:59Z",
+          "not_before": "2024-10-15T00:00:00Z",
+          "serial": "158DFF27AC23D2B8254B4E63371E1D9E"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.untrusted"
@@ -642,8 +808,20 @@
         "claim_version": 1,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "Adobe Inc.",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2025-10-15T23:59:59Z",
+          "not_before": "2024-10-15T00:00:00Z",
+          "serial": "158DFF27AC23D2B8254B4E63371E1D9E"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.untrusted",
@@ -834,8 +1012,17 @@
         "claim_version": 2,
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "generative_depth": null,
         "issuer": "C2PA Test Signing Cert",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2030-08-26T18:46:28Z",
+          "not_before": "2022-06-10T18:46:28Z",
+          "serial": "7E3E629ADCCFE7D99710135B5A48056972DF8199"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
         "validation_codes": [
           "signingCredential.untrusted",
           "signingCredential.untrusted"
@@ -859,7 +1046,8 @@
   "schema": "halftone-differential-expectations/1",
   "tools": {
     "c2patool": "c2patool 0.28.0",
-    "exiftool": "13.55"
+    "exiftool": "13.55",
+    "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
   "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",

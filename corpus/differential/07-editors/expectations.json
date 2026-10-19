@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-07T08:04:46Z",
+  "collected_at": "2026-10-14T18:50:11Z",
   "corpus": "corpus/differential/07-editors",
   "files": {
     "exiftool__gps-strip__pixel5-default__s03__1.jpg": {
@@ -132,8 +132,20 @@
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
         ],
+        "generative_depth": null,
         "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-11-09T20:49:11Z",
+          "not_before": "2026-08-12T20:49:12Z",
+          "serial": "61B158877FF04A124883BE0CB7DAEDB641E6A3"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "assertion.dataHash.mismatch",
           "assertion.dataHash.mismatch"
@@ -169,8 +181,20 @@
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
         ],
+        "generative_depth": null,
         "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-11-09T20:49:15Z",
+          "not_before": "2026-08-12T20:49:16Z",
+          "serial": "E0D85E4A221B02E9E26F90B33C0FA3B5BC80EE"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "assertion.dataHash.mismatch",
           "assertion.dataHash.mismatch"
@@ -202,8 +226,20 @@
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
         ],
+        "generative_depth": null,
         "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
         "present": true,
+        "signing_cert": {
+          "not_after": "2026-11-09T20:49:15Z",
+          "not_before": "2026-08-12T20:49:16Z",
+          "serial": "87A6BE0CA5BAB42F30C64467B82AF41A6FE81E"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
         "validation_codes": [
           "assertion.dataHash.mismatch",
           "assertion.dataHash.mismatch"
@@ -227,7 +263,8 @@
   "schema": "halftone-differential-expectations/1",
   "tools": {
     "c2patool": "c2patool 0.28.0",
-    "exiftool": "13.55"
+    "exiftool": "13.55",
+    "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
   "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",

@@ -414,6 +414,22 @@ fn compare_file(
                 show(str_set(&row["manifest"]["digital_source_type"])),
             );
 
+            // ---- provenance lineage (D-013) ---------------------------------------
+            // Expectations collected before the lineage fields existed lack the key;
+            // compare only when the collector recorded it (null counts as recorded).
+            if ct.get("generative_depth").is_some() {
+                push(
+                    "c2pa.generative_depth",
+                    show(ct["generative_depth"].as_u64()),
+                    show(row["manifest"]["generative_depth"].as_u64()),
+                );
+                push(
+                    "c2pa.lineage_digital_source_type",
+                    show(str_set(&ct["lineage_digital_source_type"])),
+                    show(str_set(&row["manifest"]["lineage_digital_source_type"])),
+                );
+            }
+
             // ---- signing certificate and time-stamp (D-010, D-012) ------------------
             if ct.get("signing_cert").is_some() {
                 let cert = &ct["signing_cert"];
