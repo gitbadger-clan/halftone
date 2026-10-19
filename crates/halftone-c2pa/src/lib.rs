@@ -5,8 +5,9 @@
 //!   trusted anchor. `details` carries the parsed claim chain plus every
 //!   `digitalSourceType` the active manifest declares ([`source_type`]): the term
 //!   codes in `digital_source_type`, each occurrence with its assertion, action and
-//!   JSON path in `digital_source_type_hits`, and `declares_ai` = any occurrence is a
-//!   generative term of the shared vocabulary in [`halftone_core::dst`].
+//!   JSON path in `digital_source_type_hits`, and `declares_ai` = any manifest on the parentOf
+//!   lineage declares a generative term ([lineage]); declares_ai_active keeps the active manifest's
+//!   own answer.
 //! - `Absent`: no manifest. Say nothing about origin; most real photos have none.
 //! - `Inconclusive`: manifest present but the signature fails, the signer is not
 //!   trusted, the hard binding is broken (bytes changed after signing), or it can't be
@@ -42,6 +43,7 @@
 //! says the result depends on that server and the time of checking. Files with an
 //! embedded manifest never touch the network either way. OCSP is never consulted.
 //!
+pub mod lineage;
 pub mod shelf_life;
 pub mod source_type;
 pub mod trust;
@@ -399,6 +401,8 @@ mod imp {
             })
             .unwrap_or_default();
         let source_type = crate::source_type::find(&active);
+        let lineage = crate::lineage::walk(&js);
+        let ingredient_failures = crate::lineage::ingredient_failures(&js);
         let manifests = js
             .get("manifests")
             .and_then(|m| m.as_object())
@@ -484,7 +488,7 @@ mod imp {
             (None, Some(i)) => format!("signed by {i}"),
             (None, None) => "from an unknown claim generator".into(),
         };
-        let ai_note = crate::source_type::describe(&source_type);
+        let ai_note = crate::lineage::describe(&source_type, &lineage, ingredient_failures);
 
         let (status, rationale) = match state {
             c2pa::ValidationState::Trusted => (
@@ -606,10 +610,15 @@ mod imp {
             "signed_at": signed_at,
             "ingredients": ingredients,
             "assertions": assertion_labels,
-            "declares_ai": source_type.declares_ai,
+            "declares_ai": source_type.declares_ai || lineage.declares_ai(),
+            "declares_ai_active": source_type.declares_ai,
+            "generative_depth": lineage.generative_depth(),
+            "lineage_digital_source_type": lineage.parent_codes(),
             "digital_source_type": source_type.codes,
             "digital_source_type_unknown": source_type.unknown,
             "digital_source_type_hits": source_type.hits,
+            "lineage": lineage,
+            "source_type_note": ai_note.clone(),
             "vocabulary_version": halftone_core::dst::VOCABULARY_VERSION,
             "trust": resolved.details(),
             "signing_cert": signing_cert,
