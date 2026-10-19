@@ -467,7 +467,18 @@ mod imp {
             _ => String::new(),
         };
 
-        let who = match (&claim_generator, &issuer) {
+        // The rationale names the generator without its build number; the full
+        // `name version` stays in details.claim_generator (compared with c2patool, D-003).
+        let generator_name = active
+            .get("claim_generator")
+            .and_then(|v| v.as_str())
+            .or_else(|| {
+                active
+                    .pointer("/claim_generator_info/0/name")
+                    .and_then(|v| v.as_str())
+            })
+            .map(str::to_string);
+        let who = match (&generator_name, &issuer) {
             (Some(g), Some(i)) => format!("from {g}, signed by {i}"),
             (Some(g), None) => format!("from {g}, signer unknown"),
             (None, Some(i)) => format!("signed by {i}"),
@@ -479,18 +490,19 @@ mod imp {
             c2pa::ValidationState::Trusted => (
                 Status::Present,
                 format!(
-                    "Valid C2PA manifest {who}; signer chains to a trusted anchor and the \
-                     content hash matches, so the file is unchanged since signing.\
-                     {shelf_note}{ai_note}"
+                    "Valid C2PA manifest {who}; signer chains to a trusted anchor in \
+                     {lists} and the content hash matches, so the file is unchanged \
+                     since signing.{shelf_note}{ai_note}",
+                    lists = resolved.manifest_lists_label()
                 ),
             ),
             c2pa::ValidationState::Valid => (
                 Status::Inconclusive,
                 format!(
                     "C2PA manifest {who} is cryptographically valid and the content is \
-                     unchanged since signing, but the signer does not chain to any configured \
-                     trust anchor (see details.trust for which lists were used).\
-                     {shelf_note}{ai_note}"
+                     unchanged since signing, but the signer does not chain to any anchor \
+                     in {lists} (details.trust lists them).{shelf_note}{ai_note}",
+                    lists = resolved.manifest_lists_label()
                 ),
             ),
             c2pa::ValidationState::Invalid => {

@@ -152,6 +152,54 @@ impl ResolvedTrust {
     pub fn is_empty(&self) -> bool {
         !self.anchors.iter().any(|a| a.kind == AnchorKind::Manifest)
     }
+
+    /// The lists a signer can chain to, in plain words, for a rationale. c2pa does
+    /// not report which anchor matched, so a `Trusted` result names all of them:
+    /// the official C2PA Trust List with where this copy came from, plus any
+    /// operator-supplied bundles. TSA lists are left out: they trust time-stamps,
+    /// not signers. No paths, so nothing from the operator's machine leaks into a
+    /// report.
+    pub fn manifest_lists_label(&self) -> String {
+        let mut parts: Vec<String> = Vec::new();
+        for b in self
+            .internal
+            .iter()
+            .filter(|b| b.kind == AnchorKind::Manifest)
+        {
+            let detail = match (b.origin.as_str(), &b.version, &b.fetched_at) {
+                ("vendored", _, _) => {
+                    // "repo@sha 2026-08-14T21:00:15Z" → "2026-08-14"; full id in details.trust
+                    let snap = b
+                        .source
+                        .split_once('@')
+                        .map_or(b.source.as_str(), |(_, s)| s);
+                    let date = snap
+                        .split_whitespace()
+                        .nth(1)
+                        .and_then(|t| t.get(..10))
+                        .unwrap_or(snap);
+                    format!("snapshot of {date}, built in")
+                }
+                (_, Some(v), _) => v.clone(),
+                (_, None, Some(t)) => format!("fetched {t}"),
+                (_, None, None) => "installed copy".to_string(),
+            };
+            parts.push(format!("the C2PA Trust List ({detail})"));
+        }
+        let custom = self
+            .custom
+            .iter()
+            .filter(|b| b.kind == AnchorKind::Manifest)
+            .count();
+        if custom > 0 {
+            parts.push(format!("{custom} operator-supplied anchor bundle(s)"));
+        }
+        if parts.is_empty() {
+            "no signer trust list".to_string()
+        } else {
+            parts.join(" and ")
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
