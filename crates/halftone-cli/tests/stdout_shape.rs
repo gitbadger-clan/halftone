@@ -59,7 +59,7 @@ fn batch_json_is_one_object_with_summary_rows() {
         "batch mode emits exactly one line"
     );
     let v: serde_json::Value = serde_json::from_str(stdout.trim()).unwrap();
-    assert_eq!(v["schema_version"], "1.2.0");
+    assert_eq!(v["schema_version"], "1.3.0");
     assert_eq!(v["summary"].as_array().unwrap().len(), 2);
     assert_eq!(v["inspections"].as_array().unwrap().len(), 2);
     assert_eq!(
