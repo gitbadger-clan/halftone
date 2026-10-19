@@ -40,11 +40,13 @@
               "issuer": { "type": "string" },
               "claim_generator": { "type": "string" },
               "digital_source_type": { "type": "array", "items": { "type": "string" } },
-              "declares_ai": { "type": "boolean" },
+              "declares_ai": { "type": "boolean", "description": "any manifest on the parentOf lineage declares a generative term (D-013)" },
               "remote_manifest_url": { "type": "string" },
               "fetched_from": { "type": "string" },
               "signing_cert_serial": { "type": "string", "description": "signer certificate serial, uppercase hex as `openssl x509 -serial` prints it" },
               "signing_cert_not_after": { "type": "string", "format": "date-time", "description": "end of the signer certificate's validity window" },
+              "generative_depth": { "type": "integer", "minimum": 0, "description": "steps back from the active manifest to the nearest manifest declaring a generative term; 0 = the active manifest" },
+              "lineage_digital_source_type": { "type": "array", "items": { "type": "string" }, "description": "term codes declared behind the active manifest on its parentOf lineage" },
               "time_stamp": { "enum": ["trusted", "untrusted", "failed", "validated_only", "none"], "description": "signature time-stamp status under the TSA list the run loaded" }
             }
           },

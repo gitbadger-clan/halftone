@@ -469,10 +469,9 @@ pub fn render_long(batch: &Batch) -> String {
             r.transform.as_deref().unwrap_or(""),
             manifest,
             r.manifest.issuer.as_deref().unwrap_or("-"),
-            if r.manifest.digital_source_type.is_empty() {
-                "-".to_string()
-            } else {
-                r.manifest.digital_source_type.join(",")
+            {
+                let t = halftone_core::batch::manifest_terms(&r.manifest, ",");
+                if t.is_empty() { "-".to_string() } else { t }
             },
             xmp,
         ));

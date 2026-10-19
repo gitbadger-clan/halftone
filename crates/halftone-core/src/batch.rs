@@ -49,9 +49,17 @@ pub struct ManifestColumns {
     /// Distinct `digitalSourceType` term codes declared in the active manifest.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub digital_source_type: Vec<String>,
-    /// Any declared term is generative.
+    /// Any manifest on the active manifest's `parentOf` lineage declares a
+    /// generative term; the active manifest alone may not (DIFFERENTIAL.md D-013).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub declares_ai: Option<bool>,
+    /// Steps back from the active manifest to the nearest manifest declaring a
+    /// generative term; 0 is the active manifest itself.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub generative_depth: Option<u64>,
+    /// Distinct term codes declared behind the active manifest on its lineage.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub lineage_digital_source_type: Vec<String>,
     /// The file carries only a reference to a remote manifest at this URL; nothing
     /// was fetched, so no `validation_state` exists.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -183,6 +191,25 @@ impl Batch {
     }
 }
 
+/// Source-type text for a manifest column: the active manifest's terms, plus
+/// where a generative declaration sits when it is behind the active manifest.
+pub fn manifest_terms(m: &ManifestColumns, sep: &str) -> String {
+    let mut s = m.digital_source_type.join(sep);
+    if let Some(n) = m.generative_depth.filter(|&n| n > 0) {
+        let back = if n == 1 {
+            "one step".to_string()
+        } else {
+            format!("{n} steps")
+        };
+        let terms = m.lineage_digital_source_type.join(sep);
+        if s.is_empty() {
+            s = format!("{terms} {back} back");
+        } else {
+            s.push_str(&format!(" (lineage: {terms} {back} back)"));
+        }
+    }
+    s
+}
 /// Derive one summary row from an inspection.
 pub fn summarize(insp: &Inspection) -> FileRow {
     let mut manifest = ManifestColumns::default();
@@ -206,6 +233,8 @@ pub fn summarize(insp: &Inspection) -> FileRow {
                 manifest.claim_generator = str_field(d, "claim_generator");
                 manifest.digital_source_type = str_list(d, "digital_source_type");
                 manifest.declares_ai = d.get("declares_ai").and_then(|v| v.as_bool());
+                manifest.generative_depth = d.get("generative_depth").and_then(|v| v.as_u64());
+                manifest.lineage_digital_source_type = str_list(d, "lineage_digital_source_type");
                 manifest.remote_manifest_url = str_field(d, "remote_manifest_url");
                 manifest.fetched_from = str_field(d, "fetched_from");
                 manifest.signing_cert_serial = nested_str(d, "signing_cert", "serial");
@@ -371,8 +400,9 @@ fn detail_line(row: &FileRow) -> String {
         if let Some(i) = &m.issuer {
             s.push_str(&format!(" · signed by {i}"));
         }
-        if !m.digital_source_type.is_empty() {
-            s.push_str(&format!(" · {}", m.digital_source_type.join(", ")));
+        let terms = manifest_terms(m, ", ");
+        if !terms.is_empty() {
+            s.push_str(&format!(" · {terms}"));
         }
         if let Some(url) = &m.fetched_from {
             s.push_str(&format!(" · fetched from {}", host_of(url)));
@@ -705,5 +735,26 @@ mod tests {
     fn long_names_are_truncated_from_the_left() {
         assert_eq!(truncate("abcdefghij", 6), "…fghij");
         assert_eq!(truncate("abc", 6), "abc");
+    }
+
+    #[test]
+    fn generative_lineage_shows_in_the_manifest_terms() {
+        let e2 = ManifestColumns {
+            digital_source_type: vec!["algorithmicallyEnhanced".into()],
+            declares_ai: Some(true),
+            generative_depth: Some(1),
+            lineage_digital_source_type: vec!["trainedAlgorithmicMedia".into()],
+            ..Default::default()
+        };
+        assert_eq!(
+            manifest_terms(&e2, ", "),
+            "algorithmicallyEnhanced (lineage: trainedAlgorithmicMedia one step back)"
+        );
+        let e1 = ManifestColumns {
+            digital_source_type: vec!["trainedAlgorithmicMedia".into()],
+            generative_depth: Some(0),
+            ..Default::default()
+        };
+        assert_eq!(manifest_terms(&e1, ", "), "trainedAlgorithmicMedia");
     }
 }
