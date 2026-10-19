@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-14T18:50:06Z",
+  "collected_at": "2026-10-19T19:53:44Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
@@ -797,9 +797,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -842,9 +843,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -929,9 +931,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -974,9 +977,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -1019,9 +1023,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -1106,9 +1111,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -1151,9 +1157,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -1196,9 +1203,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [
@@ -1241,9 +1249,10 @@
         "time_stamp": "none",
         "time_stamp_codes": [],
         "validation_codes": [
-          "signingCredential.untrusted"
+          "signingCredential.untrusted",
+          "signingCredential.expired"
         ],
-        "validation_state": "Valid"
+        "validation_state": "Invalid"
       },
       "exiftool": {
         "digital_source_type": [

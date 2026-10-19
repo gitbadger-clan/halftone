@@ -485,6 +485,10 @@ file against the directory.
   JPG (generation 2); p2–p5 via opened preview; p3 larger-size; p3 bg-removed and
   bg-removed-erase; p2 magic-edit; edits E1–E3 via chat (3), Magic Edit (3),
   Magic Expand (1); p2 free-tier re-download; p1 fresh free-tier generation.
+- 2026-10-19 collection: every October Canva export (edits, Free p1__3, Free
+  p2__2) reads `Invalid` with `signingCredential.expired`; the two October
+certificates expired 2026-10-15T23:52Z and 23:53Z, no time-stamp (D-010).
+Content hashes still match.
 - Pending (not done during the trial; on Free they now test Free, not Pro): share
   link → served asset, one non-default aspect, result-card download.
 

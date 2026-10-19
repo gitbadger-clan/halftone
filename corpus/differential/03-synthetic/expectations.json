@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-02T10:01:53Z",
+  "collected_at": "2026-10-19T19:53:33Z",
   "corpus": "corpus/differential/03-synthetic",
   "files": {
     "bare_term.jpg": {
@@ -987,7 +987,8 @@
   "schema": "halftone-differential-expectations/1",
   "tools": {
     "c2patool": "c2patool 0.28.0",
-    "exiftool": "13.55"
+    "exiftool": "13.55",
+    "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
   "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
