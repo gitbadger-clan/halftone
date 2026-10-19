@@ -35,7 +35,9 @@ if contains -- --png $argv
         exit 2
     end
     mkdir -p (dirname $out)
+    # the frame runs ht/c2patool per file, well past freeze's default 10s
     freeze --execute "fish $self" \
+        --execute.timeout 120s \
         --output $out \
         --background '#1c1e26' \
         --font.size 15 \
@@ -45,6 +47,10 @@ if contains -- --png $argv
         --margin 0 \
         --border.radius 8 \
         --window
+    or begin
+        echo "freeze failed, $out not written" >&2
+        exit 1
+    end
     echo "wrote $out"
     exit 0
 end
@@ -80,14 +86,16 @@ for row in $rows
     ht inspect --batch --json --only manifest $f 2>/dev/null | jq -C -c \
         '.inspections[0].evidence[] | select(.source.name=="c2pa")
          | {status, state: .details.validation_state, issuer: .details.issuer,
-            generator: .details.claim_generator, remote: .details.remote_manifest_url}
-         | with_entries(select(.value != null))'
+            remote: .details.remote_manifest_url}
+         | with_entries(select(.value != null))
+         | if .remote then .remote |= (sub("^https://"; "") | .[:46] + "…") else . end'
 
     # c2patool as recorded by the collector (offline, vendored trust + EKU config)
     echo -n "c2patool  "
     jq -C -c --arg k $kv[2] '.files[$k].c2patool
-        | {state: .validation_state, issuer, generator: .claim_generator, remote: .remote_manifest}
-        | with_entries(select(.value != null))' $exp
+        | {state: .validation_state, issuer, remote: .remote_manifest}
+        | with_entries(select(.value != null))
+        | if .remote then .remote |= (sub("^https://"; "") | .[:46] + "…") else . end' $exp
 
     # every manifest in the store, not just the active one
     if test $kv[3] = partner
@@ -95,9 +103,10 @@ for row in $rows
         c2patool $f 2>/dev/null | jq -C -c '[.manifests[]?.signature_info.issuer] | unique'
     end
 
-    # does anything in the file's bytes name Adobe or Firefly?
-    set -l hits (LC_ALL=C grep -a -o -i -E '.{0,24}(adobe|firefly).{0,24}' $f | string replace -ra '[^[:print:]]' '.')
-    echo "adobe/firefly in bytes: "(count $hits)
+    # does anything in the file's bytes say Firefly? ("adobe" alone is useless here:
+    # every XMP packet carries adobe namespaces and usually Adobe's XMP toolkit string)
+    set -l hits (LC_ALL=C grep -a -o -i -E '.{0,24}firefly.{0,24}' $f | string replace -ra '[^[:print:]]' '.')
+    echo "'firefly' in bytes: "(count $hits)
     for h in $hits[1..3]
         echo "$D  $h$R"
     end

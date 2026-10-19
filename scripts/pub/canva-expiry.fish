@@ -31,7 +31,9 @@ if contains -- --png $argv
         exit 2
     end
     mkdir -p (dirname $out)
+    # the frame runs ht/c2patool per file, well past freeze's default 10s
     freeze --execute "fish $self" \
+        --execute.timeout 120s \
         --output $out \
         --background '#1c1e26' \
         --font.size 15 \
@@ -41,6 +43,10 @@ if contains -- --png $argv
         --margin 0 \
         --border.radius 8 \
         --window
+    or begin
+        echo "freeze failed, $out not written" >&2
+        exit 1
+    end
     echo "wrote $out"
     exit 0
 end
