@@ -29,6 +29,12 @@ Halftone: agrees on every field.
 Finding, not a bug: the only source-type declaration is inside the signed manifest.
 Contradicts published claims that OpenAI also writes the IPTC field in XMP. The
 marking survives exactly as far as the `caBX` chunk does.
+Resolved 2026-10-21 · Corpus files now stand behind both paths. API:
+`openai-api__chatgpt-image-latest__api-{png,jpeg,webp}__p1__{1,2,3}`: all
+three formats carry the same signed record (created + converted), so the
+format does not decide the marking. Website: `chatgpt__base__*`: PNG with the
+same signer plus a `c2pa.watermarked.unbound` action the API files lack.
+Neither path writes XMP DigitalSourceType.
 
 ### D-002 · 2026-09-08 · c2patool reports `Valid`, Halftone `Trusted`
 
@@ -88,6 +94,12 @@ leading space inside the signed assertion. Both the collector and Halftone's
 `code_of` trim before taking the last path segment, so both read `digitalCapture`.
 Kept as a fixture of the "trim, then match exactly" rule: whitespace is tolerated,
 case is not.
+Addendum 2026-10-21 · Google's own API, JPEG output: manifest only, no XMP
+DigitalSourceType (gemini-3.1-flash-image and gemini-3-pro-image, p1–p5).
+The two Google-signed files that carry XMP (aggregator row, Firefly partner
+row) are both PNG from resellers. Whether the XMP field comes with PNG
+output or is added by the reseller is not determined; a PNG request to the
+API, if it offers one, would separate the two.
 
 ### D-007 · 2026-09-08 · Stapled OCSP assertion fails to decode with c2pa_cbor 0.77.2
 
@@ -208,6 +220,11 @@ Canva (no time-stamp) and Bing (time-stamp untrusted, D-012) by coincidence, and
 would be wrong for a file whose signature carries a trusted time-stamp but no
 such assertion, or the reverse. Open: derive time-stamp status from the
 `timeStamp.*` codes instead; planned with the certificate shelf-life fields.
+Addendum 2026-10-20 · The pattern holds a third time. Two Free exports on
+2026-10-20 are signed with two certificates issued about 100 s apart,
+391F7E…A7591 (valid 2026-10-19T23:53:56Z to 10-27T23:53:56Z) and 3DFFDF…F0E3BD
+(to 10-27T23:52:12Z), neither with a time-stamp. September, October
+and this pair all run exactly 8 days and are issued just before midnight GMT.
 
 ### D-011 · 2026-09-25 · c2pa 0.91: trust anchors silently dropped; Bing Invalid
 
@@ -439,3 +456,12 @@ active manifest, and differs from the first in 0.63 % of pixels (PSNR
 therefore get opposite source-type readings under the active-manifest-only
 rule. All three files are fixtures: the chain walk must report the same
 generative finding for both E2 downloads and for E1.
+
+Addendum 2026-10-20 · A second source of the shape, on a sharing path: the
+Gemini app's share link. E3's share-page download
+(`gemini-app__nano-banana__share-link-download__e3__3.jpg`) keeps the camera
+record and the generation record of the chat download, but its active
+manifest is a new `c2pa.opened` + `c2pa.transcoded` (algorithmicallyEnhanced)
+with the generation as `parentOf`. An active-manifest-only reading calls the
+file a recipient gets non-generative; the lineage walk reports it as
+generative. Fixture added.
