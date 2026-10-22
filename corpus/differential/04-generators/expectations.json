@@ -1,9 +1,77 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-19T19:53:44Z",
+  "collected_at": "2026-10-22T05:35:54Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
+    "adobe-firefly__firefly-expand__edit-photo__e3__3.jpg": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-a265c0ac-55f4-486f-a7fb-0f20773e6c6c-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "c721a63d5d3d06eb5da0e5d8cf724a047b860c554e76af19ad1762fe81ddb987",
+      "size_bytes": 7238279
+    },
+    "adobe-firefly__firefly-fill__edit-photo__e1__1.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-30154e25-ea1f-48a9-90b8-e0ff91855f53-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "a02ffb4854e2de11d12ffdaf579c13dc7c78acac4e57c77e826a63e830a309d8",
+      "size_bytes": 1270052
+    },
+    "adobe-firefly__firefly-fill__edit-photo__e2__2.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-dc58a299-3927-4dd3-aab9-fee4f9326522-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "9db7382efae30c3566f9f18da5db89ff51c8f3b7dc6c27274db88ac592efd8bd",
+      "size_bytes": 1167060
+    },
+    "adobe-firefly__firefly-image-4-ultra-fill__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-7ef2a9b1-8e98-4051-af93-6ed2d478c86c-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "4607d90182ccff4a242e33a07628f0813f7894719351646ba32e5c569d542dca",
+      "size_bytes": 1174890
+    },
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
       "c2patool": {
         "present": false
@@ -53,6 +121,23 @@
       },
       "sha256": "6848348e0e388bfeaee8ec29d13dd915628964dc0b757af34f89d99a880cf4b4",
       "size_bytes": 1529330
+    },
+    "adobe-firefly__firefly-image-5-2k__web-download-thumb__p1__1.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-79b9dd22-f566-4b67-ac8c-9d766216df74-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "1716ba87956b168faad76e893465c85930953e578a4dd56af73cb3b45db50e2d",
+      "size_bytes": 4457928
     },
     "adobe-firefly__firefly-image-5-upscaled__web-download-thumb__p1__1.jpg": {
       "c2patool": {
@@ -137,6 +222,23 @@
       },
       "sha256": "0383dc8aaba85738bd7cde0a7b4e6b8827584651d4a7e2390b333add99973b55",
       "size_bytes": 1146991
+    },
+    "adobe-firefly__firefly-image-5__web-download-thumb__p1__3.png": {
+      "c2patool": {
+        "present": null,
+        "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-fe46d670-bf34-4a57-9cd2-b025a0fcdae2-adobe"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "41650ef23664080726de669c60ef7b6c4274faa7e40cf51eaed6c036ff08a747",
+      "size_bytes": 1164937
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p2__2.png": {
       "c2patool": {
@@ -484,6 +586,52 @@
       "sha256": "ab47cc0a70aaf3232a81788c827c5c324dc88e755a5b60d9b39c10a9f9bb65ac",
       "size_bytes": 398421
     },
+    "bing-image__mai-image-2.5-flash__web-download__p1__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.soft-binding"
+        ],
+        "claim_generator": "Microsoft 1.0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Microsoft Corporation",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-09-17T19:05:06Z",
+          "not_before": "2026-09-17T19:05:06Z",
+          "serial": "33000000D873EC32B53221A4390000000000D8"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "claim.malformed"
+        ],
+        "validation_state": "Invalid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "ebb01703a10fed518665413f0cb31ec586a9eb73fc661b63577f1ed936fdf4bc",
+      "size_bytes": 279598
+    },
     "bing-image__mai-image-2.5-flash__web-download__p2__2.jpg": {
       "c2patool": {
         "assertions": [
@@ -756,6 +904,51 @@
       "sha256": "03fa568923e830095419bdc85a007dd567bd83a07ee36d9d8489d5bbb1dfa173",
       "size_bytes": 236061
     },
+    "canva__canva-ai-free__web-download-editor__p1__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Canva",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-27T23:52:12Z",
+          "not_before": "2026-10-19T23:52:12Z",
+          "serial": "3DFFDF68C8C2C0752D061279D729460430F0E3BD"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "02c67de1f3b4ee09aed189154d18841af33977ad9f438f31feaed53af64f4489",
+      "size_bytes": 2431398
+    },
     "canva__canva-ai-free__web-download__p1__1.png": {
       "c2patool": {
         "present": false
@@ -817,6 +1010,51 @@
       },
       "sha256": "86e812000bcfa1e8e3b3d69737de1b692f5cecb952bb88ba70054c56ed29a079",
       "size_bytes": 3338204
+    },
+    "canva__canva-ai-free__web-download__p1__4.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Canva",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2026-10-27T23:53:56Z",
+          "not_before": "2026-10-19T23:53:56Z",
+          "serial": "391F7ED6291081BA52E2323521E10E17E64A7591"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "160c06ab5c876595686a4d867d0471782ba6ba9e7c0ac2e2f6fded0018650085",
+      "size_bytes": 3571714
     },
     "canva__canva-ai-free__web-download__p2__2.png": {
       "c2patool": {
@@ -1564,6 +1802,1275 @@
       "sha256": "15039a0c3b88f0583445d72ee761f854fff88e57a1dad80382ecb25c9b2bc62d",
       "size_bytes": 617823
     },
+    "chatgpt__base-bg-removed__web-download__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "2c03cfe7489456e3bb15922f3970501c9ea1d7c538d6008a849878d8b5bfd87d",
+      "size_bytes": 650255
+    },
+    "chatgpt__base__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "79f409578b0ebe78328f4bb3ef969db4c7adb90b43d7391e11c2fe0dd0f1c5f4",
+      "size_bytes": 2655908
+    },
+    "chatgpt__base__edit-photo__e1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "752a354dbc8f5907eea0bf38e21383a2b86fad758d25a2b05d9db68ea9832f17",
+      "size_bytes": 1987313
+    },
+    "chatgpt__base__edit-photo__e2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "145e0e9652af0ee09f27c8a13d89e1911901fd9adf3fef27f4b0f76abe411f97",
+      "size_bytes": 2206721
+    },
+    "chatgpt__base__edit-photo__e3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "4983fda961027ed67be67cfcb6f667b69a5b5ec8960dd0c5e36a62dea5b6d31a",
+      "size_bytes": 3316469
+    },
+    "chatgpt__base__web-download__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d7886446fe56120343d7e39dcdf454b74b23346610e507c1f3f0b14230ebe3c1",
+      "size_bytes": 2101196
+    },
+    "chatgpt__base__web-download__p2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "15bc1ab10ecf31d69288905e47342b523790869b333a25869d50ae6707b70afd",
+      "size_bytes": 3709327
+    },
+    "chatgpt__base__web-download__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "6d3f47d873008b360f91cc94f3021415aad1c0f02b9db345f6e2b7a885e88a65",
+      "size_bytes": 1802195
+    },
+    "chatgpt__base__web-download__p4__4.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "c1a3bb77b8b964e15961cd128003d31c00ff3fe42f1a026319abc410afebe8a1",
+      "size_bytes": 3039369
+    },
+    "chatgpt__base__web-download__p5__5.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "a18d8fe95cb4321433caaee334c7bb4bd5d5825e9e922ad1465abba5133d3edc",
+      "size_bytes": 1500352
+    },
+    "gemini-api__gemini-3-pro-image__api-jpeg__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b25cf6f8c646f87fe94c165e8897f2e54c52b6a51db367ade43fad5f1a9341f8",
+      "size_bytes": 855769
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "60e6f563d383651fe6103cce1f62bd1dbc9f9cfb2dd5a0676b2d67a1ab0e4f29",
+      "size_bytes": 631032
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__e2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "aec48f9d860010ef38fe260f02d85057d35a826e09dd6971729150d1009d794a",
+      "size_bytes": 635044
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__e3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "5419461c6770c8ea47e8bfbeda1fef4b1b2da5e95c4b4fe751a919e051e860b1",
+      "size_bytes": 885034
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b5bfa902bdf9875a7f2e97b19522e7e1a810d518766484ab277333785626aba3",
+      "size_bytes": 847481
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__p2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "dc34ba7d23a2de99f40e8d8df0d09e90e3558faf1690ca7a771d92b8fd4091dc",
+      "size_bytes": 1035845
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__p3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7c6c8c2f28a097bb130af1615c330efcc8fcf2720f3fbbf5f03b53b69a6c1efe",
+      "size_bytes": 513822
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__p4__4.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7b64b0f6409740a5e057715f5ce6bdd43a80d69a90559a3e6c1100d1ec490c2f",
+      "size_bytes": 934111
+    },
+    "gemini-api__gemini-3.1-flash-image__api-jpeg__p5__5.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1002340190:1002340190",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "f756583af2c378cbd85746a4a709aacb0b99ecf33adc0975898bc4bd6b9f0d80",
+      "size_bytes": 673372
+    },
+    "gemini-app__nano-banana-pro__web-download__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b267c0f25ed657a86c26b539da74e9538b1dc7901849032f7278a50239d73c0d",
+      "size_bytes": 3591401
+    },
+    "gemini-app__nano-banana__browser-save__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "fbf2fbcc3fed227ceac3fa34279e99c2d57c93a3eadd8581fd5482141fee3c1d",
+      "size_bytes": 93788
+    },
+    "gemini-app__nano-banana__copy-image__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "348e6980e6ee8eacb850daedc4a89b7ade81a5a47bceab5e6115d7fdda095b6a",
+      "size_bytes": 793664
+    },
+    "gemini-app__nano-banana__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "54327e5544bf2b526332f52df63e34dedad1795d322dd63f44dd9ec8ea975829",
+      "size_bytes": 2300385
+    },
+    "gemini-app__nano-banana__edit-photo__e2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "f9d5cad688ca78c2068e9be6718cf130c11401732b140c37efa21e1b47cee32c",
+      "size_bytes": 2529353
+    },
+    "gemini-app__nano-banana__edit-photo__e3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "8dd0bf69a20af6737a06efb749b4006290e26a9e7789cb0df32d603d110366e9",
+      "size_bytes": 3434168
+    },
+    "gemini-app__nano-banana__share-link-download__e3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1001866207:1001866207",
+        "claim_version": 2,
+        "digital_source_type": [
+          "algorithmicallyEnhanced"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicallyEnhanced"
+        ],
+        "generative_depth": 1,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-08-07T12:04:24Z",
+          "not_before": "2026-08-12T12:04:25Z",
+          "serial": "158DC872BA67150827227035CAFB51B01A2F2C"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b7a5a4443cfb8312dc671c66eee39281007c592b7535b49288be4a82e81b4cc4",
+      "size_bytes": 274742
+    },
+    "gemini-app__nano-banana__ui-copy__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 5
+      },
+      "sha256": "7b71ca165d20c4ae8ad6a935697f2f40c9c12e2af8529a249675078c47554b7a",
+      "size_bytes": 1084160
+    },
+    "gemini-app__nano-banana__web-download__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e15b59104cdaab2a79cb68c3ca20d107d9cde58706ef9af9bfe2935c0e5664c6",
+      "size_bytes": 2888720
+    },
+    "gemini-app__nano-banana__web-download__p2__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "abbd697bfb5cdcca11d4a26a5d89a9e2f988d103b48ae49e972021f24abc6e4a",
+      "size_bytes": 4182053
+    },
+    "gemini-app__nano-banana__web-download__p3__3.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "21a8709df99e40889fc3adc46144ad4ff8ae29725bfb54b829a836eda926d0f6",
+      "size_bytes": 1792350
+    },
+    "gemini-app__nano-banana__web-download__p4__4.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e8f05014ef5002655b26349d6fb320508e9045250231c9633d256fee2d9335de",
+      "size_bytes": 3465309
+    },
+    "gemini-app__nano-banana__web-download__p5__5.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "67c40625bb6b2447e1f6f445197ff179bf689c0e200628873e5a3e0129ff392b",
+      "size_bytes": 1961098
+    },
     "google-flow__nano-banana-2-1x1__web-download-thumb__p3__1.jpeg": {
       "c2patool": {
         "assertions": [
@@ -2171,6 +3678,92 @@
       "sha256": "00662f5204178f7c30ea4fc5a3abf4fa9c4e82cb8dc1b5eff61fdd8103e71ad7",
       "size_bytes": 609250
     },
+    "google-flow__upload-unedited__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 1001866207:1001866207",
+        "claim_version": 2,
+        "digital_source_type": [
+          "algorithmicallyEnhanced"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicallyEnhanced"
+        ],
+        "generative_depth": null,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "computationalCapture"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-08-07T12:04:24Z",
+          "not_before": "2026-08-12T12:04:25Z",
+          "serial": "158DC872BA67150827227035CAFB51B01A2F2C"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0b15178177c92a9fdda9645241e13ee755322679b1a7e1f5e8bf4b885d8b2e2a",
+      "size_bytes": 2097731
+    },
+    "ideogram__ideogram-v4.5-magic-fill__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "com.ideogram.generation"
+        ],
+        "claim_generator": "Ideogram V_4_0",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Ideogram, Inc.",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2028-07-30T19:58:04Z",
+          "not_before": "2026-07-30T19:58:04Z",
+          "serial": "032839AA8D640046BF63BD6DD10AEE82FA9EFD81"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
+        "validation_codes": [
+          "signingCredential.untrusted"
+        ],
+        "validation_state": "Valid"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "f330635e4f0ddfc52dc7ffa331bc65523b3a97539a796e6d7fd1a859bb387c49",
+      "size_bytes": 441920
+    },
     "ideogram__ideogram-v4__copy-image__p1__1.png": {
       "c2patool": {
         "present": false
@@ -2713,6 +4306,66 @@
       "sha256": "e21542751f2c6fd4f7b4b06010f11e9e78f001d0e457c1beefbfbc00e5d3b232",
       "size_bytes": 2708122
     },
+    "meta-ai__instant__edit-photo__e1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "5b0aa98fbd9cdb646f1436498d13dc8046c0006e30bdfde2767bfd49c1a77e54",
+      "size_bytes": 177004
+    },
+    "meta-ai__instant__edit-photo__e2__2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "536a47071ed4e699ae5603588d892773f7ef485258809508a4ac7283d3f028ff",
+      "size_bytes": 177481
+    },
+    "meta-ai__instant__edit-photo__e3__3.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "6546eff3470110f3c8621427aed012d4c8354b9c98b0f3a434e2185a697a412e",
+      "size_bytes": 504142
+    },
     "meta-ai__instant__share-instagram-browser-save__p1__1.jpg": {
       "c2patool": {
         "present": false
@@ -2908,6 +4561,468 @@
       },
       "sha256": "5d11c414eaa7152863b12db3ed1e70fe6d1e4ce247ad88780fc33661323d3fcb",
       "size_bytes": 173734
+    },
+    "openai-api__chatgpt-image-latest__api-jpeg__p1__2.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "ea3fe5b2dd12856fb88b0f77a7cc66068ca1b51e1cee62fe1c6e3db18b7a7561",
+      "size_bytes": 122260
+    },
+    "openai-api__chatgpt-image-latest__api-png__e1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "def4d4161b2ee381ff00d3201d7434d0cae3cf50e1e6fd75162e943cd52e1b0d",
+      "size_bytes": 1586565
+    },
+    "openai-api__chatgpt-image-latest__api-png__e2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "9e5b85993f4f1861fd32ab574c9b3f8ab6995dad98985f951c978aadfd64db78",
+      "size_bytes": 2211165
+    },
+    "openai-api__chatgpt-image-latest__api-png__e3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "173f70d4e8f3e2e5c45e85a32510f7d5224109c87f2a20007617880f13c3e182",
+      "size_bytes": 3527674
+    },
+    "openai-api__chatgpt-image-latest__api-png__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "05ecccc20964fbf28ad0e7167da5b64e693d8dfa3996deb06c2a3a67d27ef5ab",
+      "size_bytes": 1504558
+    },
+    "openai-api__chatgpt-image-latest__api-png__p2__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "f4d08a194145f5f5f1c50864b98a91d29f3b77cdcdcfab9e3190de017e2f397c",
+      "size_bytes": 3473588
+    },
+    "openai-api__chatgpt-image-latest__api-png__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "cb2061bd0bedacfe5988cf2f4c02b10a67746f601c19775f51dedcc07af01032",
+      "size_bytes": 1966167
+    },
+    "openai-api__chatgpt-image-latest__api-png__p4__4.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "dd4a59351cb806bd9d6b1463afcc78e34ef70872299938b83a448a9eba16e1a4",
+      "size_bytes": 2063887
+    },
+    "openai-api__chatgpt-image-latest__api-png__p5__5.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "bb4fbbc8886c013a647ae45a98ce6e76f0d0d8a14f5559425646a41f24ad3d57",
+      "size_bytes": 563847
+    },
+    "openai-api__chatgpt-image-latest__api-webp__p1__3.webp": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d4546fba215413c681168412c540b93aef87a941316aa54580fefd6190acd550",
+      "size_bytes": 1488162
+    },
+    "openai-api__gpt-image-1.5-transparent__api-png__p3__3.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-03-24T02:53:02Z",
+          "not_before": "2026-03-23T02:53:02Z",
+          "serial": "5294250781B56A86F933177870D68EADEF621A41"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "exiftool": {
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "90059b856913010798f40b2dc8166089f9f633171058ffaf0eb1ac4d3a0b9576",
+      "size_bytes": 2085025
     },
     "zai__glm-wm-off__web-download__p1__1.png": {
       "c2patool": {

@@ -59,9 +59,12 @@ file against the directory.
   generation. Removed. No page image of a wm-off generation has been collected.
 - Files (9): `glm-wm-off` p1–p5 download; `glm-wm-on` p1–p2 download and
   copy-image.
-- Pending: browser-save and copy-image of a wm-off generation (the 2026-09-09
-  p1 if still in history, else a new p1 as `__p1__2` via all three paths); that
-  is what tests whether the toggle reaches the page image.
+- 2026-10-20: attempted the page image of the wm-off p1 generation via
+  copy-image and browser-save, from an open tab after the account was
+  disabled the same day (reason not stated). Both came from a square p1
+  generation not in the corpus (≤ 11 dB against every Z.ai download; no
+  visible mark, toggle setting at its generation not recorded), so they
+  don't answer the question; both removed.
 - Not offered: API access on this tier, edit of an uploaded photo, upscale.
 
 ## Google Flow — Nano Banana (flow.google, formerly ImageFX)
@@ -120,13 +123,93 @@ file against the directory.
   between the two downloads is not known. The first download's active
   manifest therefore declares only `algorithmicallyEnhanced`, with the
   generative step one ingredient down (DIFFERENTIAL.md D-013).
-- Files (16): p1 via browser-save-open, copy-image-open, copy-image-thumb,
+- Files (17): p1 via browser-save-open, copy-image-open, copy-image-thumb,
   web-download-thumb; p2–p5 web-download-thumb; p3 1:1; p2 upscaled; edits
   E1–E3 on nano-banana-2.1, E1 on nano-banana-pro and nano-banana-lite; E2
   re-download.
-- Pending: optional control, the unedited upload downloaded back from Flow
-  (what Flow writes for an upload alone; the chain shows it as `c2pa.opened` +
-  `c2pa.transcoded`).
+- Control (`upload-unedited`, E1 slot, 2026-10-20): `photo_bowl` uploaded
+  to Flow with no prompt and downloaded back unedited; 3000×4000 JPEG (the
+  photo's own size; edits return 896×1200), `Trusted`. Two records, both
+  signed by Google LLC: the camera's (`c2pa.created`, computationalCapture,
+  "Created by Pixel Camera") as `parentOf` ingredient, and Flow's active
+  record, `c2pa.opened` + `c2pa.transcoded` declaring algorithmicallyEnhanced.
+  The upload step alone adds a record and an "enhanced" label, with no edit.
+
+## Gemini app — Nano Banana (gemini.google.com)
+
+- Date: 2026-10-20. Plan: Google AI Pro (the same subscription as Flow).
+  Chat model 3.8 Flash and thinking Low (both defaults); the image tool shows
+  "Nano Banana" without a version → variant `nano-banana`; "Redo with Pro"
+  → `nano-banana-pro`. Each prompt in a new chat. Default output 2752×1536.
+  The sidebar's Images entry: a separate creation view, not a gallery
+  (checked 2026-10-22): "Create images" with the Images tool pre-selected
+  in the prompt box, a model menu (Flash shown), an Aspect ratio control,
+  and style templates (Bronze, Sommelier, Mural, Studio, Clay, …); the
+  subtitle names Nano Banana.
+- Paths: download button (`web-download`, JPEG); Gemini's copy button
+  (`ui-copy`) and browser Copy Image (`copy-image`), both pasted into Preview
+  and saved as PNG (Preview is the writer); right-click Save Image
+  (`browser-save`, JPEG); Share → link opened in a private window, not logged
+  in, the share page's download (`share-link-download`).
+- Finding (downloads): C2PA manifest signed by Google LLC, trusted; no XMP
+  DigitalSourceType: manifest only, as Flow web, unlike the API path and the
+  Firefly Nano Banana partner row (D-006). Two records: the generation
+  (`c2pa.created` + `c2pa.edited` "Applied imperceptible SynthID watermark.",
+  trainedAlgorithmicMedia), and active `c2pa.opened` ("Opened by Google
+  Generative AI.") + `c2pa.resized` ("Resized by Google Generative AI.",
+  trainedAlgorithmicMedia) with the generation as `parentOf`: every download
+  is a generative resize of the generation. Pro p1: same shape, 2816×1536.
+  JPEG with libjpeg tables at Q100.
+- Finding (page and clipboard): the page shows a 1024×572 preview;
+  browser-save (JPEG, 93,788 B, non-libjpeg tables) and both copies carry no
+  manifest and no XMP field.
+- Edits (E1–E3): photo attached as a file from 00-base, prompt verbatim, new
+  chat each, download button. E1/E2 1792×2390 (3:4 kept), E3 2528×1696 (3:2;
+  Gemini chose the aspect itself). Three records: the
+  Fold's camera capture (bowl …4969aa2caf8f, flask …4665cbaddaa9, path
+  …4c914b5479b0) as `inputTo` of the generation (created + SynthID), then the
+  resize as active. Same model as Flow (a new creation that took the photo as
+  input), with a resize instead of a transcode on top. No camera EXIF.
+- Finding (share link): E3 through the share link, opened in a private
+  window: JPEG 1264×848, different bytes. The chain keeps the camera record
+  and the same generation record (…4f5229595fd3), but the top layer is
+  replaced: active `c2pa.opened` ("Opened by Google") + `c2pa.transcoded`,
+  algorithmicallyEnhanced. The file a recipient gets has an active manifest
+  that declares only a re-encode, with the generative step one record down:
+  the D-013 shape on a sharing path. Halftone's lineage walk reports it as
+  generative.
+- Files (13): p1 via web-download, ui-copy, copy-image, browser-save; Pro p1
+  web-download; p2–p5 web-download; E1–E3 edit-photo; E3 share-link-download.
+- Pending: the Fold app row (`app-save-open`).
+
+
+## Gemini API — Nano Banana 2 and Pro (generativelanguage.googleapis.com, `scripts/api-gen.py`)
+
+- Date: 2026-10-21. Key from Google AI Studio, billing on. Image models
+  listed for the key: gemini-2.5-flash-image, gemini-3-pro-image (+ preview),
+  gemini-3.1-flash-image (+ preview), gemini-3.1-flash-lite-image. Rows use
+  `gemini-3.1-flash-image` (Nano Banana 2); p1 also on `gemini-3-pro-image`.
+  Request: `responseModalities: ["IMAGE"]`, nothing else. The first p1 by
+  hand with curl (same request), the rest with `api-gen.py`; every call in
+  `target/api-gen/log.jsonl`.
+- Path: `api-jpeg`: the API returned image/jpeg for every call; no format was
+  requested.
+- Finding (generations): JPEG 1408×768, one record, Google LLC, trusted:
+  `c2pa.created` (trainedAlgorithmicMedia, "Created by Google Generative
+  AI.") + `c2pa.edited` ("Applied imperceptible SynthID watermark."). No
+  resize layer: the app's `c2pa.resized` and its 2752×1536 come from the
+  app's delivery, not the model. No XMP DigitalSourceType. 1408×768 is the
+  size of Firefly's Nano Banana 2 partner row, consistent with Firefly
+  calling this API.
+- Edits (E1–E3): base photo bytes sent unchanged as inline data. Three
+  records: the camera capture as `parentOf` of a Google upload record
+  (`c2pa.opened` "Opened by Google" + `c2pa.transcoded`,
+  algorithmicallyEnhanced), which is the `inputTo` of the generation
+  (created + SynthID, active). The same chain as Flow's edits; the Gemini
+  app instead puts the camera directly under the generation and adds a
+  resize on top; the OpenAI API replaces the camera record. All three edits
+  896×1195 (the photo's 3:4; E3 not widened). No XMP, no camera EXIF.
+- Files (9): Flash p1–p5 and E1–E3; Pro p1.
 
 ## aggregator-zimage (third-party reseller UI)
 
@@ -171,8 +254,9 @@ file against the directory.
   not the signature time. Cause not established: a timestamp authority outside
   the vendored TSA list, or a time that is not a TSA timestamp.
 - XMP DigitalSourceType: none on any Bing file (2026-10-04 collection).
-- Files (7): p1 download; p1 copy-image as `__p1__2` (copied from a regenerated
-  image, 12.1 dB against p1__1); p2–p5 download; p2 at 1:1.
+- Files (8): p1 download; p1 copy-image as `__p1__2` (copied from a regenerated
+  image, 12.1 dB against p1__1); `web-download__p1__2` (2026-10-20); p2–p5
+  download; p2 at 1:1.
 - Finding (expiry): `signingCredential.expired` on all six signed downloads
   since 2026-10-09. One download session (2026-09-09, 19:24–19:50 UTC) was
   signed by two Microsoft leaf certificates, each valid for one year: serial
@@ -188,19 +272,25 @@ file against the directory.
   D-011) unchanged. Unlike Canva (D-010), Bing time-stamps its signatures; the
   files read `expired` because of the TSA trust list, not a missing
   time-stamp. DIFFERENTIAL.md D-012.
-- Pending: download of the p1__2 generation, if it is still in the Bing
-  history, so the copy route has a same-generation partner (marking kept or
-  lost through the clipboard). A download now would also show whether Bing
-  signs at download (new certificate and signature time) or serves the
-  September manifest.
+- 2026-10-20: download of the Oct 1 p1 generation (`web-download__p1__2`),
+  same generation as the copy-image row: pixel-identical (ImageMagick PSNR
+  120 dB = no difference), so the clipboard copy keeps every pixel and drops
+  the whole manifest. Signature time 2026-10-01T11:58:24Z, the generation, not
+  the download: Bing stores the manifest at generation and serves it again
+  (Canva signs at export). Third Microsoft leaf certificate, serial
+  33000000D873…0000D8, valid 2026-09-17 to 2027-09-17; validation shows only
+  `claim.malformed` (D-011), no `expired` until 2027-09-17 (D-012 logic, TSA
+  still untrusted). Download file name is the prompt as a slug.
 
 ## Adobe Firefly — Image 5 and Image 4 Ultra (firefly.adobe.com)
 
 - Date: 2026-09-09 to 2026-09-11 (Adobe models), 2026-10-01 (remote-manifest
-  pass, partner models), 2026-10-02 (p1 variant 2, route check). Plan: free tier,
-  4 generations per day, which is why prompts arrive over several days. Default
-  aspect: 4:3 landscape as labelled in the UI; the files are 9:7 (2304×1792,
-  1152×896). Default model on this tier: Firefly Image 5; Image 4 Ultra
+  pass, partner models), 2026-10-02 (p1 variant 2, route check), 2026-10-20
+  and 2026-10-22 (edits), 2026-10-22 (p1 generation 3, p1 at 2K). Plan: free
+  tier, 4 generations per day, which is why prompts arrive over several days.
+  Default aspect: 4:3 landscape as labelled in the UI; the files are 9:7
+  (2304×1792, 1152×896). Default resolution 1K; `firefly-image-5-2k` = the 2K
+  setting. Default model on this tier: Firefly Image 5; Image 4 Ultra
   (`firefly-image-4-ultra`) selectable, used as a second variant for p1–p2.
 - Browser context actions are not available: right-click Save Image and Copy Image
   are disabled on the canvas. Recorded as `browser-save` / `copy-image`: not offered.
@@ -228,7 +318,11 @@ file against the directory.
   per model. Image 5 p1 variant 1 (2026-09-09) is 2304×1792; every later Image 5
   download (p2 2026-09-10, p3–p5 2026-09-11, p1 variant 2 2026-10-02) is
   1152×896. Image 4 Ultra p1–p2 are 2304×1792. Upscale output is JPEG
-  4608×3584, 2× variant 1.
+  4608×3584, 2× variant 1. A fresh p1 on 2026-10-22
+  (`web-download-thumb__p1__3`, card download, all defaults) is 1152×896 as
+  well; the settings panel offers a resolution of 1K or 2K, default 1K.
+  Variant 1's 2304×1792 is exactly twice 1152×896: a 2K generation, confirmed
+  2026-10-22 (see below).
 - Finding (credentials): Adobe-model downloads (Image 5 PNG, Image 4 Ultra JPEG)
   carry no embedded manifest. XMP holds only a remote-manifest reference at
   cai-manifests.adobe.com and no IPTC DigitalSourceType. Each card download of an
@@ -236,21 +330,38 @@ file against the directory.
   a new one, so one image can have any number of valid manifests on Adobe's
   server. Fetched 2026-10-01, manifests are from Adobe Firefly, signed by Adobe
   Inc., cryptographically valid, content unchanged, trainedAlgorithmicMedia, but
-  the signer does not chain to the vendored C2PA trust anchors (see Pending).
+  the signer does not chain to the vendored C2PA trust anchors (why: see
+  2026-10-22 below).
   Offline, an Adobe-model file verifies nothing. The earlier expectation that
   Adobe's certificate is in the vendored trust list did not hold.
 - Withdrawn 2026-10-02: a 2026-10-01 "redownload" of p1 was a copy of the upscaled
   file (identical bytes) and was removed; the "delivery pipeline changed between
   dates" reading came from comparing variant 1 with variant 2 and does not hold.
-- Files (12): Image 5 p1 variant 1 card download and share-copy; p1 variant 2
-  card and opened-view downloads (`p1__2`); p2–p5 card downloads; p1 upscaled
-  card download; Image 4 Ultra p1–p2 card downloads, p1 share-copy-thumb.
-- Pending: which trust list Adobe's signer is on; compare the upscaled and native
-  manifests (upscale action with the original as ingredient, or a fresh
-  manifest); why Image 5 p1 variant 1 is 2304×1792 when every later Image 5
-  download is 1152×896 (a same-day pair of new downloads would separate date
-  from generation); `edit-photo` e1–e3 via Generative Fill once
-  `00-base/photo_*.jpg` exist.
+- Files (14): Image 5 p1 variant 1 card download and share-copy; p1 variant 2
+  card and opened-view downloads (`p1__2`); p1 generation 3 card download
+  (`p1__3`, 2026-10-22); p1 at 2K card download (`firefly-image-5-2k`,
+  2026-10-22); p2–p5 card downloads; p1 upscaled card download; Image 4 Ultra
+  p1–p2 card downloads, p1 share-copy-thumb.
+- 2026-10-20 (remote manifests fetched deliberately, `edit-chain.fish
+  --fetch`): native p1 variant 1 holds one Adobe record (`c2pa.created`,
+  trainedAlgorithmicMedia, …97dc4f7afdb1). The upscale holds three: that same
+  record unchanged, then `c2pa.opened` with it as `parentOf` (…03724826f46d),
+  then the active `c2pa.created`, trainedAlgorithmicMedia, with the opened
+  step as `inputTo` (…84e367de8456). So the upscale links to its exact source
+  generation, and Adobe records it as a new AI creation from that input, not
+  as a resize (no `c2pa.resized`). Same shape as the Image 4 Ultra edit.
+- 2026-10-22: p1 at 2K (`firefly-image-5-2k__web-download-thumb__p1__1`) is
+  2304×1792: the 2K setting gives variant 1's size, so variant 1 was a 2K
+  generation. Adobe's signer, read from the remote manifest fetched
+  2026-10-22: leaf "Adobe Firefly C2PA" (OU Content Authenticity Initiative,
+  Adobe Inc., valid to 2027-08-20), issued by "Adobe Product Services G4",
+  which chains to "Adobe Root CA G2" (to 2044-11-19). Adobe Root CA G2 is not
+  in the vendored C2PA Trust List (2026-08-14 snapshot), so the chain fails
+  there (`openssl verify`: unable to get local issuer certificate at depth 1),
+  which is why Firefly records read as untrusted under that list. The list
+  does hold an Adobe CA ("Adobe Product Issuing CA vault-a-or2.adobe.net
+  cai", Adobe Inc), so Adobe has a C2PA-listed CA, but Firefly's remote
+  manifests are signed through a different chain.
 - Not offered: API (Firefly Services) not on this tier.
 
 ### Partner models (collected 2026-10-01)
@@ -285,6 +396,122 @@ file against the directory.
   Adobe-model image does not.
 - Files (2): `gpt-image-2.5-flare` p1, `nano-banana-2` p1 `web-download`.
 
+### Edits (2026-10-20 and 2026-10-22, free tier)
+
+- Base photo uploaded as a file from 00-base, prompt verbatim, a single result
+  each, Firefly's Download button. Image → Edit image → Fill, or Expand
+  background → Expand.
+  - Fill, default model Firefly Image 5 (`firefly-fill`): E1 (apples brushed), E2
+    (work surface and wall brushed, flask left out). PNG 880×1184, 3:4 kept,
+    camera EXIF kept (Make Google).
+  - Fill with Firefly Image 4 Ultra (`firefly-image-4-ultra-fill`): E1. JPEG
+    2304×1792, landscape from a portrait photo, no camera EXIF.
+  - Expand (`firefly-expand`): E3, `photo_path.jpg` uploaded from disk,
+    16:9, photo centred, no prompt field shown, a single result, 2026-10-22.
+    JPEG 7111×4000 (full height, widened to 16:9), camera EXIF dropped.
+    Remote manifest only (urn-c2pa-a265c0ac…), fetched 2026-10-22 with
+    `edit-chain.fish --fetch`: two Adobe records: `c2pa.opened` +
+    `c2pa.edited` (compositeWithTrainedAlgorithmicMedia) with a `parentOf`
+    and an `inputTo` ingredient that carry no manifest (both untitled), then
+    an active `c2pa.opened` with that record as `parentOf`. The camera record
+    is not in the chain: unlike Fill, Expand names its inputs but does not
+    carry their provenance. The active record declares no source type; the
+    generative step is one record down (the D-013 shape).
+- Finding: no edit carries an embedded manifest. XMP `dcterms:provenance`
+  points to a remote manifest at cai-manifests.adobe.com. Fetched 2026-10-20
+  (unintentionally, by c2patool's default remote fetch; `edit-chain.fish`
+  now runs offline unless `--fetch`):
+  - Fill: two records. The Fold's camera record (Google LLC,
+    `computationalCapture`, "Created by Pixel Camera.") as `parentOf`, and
+    Adobe's (Adobe Inc.) with `c2pa.opened` + `c2pa.edited`,
+    `compositeWithTrainedAlgorithmicMedia`: the edit recorded as an edit of
+    the camera photo, the C2PA-shaped case.
+  - Image 4 Ultra: `c2pa.created`, `trainedAlgorithmicMedia`, the camera
+    record as `inputTo`: a new creation that took the photo as input, like
+    Flow.
+  Offline none of it verifies: Halftone reports a remote reference, not
+  fetched (D-009).
+- Files (4): Fill E1, E2; Image 4 Ultra Fill E1; Expand E3.
+
+## ChatGPT — website (chatgpt.com)
+
+- Date: 2026-10-21. Plan: Pro. Prompts with the "Create image" tool, each
+  in a new chat; thinking effort Medium (the default), unchanged. The UI names
+  no image model (the editor's menu shows "Image") → variant `base`. The
+  manifest's softwareAgent is a generator-info map {"name": "ChatGPT",
+  "version": "gpt-image"}; the API rows carry the string "API
+  chatgpt-image-latest" instead.
+- Paths: download icon in the opened view (`web-download`, PNG, named after
+  ChatGPT's own title for the image); browser Copy Image pasted into Preview
+  (`copy-image`); ChatGPT's copy button, right-click Save Image, and the
+  image's own share icon → link → private window → download were also taken
+  (see below).
+- Finding (downloads): one manifest from "OpenAI Media Service API", signed by
+  OpenAI OpCo, LLC, trusted: `c2pa.created` (trainedAlgorithmicMedia) +
+  `c2pa.converted` + `c2pa.watermarked.unbound`. The third action is absent
+  from all 11 API files: the website declares a watermark the API does not.
+  No soft-binding assertion (`c2pa.actions.v2` is the only assertion), so the
+  watermark is declared but not tied to the record, as "unbound" says. No
+  XMP. PNG with a bare IHDR/IDAT/IEND layout plus caBX, like the API. Sizes
+  differ from the API's: 1448×1086 (p1, p2, p4), 1278×1230 (p3), 1254×1254
+  (p5). The same two alternating certificates as the API (expiring 2027-03-24
+  and 2027-04-23, TSA not on the vendored list).
+- Finding (page, links, clipboard): right-click Save Image on p1 gave the
+  download's bytes exactly, and the share link of E3 served the E3
+  download's bytes exactly: unlike Flow and Gemini, the page and the share
+  link serve the signed file itself. ChatGPT's copy button and the browser's
+  Copy Image gave byte-identical PNGs via Preview, with no manifest and no
+  XMP field: the clipboard drops the record. The three duplicates
+  (browser-save, share-link, ui-copy) were removed on 2026-10-21; one file
+  per distinct output kept.
+- Edits (E1–E3): photo attached as a file, prompt verbatim, new chat each.
+  One OpenAI record each (created + converted + watermarked.unbound), zero
+  ingredients; camera-record IDs and camera strings absent from the bytes; no
+  camera EXIF. The camera record is replaced, as with the API. E1 and E2
+  1086×1448 (3:4 kept), E3 1764×891 (widened to about 2:1; the API kept 3:2).
+- Remove BG on p3 (`base-bg-removed`): one click, no prompt. 1279×1230,
+  signed, trusted, a fresh record (created + converted + watermarked.unbound)
+  with no ingredient: the derived image does not link back to p3.
+- Files (10): p1–p5 download; p1 copy-image; E1–E3; p3 bg-removed.
+
+## OpenAI API — GPT Image (api.openai.com, `scripts/api-gen.py`)
+
+- Date: 2026-10-21. Paid API key (project key). Models listed for the key:
+  chatgpt-image-latest, gpt-image-1, -1-mini, -1.5, -2 (+ 2026-04-21),
+  -2.5-flare and -2.5-sunburst (+ 2026-09-08 snapshots). Rows use
+  `chatgpt-image-latest` (ChatGPT's model); the transparent p3 uses
+  `gpt-image-1.5` (gpt-image-2 does not support transparency). Defaults
+  everywhere: no size, quality or compression sent. Every call in
+  `target/api-gen/log.jsonl` (request id, duration, response metadata).
+- Paths: `api-png` / `api-jpeg` / `api-webp` = the `output_format` requested;
+  the file is the base64 payload decoded, unmodified. Each call is its own
+  generation, so p1 in three formats is p1__1 (png), p1__2 (jpeg),
+  p1__3 (webp).
+- Finding (formats, closes D-001): PNG, JPEG and WebP each carry the same
+  signed record: one manifest from "OpenAI Media Service API", signed by
+  OpenAI OpCo, LLC, trusted, content hash intact, `c2pa.created`
+  (trainedAlgorithmicMedia, softwareAgent "API chatgpt-image-latest") + `c2pa.converted`.
+  No XMP DigitalSourceType on any format. The delivery format does not
+  decide the marking on the API path.
+- Finding (transparent p3): 1024×1536 PNG with alpha, signed the same way.
+  Unlike Ideogram's no-background PNG, the alpha path does not drop the
+  record.
+- Finding (certificates): two OpenAI signing certificates alternate within
+  one session (not_after 2027-03-24T02:53:02Z and 2027-04-23T15:51:04Z).
+  Signatures carry RFC 3161 time-stamps from a TSA outside the vendored list,
+  so under this list the files read `expired` after those dates (the D-012
+  case). A stapled OCSP response says the certificate was not revoked: the
+  first generator in the corpus with one.
+- Edits (E1–E3, `/images/edits`, base photo bytes uploaded unchanged):
+  one record each, OpenAI's (`created`, trainedAlgorithmicMedia, +
+  `converted`), zero ingredients; the camera-record IDs and camera strings
+  are absent from the file bytes; no XMP, no camera EXIF. The camera record
+  is replaced and the edit is labelled a generation, as with Ideogram.
+  Frames are the API's own: E1 1024×1024 (square from a 3:4 photo), E2
+  1024×1536, E3 1536×1024.
+- Files (11): `chatgpt-image-latest` p1 png/jpeg/webp, p2–p5 png, E1–E3 png;
+  `gpt-image-1.5-transparent` p3 png.
+
 ## Meta AI — meta.ai (web), modes "instant" and "thinking"
 
 - Date: 2026-09-10. Plan: free (Meta account). Default mode: instant;
@@ -315,12 +542,21 @@ file against the directory.
   trainedAlgorithmicMedia and no C2PA manifest. The page WebPs (browser-save,
   both modes) keep the field too; the copy-image PNGs (Preview as writer) lose
   it. The Instagram-served thumbnail (27 KB, cropped, re-encoded) kept it.
-- Pending: `edit-photo` e1–e3 once base photos exist.
 - Files (11): instant p1 web-download-thumb, browser-save-open, copy-image-open,
   share-instagram-browser-save; instant p2–p5 web-download-thumb; thinking p1
   web-download-thumb, browser-save-thumb, copy-image-thumb.
-- Pending: `edit-photo` e1–e3 once base photos exist; whether the Instagram
-  thumbnail kept the XMP field.
+- Edits (E1–E3, 2026-10-20, free, mode instant): base photo attached as a
+  file from 00-base, prompt verbatim, Meta's download control. E3: Meta
+  extended to 16:9 by itself.
+  JPEG, progressive; E1/E2 1376×1824 (3:4 kept), E3 2048×1152.
+  Finding: the Fold's signed record is dropped; no C2PA manifest of Meta's own;
+  XMP DigitalSourceType trainedAlgorithmicMedia, the same unsigned label Meta
+  puts on its generations, so the edit declares itself a generation; camera
+  EXIF gone; no camera-record ID or camera string in the file bytes.
+  The download name carries the uploaded file's name and the prompt
+  (`photo_bowl-replace-the-green-apples-…-k.jpg`) for E1 and E2; E3 came as
+  `image_20261020_072046.jpg`.
+- Files (3): E1, E2, E3 edit downloads (`instant`, 2026-10-20).
 - See also: the Android app and WhatsApp sections below.
 
 ## Meta AI — Android app (com.facebook.stella)
@@ -382,7 +618,7 @@ file against the directory.
 
 ## Canva — Canva AI image generator (canva.com)
 
-- Date: 2026-09-10 to 2026-10-10. Plan: Pro trial from 2026-09-10 (one
+- Date: 2026-09-10 to 2026-10-20. Plan: Pro trial from 2026-09-10 (one
   free-tier file predates it, see below), cancelled 2026-10-10 09:43;
   account on Free from 09:43 2026-10-10.
   Model as shown in the UI: not stated → variant `canva-ai`. Default aspect: 1:1.
@@ -437,7 +673,7 @@ file against the directory.
   replaced by Canva's (issuer Canva) with zero ingredients, so the camera
   original is not recorded; `compositeWithTrainedAlgorithmicMedia` in both
   the manifest and XMP. Camera EXIF (make, model, capture time) not carried
-    over. Valid when collected, `signingCredential.untrusted` only; two new
+  over. Valid when collected, `signingCredential.untrusted` only; two new
   signing certificates, issued 104 s apart on 2026-10-07, each valid 8 days:
   the chat route on serial 167403…226101 (hex 1D529F…C0CEF5, not_after
   2026-10-15T23:53:55Z), Magic Edit and Magic Expand on 600751…481979 (hex
@@ -481,16 +717,28 @@ file against the directory.
   export collected in October, Free or Pro, generation or edit, carries both.
 - p1 generation 2 (Pro): opened-preview PNG `__p1__2` and its JPG export
   `web-download-jpg__p1__2` (57.6 dB, same image).
-- Files (21): free-tier p1; Pro p1 editor export (generation 1); Pro p1 PNG and
+- Files (23): free-tier p1; Pro p1 editor export (generation 1); Pro p1 PNG and
   JPG (generation 2); p2–p5 via opened preview; p3 larger-size; p3 bg-removed and
   bg-removed-erase; p2 magic-edit; edits E1–E3 via chat (3), Magic Edit (3),
-  Magic Expand (1); p2 free-tier re-download; p1 fresh free-tier generation.
+  Magic Expand (1); p2 free-tier re-download; p1 fresh free-tier generation;
+  p1 Free generation p1__4 and editor re-export of p1__3 (2026-10-20).
 - 2026-10-19 collection: every October Canva export (edits, Free p1__3, Free
   p2__2) reads `Invalid` with `signingCredential.expired`; the two October
-certificates expired 2026-10-15T23:52Z and 23:53Z, no time-stamp (D-010).
-Content hashes still match.
-- Pending (not done during the trial; on Free they now test Free, not Pro): share
-  link → served asset, one non-default aspect, result-card download.
+  certificates expired 2026-10-15T23:52Z and 23:53Z, no time-stamp (D-010).
+  Content hashes still match.
+- 2026-10-20, on Free: a new p1 generation (`web-download__p1__4`), from the
+  preview, and a re-export of the Oct 10 p1__3 image from the design editor
+  (`web-download-editor__p1__3`, 1012×1012; 40.2 dB against the Oct 10 preview
+  download, so the same picture re-rendered at a smaller size). The design is
+  named after p2 ("Rainy pine forest path"); the name reaches only the
+  download file name. Both carry fresh Canva manifests on 8-day certificates
+  without time-stamp: p1__4 serial 391F7E…A7591 (hex), valid
+  2026-10-19T23:53:56Z to 10-27T23:53:56Z; the re-export serial 3DFFDF…F0E3BD
+  (hex), valid 2026-10-19T23:52:12Z to 10-27T23:52:12Z: again two
+  certificates issued about 100 s apart, as in October. The re-export is the
+  same image signed twice, 10 days apart, on different certificates. Card vs
+  preview: not determined. Share link: not allowed on Free. Non-default
+  aspect: no setting on Free.
 
 ## Ideogram — Ideogram 3 and v4 (ideogram.ai)
 
@@ -510,7 +758,7 @@ Content hashes still match.
   2026-10-05: Generation, 1:1, 2048×2048, seed 354120087, created 2026-09-11
   06:03 local), same free account, p1 via download and copy-image; the
   manifest's claim_generator is `Ideogram V_4_0`.
-- Files (12): medium p1 via download, browser-save, copy-image, ui-copy; p2–p5
+- Files (13): medium p1 via download, browser-save, copy-image, ui-copy; p2–p5
   via download; p2 at 3:1; p1 no-bg; v4 p1 download and copy-image.
 - Finding (Ideogram 3): C2PA manifest signed by "Ideogram, Inc." on every
   download JPG, `Valid` (signer not on the vendored 2026-08-14 list), one
@@ -522,20 +770,29 @@ Content hashes still match.
   `Valid` (`signingCredential.untrusted`), `trainedAlgorithmicMedia`; unlike the
   Ideogram 3 files it carries a second assertion, `com.ideogram.generation`. No
   XMP field. The v4 copy-image PNG carries nothing.
-- Pending: Upscale is offered in the asset view (checked 2026-10-05), not yet
-  collected; edit-photo via Ideogram's Edit once base photos exist.
+- Upscale: offered in the asset view but requires a paid plan (checked
+  2026-10-20); not collected.
+- Edits (2026-10-20, free account): E1 via Canvas Magic Fill on Ideogram V4.5
+  (`ideogram-v4.5`, after the September `ideogram-v4`), the only model that
+  accepts an uploaded photo for Magic Fill; the p-image model does not take
+  it. `photo_bowl.jpg` uploaded from disk, apples masked, prompt verbatim,
+  Magic Prompt off, no Style option shown. Ideogram then asked for a paid
+  plan before E2 and E3 (Magic Fill, Extend), so those were not tested
+  (editing uploaded images requires Ideogram Plus or higher, checked
+  2026-10-20).
+  Finding: one record, signed by Ideogram, Inc.: `c2pa.created`,
+  trainedAlgorithmicMedia, zero ingredients. The Fold's record is replaced,
+  as with Canva, but the edit is labelled a generation, not a composite. No
+  XMP DigitalSourceType, no camera EXIF, no camera-record ID or camera string
+  in the file bytes. 1760×2336, the photo's 3:4 kept.
 
 ## Midjourney
 - Not tested: paid-only as of 2026-09-09, no subscription. Row shows "not tested".
 
 ## Not yet collected
-- ChatGPT web and OpenAI API (`scripts/collect-api.py openai`): closes D-001 and
-  is the direct counterpart of the Firefly GPT Image 2.5 Flare row.
-- Gemini app (web, Fold) and Gemini API: the direct counterpart of the Flow and
-  Firefly Nano Banana 2 rows.
+- Gemini app on the Fold (`app-save-open`), p1.
 - Local Stable Diffusion: A1111 with invisible-watermark on/off, ComfyUI,
   InvokeAI (the known-key Layer 2 fixture).
-- `00-base/photo_{bowl,path,flask}`: blocks every `edit-photo` row.
 
 ## Template for the next generator
 ```
