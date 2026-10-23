@@ -252,7 +252,7 @@ set -l shown
 for n in $names
     contains -- $n $skip; or set -a shown $n
 end
-echo "$H== "(count $shown)" copies of that file, three validators$R"
+echo "$H== "(count $shown)" copies of that file, two libraries: c2pa-rs (ht, c2patool) and Credentio$R"
 printf "$D%-13s %-22s %-9s %-10s %-10s %-10s %-10s %-22s %s$R\n" \
     file change ht c2patool "part 0" "part 1" "part 2" "credentio result" "decided by"
 for i in (seq (count $names))
