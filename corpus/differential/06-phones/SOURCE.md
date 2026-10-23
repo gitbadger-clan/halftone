@@ -43,6 +43,16 @@ confirmed on the reshoot.
   `hashedURI.match`, on unmodified and modified files alike. The whole-file hash
   reports `assertion.dataHash.additionalExclusionsPresent`; what it excludes
   besides the manifest is not yet checked.
+- Multi-asset (2026-10-23, s02): the signed `c2pa.hash.multi-asset` lists the
+  primary JPEG [0, 2047094) as required, the gain map [2047094, 2056812) and
+  the MP4 [2056812, 5353659) as optional; the offsets match the bytes. c2pa-rs
+  (c2patool, Halftone) never evaluates it, so a copy with the MP4, or the MP4
+  and gain map, removed reads Invalid; Credentio validates such a copy through
+  the parts (`multiAssetHash.match`) and still rejects a changed bit in the
+  MP4 or in the primary (`multiAssetHash.mismatch`). The 2026-10-08 result
+  above holds for every tool tested: changing the video invalidates the
+  manifest; removing it does so only for a validator without the §15.12.4
+  fallback. D-014, D-015.
 - Parser: all layouts read cleanly; jpeg_double unaffected by the MP4 tail.
 - Tool note: ExifTool 13.55 reports `GainMapImage` with the MP4's length on
   three-part files; the container directory has the true gain-map length.

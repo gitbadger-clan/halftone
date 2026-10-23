@@ -7,6 +7,12 @@ collected by `uv run scripts/differential.py`, asserted by
 recorded here with its cause and resolution, whether the fix landed in Halftone, in
 the expectations, or in how a reference tool is invoked.
 
+From D-014 on, two more references are used for classes c2patool cannot speak to,
+run by scripts rather than the collector: Credentio, Google's C2PA validator
+(`scripts/multipart-evidence.fish`, `scripts/pub/multipart-reply.fish`), and the
+C2PA signals rubric from the conformance program (`scripts/rubric-signals.fish`).
+Each run records its tool versions in a `VERSIONS.txt` beside its raw output.
+
 Regenerate ground truth:
 
     uv run scripts/differential.py corpus/differential \
@@ -465,3 +471,111 @@ manifest is a new `c2pa.opened` + `c2pa.transcoded` (algorithmicallyEnhanced)
 with the generation as `parentOf`. An active-manifest-only reading calls the
 file a recipient gets non-generative; the lineage walk reports it as
 generative. Fixture added.
+
+Addendum 2026-10-23 · The C2PA signals rubric agrees with the chain walk. C2PA
+Asset Rubrics 1.0 (`asset-rubric-signals-local.yml`, evaluated on Credentio's
+crJSON by `scripts/rubric-signals.fish`) on both E2 downloads: generation
+(…4c0148722cca) `fullyGenAIMedia` + `perceptibleGenAI`; upload
+(…46f4526fcec1) `nonEditorial`; camera (…4665cbaddaa9) `capturedMedia`; the
+first download's extra top manifest (…4ad6861a347d) `nonEditorial`, since the
+rubric lists `c2pa.transcoded` as non-editorial. Identical signals at the three
+shared manifests, so the rubric gives both downloads the same generative
+finding, as `declares_ai` does. Two notes: the generation's inception signal is
+`fullyGenAIMedia` although its `inputTo` ingredient is a camera capture (the
+rubric reads `c2pa.created` + `trainedAlgorithmicMedia` as inception whatever
+the ingredients), and every manifest also carries `ambiguousActions` (D-016).
+
+### D-014 · 2026-10-23 · c2pa-rs never falls back to the multi-asset hash; a motion photo with its optional parts removed reads Invalid
+
+- File: `06-phones/pixel9fold__motion__adb-pull__s02__1.jpg`, 5,353,659 bytes.
+  Besides the whole-file `c2pa.hash.data`, its manifest signs a
+  `c2pa.hash.multi-asset` over three parts: 0, primary JPEG, [0, 2047094),
+  required; 1, gain map, [2047094, 2056812), optional; 2, MP4,
+  [2056812, 5353659), optional. The offsets match the bytes (EOI at the end of
+  part 0, SOI at the start of part 1, `ftyp` in part 2).
+- Rule: C2PA 2.4 §15.12.4. When the hard binding fails and a multi-asset hash
+  is present, the validator shall validate the multi-asset hash. A missing
+  optional part is skipped; a located part whose hash does not match, or that
+  is shorter than its locator, rejects the manifest with
+  `assertion.multiAssetHash.mismatch`; on success the validator records
+  `assertion.multiAssetHash.match` and no hard-binding failure codes. §18.9:
+  `optional` says the presence of the part is optional.
+- Copies and results (`scripts/multipart-evidence.fish`, run
+  2026-10-23T1022; positions derived by `scripts/multipart-layout.fish`):
+
+  | Copy | Change | Halftone | c2patool | Credentio |
+  |---|---|---|---|---|
+  | untouched | none | Trusted | Valid (no anchors, D-002) | `dataHash.match` (whole file) |
+  | no-clip | part 2 removed | Invalid | Invalid | `multiAssetHash.match`; parts 0, 1 match |
+  | still-only | parts 1 and 2 removed | Invalid | Invalid | `multiAssetHash.match`; part 0 matches |
+  | flip-clip | 1 bit at 3705235 (part 2) | Invalid | Invalid | `multiAssetHash.mismatch`; part 2 mismatch, parts 0, 1 match |
+  | flip-still | 1 bit at 1069236 (part 0 scan data) | Invalid | Invalid | `multiAssetHash.mismatch`; part 0 mismatch, parts 1, 2 match |
+
+  Halftone and c2patool report `assertion.dataHash.mismatch` on the whole-file
+  hash for every modified copy. Credentio follows §15.12.4 on all five rows;
+  on the truncated sixth copy see D-015. An earlier run (2026-10-23T0741,
+  control flip at 2000000) gave the same results.
+- Cause: c2pa-rs (c2patool 0.28.0; Halftone through `halftone-c2pa`) checks the
+  whole-file hard binding and never takes the §15.12.4 fallback. Stricter than
+  the specification: an authentic capture whose optional parts were removed as
+  the specification allows reads Invalid, which for Halftone is a false tamper
+  signal on a camera photo. By structure the same applies to the Fold's default
+  (gain map) and s05 (no gain map, MP4) layouts; not tested.
+- Required: either implement §15.12.4 in `halftone-c2pa` (parts and optional
+  flags from the multi-asset assertion; each part's hash assertion evaluated
+  over that part's bytes, offsets relative to the part's start), or, until
+  then, report a manifest whose hard binding fails while a multi-asset
+  assertion is present as `Inconclusive`, with a rationale naming the
+  unevaluated fallback. Upstream: a c2pa-rs issue with the five copies.
+- Status: open.
+
+### D-015 · 2026-10-23 · Credentio reports a truncated optional part as missing, not mismatched
+
+- File: the D-014 file cut inside part 2 (`partial-clip`; at 3705235 in run
+  2026-10-23T1022, at 3000000 in run 2026-10-23T0959).
+- Credentio ee4078b: `assertion.multiAssetHash.malformed` and
+  `assertion.multiAssetHash.missingPart`, no hash result for part 2, parts 0
+  and 1 `dataHash.match`, whole-file `dataHash.mismatch`.
+- Rule: §15.12.4 treats a part shorter than its locator's length as
+  `assertion.multiAssetHash.mismatch`; `missingPart` is for a missing part that
+  is not optional, and a missing optional part is skipped.
+- Effect: the manifest is rejected either way; only the reason differs. Not a
+  Halftone issue; recorded because Credentio is now a reference for D-014.
+- Status: open, to report to the Credentio team (credentio-team@google.com).
+
+### D-016 · 2026-10-23 · The C2PA signals rubric flags every Google manifest as ambiguous
+
+- Files: both E2 Flow downloads (D-013), seven Google LLC manifests between
+  them, including the Pixel camera capture.
+- Rubric: C2PA Asset Rubrics 1.0, `asset-rubric-signals-local.yml`
+  (`scripts/rubric-signals.fish`). Every manifest gets
+  `transformation:signal_ambiguousActions`, which the rubric raises when the
+  actions list is empty, `allActionsIncluded` is not `true`, an action is
+  outside the `c2pa.` namespace or is `c2pa.unknown`, or the actions assertion
+  is among the gathered assertions.
+- Observed in Credentio's crJSON: `allActionsIncluded` absent from all seven
+  `c2pa.actions.v2` assertions; no actions assertion among the gathered
+  assertions; every action in the `c2pa.` namespace. A hand-built crJSON
+  confirms that absence of the field alone raises the signal.
+- Verification (2026-10-23): the field is absent from the signed manifests, not
+  only from the crJSON export: `c2patool <file> --detailed | jq
+  '[.. | objects | select(has("allActionsIncluded"))] | length'` gives 0 on
+  both E2 downloads (4 and 3 actions assertions found, one per manifest). Same
+  check on the Fold's own capture (06-phones s02): 0 (1 found).
+- Rule: C2PA 2.4 §18.15.3. A claim generator *should* set
+  `allActionsIncluded`; validators *should* read an omitted field as "additional,
+  unrecorded actions may have been performed", which is what the rubric's
+  signal encodes. The only *shall* is for a manifest that opens an asset and
+  re-saves it with no other change; the conformance rubric checks that case as
+  an actions list holding `c2pa.opened` alone
+  (`validation:all_actions_included_opened`), which none of these manifests is
+  (each opened manifest also records `c2pa.transcoded`). Separately, the
+  Conformance Program 0.2 rubric requires the field on every actions assertion
+  of the active manifest (`validation:mandatory_all_actions_included`), a
+  program policy rather than a specification requirement.
+- For Halftone: if the lineage view adopts the rubric, `ambiguousActions` must
+  be explained in the specification's own terms ("the signer did not state that
+  this list is complete; other actions may have been performed"), never as a
+  sign of tampering.
+- Status: open; question to Google (whether Pixel Camera and Flow are meant to
+  set the field) not yet asked.
