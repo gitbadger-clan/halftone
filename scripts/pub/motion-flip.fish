@@ -4,6 +4,9 @@
 # clip. Flip one bit in the middle of the MP4 on a throwaway copy and both tools
 # read Invalid, although no byte of the still image changed. Repeats the
 # 2026-10-08 tamper test from 06 SOURCE.md. The corpus file is never modified.
+# Both tools here are c2pa-rs. A validator that implements the multi-asset hash
+# fallback (C2PA 2.4 §15.12.4) also rejects this copy, but accepts one with the
+# clip removed: see D-014 and scripts/pub/multipart-reply.fish.
 #
 #   fish scripts/pub/motion-flip.fish          # print the frame
 #   fish scripts/pub/motion-flip.fish --png    # render scripts/pub/out/motion-flip.png
