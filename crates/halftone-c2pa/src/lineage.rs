@@ -397,22 +397,6 @@ fn signer_class(g: &Step) -> &'static str {
     }
 }
 
-/// The generative claim in the signer's own term, so a rationale never blurs the
-/// two: "created by generative AI" (trainedAlgorithmicMedia) is not "a composite
-/// that includes generative AI" (compositeWithTrainedAlgorithmicMedia). Only when a
-/// manifest declares both, or neither by code, does it fall back to naming both.
-fn ai_phrase(codes: &[String]) -> &'static str {
-    let has = |code: &str| codes.iter().any(|c| c == code);
-    match (
-        has("trainedAlgorithmicMedia"),
-        has("compositeWithTrainedAlgorithmicMedia"),
-    ) {
-        (true, false) => "created by generative AI",
-        (false, true) => "a composite that includes generative AI",
-        _ => "generated or composited with generative AI",
-    }
-}
-
 /// What no record in a C2PA store can say: how much of the input survived.
 fn extent(capture: &str) -> String {
     format!(
@@ -664,7 +648,7 @@ pub fn describe(active: &SourceTypeSummary, lin: &Lineage, ingredient_failures: 
             " This file's own manifest (the active one) declares digitalSourceType = {}: \
              the signer asserts the content is {}.",
             terms(&active.codes),
-            ai_phrase(&active.codes)
+            source_type::ai_phrase(&active.codes)
         ));
     } else if own_actions.is_empty() {
         out.push_str(&format!(
@@ -703,7 +687,7 @@ pub fn describe(active: &SourceTypeSummary, lin: &Lineage, ingredient_failures: 
                 } else {
                     format!(" on {}", s.actions.join(", "))
                 },
-                ai_phrase(&s.source_type.codes),
+                source_type::ai_phrase(&s.source_type.codes),
             )),
             None if lin.steps.len() > 1 => out.push_str(&format!(
                 " No manifest in its parent lineage ({} more) declares a generative term.",

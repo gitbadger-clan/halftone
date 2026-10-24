@@ -71,6 +71,23 @@ pub fn find(manifest: &serde_json::Value) -> SourceTypeSummary {
     out
 }
 
+/// The generative claim in the signer's own term, so a rationale never blurs the
+/// two: "created by generative AI" (trainedAlgorithmicMedia) is not "a composite
+/// that includes generative AI" (compositeWithTrainedAlgorithmicMedia). Only when a
+/// manifest declares both, or neither by code, does it fall back to naming both.
+/// Shared by the single-manifest rationale here and the lineage rationale.
+pub fn ai_phrase(codes: &[String]) -> &'static str {
+    let has = |code: &str| codes.iter().any(|c| c == code);
+    match (
+        has("trainedAlgorithmicMedia"),
+        has("compositeWithTrainedAlgorithmicMedia"),
+    ) {
+        (true, false) => "created by generative AI",
+        (false, true) => "a composite that includes generative AI",
+        _ => "generated or composited with generative AI",
+    }
+}
+
 /// One or two sentences for the rationale, or an empty string if nothing is declared.
 pub fn describe(s: &SourceTypeSummary) -> String {
     if s.codes.is_empty() {
@@ -87,7 +104,8 @@ pub fn describe(s: &SourceTypeSummary) -> String {
     if s.declares_ai {
         format!(
             " The manifest declares digitalSourceType = {list}: the signer asserts the \
-             content is generated or composited with generative AI."
+             content is {}.",
+            ai_phrase(&s.codes)
         )
     } else if !s.unknown.is_empty() && s.unknown.len() == s.codes.len() {
         format!(" The manifest declares digitalSourceType = {list}; reported verbatim.")
@@ -200,7 +218,29 @@ mod tests {
         );
         let d = describe(&s);
         assert!(d.contains("digitalCapture"));
-        assert!(d.contains("generated or composited"));
+        assert!(d.contains(
+            "the signer asserts the content is a composite that includes generative AI."
+        ));
+    }
+
+    #[test]
+    fn rationale_uses_the_signers_own_term() {
+        let trained = find(&actions_manifest(json!([
+            {"action": "c2pa.created",
+             "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"}
+        ])));
+        let d = describe(&trained);
+        assert!(d.contains("the signer asserts the content is created by generative AI."));
+        assert!(!d.contains("generated or composited"));
+
+        // both terms declared: the rationale names both rather than pick one
+        let both = find(&actions_manifest(json!([
+            {"action": "c2pa.created",
+             "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"},
+            {"action": "c2pa.edited",
+             "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"}
+        ])));
+        assert!(describe(&both).contains("generated or composited with generative AI"));
     }
 
     #[test]
