@@ -19,6 +19,12 @@ are not committed; this file and `expectations.json` are. Names:
   the metadata segments before the C2PA segment moved it. The per-part hashes
   report only `hashedURI.match`, as on the unmodified originals (see 06). A
   privacy edit invalidates the camera's signature.
+  Credentio (ee4078b, 2026-10-24), which takes the C2PA 2.4 §15.12.4
+  multi-asset fallback that c2pa-rs lacks (D-014), also rejects all three Fold
+  files: s01 and s02 fail the primary part's own hash (c2pa.hash.data.part
+  mismatch) plus multiAssetHash.malformed, since the shifted parts no longer
+  tile the file; s03 (no multi-asset hash) fails the whole-file hash. The edit
+  invalidates the signature under both libraries.
 - Finding (Pixel 5, unsigned): no manifest, nothing to break.
 - Container: parts unchanged per ht-layout (gain map and MP4 kept on every
   file); sizes changed by −243 to +127 bytes, i.e. ExifTool rewrote the

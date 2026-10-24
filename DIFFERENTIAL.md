@@ -541,6 +541,9 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   is not optional, and a missing optional part is skipped.
 - Effect: the manifest is rejected either way; only the reason differs. Not a
   Halftone issue; recorded because Credentio is now a reference for D-014.
+- Also seen 2026-10-24 on `07-editors/exiftool__gps-strip__pixel9fold-default__s01__1.jpg`:
+  `multiAssetHash.missingPart` for the optional gain map, alongside
+  `malformed`; the verdict (rejected) is unaffected.
 - Status: open, to report to the Credentio team (credentio-team@google.com).
 
 ### D-016 · 2026-10-23 · The C2PA signals rubric flags every Google manifest as ambiguous
