@@ -245,7 +245,8 @@ fn capture_of(step: &Step) -> Option<&'static str> {
 
 fn declares_watermark(step: &Step) -> bool {
     step.events.iter().any(|e| {
-        e.action == "c2pa.watermarked"
+        // c2pa.watermarked, and its .bound / .unbound forms (ChatGPT's website files)
+        e.action.starts_with("c2pa.watermarked")
             || e.description
                 .as_deref()
                 .is_some_and(|d| d.to_lowercase().contains("watermark"))
@@ -439,6 +440,8 @@ fn plain_action(action: &str) -> Option<&'static str> {
         "c2pa.removed" => "removed content",
         "c2pa.redacted" => "redacted",
         "c2pa.watermarked" => "watermarked",
+        "c2pa.watermarked.bound" => "invisible watermark applied, tied to this record",
+        "c2pa.watermarked.unbound" => "invisible watermark applied, not tied to this record",
         "c2pa.published" => "published",
         "c2pa.translated" => "translated",
         "c2pa.unknown" => "unspecified action",
@@ -1407,6 +1410,38 @@ mod tests {
         assert!(t.contains("not as verified"));
         assert_eq!(render_timeline(&json!({})), "");
         assert_eq!(render_timeline(&json!({"steps": []})), "");
+    }
+
+    #[test]
+    fn unbound_watermark_is_labelled_and_declared() {
+        // the shape of ChatGPT's website downloads (2026-10-21): one record,
+        // created + converted + c2pa.watermarked.unbound, no ingredients
+        let store = json!({
+            "active_manifest": "urn:c2pa:chatgpt",
+            "manifests": {
+                "urn:c2pa:chatgpt": {
+                    "signature_info": {"issuer": "OpenAI OpCo, LLC", "time": "2026-10-21T12:48:09+00:00"},
+                    "claim_generator_info": [{"name": "OpenAI Media Service API", "version": "1"}],
+                    "assertions": [{"label": "c2pa.actions.v2", "data": {"actions": [
+                        action("c2pa.created", Some("trainedAlgorithmicMedia")),
+                        action("c2pa.converted", None),
+                        action("c2pa.watermarked.unbound", None),
+                    ]}}],
+                    "ingredients": [],
+                }
+            }
+        });
+        let lin = walk(&store);
+        let t = render_timeline(&serde_json::to_value(&lin).unwrap());
+        assert!(t.contains(
+            "invisible watermark applied, not tied to this record (c2pa.watermarked.unbound)"
+        ));
+        assert!(
+            lin.summary
+                .as_deref()
+                .unwrap_or("")
+                .contains("watermark declared")
+        );
     }
 
     #[test]
