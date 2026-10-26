@@ -1,12 +1,15 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-14T18:50:11Z",
+  "collected_at": "2026-10-26T05:58:37Z",
   "corpus": "corpus/differential/07-editors",
   "files": {
     "exiftool__gps-strip__pixel5-default__s03__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -24,6 +27,9 @@
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -39,6 +45,9 @@
     "exiftool__gps-strip__pixel5-motion__s04__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -56,6 +65,9 @@
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -71,6 +83,9 @@
     "exiftool__gps-strip__pixel5-uhdr-off-motion__s05__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -88,6 +103,9 @@
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -103,6 +121,9 @@
     "exiftool__gps-strip__pixel5-uhdr-off__s07__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -151,6 +172,22 @@
           "assertion.dataHash.mismatch"
         ],
         "validation_state": "Invalid"
+      },
+      "credentio": {
+        "failures": [
+          "assertion.dataHash.mismatch",
+          "assertion.multiAssetHash.malformed",
+          "assertion.multiAssetHash.missingPart"
+        ],
+        "hard_binding": "mismatch",
+        "multi_asset": [
+          "malformed",
+          "missingPart"
+        ],
+        "parts": {
+          "c2pa.hash.data.part": "mismatch"
+        },
+        "present": true
       },
       "exiftool": {
         "digital_source_type": [],
@@ -201,6 +238,22 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "assertion.dataHash.mismatch",
+          "assertion.multiAssetHash.malformed"
+        ],
+        "hard_binding": "mismatch",
+        "multi_asset": [
+          "malformed"
+        ],
+        "parts": {
+          "c2pa.hash.data.part": "mismatch",
+          "c2pa.hash.data.part__1": "mismatch",
+          "c2pa.hash.data.part__2": "mismatch"
+        },
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -246,6 +299,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "assertion.dataHash.mismatch"
+        ],
+        "hard_binding": "mismatch",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -263,6 +325,7 @@
   "schema": "halftone-differential-expectations/1",
   "tools": {
     "c2patool": "c2patool 0.28.0",
+    "credentio": "ee4078b",
     "exiftool": "13.55",
     "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },

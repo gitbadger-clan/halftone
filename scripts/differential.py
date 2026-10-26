@@ -3,7 +3,8 @@
 # requires-python = ">=3.14"
 # dependencies = []
 # ///
-"""Collect ground truth for the differential test from ExifTool and c2patool.
+"""Collect ground truth for the differential test from ExifTool and c2patool, and
+optionally Credentio.
 
 Walks a corpus directory and writes ``expectations.json`` next to it, recording for
 every image file what the two reference tools report for the fields Halftone's
@@ -52,6 +53,22 @@ only on the file and the TSA list. The status uses the same names and precedence
 Halftone and ``scripts/cert-shelf-life.sh``, so for the status the check is of how
 Halftone reads c2pa's codes, not of c2pa itself; the certificate fields are a true
 second reading. Needs ``openssl`` (or LibreSSL) on PATH unless ``--no-c2pa``.
+
+Credentio (DIFFERENTIAL.md D-014, D-015): with ``--credentio <c2pa_validate>``
+(Google's C2PA validator, built from mediaprovenance.googlesource.com/credentio),
+each file is also validated by Credentio with the same manifest and TSA anchors,
+and the collector records its hard-binding results: the whole-file
+``c2pa.hash.data``, the ``assertion.multiAssetHash.*`` outcome, and each part
+hash's match or mismatch. Credentio applies the C2PA 2.4 §15.12.4 multi-asset
+fallback that c2pa (and so c2patool) lacks, so it is the reference for
+``details.multi_asset``. The binary's version is read from its file name
+(``c2pa_validate-<commit>``, the pinned copy a symlink points to).
+
+    uv run scripts/differential.py corpus/differential/08-multipart \\
+        --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem \\
+        --tsa-anchors crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem \\
+        --trust-config crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg \\
+        --credentio ~/oss-bins/c2pa_validate
 """
 from __future__ import annotations
 
@@ -369,6 +386,82 @@ def repo_relative(p: Path) -> str:
     return str(p)
 
 
+def credentio_version(binary: Path) -> str:
+    """``c2pa_validate-<commit>`` names the build; a symlink is resolved first."""
+    name = binary.resolve().name
+    return name.removeprefix("c2pa_validate-") if name.startswith("c2pa_validate-") else name
+
+
+def credentio_statuses(txtpb: str) -> list[tuple[str, str, str]]:
+    """``(kind, code, assertion label)`` for every failure and success in Credentio's
+    text-proto output. Informational codes are not results and are dropped."""
+    out: list[tuple[str, str, str]] = []
+    kind = code = None
+    for line in txtpb.splitlines():
+        t = line.strip()
+        m = re.match(r"(failures|successes|informationals)\s*\{$", t)
+        if m:
+            kind, code = m.group(1), None
+            continue
+        m = re.match(r'code:\s*"([^"]*)"', t)
+        if m:
+            code = m.group(1)
+            continue
+        m = re.match(r'url:\s*"([^"]*)"', t)
+        if m and kind in ("failures", "successes") and code:
+            out.append((kind, code, m.group(1).rsplit("/", 1)[-1]))
+    return out
+
+
+def credentio_facts(p: Path, binary: Path, anchors: Path | None, tsa: Path | None) -> dict:
+    """Credentio's hard-binding results for one file (D-014): whole-file data hash,
+    multi-asset outcome words (``match``, ``mismatch``, ``missingPart``,
+    ``malformed``), and per-part data-hash results keyed by assertion label."""
+    with tempfile.TemporaryDirectory(prefix="credentio-") as d:
+        out = Path(d) / "result.txtpb"
+        cmd = [str(binary), f"--asset={p}", "--output_format=txtpb", f"--output_file={out}"]
+        if anchors:
+            cmd.append(f"--claim_signer_trust={anchors}")
+        if tsa:
+            cmd.append(f"--tsa_trust={tsa}")
+        try:
+            rc, so, se = run(cmd)
+        except FileNotFoundError:
+            return {"error": "credentio not found"}
+        if not out.is_file():
+            # Credentio's message carries its own source locations (file.cc:line) and
+            # decoration that change with every build, so recording it would rewrite
+            # expectations.json on each re-collection. The test skips error rows
+            # either way: keep the exit status, show the text on the console.
+            msg = (se or so).strip()
+            if msg:
+                print(f"  credentio, {p.name}: " + " | ".join(msg.splitlines()[:3])[:300], file=sys.stderr)
+            return {"error": f"no result (exit {rc})"}
+        text = out.read_text()
+    statuses = credentio_statuses(text)
+    if not statuses:
+        return {"present": False}
+    whole = None
+    multi: set[str] = set()
+    parts: dict[str, str] = {}
+    for kind, code, label in statuses:
+        if code.startswith("assertion.multiAssetHash."):
+            multi.add(code.removeprefix("assertion.multiAssetHash."))
+        elif code in ("assertion.dataHash.match", "assertion.dataHash.mismatch"):
+            word = code.removeprefix("assertion.dataHash.")
+            if label == "c2pa.hash.data":
+                whole = "mismatch" if "mismatch" in (whole, word) else word
+            elif label.startswith("c2pa.hash.data.part"):
+                parts[label] = "mismatch" if "mismatch" in (parts.get(label), word) else word
+    return {
+        "present": True,
+        "hard_binding": whole,
+        "multi_asset": sorted(multi),
+        "parts": dict(sorted(parts.items())),
+        "failures": sorted({c for k, c, _ in statuses if k == "failures"}),
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("corpus", type=Path)
@@ -377,6 +470,8 @@ def main() -> int:
     ap.add_argument("--tsa-anchors", type=Path, help="PEM bundle handed to c2patool as TSA anchors (needs --trust-anchors)")
     ap.add_argument("--trust-config", type=Path, help="accepted signing-certificate EKUs (trust.trust_config), one OID per line")
     ap.add_argument("--no-c2pa", action="store_true", help="skip c2patool entirely")
+    ap.add_argument("--credentio", type=Path,
+                help="Credentio's c2pa_validate: also record its hard-binding and multi-asset results (D-014)")
     ap.add_argument("--no-trust", action="store_true",
                 help="collect without trust anchors; the EKU policy (--trust-config) is always passed")
     a = ap.parse_args()
@@ -414,6 +509,13 @@ def main() -> int:
         )
         return 2
 
+    credentio_ver = None
+    if a.credentio:
+        if not a.credentio.is_file():
+            print(f"--credentio: no such file: {a.credentio}", file=sys.stderr)
+            return 2
+        credentio_ver = credentio_version(a.credentio)
+
     settings_file = Path(tempfile.mkstemp(suffix=".toml", prefix="c2patool-")[1])
     settings_file.write_text(c2patool_settings(a.trust_anchors, a.tsa_anchors, a.trust_config))
 
@@ -433,11 +535,16 @@ def main() -> int:
         }
         if not a.no_c2pa:
             entry["c2patool"] = c2patool_facts(p, settings_file)
+        if a.credentio:
+            entry["credentio"] = credentio_facts(p, a.credentio, a.trust_anchors, a.tsa_anchors)
         files[rel] = entry
         dst = ex.get("digital_source_type") or []
         ct = entry.get("c2patool") or {}
         state = ct.get("validation_state") or ("remote" if ct.get("remote_manifest") else "-")
-        print(f"{rel:60} xmp={'y' if ex.get('xmp_present') else 'n'} dst={','.join(dst) or '-':40} c2pa={state}")
+        cr = entry.get("credentio") or {}
+        multi = ",".join(cr.get("multi_asset") or []) or "-"
+        print(f"{rel:60} xmp={'y' if ex.get('xmp_present') else 'n'} dst={','.join(dst) or '-':40} c2pa={state}"
+              + (f" multi-asset={multi}" if a.credentio else ""))
 
     # Strata generated by us (03-synthetic) ship a cases.json with the intended
     # Halftone verdict per file; merge it so the test can assert semantics, not just
@@ -471,7 +578,8 @@ def main() -> int:
         # reader of this file needs to know when the states were true.
         "collected_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "corpus": repo_relative(corpus),
-        "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver, "openssl": openssl_ver},
+        "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver, "openssl": openssl_ver,
+                  "credentio": credentio_ver},
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
         "tsa_anchors": repo_relative(a.tsa_anchors) if a.tsa_anchors else None,
         "trust_config": repo_relative(a.trust_config) if a.trust_config else None,

@@ -1,12 +1,15 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-14T18:50:09Z",
+  "collected_at": "2026-10-26T05:58:34Z",
   "corpus": "corpus/differential/06-phones",
   "files": {
     "pixel5__default__adb-pull__s03__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -24,6 +27,9 @@
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -39,6 +45,9 @@
     "pixel5__motion__adb-pull__s04__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -56,6 +65,9 @@
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -72,6 +84,9 @@
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -87,6 +102,9 @@
     "pixel5__uhdr-off__adb-pull__s07__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -133,6 +151,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -177,6 +202,13 @@
         ],
         "validation_codes": [],
         "validation_state": "Trusted"
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
       },
       "exiftool": {
         "digital_source_type": [],
@@ -224,6 +256,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -265,6 +304,13 @@
         ],
         "validation_codes": [],
         "validation_state": "Trusted"
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
       },
       "exiftool": {
         "digital_source_type": [],
@@ -311,6 +357,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -353,6 +406,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -370,6 +430,7 @@
   "schema": "halftone-differential-expectations/1",
   "tools": {
     "c2patool": "c2patool 0.28.0",
+    "credentio": "ee4078b",
     "exiftool": "13.55",
     "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },

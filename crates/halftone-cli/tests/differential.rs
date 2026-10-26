@@ -27,6 +27,13 @@
 //! `timeStamp.*` codes. Neither ages with the date, so they are compared even on an
 //! aged row. Expectations collected before the collector recorded them have no such
 //! keys and are not compared.
+//!
+//! Multi-asset hashes (D-014, D-015): when the collector ran with `--credentio`,
+//! Halftone's `details.multi_asset` (C2PA 2.4 §15.12.4) is compared with Credentio's
+//! hard-binding results: the multi-asset outcome codes, and each part hash Credentio
+//! reports. A part cut short is `mismatch` per §15.12.4 and Credentio reports it as
+//! `missingPart` (+ `malformed`); that one recorded disagreement is printed as
+//! `known: D-015` and does not fail the run. Anything else different does.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -49,6 +56,15 @@ struct Aged {
     file: String,
     /// The state recorded at collection time (`Valid` or `Trusted`).
     expected: String,
+}
+
+/// A disagreement with a reference tool that DIFFERENTIAL.md already records and
+/// explains. Printed on every run, never counted as a failure.
+#[derive(Debug)]
+struct Known {
+    file: String,
+    entry: &'static str,
+    detail: String,
 }
 
 /// The one code allowed to be new in an aged row.
@@ -477,6 +493,105 @@ fn compare_file(
     }
 }
 
+/// Halftone's multi-asset outcome in Credentio's words (`match`, `mismatch`,
+/// `missingPart`, `malformed`); empty when Halftone did not evaluate it.
+fn halftone_multi_asset(ma: &Value) -> Vec<String> {
+    ma["code"]
+        .as_str()
+        .and_then(|c| c.strip_prefix("assertion.multiAssetHash."))
+        .map(|w| vec![w.to_string()])
+        .unwrap_or_default()
+}
+
+/// A part's hash result in Credentio's words. A part cut short is a mismatch
+/// (§15.12.4); `absent`, `missing` and unchecked parts have no hash result.
+fn part_word(result: &Value) -> Option<&'static str> {
+    match result.as_str() {
+        Some("match") => Some("match"),
+        Some("mismatch" | "truncated") => Some("mismatch"),
+        _ => None,
+    }
+}
+
+/// Whether a multi-asset disagreement is D-015: Halftone says `mismatch` because an
+/// optional part is cut short, and Credentio says `missingPart` for it instead.
+fn is_d015(want: &[String], got: &[String], ma: &Value) -> bool {
+    let truncated_optional = ma["parts"].as_array().is_some_and(|ps| {
+        ps.iter()
+            .any(|p| p["result"] == "truncated" && p["optional"] == true)
+    });
+    got == ["mismatch"] && truncated_optional && want.iter().any(|w| w == "missingPart")
+}
+
+/// Compare Halftone's §15.12.4 result with Credentio's (D-014). Only when the
+/// collector ran with `--credentio` and the c2pa layer is built in.
+fn compare_credentio(
+    name: &str,
+    exp: &Value,
+    insp: &Value,
+    out: &mut Vec<Disagreement>,
+    known: &mut Vec<Known>,
+) {
+    let cr = &exp["credentio"];
+    if !cr.is_object() || cr.get("error").is_some() || cr["present"] != true {
+        return;
+    }
+    let Some(ev) = evidence(insp, "c2pa") else {
+        return;
+    };
+    if ev["rationale"]
+        .as_str()
+        .unwrap_or("")
+        .contains("built without")
+    {
+        return;
+    }
+    let ma = &ev["details"]["multi_asset"];
+    let want = str_set(&cr["multi_asset"]);
+    let got = halftone_multi_asset(ma);
+    if want != got {
+        if is_d015(&want, &got, ma) {
+            known.push(Known {
+                file: name.to_string(),
+                entry: "D-015",
+                detail: format!("credentio {} vs halftone {}", show(&want), show(&got)),
+            });
+        } else {
+            out.push(Disagreement {
+                file: name.to_string(),
+                field: "credentio.multi_asset",
+                expected: show(&want),
+                got: if got.is_empty() && !ma.is_null() {
+                    format!(
+                        "not evaluated: {}",
+                        ma["reason"].as_str().unwrap_or("no reason recorded")
+                    )
+                } else {
+                    show(&got)
+                },
+            });
+        }
+    }
+    // Every part hash Credentio reports must have the same result in Halftone.
+    if let Some(parts) = cr["parts"].as_object() {
+        for (label, res) in parts {
+            let ours = ma["parts"]
+                .as_array()
+                .and_then(|ps| ps.iter().find(|p| p["hash_assertion"] == label.as_str()))
+                .and_then(|p| part_word(&p["result"]));
+            let theirs = res.as_str();
+            if ours != theirs {
+                out.push(Disagreement {
+                    file: format!("{name} [{label}]"),
+                    field: "credentio.part",
+                    expected: show(theirs),
+                    got: show(ours),
+                });
+            }
+        }
+    }
+}
+
 fn render(rows: &[Disagreement]) -> String {
     let mut s = String::from("| file | field | expected | halftone |\n|---|---|---|---|\n");
     for d in rows {
@@ -562,6 +677,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
 
         let mut compared = 0;
         let mut aged: Vec<Aged> = Vec::new();
+        let mut known: Vec<Known> = Vec::new();
         for (name, e) in files_obj {
             if !dir.join(name).is_file() {
                 continue; // already reported as missing
@@ -580,6 +696,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                 Some((row, insp)) => {
                     compared += 1;
                     compare_file(&name, e, row, insp, trust_exact, &mut dis, &mut aged);
+                    compare_credentio(&name, e, insp, &mut dis, &mut known);
                 }
                 None => dis.push(Disagreement {
                     file: name,
@@ -602,6 +719,12 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             println!(
                 "differential[{label}]: {}: {} -> Invalid ({EXPIRED}), aged since {collected_at}: re-collect",
                 a.file, a.expected
+            );
+        }
+        for k in &known {
+            println!(
+                "differential[{label}]: {}: known: {} ({}), not counted",
+                k.file, k.entry, k.detail
             );
         }
         total_aged += aged.len();
@@ -899,5 +1022,91 @@ mod shelf_life_rule {
             ["c2pa.signing_cert.serial"]
         );
         assert!(fields(&exp, &halftone(None, NOT_AFTER, "none")).is_empty());
+    }
+}
+
+// ---- Credentio comparison: fabricated results, no corpus needed (D-014, D-015) ----
+
+#[cfg(test)]
+mod credentio_rule {
+    use super::*;
+    use serde_json::json;
+
+    fn exp(multi: &[&str], parts: Value) -> Value {
+        json!({"credentio": {"present": true, "multi_asset": multi, "parts": parts}})
+    }
+
+    fn insp(multi_asset: Value) -> Value {
+        json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "",
+                             "details": {"multi_asset": multi_asset}}]})
+    }
+
+    fn ma(code: Option<&str>, parts: Value) -> Value {
+        json!({"code": code, "parts": parts})
+    }
+
+    fn run(e: &Value, i: &Value) -> (Vec<Disagreement>, Vec<Known>) {
+        let (mut out, mut known) = (Vec::new(), Vec::new());
+        compare_credentio("f", e, i, &mut out, &mut known);
+        (out, known)
+    }
+
+    #[test]
+    fn agreement_on_a_removed_clip() {
+        let e = exp(&["match"], json!({"c2pa.hash.data.part": "match"}));
+        let i = insp(ma(
+            Some("assertion.multiAssetHash.match"),
+            json!([{"hash_assertion": "c2pa.hash.data.part", "optional": false, "result": "match"},
+                   {"hash_assertion": "c2pa.hash.data.part__2", "optional": true, "result": "absent"}]),
+        ));
+        let (out, known) = run(&e, &i);
+        assert!(out.is_empty(), "{out:?}");
+        assert!(known.is_empty());
+    }
+
+    #[test]
+    fn a_truncated_optional_part_is_the_known_d015() {
+        let e = exp(
+            &["malformed", "missingPart"],
+            json!({"c2pa.hash.data.part": "match"}),
+        );
+        let i = insp(ma(
+            Some("assertion.multiAssetHash.mismatch"),
+            json!([{"hash_assertion": "c2pa.hash.data.part", "optional": false, "result": "match"},
+                   {"hash_assertion": "c2pa.hash.data.part__2", "optional": true, "result": "truncated"}]),
+        ));
+        let (out, known) = run(&e, &i);
+        assert!(out.is_empty(), "{out:?}");
+        assert_eq!(known.len(), 1);
+        assert_eq!(known[0].entry, "D-015");
+    }
+
+    #[test]
+    fn a_different_part_result_is_a_disagreement() {
+        let e = exp(&["mismatch"], json!({"c2pa.hash.data.part__2": "mismatch"}));
+        let i = insp(ma(
+            Some("assertion.multiAssetHash.mismatch"),
+            json!([{"hash_assertion": "c2pa.hash.data.part__2", "optional": true, "result": "match"}]),
+        ));
+        let (out, _) = run(&e, &i);
+        assert_eq!(out.len(), 1);
+        assert_eq!(out[0].field, "credentio.part");
+    }
+
+    #[test]
+    fn not_evaluating_what_credentio_evaluated_is_a_disagreement() {
+        let e = exp(&["match"], json!({}));
+        let i = insp(
+            json!({"code": null, "reason": "c2pa.hash.data.part__1 is not confirmed as part of the signed claim", "parts": []}),
+        );
+        let (out, _) = run(&e, &i);
+        assert_eq!(out.len(), 1);
+        assert!(out[0].got.starts_with("not evaluated"), "{}", out[0].got);
+    }
+
+    #[test]
+    fn nothing_to_compare_without_credentio() {
+        let (out, known) = run(&json!({}), &insp(Value::Null));
+        assert!(out.is_empty() && known.is_empty());
     }
 }
