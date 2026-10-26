@@ -21,6 +21,7 @@ halftone-bench = { path = "crates/halftone-bench", version = "0.1.0" }
 halftone-packs = { path = "crates/halftone-packs", version = "0.1.0" }
 halftone-report = { path = "crates/halftone-report", version = "0.1.0" }
 halftone-pixel = { path = "crates/halftone-pixel", version = "0.1.0" }
+halftone-rubric = { path = "crates/halftone-rubric", version = "0.1.0" }
 
 # shared
 serde = { version = "1", features = ["derive"] }
@@ -45,6 +46,8 @@ ed25519-dalek = "3"
 # Same version as c2pa's own dependency, so the build has one copy. Used only to
 # read the signing certificate's serial and validity window (halftone-c2pa).
 x509-parser = "0.18"
+
+yaml-rust2 = "0.13"
 
 # Reserved: no crate uses these yet. Uncomment here together with the crate-level line.
 # ort = "2.0.0-rc.9"     # blind FeatureProbe encoder + head; mark AudioSeal/VideoSeal (check for a newer 2.0 first)

@@ -1,0 +1,29 @@
+halftone-rubric
+Part of Halftone, https://halftone.gitbadger.com
+Copyright 2026 Artur Daschevici (gitbadger)
+
+This crate contains third-party material under its own licences. As a
+whole it is distributed under the Apache License, Version 2.0
+(LICENSE-APACHE), with the vendored rubric under CC BY 4.0, as below.
+
+1. json-formula interpreter (src/formula/)
+   Ported from json-formula-py, https://github.com/adobe/json-formula-py
+   (commit 327a8d75669673c10db3051da816311ac2df8a32).
+   Copyright 2026 Adobe. Licensed under the Apache License, Version 2.0.
+   Modified by the Halftone authors: translated from Python to Rust; the
+   grammar, coercion rules and built-in functions follow the original.
+   These files are distributed under the Apache License, Version 2.0
+   only, not under the MIT option of the wider Halftone project.
+
+2. C2PA Asset Signals Rubric (Local) 1.0
+   (rubrics/asset-rubric-signals-local.yml)
+   From c2pa-org/conformance-public, https://github.com/c2pa-org/conformance-public
+   (asset-rubrics/, commit da71a72). Issued by the C2PA Conformance Task
+   Force. Licensed under Creative Commons Attribution 4.0 International,
+   https://creativecommons.org/licenses/by/4.0/. Included unmodified; see
+   rubrics/NOTICE.md.
+
+3. The signals evaluator (src/signals.rs, src/rubric.rs) reimplements the
+   behaviour of c2pa_signals_rubric_evaluator.py and
+   c2pa_conformance_rubric_evaluator.py from the same repository
+   (CC BY 4.0), as described in those files.

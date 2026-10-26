@@ -1,0 +1,23 @@
+[package]
+name = "halftone-rubric"
+description = "C2PA asset rubrics evaluated natively: a json-formula interpreter held to the reference evaluator"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+# The json-formula port (src/formula/) is Apache-2.0 only, and the vendored rubric
+# is CC BY 4.0; see NOTICE.
+license = "Apache-2.0 AND CC-BY-4.0"
+repository.workspace = true
+homepage.workspace = true
+include = ["src/**", "rubrics/**", "Cargo.toml", "NOTICE", "LICENSE-APACHE"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+yaml-rust2.workspace = true
+
+[dev-dependencies]
+sha2.workspace = true
+
+[lints]
+workspace = true
