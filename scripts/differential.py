@@ -1,7 +1,11 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.14"
-# dependencies = []
+# dependencies = [
+#   # Only for --rubrics: the C2PA's signals evaluator runs on these.
+#   "PyYAML>=6.0",
+#   "json-formula @ git+https://github.com/adobe/json-formula-py.git@327a8d75669673c10db3051da816311ac2df8a32",
+# ]
 # ///
 """Collect ground truth for the differential test from ExifTool and c2patool, and
 optionally Credentio.
@@ -69,6 +73,21 @@ fallback that c2pa (and so c2patool) lacks, so it is the reference for
         --tsa-anchors crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem \\
         --trust-config crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg \\
         --credentio ~/oss-bins/c2pa_validate
+
+Signals rubric: with ``--rubrics <conformance-public checkout>`` (and
+``--credentio``), each file's manifest store is also exported by Credentio as
+crJSON and run through the C2PA's own signals evaluator (pinned json-formula-py),
+recorded under ``signals`` as nodes named by manifest label, the shape Halftone
+writes to ``details.signals.nodes``. Halftone exports its crJSON with c2pa-rs, so
+the comparison covers both the evaluator and the two exporters. The header's
+``signals_rubric`` records the rubric's commit, version and SHA-256; the Rust test
+compares only when Halftone ran the same rubric.
+
+    uv run scripts/differential.py corpus/differential/06-phones \\
+        --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem \\
+        --tsa-anchors crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem \\
+        --trust-config crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg \\
+        --credentio ~/oss-bins/c2pa_validate --rubrics ../conformance-public
 """
 from __future__ import annotations
 
@@ -413,6 +432,97 @@ def credentio_statuses(txtpb: str) -> list[tuple[str, str, str]]:
     return out
 
 
+JSON_FORMULA_PIN = "327a8d75669673c10db3051da816311ac2df8a32"
+
+
+def load_signals_evaluator(rubrics: Path):
+    """The C2PA's own signals evaluator from a conformance-public checkout, imported
+    in-process so its graph builder can name the nodes it evaluated. Returns the
+    module, the rubric path, and what identifies the rubric (commit, version, SHA)."""
+    root = rubrics / "asset-rubrics"
+    rubric = root / "asset-rubric-signals-local.yml"
+    if not (root / "c2pa_signals_rubric_evaluator.py").is_file() or not rubric.is_file():
+        raise FileNotFoundError(f"no signals evaluator under {root}")
+    sys.path.insert(0, str(root))
+    import c2pa_signals_rubric_evaluator as ev  # noqa: PLC0415 (path set just above)
+
+    _, commit, _ = run(["git", "-C", str(rubrics), "rev-parse", "--short", "HEAD"])
+    meta = {
+        "conformance_public": commit.strip() or None,
+        "version": (root / "VERSION").read_text().strip() if (root / "VERSION").is_file() else None,
+        "sha256": sha256(rubric),
+    }
+    return ev, rubric, meta
+
+
+def signals_facts(p: Path, binary: Path, anchors: Path | None, tsa: Path | None, ev, rubric: Path) -> dict:
+    """The signals rubric's result for one file, as the C2PA's evaluator computes it
+    on Credentio's crJSON. Nodes are named by manifest label, taken from the
+    evaluator's own graph (``build_provenance_dag``, sorted as ``evaluate_asset``
+    sorts it), in the shape Halftone writes to ``details.signals.nodes``: the
+    evaluator's output numbers nodes by crJSON position, which differs between
+    exporters, so positions are not comparable and labels are."""
+    with tempfile.TemporaryDirectory(prefix="credentio-") as d:
+        cj = Path(d) / "store.crjson"
+        cmd = [str(binary), f"--asset={p}", "--output_format=crjson", f"--output_file={cj}"]
+        if anchors:
+            cmd.append(f"--claim_signer_trust={anchors}")
+        if tsa:
+            cmd.append(f"--tsa_trust={tsa}")
+        try:
+            rc, so, se = run(cmd)
+        except FileNotFoundError:
+            return {"error": "credentio not found"}
+        if not cj.is_file() or cj.stat().st_size == 0:
+            msg = (se or so).strip()
+            if msg:
+                print(f"  credentio crjson, {p.name}: " + " | ".join(msg.splitlines()[:3])[:300], file=sys.stderr)
+            return {"error": f"no crJSON (exit {rc})"}
+        data = json.loads(cj.read_text())
+    if not data.get("manifests"):
+        return {"present": False}
+    import contextlib  # noqa: PLC0415
+    import io  # noqa: PLC0415
+
+    log = io.StringIO()
+    # The evaluator prints its result to stdout and per-statement errors to stderr.
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(log):
+        try:
+            out = ev.evaluate_asset(str(rubric), data_dict=data)
+            dag = ev.build_provenance_dag(data, ev.create_index_mapping(data))
+        except Exception as exc:  # the evaluator gave up on this crJSON
+            return {"error": f"evaluator failed: {type(exc).__name__}: {exc}"[:300]}
+    order = sorted(dag, key=lambda x: (1 if dag[x].get("is_pseudo", False) else 0, int(x)))
+    labels = [dag[k]["urn"] for k in order]
+    entries = out.get("manifests", [])
+    if len(entries) != len(labels):
+        return {"error": f"evaluator returned {len(entries)} nodes for {len(labels)} graph nodes"}
+
+    def label_at(i):
+        return labels[i] if isinstance(i, int) and 0 <= i < len(labels) else None
+
+    nodes = [
+        {
+            "label": label,
+            "pseudo": bool(e.get("pseudo", False)),
+            "inception": [s["trait"] for s in e.get("localInceptions", [])],
+            "transformation": [s["trait"] for s in e.get("localTransformations", [])],
+            "ingredients": [
+                {"label": label_at(i.get("index")), "relationship": i.get("relationship")}
+                for i in e.get("ingredients", [])
+            ],
+        }
+        for label, e in zip(labels, entries)
+    ]
+    errors = [l for l in log.getvalue().splitlines() if l.startswith("Error evaluating")]
+    return {
+        "present": True,
+        "crjson_generator": data.get("jsonGenerator"),
+        "nodes": nodes,
+        "statement_errors": len(errors),
+    }
+
+
 def credentio_facts(p: Path, binary: Path, anchors: Path | None, tsa: Path | None) -> dict:
     """Credentio's hard-binding results for one file (D-014): whole-file data hash,
     multi-asset outcome words (``match``, ``mismatch``, ``missingPart``,
@@ -472,6 +582,9 @@ def main() -> int:
     ap.add_argument("--no-c2pa", action="store_true", help="skip c2patool entirely")
     ap.add_argument("--credentio", type=Path,
                 help="Credentio's c2pa_validate: also record its hard-binding and multi-asset results (D-014)")
+    ap.add_argument("--rubrics", type=Path,
+                    help="a c2pa-org/conformance-public checkout: also record the C2PA signals rubric's "
+                         "result on Credentio's crJSON (needs --credentio)")
     ap.add_argument("--no-trust", action="store_true",
                 help="collect without trust anchors; the EKU policy (--trust-config) is always passed")
     a = ap.parse_args()
@@ -516,6 +629,17 @@ def main() -> int:
             return 2
         credentio_ver = credentio_version(a.credentio)
 
+    signals_ev = signals_rubric = signals_meta = None
+    if a.rubrics:
+        if not a.credentio:
+            print("--rubrics needs --credentio (the crJSON comes from Credentio)", file=sys.stderr)
+            return 2
+        try:
+            signals_ev, signals_rubric, signals_meta = load_signals_evaluator(a.rubrics)
+        except (FileNotFoundError, ImportError) as exc:
+            print(f"--rubrics: {exc}", file=sys.stderr)
+            return 2
+
     settings_file = Path(tempfile.mkstemp(suffix=".toml", prefix="c2patool-")[1])
     settings_file.write_text(c2patool_settings(a.trust_anchors, a.tsa_anchors, a.trust_config))
 
@@ -537,14 +661,20 @@ def main() -> int:
             entry["c2patool"] = c2patool_facts(p, settings_file)
         if a.credentio:
             entry["credentio"] = credentio_facts(p, a.credentio, a.trust_anchors, a.tsa_anchors)
+        if signals_ev:
+            entry["signals"] = signals_facts(p, a.credentio, a.trust_anchors, a.tsa_anchors,
+                                             signals_ev, signals_rubric)
         files[rel] = entry
         dst = ex.get("digital_source_type") or []
         ct = entry.get("c2patool") or {}
         state = ct.get("validation_state") or ("remote" if ct.get("remote_manifest") else "-")
         cr = entry.get("credentio") or {}
         multi = ",".join(cr.get("multi_asset") or []) or "-"
+        sg = entry.get("signals") or {}
+        nodes = "err" if sg.get("error") else str(len(sg.get("nodes") or []))
         print(f"{rel:60} xmp={'y' if ex.get('xmp_present') else 'n'} dst={','.join(dst) or '-':40} c2pa={state}"
-              + (f" multi-asset={multi}" if a.credentio else ""))
+              + (f" multi-asset={multi}" if a.credentio else "")
+              + (f" signal-nodes={nodes}" if signals_ev else ""))
 
     # Strata generated by us (03-synthetic) ship a cases.json with the intended
     # Halftone verdict per file; merge it so the test can assert semantics, not just
@@ -579,7 +709,10 @@ def main() -> int:
         "collected_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "corpus": repo_relative(corpus),
         "tools": {"exiftool": exif_ver, "c2patool": c2pa_ver, "openssl": openssl_ver,
-                  "credentio": credentio_ver},
+                  "credentio": credentio_ver,
+                  "json-formula-py": JSON_FORMULA_PIN if signals_ev else None},
+        # Which signals rubric produced the "signals" entries (--rubrics).
+        "signals_rubric": signals_meta,
         "trust_anchors": repo_relative(a.trust_anchors) if a.trust_anchors else None,
         "tsa_anchors": repo_relative(a.tsa_anchors) if a.tsa_anchors else None,
         "trust_config": repo_relative(a.trust_config) if a.trust_config else None,

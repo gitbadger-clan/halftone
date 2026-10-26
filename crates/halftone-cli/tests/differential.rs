@@ -34,6 +34,13 @@
 //! reports. A part cut short is `mismatch` per §15.12.4 and Credentio reports it as
 //! `missingPart` (+ `malformed`); that one recorded disagreement is printed as
 //! `known: D-015` and does not fail the run. Anything else different does.
+//!
+//! Signals rubric: when the collector ran with `--rubrics`, Halftone's
+//! `details.signals` (c2pa-rs crJSON, `halftone-rubric`) is compared with the
+//! C2PA's own evaluator on Credentio's crJSON, provided both ran the same rubric
+//! file. Nodes are matched by manifest label, never by position; a pseudo node's
+//! trailing number (an exporter-order artifact) is ignored. Each node's traits and
+//! ingredients must agree as sets.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -592,6 +599,140 @@ fn compare_credentio(
     }
 }
 
+/// A pseudo node's label ends in `_<n>`, a graph-node number that depends on the
+/// exporter's manifest order; everything before it (the parent's label and the
+/// ingredient title) does not. Real manifest labels are compared as they are.
+fn signal_label(label: &str) -> String {
+    match label.rsplit_once('_') {
+        Some((head, n))
+            if label.starts_with("urn:c2pa:pseudo:")
+                && !n.is_empty()
+                && n.chars().all(|c| c.is_ascii_digit()) =>
+        {
+            head.to_string()
+        }
+        _ => label.to_string(),
+    }
+}
+
+/// A node's ingredients as sorted `label relationship` strings: exporters may list
+/// a manifest's assertions in different orders, and with them its ingredients.
+fn signal_ingredients(node: &Value) -> Vec<String> {
+    let mut v: Vec<String> = node["ingredients"]
+        .as_array()
+        .map(|a| {
+            a.iter()
+                .map(|i| {
+                    let l = i["label"].as_str().map_or("?".to_string(), signal_label);
+                    format!("{l} {}", i["relationship"].as_str().unwrap_or("-"))
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    v.sort();
+    v
+}
+
+/// Nodes by normalised label.
+fn signal_nodes(v: &Value) -> std::collections::BTreeMap<String, &Value> {
+    v.as_array()
+        .map(|a| {
+            a.iter()
+                .filter_map(|n| Some((signal_label(n["label"].as_str()?), n)))
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// Compare Halftone's `details.signals` (c2pa-rs crJSON, native evaluator) with the
+/// C2PA's evaluator on Credentio's crJSON. Only when the collector ran with
+/// `--rubrics` and both sides ran the same rubric file (by SHA-256): nodes are
+/// matched by label, never by position, and each node's inception and
+/// transformation traits and its ingredients must agree as sets.
+fn compare_signals(
+    name: &str,
+    exp: &Value,
+    rubric_sha256: Option<&str>,
+    insp: &Value,
+    out: &mut Vec<Disagreement>,
+) {
+    let sg = &exp["signals"];
+    if !sg.is_object() || sg.get("error").is_some() || sg["present"] != true {
+        return;
+    }
+    let Some(ev) = evidence(insp, "c2pa") else {
+        return;
+    };
+    if ev["rationale"]
+        .as_str()
+        .unwrap_or("")
+        .contains("built without")
+    {
+        return;
+    }
+    let mut push = |file: String, field: &'static str, expected: String, got: String| {
+        out.push(Disagreement {
+            file,
+            field,
+            expected,
+            got,
+        });
+    };
+    let hs = &ev["details"]["signals"];
+    if !hs.is_object() || hs.get("error").is_some() {
+        let got = hs
+            .get("error")
+            .map_or("no details.signals".to_string(), |e| format!("error: {e}"));
+        push(name.to_string(), "signals", "nodes".into(), got);
+        return;
+    }
+    if let Some(want) = rubric_sha256 {
+        let got = hs["rubric"]["sha256"].as_str();
+        if got != Some(want) {
+            // Different rubric files: nothing below is comparable.
+            push(name.to_string(), "signals.rubric", want.into(), show(got));
+            return;
+        }
+    }
+    let ref_errors = sg["statement_errors"].as_u64().unwrap_or(0);
+    let our_errors = hs["errors"].as_array().map_or(0, Vec::len) as u64;
+    if ref_errors != our_errors {
+        push(
+            name.to_string(),
+            "signals.statement_errors",
+            ref_errors.to_string(),
+            our_errors.to_string(),
+        );
+    }
+    let (want, got) = (signal_nodes(&sg["nodes"]), signal_nodes(&hs["nodes"]));
+    for (label, w) in &want {
+        let file = format!("{name} [{}]", label.trim_start_matches("urn:c2pa:"));
+        let Some(g) = got.get(label) else {
+            push(file, "signals.node", "present".into(), "absent".into());
+            continue;
+        };
+        for field in ["inception", "transformation"] {
+            let (a, b) = (str_set(&w[field]), str_set(&g[field]));
+            if a != b {
+                let f = if field == "inception" {
+                    "signals.inception"
+                } else {
+                    "signals.transformation"
+                };
+                push(file.clone(), f, show(&a), show(&b));
+            }
+        }
+        let (a, b) = (signal_ingredients(w), signal_ingredients(g));
+        if a != b {
+            push(file.clone(), "signals.ingredients", show(&a), show(&b));
+        }
+    }
+    for label in got.keys().filter(|l| !want.contains_key(*l)) {
+        let file = format!("{name} [{}]", label.trim_start_matches("urn:c2pa:"));
+        push(file, "signals.node", "absent".into(), "present".into());
+    }
+}
+
 fn render(rows: &[Disagreement]) -> String {
     let mut s = String::from("| file | field | expected | halftone |\n|---|---|---|---|\n");
     for d in rows {
@@ -697,6 +838,13 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                     compared += 1;
                     compare_file(&name, e, row, insp, trust_exact, &mut dis, &mut aged);
                     compare_credentio(&name, e, insp, &mut dis, &mut known);
+                    compare_signals(
+                        &name,
+                        e,
+                        exp["signals_rubric"]["sha256"].as_str(),
+                        insp,
+                        &mut dis,
+                    );
                 }
                 None => dis.push(Disagreement {
                     file: name,
@@ -1108,5 +1256,137 @@ mod credentio_rule {
     fn nothing_to_compare_without_credentio() {
         let (out, known) = run(&json!({}), &insp(Value::Null));
         assert!(out.is_empty() && known.is_empty());
+    }
+}
+
+// ---- Signals rubric comparison: fabricated results, no corpus needed ----
+
+#[cfg(test)]
+mod signals_rule {
+    use super::*;
+    use serde_json::json;
+
+    const SHA: &str = "0502e989";
+
+    fn node(label: &str, inc: &[&str], tr: &[&str], ing: Value) -> Value {
+        json!({"label": label, "inception": inc, "transformation": tr, "ingredients": ing})
+    }
+
+    fn exp(nodes: Value) -> Value {
+        json!({"signals": {"present": true, "nodes": nodes, "statement_errors": 0}})
+    }
+
+    fn insp(nodes: Value, sha: &str) -> Value {
+        json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "",
+            "details": {"signals": {"rubric": {"sha256": sha}, "nodes": nodes, "errors": []}}}]})
+    }
+
+    fn run(e: &Value, i: &Value) -> Vec<Disagreement> {
+        let mut out = Vec::new();
+        compare_signals("f", e, Some(SHA), i, &mut out);
+        out
+    }
+
+    fn fold() -> Value {
+        json!([node(
+            "urn:c2pa:416184a8",
+            &["inception:signal_capturedMedia"],
+            &["transformation:signal_ambiguousActions"],
+            json!([])
+        )])
+    }
+
+    #[test]
+    fn agreement_whatever_the_node_order() {
+        let chain = json!([
+            node(
+                "urn:c2pa:edit",
+                &[],
+                &["transformation:signal_perceptibleGenAI"],
+                json!([{"label": "urn:c2pa:cam", "relationship": "parentOf"}])
+            ),
+            node(
+                "urn:c2pa:cam",
+                &["inception:signal_capturedMedia"],
+                &[],
+                json!([])
+            ),
+        ]);
+        let mut reversed = chain.clone();
+        reversed.as_array_mut().unwrap().reverse();
+        assert!(run(&exp(chain), &insp(reversed, SHA)).is_empty());
+        assert!(run(&exp(fold()), &insp(fold(), SHA)).is_empty());
+    }
+
+    #[test]
+    fn pseudo_node_numbers_are_not_compared() {
+        let mk = |n: u32| {
+            json!([
+                node(
+                    "urn:c2pa:top",
+                    &["inception:signal_mediaUnknownProvenance"],
+                    &[],
+                    json!([{"label": format!("urn:c2pa:pseudo:urn:c2pa:top:photo.jpg_{n}"), "relationship": "parentOf"}])
+                ),
+                node(
+                    &format!("urn:c2pa:pseudo:urn:c2pa:top:photo.jpg_{n}"),
+                    &["inception:signal_capturedMedia"],
+                    &[],
+                    json!([])
+                ),
+            ])
+        };
+        assert!(run(&exp(mk(1)), &insp(mk(3), SHA)).is_empty());
+    }
+
+    #[test]
+    fn a_differing_trait_is_one_row_naming_the_node() {
+        let ours = json!([node(
+            "urn:c2pa:416184a8",
+            &["inception:signal_capturedMedia"],
+            &[],
+            json!([])
+        )]);
+        let out = run(&exp(fold()), &insp(ours, SHA));
+        assert_eq!(out.len(), 1, "{out:?}");
+        assert_eq!(out[0].field, "signals.transformation");
+        assert_eq!(out[0].file, "f [416184a8]");
+        assert!(out[0].expected.contains("ambiguousActions"));
+    }
+
+    #[test]
+    fn missing_and_extra_nodes_are_rows() {
+        let ours = json!([node("urn:c2pa:other", &[], &[], json!([]))]);
+        let out = run(&exp(fold()), &insp(ours, SHA));
+        let fields: Vec<(&str, &str)> = out.iter().map(|d| (d.field, d.got.as_str())).collect();
+        assert_eq!(
+            fields,
+            vec![("signals.node", "absent"), ("signals.node", "present")]
+        );
+    }
+
+    #[test]
+    fn another_rubric_is_one_row_and_nothing_else() {
+        let out = run(&exp(fold()), &insp(json!([]), "ffff"));
+        assert_eq!(out.len(), 1);
+        assert_eq!(out[0].field, "signals.rubric");
+    }
+
+    #[test]
+    fn nothing_to_compare_without_reference_signals_or_a_c2pa_build() {
+        assert!(run(&json!({}), &insp(fold(), SHA)).is_empty());
+        assert!(
+            run(
+                &json!({"signals": {"error": "no crJSON (exit 1)"}}),
+                &insp(fold(), SHA)
+            )
+            .is_empty()
+        );
+        let built_without = json!({"evidence": [{"source": {"name": "c2pa"},
+            "rationale": "Halftone was built without the c2pa feature", "details": null}]});
+        assert!(run(&exp(fold()), &built_without).is_empty());
+        let no_details =
+            json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "", "details": {}}]});
+        assert_eq!(run(&exp(fold()), &no_details)[0].field, "signals");
     }
 }
