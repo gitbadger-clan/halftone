@@ -1,7 +1,9 @@
 # ht-collect.fish — corpus collection helpers for corpus/differential/<stratum>.
 #
 # Every command that writes into the corpus needs the target stratum:
-#   set -gx HT_STRATUM 06-phones      # or 04-generators, 00-base, 05-fold, 07-editors
+#   set -gx HT_STRATUM 06-phones      # or 04-generators, 00-base, 05-fold, 07-editors,
+#                                     # 10-messaging, 11-screenshots (08-multipart is
+#                                     # built by scripts/make-multipart-stratum.fish)
 # Without it they refuse: a missing value once filed phone shots under 04.
 #
 # Phone (adb; one phone per terminal):
