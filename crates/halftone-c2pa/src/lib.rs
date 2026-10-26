@@ -13,6 +13,20 @@
 //!   trusted, the hard binding is broken (bytes changed after signing), or it can't be
 //!   parsed. The reason codes are in `details.validation_status`.
 //!
+//! Multi-part files ([`multi_asset`], DIFFERENTIAL.md D-014): when c2pa reports the
+//! whole-file hard binding as failed and the manifest carries a
+//! `c2pa.hash.multi-asset` assertion, Halftone applies C2PA 2.4 §15.12.4 itself,
+//! which c2pa 0.91 does not: each part (the still, a gain map, a motion clip) is
+//! checked against its own signed hash, with c2pa's data-hash code. If every part
+//! still in the file matches and only parts the signer marked optional are gone,
+//! the content binding holds and the verdict is decided as for an intact file
+//! (`Present` for a trusted signer); the rationale names what was removed. If a part
+//! changed, the rationale names which one. `details.validation_state` stays what c2pa
+//! reported, so it still compares with c2patool; `details.multi_asset` holds the
+//! outcome, the status code and the per-part table. The fallback runs only when the
+//! claim signature validated, nothing else failed, and every assertion it reads is
+//! bound to the signed claim.
+//!
 //! Shelf life ([`shelf_life`], DIFFERENTIAL.md D-010, D-012): for every manifest with
 //! a signature, `details.signing_cert` carries the signer certificate's serial and
 //! validity window and `details.time_stamp` the time-stamp status under the loaded
@@ -137,9 +151,182 @@ mod imp {
     use super::C2paSource;
     use super::shelf_life::{self, SigningCert, TimeStampStatus};
     use super::trust::{AnchorKind, ResolvedTrust};
+    use crate::multi_asset::{self, Outcome, PartHash, PartReport, PartResult, Report};
     use c2pa::settings::{TrustAnchor, TrustListKind};
     use halftone_core::{Asset, Evidence, EvidenceSource, Status};
     use std::io::Cursor;
+
+    /// Checks one part of a multi-part file with c2pa's own data-hash code, so a
+    /// part is hashed exactly as c2pa hashes the whole file (same exclusion rules).
+    struct C2paPartHasher;
+
+    impl multi_asset::PartHasher for C2paPartHasher {
+        fn verify(&self, part: &PartHash, bytes: &[u8]) -> Result<bool, String> {
+            let alg = part.alg.as_deref().unwrap_or("sha256");
+            // c2pa hashes an unknown algorithm to an empty value, which would read as
+            // a mismatch; refuse it instead.
+            if !matches!(alg, "sha256" | "sha384" | "sha512") {
+                return Err(format!("unsupported hash algorithm {alg}"));
+            }
+            let mut dh = c2pa::assertions::DataHash::new("part", alg);
+            for &(start, length) in &part.exclusions {
+                if start.saturating_add(length) > bytes.len() as u64 {
+                    return Err("an exclusion range runs past the end of the part".into());
+                }
+                dh.add_exclusion(c2pa::HashRange::new(start, length));
+            }
+            dh.set_hash(part.hash.clone());
+            match dh.verify_in_memory_hash(bytes, Some(alg)) {
+                Ok(()) => Ok(true),
+                Err(c2pa::Error::HashMismatch(_)) => Ok(false),
+                Err(e) => Err(e.to_string()),
+            }
+        }
+    }
+
+    /// The active manifest's failure and success codes, each with its assertion URL.
+    fn statuses(reader: &c2pa::Reader) -> (Vec<multi_asset::Status>, Vec<multi_asset::Status>) {
+        let Some(s) = reader
+            .validation_results()
+            .and_then(|r| r.active_manifest())
+        else {
+            return (Vec::new(), Vec::new());
+        };
+        (
+            s.failure()
+                .iter()
+                .map(|v| multi_asset::Status::new(v.code(), v.url()))
+                .collect(),
+            s.success()
+                .iter()
+                .map(|v| multi_asset::Status::new(v.code(), v.url()))
+                .collect(),
+        )
+    }
+
+    /// C2PA 2.4 §15.12.4 for the active manifest. `None` when it does not apply: the
+    /// whole-file hard binding did not fail, or there is no multi-asset assertion.
+    /// The assertions come from c2pa's detailed JSON, the only view that keeps the
+    /// hash assertions (`Reader::json` drops them).
+    fn multi_asset_fallback(
+        reader: &c2pa::Reader,
+        active_label: Option<&str>,
+        bytes: &[u8],
+    ) -> Option<Report> {
+        let (failures, successes) = statuses(reader);
+        if !multi_asset::hard_binding_failed(&failures) {
+            return None;
+        }
+        let detailed: serde_json::Value = serde_json::from_str(&reader.detailed_json()).ok()?;
+        let store = detailed
+            .get("manifests")?
+            .get(active_label?)?
+            .get("assertion_store")?;
+        let ma = store.get(multi_asset::LABEL)?;
+        let labels = multi_asset::part_labels(ma);
+        if let Err(why) = multi_asset::eligible(&failures, &successes, &labels) {
+            return Some(Report::not_evaluated(why));
+        }
+        Some(multi_asset::evaluate(ma, store, bytes, &C2paPartHasher))
+    }
+
+    /// "part 2 (MP4, optional)": index, what the bytes look like, and whether the
+    /// signer allowed it to be removed.
+    fn part_name(p: &PartReport) -> String {
+        let need = if p.optional { "optional" } else { "required" };
+        match p.kind {
+            Some("jpeg") => format!("part {} (JPEG, {need})", p.index),
+            Some("mp4") => format!("part {} (MP4, {need})", p.index),
+            _ => format!("part {} ({need})", p.index),
+        }
+    }
+
+    /// Names of the parts whose result satisfies `want`, in signed order.
+    fn parts_where(r: &Report, want: impl Fn(&PartResult) -> bool) -> Vec<String> {
+        r.parts
+            .iter()
+            .filter(|p| want(&p.result))
+            .map(part_name)
+            .collect()
+    }
+
+    /// Upper-case the first letter, for a list that starts a sentence.
+    fn cap(s: String) -> String {
+        let mut c = s.chars();
+        match c.next() {
+            Some(first) => first.to_uppercase().chain(c).collect(),
+            None => s,
+        }
+    }
+
+    /// "a", "a and b", "a, b and c".
+    fn and_list(items: &[String]) -> String {
+        match items {
+            [] => String::new(),
+            [one] => one.clone(),
+            [rest @ .., last] => format!("{} and {last}", rest.join(", ")),
+        }
+    }
+
+    /// The sentence appended to an Invalid rationale when the fallback ran and did
+    /// not restore the binding: which part changed, or why it could not be judged.
+    fn multi_asset_note(r: &Report) -> String {
+        let rule = multi_asset::RULE;
+        let matched = parts_where(r, |p| *p == PartResult::Match);
+        let still = if matched.is_empty() {
+            String::new()
+        } else {
+            format!(
+                " {} still {}.",
+                cap(and_list(&matched)),
+                if matched.len() == 1 {
+                    "matches"
+                } else {
+                    "match"
+                }
+            )
+        };
+        match r.outcome {
+            Outcome::Mismatch => {
+                let changed = parts_where(r, |p| *p == PartResult::Mismatch);
+                let cut = parts_where(r, |p| *p == PartResult::Truncated);
+                let mut what = Vec::new();
+                if !changed.is_empty() {
+                    what.push(format!(
+                        "{} {} from what was signed",
+                        and_list(&changed),
+                        if changed.len() == 1 {
+                            "differs"
+                        } else {
+                            "differ"
+                        }
+                    ));
+                }
+                if !cut.is_empty() {
+                    what.push(format!(
+                        "{} {} cut short",
+                        and_list(&cut),
+                        if cut.len() == 1 { "is" } else { "are" }
+                    ));
+                }
+                format!(
+                    " The manifest's per-part hashes ({rule}) locate the change: {}.{still}",
+                    what.join("; ")
+                )
+            }
+            Outcome::Malformed | Outcome::MissingPart => format!(
+                " Its multi-asset hash ({rule}) does not validate either: {} ({}).{still}",
+                r.reason.as_deref().unwrap_or("no reason recorded"),
+                r.code.unwrap_or("-")
+            ),
+            Outcome::NotEvaluated => format!(
+                " The manifest also carries a multi-asset hash ({rule}), which was not \
+                 evaluated: {}.",
+                r.reason.as_deref().unwrap_or("no reason recorded")
+            ),
+            Outcome::Match => String::new(),
+        }
+    }
 
     /// One typed c2pa anchor per resolved bundle, kind preserved.
     ///
@@ -414,6 +601,14 @@ mod imp {
             .cloned()
             .unwrap_or(serde_json::Value::Null);
 
+        // C2PA 2.4 §15.12.4, which c2pa 0.91 does not apply (D-014). Only an Invalid
+        // manifest can have a failed hard binding to fall back from.
+        let multi_part = if state == c2pa::ValidationState::Invalid {
+            multi_asset_fallback(&reader, active_label.as_deref(), &a.bytes)
+        } else {
+            None
+        };
+
         // Time-stamp codes of the active manifest, from all three buckets of
         // validation_results: c2pa files `timeStamp.validated` / `.trusted` as success
         // and `timeStamp.untrusted` as informational, so validation_status (failures
@@ -510,7 +705,73 @@ mod imp {
                     lists = resolved.manifest_lists_label()
                 ),
             ),
+            c2pa::ValidationState::Invalid
+                if multi_part
+                    .as_ref()
+                    .is_some_and(|r| r.outcome == Outcome::Match) =>
+            {
+                // The whole-file hash failed, but every part still in the file matches
+                // its own signed hash and only optional parts are gone: per §15.12.4
+                // the content binding holds. Decide trust as for an intact file.
+                let r = multi_part.as_ref().expect("guarded by is_some_and above");
+                let matched = parts_where(r, |p| *p == PartResult::Match);
+                let gone = parts_where(r, |p| *p == PartResult::Absent);
+                let removed = if gone.is_empty() {
+                    String::new()
+                } else {
+                    format!(
+                        " {} {} no longer in the file, which the signer allowed by marking {} \
+                         optional.",
+                        cap(and_list(&gone)),
+                        if gone.len() == 1 { "is" } else { "are" },
+                        if gone.len() == 1 { "it" } else { "them" }
+                    )
+                };
+                let parts_sentence = format!(
+                    "The whole-file content hash no longer matches, but the manifest also signs \
+                     each part of this multi-part file on its own ({rule}), and {} still {}.{removed} \
+                     The content still in the file is unchanged since signing. (c2pa-rs alone \
+                     reports this manifest Invalid: it does not apply that rule.)",
+                    and_list(&matched),
+                    if matched.len() == 1 {
+                        "matches"
+                    } else {
+                        "match"
+                    },
+                    rule = multi_asset::RULE,
+                );
+                let untrusted = validation_status.as_array().is_some_and(|a| {
+                    a.iter().any(|x| {
+                        x.get("code").and_then(|c| c.as_str())
+                            == Some("signingCredential.untrusted")
+                    })
+                });
+                if untrusted {
+                    (
+                        Status::Inconclusive,
+                        format!(
+                            "C2PA manifest {who} is cryptographically valid, but the signer does \
+                             not chain to any anchor in {lists} (details.trust lists them). \
+                             {parts_sentence}{shelf_note}{ai_note}",
+                            lists = resolved.manifest_lists_label()
+                        ),
+                    )
+                } else {
+                    (
+                        Status::Present,
+                        format!(
+                            "Valid C2PA manifest {who}; signer chains to a trusted anchor in \
+                             {lists}. {parts_sentence}{shelf_note}{ai_note}",
+                            lists = resolved.manifest_lists_label()
+                        ),
+                    )
+                }
+            }
             c2pa::ValidationState::Invalid => {
+                let ma_note = multi_part
+                    .as_ref()
+                    .map(multi_asset_note)
+                    .unwrap_or_default();
                 // Distinguish the two things "Invalid" can mean to a reader: the
                 // content or signature is broken, or the signing certificate has
                 // expired and nothing in the manifest fixes when it was signed. The
@@ -556,7 +817,8 @@ mod imp {
                         Status::Inconclusive,
                         format!(
                             "C2PA manifest {who} is present but does not validate: the signature \
-                             fails or the content was modified after signing. See validation_status.{ai_note}"
+                             fails or the content was modified after signing.{ma_note} See \
+                             validation_status.{ai_note}"
                         ),
                     )
                 } else {
@@ -630,6 +892,10 @@ mod imp {
         });
         if let Some(e) = signing_cert_error {
             details["signing_cert_error"] = serde_json::Value::String(e);
+        }
+        // Only present when the fallback applied, so other files' details are unchanged.
+        if let Some(r) = &multi_part {
+            details["multi_asset"] = serde_json::to_value(r).unwrap_or(serde_json::Value::Null);
         }
         // Only present when the manifest came over the network, so an embedded
         // manifest's details are unchanged from earlier versions.
