@@ -1,0 +1,716 @@
+[
+ {
+  "expr": "\"a\\\"b\"",
+  "data": null,
+  "result": "a\"b"
+ },
+ {
+  "expr": "`[1, 2.5, \"x\", null, true]`",
+  "data": null,
+  "result": [
+   1,
+   2.5,
+   "x",
+   null,
+   true
+  ]
+ },
+ {
+  "expr": "1.5e3",
+  "data": null,
+  "result": 1500.0
+ },
+ {
+  "expr": ".5",
+  "data": null,
+  "result": 0.5
+ },
+ {
+  "expr": "12",
+  "data": null,
+  "result": 12
+ },
+ {
+  "expr": "a.b",
+  "data": {
+   "a": {
+    "b": 1
+   }
+  },
+  "result": 1
+ },
+ {
+  "expr": "a.'b.c'",
+  "data": {
+   "a": {
+    "b.c": 2
+   }
+  },
+  "result": 2
+ },
+ {
+  "expr": "'a b'",
+  "data": {
+   "a b": 3
+  },
+  "result": 3
+ },
+ {
+  "expr": "a.b",
+  "data": {
+   "a": [
+    1
+   ]
+  },
+  "result": null
+ },
+ {
+  "expr": "a.'0'",
+  "data": {
+   "a": [
+    9,
+    8
+   ]
+  },
+  "result": 9
+ },
+ {
+  "expr": "null",
+  "data": {
+   "null": 7
+  },
+  "result": 7
+ },
+ {
+  "expr": "null",
+  "data": {},
+  "result": null
+ },
+ {
+  "expr": "$x",
+  "data": {
+   "$x": 5
+  },
+  "result": 5
+ },
+ {
+  "expr": "@",
+  "data": 4,
+  "result": 4
+ },
+ {
+  "expr": "a.b.c",
+  "data": {
+   "a": null
+  },
+  "result": null
+ },
+ {
+  "expr": "`1` == `1.0`",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "`true` == `1`",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "`[1]` == `[1.0]`",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "`{\"a\":1}` == `{\"a\":true}`",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "x = 1",
+  "data": {
+   "x": 1
+  },
+  "result": true
+ },
+ {
+  "expr": "x <> 1",
+  "data": {
+   "x": 2
+  },
+  "result": true
+ },
+ {
+  "expr": "\"a\" < \"b\"",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "`2` < \"10\"",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "\"x\" < `1`",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "`[1]` < `2`",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "`null` < `1`",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "`true` >= `1`",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "\"\" < `1`",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "\" 12 \" > `11`",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "a || b",
+  "data": {
+   "a": 0,
+   "b": "x"
+  },
+  "result": "x"
+ },
+ {
+  "expr": "a && b",
+  "data": {
+   "a": [],
+   "b": 1
+  },
+  "result": []
+ },
+ {
+  "expr": "a && b",
+  "data": {
+   "a": 1,
+   "b": "y"
+  },
+  "result": "y"
+ },
+ {
+  "expr": "!\"\"",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "!`{}`",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "!a || b",
+  "data": {
+   "a": 1,
+   "b": 2
+  },
+  "result": 2
+ },
+ {
+  "expr": "a == `1` && b == `2` || c",
+  "data": {
+   "a": 1,
+   "b": 3,
+   "c": "z"
+  },
+  "result": "z"
+ },
+ {
+  "expr": "a[? b == `1`]",
+  "data": {
+   "a": {
+    "b": 1
+   }
+  },
+  "result": null
+ },
+ {
+  "expr": "a[? b == `1`].c",
+  "data": {
+   "a": [
+    {
+     "b": 1,
+     "c": "x"
+    },
+    {
+     "b": 2,
+     "c": "y"
+    }
+   ]
+  },
+  "result": [
+   "x"
+  ]
+ },
+ {
+  "expr": "a[? b]",
+  "data": {
+   "a": [
+    {
+     "b": 0
+    },
+    {
+     "b": []
+    },
+    {
+     "b": "s"
+    }
+   ]
+  },
+  "result": [
+   {
+    "b": "s"
+   }
+  ]
+ },
+ {
+  "expr": "a[*].b",
+  "data": {
+   "a": [
+    {
+     "b": 1
+    },
+    {},
+    {
+     "b": 2
+    }
+   ]
+  },
+  "result": [
+   1,
+   null,
+   2
+  ]
+ },
+ {
+  "expr": "a[]",
+  "data": {
+   "a": [
+    [
+     1
+    ],
+    2,
+    [
+     3,
+     [
+      4
+     ]
+    ]
+   ]
+  },
+  "result": [
+   1,
+   2,
+   3,
+   [
+    4
+   ]
+  ]
+ },
+ {
+  "expr": "a.*",
+  "data": {
+   "a": {
+    "x": 1,
+    "y": 2
+   }
+  },
+  "result": [
+   1,
+   2
+  ]
+ },
+ {
+  "expr": "a[1:]",
+  "data": {
+   "a": [
+    1,
+    2,
+    3
+   ]
+  },
+  "result": [
+   2,
+   3
+  ]
+ },
+ {
+  "expr": "a[::-1]",
+  "data": {
+   "a": [
+    1,
+    2,
+    3
+   ]
+  },
+  "result": [
+   3,
+   2,
+   1
+  ]
+ },
+ {
+  "expr": "a[-1]",
+  "data": {
+   "a": [
+    1,
+    2,
+    3
+   ]
+  },
+  "result": 3
+ },
+ {
+  "expr": "a[5]",
+  "data": {
+   "a": [
+    1
+   ]
+  },
+  "result": null
+ },
+ {
+  "expr": "[a, b]",
+  "data": {
+   "a": 1,
+   "b": 2
+  },
+  "result": [
+   1,
+   2
+  ]
+ },
+ {
+  "expr": "{x: a, y: b}",
+  "data": {
+   "a": 1,
+   "b": 2
+  },
+  "result": {
+   "x": 1,
+   "y": 2
+  }
+ },
+ {
+  "expr": "a | b",
+  "data": {
+   "a": {
+    "b": 5
+   }
+  },
+  "result": 5
+ },
+ {
+  "expr": "length(null)",
+  "data": null,
+  "result": 0
+ },
+ {
+  "expr": "length(`5`)",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "length(`true`)",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "length(\"héllo\")",
+  "data": null,
+  "result": 5
+ },
+ {
+  "expr": "length(`{\"a\":1}`)",
+  "data": null,
+  "result": 1
+ },
+ {
+  "expr": "length(a)",
+  "data": {
+   "a": [
+    1,
+    2
+   ]
+  },
+  "result": 2
+ },
+ {
+  "expr": "length(a, b)",
+  "data": {},
+  "error": "FunctionError"
+ },
+ {
+  "expr": "contains(null, \"x\")",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "contains(null, \"\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "contains(\"abc\", `1`)",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "contains(`5`, \"5\")",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "contains(`[1, 1.0]`, `1.0`)",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "contains(\"abc\", \"b\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "contains(`[\"a\"]`, null)",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "contains(`[null]`, null)",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "contains(`{\"a\":1}`, \"a\")",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "startsWith(`[\"c2pa.a\", \"x\"]`, \"c2pa.\")",
+  "data": null,
+  "result": [
+   true,
+   false
+  ]
+ },
+ {
+  "expr": "startsWith(`5`, \"5\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "startsWith(`1.0`, \"1.0\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "startsWith(`1e20`, \"1e+20\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "startsWith(`0.0001`, \"0.0001\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "startsWith(`0.00001`, \"1e-05\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "startsWith(`123456789012345680000`, \"1.2345678901234568e+20\")",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "startsWith(null, \"\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "startsWith(`true`, \"true\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "startsWith(`[1, 2]`, \"1\")",
+  "data": null,
+  "result": [
+   true,
+   false
+  ]
+ },
+ {
+  "expr": "startsWith(`[]`, \"x\")",
+  "data": null,
+  "result": []
+ },
+ {
+  "expr": "startsWith(`{}`, \"x\")",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "startsWith(`[[1, 2], \"x\"]`, \"1\")",
+  "data": null,
+  "result": [
+   [
+    true,
+    false
+   ],
+   false
+  ]
+ },
+ {
+  "expr": "nosuch(a)",
+  "data": {},
+  "error": "FunctionError"
+ },
+ {
+  "expr": "`1` + `2`",
+  "data": null,
+  "result": 3
+ },
+ {
+  "expr": "`1` + `2.0`",
+  "data": null,
+  "result": 3.0
+ },
+ {
+  "expr": "`7` / `2`",
+  "data": null,
+  "result": 3.5
+ },
+ {
+  "expr": "`1` / `0`",
+  "data": null,
+  "error": "EvaluationError"
+ },
+ {
+  "expr": "\"2\" * `3`",
+  "data": null,
+  "result": 6.0
+ },
+ {
+  "expr": "\"x\" * `3`",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "`[1, 2]` + `[10]`",
+  "data": null,
+  "result": [
+   11,
+   2.0
+  ]
+ },
+ {
+  "expr": "-a",
+  "data": {
+   "a": 3
+  },
+  "result": -3
+ },
+ {
+  "expr": "\"a\" & \"b\"",
+  "data": null,
+  "result": "ab"
+ },
+ {
+  "expr": "`1` & `true`",
+  "data": null,
+  "result": "1true"
+ },
+ {
+  "expr": "`[1, 2]` & \"x\"",
+  "data": null,
+  "result": [
+   "1x",
+   "2x"
+  ]
+ },
+ {
+  "expr": "a ~ b",
+  "data": {
+   "a": [
+    1
+   ],
+   "b": null
+  },
+  "result": [
+   1,
+   null
+  ]
+ },
+ {
+  "expr": "`1.5` * `2`",
+  "data": null,
+  "result": 3.0
+ },
+ {
+  "expr": "a \"b\"",
+  "data": {},
+  "error": "KeyError"
+ },
+ {
+  "expr": "(a, b)",
+  "data": {},
+  "error": "SyntaxError"
+ },
+ {
+  "expr": "()",
+  "data": {},
+  "error": "IndexError"
+ },
+ {
+  "expr": "a.",
+  "data": {},
+  "error": "SyntaxError"
+ },
+ {
+  "expr": "[1, ]",
+  "data": {},
+  "error": "SyntaxError"
+ },
+ {
+  "expr": "{}",
+  "data": {},
+  "error": "SyntaxError"
+ },
+ {
+  "expr": "'unterminated",
+  "data": {},
+  "error": "SyntaxError"
+ },
+ {
+  "expr": "a\r",
+  "data": {},
+  "error": "SyntaxError"
+ },
+ {
+  "expr": "'f'(1)",
+  "data": {},
+  "error": "SyntaxError"
+ },
+ {
+  "expr": "a[? b",
+  "data": {},
+  "error": "SyntaxError"
+ }
+]

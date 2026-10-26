@@ -1,0 +1,73 @@
+{
+ "manifests": [
+  {
+   "label": "urn:c2pa:top",
+   "claim.v2": {
+    "created_assertions": [
+     {
+      "url": "self#jumbf=c2pa.assertions/c2pa.actions.v2"
+     }
+    ],
+    "gathered_assertions": []
+   },
+   "assertions": {
+    "c2pa.actions.v2": {
+     "actions": [
+      {
+       "action": "c2pa.opened"
+      },
+      {
+       "action": "c2pa.edited",
+       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+      }
+     ],
+     "allActionsIncluded": true
+    },
+    "c2pa.ingredient.v3": {
+     "relationship": "parentOf",
+     "activeManifest": {
+      "url": "self#jumbf=/c2pa/urn:c2pa:cam/c2pa.assertions/c2pa.claim.v2"
+     }
+    }
+   },
+   "signature": {
+    "certificateInfo": {
+     "subject": {
+      "CN": "t",
+      "O": "Test"
+     }
+    }
+   }
+  },
+  {
+   "label": "urn:c2pa:cam",
+   "claim.v2": {
+    "created_assertions": [
+     {
+      "url": "self#jumbf=c2pa.assertions/c2pa.actions.v2"
+     }
+    ],
+    "gathered_assertions": []
+   },
+   "assertions": {
+    "c2pa.actions.v2": {
+     "actions": [
+      {
+       "action": "c2pa.created",
+       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+      }
+     ],
+     "allActionsIncluded": true
+    }
+   },
+   "signature": {
+    "certificateInfo": {
+     "subject": {
+      "CN": "t",
+      "O": "Test"
+     }
+    }
+   }
+  }
+ ]
+}

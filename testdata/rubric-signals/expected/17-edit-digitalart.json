@@ -1,0 +1,35 @@
+{
+  "rubricName": "C2PA Asset Signals Rubric (Local)",
+  "rubricVersion": "1.0",
+  "manifests": [
+    {
+      "assertedBy": {
+        "subject": {
+          "CN": "t",
+          "O": "Test"
+        }
+      },
+      "dc:format": null,
+      "localInceptions": [
+        {
+          "trait": "inception:signal_capturedMedia",
+          "reportText": "Contains Captured Media",
+          "multiple": false
+        }
+      ],
+      "localTransformations": [
+        {
+          "trait": "transformation:signal_perceptibleNonGenAI",
+          "reportText": "Contains Perceptible Non-GenAI Transformations",
+          "multiple": false
+        },
+        {
+          "trait": "transformation:signal_perceptiblePossiblyGenAI",
+          "reportText": "Contains Perceptible Transformations Possibly Using GenAI",
+          "multiple": false
+        }
+      ],
+      "ingredients": []
+    }
+  ]
+}

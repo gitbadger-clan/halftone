@@ -1,0 +1,24 @@
+{
+  "rubricName": "C2PA Asset Signals Rubric (Local)",
+  "rubricVersion": "1.0",
+  "manifests": [
+    {
+      "assertedBy": {
+        "subject": {
+          "CN": "t",
+          "O": "Test"
+        }
+      },
+      "dc:format": null,
+      "localInceptions": [
+        {
+          "trait": "inception:signal_capturedMedia",
+          "reportText": "Contains Captured Media",
+          "multiple": false
+        }
+      ],
+      "localTransformations": [],
+      "ingredients": []
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+ "manifests": [
+  {
+   "label": "urn:c2pa:a",
+   "claim.v2": {
+    "created_assertions": [
+     {
+      "url": "self#jumbf=c2pa.assertions/c2pa.actions.v2"
+     }
+    ],
+    "gathered_assertions": []
+   },
+   "assertions": {
+    "c2pa.actions.v2": {
+     "actions": [
+      {
+       "action": "c2pa.created",
+       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+      }
+     ],
+     "allActionsIncluded": true
+    }
+   },
+   "signature": {
+    "certificateInfo": {
+     "subject": {
+      "CN": "t",
+      "O": "Test"
+     }
+    }
+   }
+  }
+ ]
+}

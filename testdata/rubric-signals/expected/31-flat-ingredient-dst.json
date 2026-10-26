@@ -1,0 +1,48 @@
+{
+  "rubricName": "C2PA Asset Signals Rubric (Local)",
+  "rubricVersion": "1.0",
+  "manifests": [
+    {
+      "assertedBy": {
+        "subject": {
+          "CN": "t",
+          "O": "Test"
+        }
+      },
+      "dc:format": null,
+      "localInceptions": [
+        {
+          "trait": "inception:signal_mediaUnknownProvenance",
+          "reportText": "Contains Media of Unknown Provenance",
+          "multiple": false
+        }
+      ],
+      "localTransformations": [],
+      "ingredients": [
+        {
+          "index": 1,
+          "relationship": "parentOf"
+        }
+      ]
+    },
+    {
+      "assertedBy": {
+        "subject": {
+          "CN": "t",
+          "O": "Test"
+        }
+      },
+      "dc:format": "image/jpeg",
+      "localInceptions": [
+        {
+          "trait": "inception:signal_capturedMedia",
+          "reportText": "Contains Captured Media",
+          "multiple": false
+        }
+      ],
+      "localTransformations": [],
+      "ingredients": [],
+      "pseudo": true
+    }
+  ]
+}

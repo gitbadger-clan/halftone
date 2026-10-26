@@ -1,0 +1,38 @@
+{
+ "manifests": [
+  {
+   "label": "urn:c2pa:top",
+   "claim.v2": {
+    "created_assertions": [
+     {
+      "url": "self#jumbf=c2pa.assertions/c2pa.actions.v2"
+     }
+    ],
+    "gathered_assertions": []
+   },
+   "assertions": {
+    "c2pa.actions.v2": {
+     "actions": [
+      {
+       "action": "c2pa.opened",
+       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+      }
+     ],
+     "allActionsIncluded": true
+    },
+    "c2pa.ingredient.v3": {
+     "relationship": "parentOf",
+     "dc:title": "x y.jpg"
+    }
+   },
+   "signature": {
+    "certificateInfo": {
+     "subject": {
+      "CN": "t",
+      "O": "Test"
+     }
+    }
+   }
+  }
+ ]
+}
