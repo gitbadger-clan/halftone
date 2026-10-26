@@ -527,7 +527,13 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   then, report a manifest whose hard binding fails while a multi-asset
   assertion is present as `Inconclusive`, with a rationale naming the
   unevaluated fallback. Upstream: a c2pa-rs issue with the five copies.
-- Status: open.
+- Resolution 2026-10-25: Halftone implements §15.12.4 itself
+  (`crates/halftone-c2pa/src/multi_asset.rs`), hashing each part with c2pa's own
+  data-hash code; `details.validation_state` keeps c2pa's answer and
+  `details.multi_asset` holds the outcome and per-part table. Credentio is a
+  reference in the differential run (`--credentio`), and stratum 08-multipart holds
+  the copies above. All agree except D-015. Upstream: c2pa-rs issue still to file.
+- Status: resolved in Halftone `613a146`; open upstream.
 
 ### D-015 · 2026-10-23 · Credentio reports a truncated optional part as missing, not mismatched
 
