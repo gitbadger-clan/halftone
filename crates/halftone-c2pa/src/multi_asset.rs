@@ -572,6 +572,8 @@ pub fn evaluate(
                             unchecked.get_or_insert_with(|| why.clone());
                             PartResult::NotChecked(why)
                         }
+                        // Unreachable: offset < len and end <= len were checked above.
+                        // Kept as an error rather than a slice index that could panic.
                         None => {
                             let why = "part range outside the file".to_string();
                             unchecked.get_or_insert_with(|| why.clone());
@@ -606,6 +608,69 @@ pub fn evaluate(
         return Report::new(Outcome::NotEvaluated, Some(why), parts);
     }
     Report::new(Outcome::Match, None, parts)
+}
+
+/// What must hold for any report [`evaluate`] returns on a file of `file_len`
+/// bytes. `Err` names the first violation. Used by the unit tests and the fuzz
+/// targets (`crates/halftone-c2pa/fuzz`), so the rules are written once.
+pub fn check_invariants(report: &Report, file_len: u64) -> Result<(), String> {
+    if report.code != report.outcome.code() {
+        return Err(format!(
+            "code {:?} does not match outcome {:?}",
+            report.code, report.outcome
+        ));
+    }
+    for p in &report.parts {
+        let Locator::Bytes { offset, length } = p.locator else {
+            return Err(format!(
+                "part {} has a BMFF locator in an evaluated report",
+                p.index
+            ));
+        };
+        let located = offset < file_len;
+        let want_present = located.then(|| length.min(file_len - offset));
+        if p.present_bytes != want_present {
+            return Err(format!(
+                "part {}: present_bytes {:?}, expected {want_present:?}",
+                p.index, p.present_bytes
+            ));
+        }
+        let ok = match &p.result {
+            PartResult::Absent => !located && p.optional,
+            PartResult::Missing => !located && !p.optional,
+            PartResult::Truncated => located && offset.saturating_add(length) > file_len,
+            PartResult::Match | PartResult::Mismatch | PartResult::NotChecked(_) => {
+                located && offset.saturating_add(length) <= file_len
+            }
+        };
+        if !ok {
+            return Err(format!(
+                "part {} ({offset}+{length}, optional {}) cannot be {:?} in a file of {file_len} bytes",
+                p.index, p.optional, p.result
+            ));
+        }
+    }
+    let any = |f: fn(&PartResult) -> bool| report.parts.iter().any(|p| f(&p.result));
+    match report.outcome {
+        Outcome::Match => {
+            if any(|r| !matches!(r, PartResult::Match | PartResult::Absent)) {
+                return Err("outcome match with a part that is not match or absent".into());
+            }
+            if !any(|r| *r == PartResult::Match) {
+                return Err("outcome match with no matching part".into());
+            }
+        }
+        Outcome::MissingPart if !any(|r| *r == PartResult::Missing) => {
+            return Err("outcome missingPart with no missing part".into());
+        }
+        Outcome::Mismatch
+            if !any(|r| matches!(r, PartResult::Mismatch | PartResult::Truncated)) =>
+        {
+            return Err("outcome mismatch with no changed or truncated part".into());
+        }
+        _ => {}
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -793,6 +858,8 @@ mod tests {
             results(&r),
             vec![PartResult::Match, PartResult::Match, PartResult::Truncated]
         );
+        assert_eq!(r.parts[2].present_bytes, Some(10));
+        assert_eq!(check_invariants(&r, cut as u64), Ok(()));
     }
 
     #[test]
@@ -960,5 +1027,92 @@ mod tests {
         );
         assert!(base64_decode("a=b=").is_none());
         assert!(base64_decode("A").is_none());
+    }
+
+    /// Fixed-seed random tables, run on every `cargo test`: the same invariants the
+    /// fuzz targets check, without needing nightly or cargo-fuzz.
+    #[test]
+    fn random_tables_keep_the_invariants() {
+        let mut seed: u64 = 0x005E_ED15_124A_55E7;
+        let mut next = move || {
+            seed ^= seed << 13;
+            seed ^= seed >> 7;
+            seed ^= seed << 17;
+            seed
+        };
+        // The part hash says "match" ([1]) or "mismatch" ([0]); anything else is unreadable.
+        struct Oracle;
+        impl PartHasher for Oracle {
+            fn verify(&self, part: &PartHash, _bytes: &[u8]) -> Result<bool, String> {
+                match part.hash.first() {
+                    Some(1) => Ok(true),
+                    Some(0) => Ok(false),
+                    _ => Err("unreadable".into()),
+                }
+            }
+        }
+        for _ in 0..20_000 {
+            let n = 1 + (next() % 4) as usize;
+            let mut parts = Vec::new();
+            let mut store = serde_json::Map::new();
+            let mut spans = Vec::new(); // (offset, length) as written into the table
+            let mut at = 0u64;
+            for i in 0..n {
+                let length = next() % 120;
+                // mostly contiguous tables, sometimes gaps, overlaps or wild offsets
+                let offset = match next() % 8 {
+                    0 => next() % 400,
+                    1 => at.saturating_sub(1 + next() % 5),
+                    2 => at + 1 + next() % 5,
+                    _ => at,
+                };
+                at = offset + length;
+                spans.push((offset, length));
+                let label = if i == 0 {
+                    "c2pa.hash.data.part".to_string()
+                } else {
+                    format!("c2pa.hash.data.part__{i}")
+                };
+                let label = if next() % 40 == 0 {
+                    label.replace("data", "boxes")
+                } else {
+                    label
+                };
+                match next() % 20 {
+                    0 => {} // missing from the store
+                    1 => {
+                        store.insert(label.clone(), json!({"hash": "%%"})); // unreadable
+                    }
+                    k => {
+                        // mostly "match", so whole-table matches are common
+                        store.insert(label.clone(), json!({"hash": [u64::from(k > 4)]}));
+                    }
+                }
+                let mut part = json!({"location": {"byteOffset": offset, "length": length},
+                    "hashAssertion": {"url": format!("self#jumbf=c2pa.assertions/{label}")}});
+                match next() % 3 {
+                    0 => {}
+                    k => part["optional"] = json!(k == 1),
+                }
+                parts.push(part);
+            }
+            // The file length decides most outcomes, so derive it from the table:
+            // an exact fit, cut at a part boundary (parts removed), cut inside a
+            // part (cut short), a little longer (uncovered bytes), or anything.
+            let (o, l) = spans[(next() % n as u64) as usize];
+            let len = match next() % 6 {
+                0 | 1 => at,
+                2 => o,
+                3 => o + next() % (l + 1),
+                4 => at + 1 + next() % 5,
+                _ => next() % 400,
+            } as usize;
+            let file = vec![0u8; len];
+            let ma = json!({"parts": parts});
+            let r = evaluate(&ma, &Value::Object(store), &file, &Oracle);
+            if let Err(e) = check_invariants(&r, len as u64) {
+                panic!("{e}\ntable: {ma}\nfile length: {len}\nreport: {r:?}");
+            }
+        }
     }
 }
