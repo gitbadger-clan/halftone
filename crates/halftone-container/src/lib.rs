@@ -22,6 +22,7 @@
 pub mod double;
 pub mod exif;
 pub mod fingerprints;
+pub mod gcontainer;
 pub mod jpeg;
 pub mod marking;
 pub mod png;

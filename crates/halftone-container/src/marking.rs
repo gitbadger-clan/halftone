@@ -246,6 +246,14 @@ fn jpeg_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
     Ok(packets)
 }
 
+/// Every XMP packet in a JPEG's metadata segments: the standard packet and, when
+/// present and complete, the reassembled ExtendedXMP. Shared with
+/// [`crate::gcontainer`], which reads the container directory from them.
+pub fn jpeg_xmp_packets(b: &[u8]) -> Result<Vec<Vec<u8>>, String> {
+    let mut scratch = MarkingScan::default();
+    jpeg_packets(b, &mut scratch)
+}
+
 /// Decode the IPTC IIM datasets from the Photoshop image-resource block (resource
 /// id `0x0404`). Returns `None` if no such resource exists.
 fn parse_irb_iptc(b: &[u8]) -> Option<IimInfo> {
