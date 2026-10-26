@@ -108,7 +108,8 @@ end
 # 1. every file, twice
 set -l tsv $out/d011-flips.tsv
 printf 'file\tsigner\twith_anchors\tzero_anchors\n' >$tsv
-for f in (string match -rv '\.(json|txt|md|toml)$|/\.' corpus/differential/0*/**)
+# Every numbered stratum (fish globs have no [0-9]; a 0* glob skipped 10 and up).
+for f in (string match -r '^corpus/differential/\d\d-.+' (string match -rv '\.(json|txt|md|toml)$|/\.' corpus/differential/*/**))
     test -f $f; or continue
     set -l a (c2 $c28 $tmp/anchors.toml $f | string split \t)
     set -l z (c2 $c28 $tmp/none.toml $f | string split \t)

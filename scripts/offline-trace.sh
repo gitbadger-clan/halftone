@@ -44,7 +44,8 @@ echo "ht:            $(ht --version)"
 echo "c2patool 0.27: $(/opt/c2patool-0.27/bin/c2patool --version)"
 echo "c2patool 0.28: $(/opt/c2patool-0.28/bin/c2patool --version)"
 
-files=$(find corpus/differential/0*/ target/conformance-v22/2.2 -type f \
+# Every numbered stratum, 00 to 99 (a 0* glob silently skipped 10 and up).
+files=$(find corpus/differential/[0-9][0-9]-*/ target/conformance-v22/2.2 -type f \
   ! -name '*.json' ! -name '*.txt' ! -name '*.md' ! -name '.*' | sort)
 echo "files:         $(echo "$files" | wc -l)"
 probe=$(echo "$files" | head -1)

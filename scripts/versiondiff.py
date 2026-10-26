@@ -13,7 +13,7 @@ upgraded build, and review every change in what Halftone says, not just the stat
 
     uv run scripts/versiondiff.py snapshot --label 0.90 --ht /tmp/ht-base/target/release/ht \
         --c2patool /opt/homebrew/bin/c2patool --settings-style legacy \
-        --conformance corpus/differential/0*/
+        --conformance corpus/differential/*/
     uv run scripts/versiondiff.py compare target/versiondiff/0.90.json target/versiondiff/0.91.json
 
 compare exits 1 when the newer snapshot has a Halftone-vs-c2patool mismatch (a Halftone

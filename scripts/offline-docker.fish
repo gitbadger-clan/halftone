@@ -59,7 +59,7 @@ function main
     echo
     echo "## output with vs without network (ht + c2patool 0.28)"
     for net in none bridge
-        drun $net sh -c "python3 scripts/versiondiff.py snapshot corpus/differential/0*/ --conformance \
+        drun $net sh -c "python3 scripts/versiondiff.py snapshot corpus/differential/[0-9][0-9]-*/ --conformance \
             --label docker-$net --ht ht --c2patool /opt/c2patool-0.28/bin/c2patool --settings-style typed \
             --out target/versiondiff/docker-$net.json" | string replace -r '^' '  '; or return 1
     end

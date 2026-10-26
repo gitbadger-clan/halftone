@@ -33,7 +33,9 @@ set -l base_c2pa (git show $base:Cargo.lock | grep -A1 '^name = "c2pa"$' | strin
 set -l head_c2pa (c2pa_version Cargo.lock)
 echo "base $base (c2pa $base_c2pa) → head $head (c2pa $head_c2pa)"
 
-set -l strata corpus/differential/0*/
+# Every numbered stratum, 00 to 99. Fish globs have no [0-9], and a 0* glob
+# silently skipped 10-messaging and 11-screenshots.
+set -l strata (string match -r '^corpus/differential/\d\d-[^/]+/$' corpus/differential/*/)
 set -l out target/versiondiff
 set -l base_snap $out/base-$base.json
 set -l head_snap $out/head-$head.json
