@@ -94,6 +94,10 @@ pub struct PartReport {
     /// What the part's first bytes look like (`jpeg`, `mp4`, …), when it is located.
     /// A hint for rationales, read from the bytes, never from the manifest.
     pub kind: Option<&'static str>,
+    /// How many of the part's bytes are in the file, when it is located: its full
+    /// length, or fewer when the file ends inside it (a part cut short). `None`
+    /// when the part is not in the file at all.
+    pub present_bytes: Option<u64>,
     /// The result for this part.
     pub result: PartResult,
 }
@@ -480,6 +484,7 @@ pub fn evaluate(
             locator,
             optional: p.get("optional").and_then(Value::as_bool).unwrap_or(false),
             kind: None,
+            present_bytes: None,
             result: PartResult::Absent, // set below
         });
     }
@@ -488,12 +493,15 @@ pub fn evaluate(
     let mut missing_required: Vec<usize> = Vec::new();
     let mut located: Vec<(u64, u64, usize)> = Vec::new(); // (offset, declared length, index into parts)
     for (i, part) in parts.iter_mut().enumerate() {
+        // Unreachable: a BMFF locator returned NotEvaluated above. Kept so a
+        // refactor that lets one through skips it instead of mislocating it.
         let Locator::Bytes { offset, length } = part.locator else {
             continue;
         };
         if offset < len {
             let start = usize::try_from(offset).unwrap_or(usize::MAX);
             part.kind = file.get(start..).and_then(sniff);
+            part.present_bytes = Some(length.min(len - offset));
             located.push((offset, length, i));
         } else if part.optional {
             part.result = PartResult::Absent;

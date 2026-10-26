@@ -151,7 +151,7 @@ mod imp {
     use super::C2paSource;
     use super::shelf_life::{self, SigningCert, TimeStampStatus};
     use super::trust::{AnchorKind, ResolvedTrust};
-    use crate::multi_asset::{self, Outcome, PartHash, PartReport, PartResult, Report};
+    use crate::multi_asset::{self, Locator, Outcome, PartHash, PartReport, PartResult, Report};
     use c2pa::settings::{TrustAnchor, TrustListKind};
     use halftone_core::{Asset, Evidence, EvidenceSource, Status};
     use std::io::Cursor;
@@ -250,6 +250,33 @@ mod imp {
             .collect()
     }
 
+    /// 3296847 -> "3,296,847".
+    fn thousands(n: u64) -> String {
+        let digits = n.to_string();
+        let mut out = String::with_capacity(digits.len() + digits.len() / 3);
+        for (i, c) in digits.chars().enumerate() {
+            if i > 0 && (digits.len() - i) % 3 == 0 {
+                out.push(',');
+            }
+            out.push(c);
+        }
+        out
+    }
+
+    /// "part 2 (MP4, optional) is cut short, 1,648,423 of 3,296,847 bytes present":
+    /// an interrupted download and a deliberate trim leave different amounts.
+    fn cut_short(p: &PartReport) -> String {
+        match (&p.locator, p.present_bytes) {
+            (Locator::Bytes { length, .. }, Some(have)) => format!(
+                "{} is cut short, {} of {} bytes present",
+                part_name(p),
+                thousands(have),
+                thousands(*length)
+            ),
+            _ => format!("{} is cut short", part_name(p)),
+        }
+    }
+
     /// Upper-case the first letter, for a list that starts a sentence.
     fn cap(s: String) -> String {
         let mut c = s.chars();
@@ -289,7 +316,12 @@ mod imp {
         match r.outcome {
             Outcome::Mismatch => {
                 let changed = parts_where(r, |p| *p == PartResult::Mismatch);
-                let cut = parts_where(r, |p| *p == PartResult::Truncated);
+                let cut: Vec<String> = r
+                    .parts
+                    .iter()
+                    .filter(|p| p.result == PartResult::Truncated)
+                    .map(cut_short)
+                    .collect();
                 let mut what = Vec::new();
                 if !changed.is_empty() {
                     what.push(format!(
@@ -303,11 +335,7 @@ mod imp {
                     ));
                 }
                 if !cut.is_empty() {
-                    what.push(format!(
-                        "{} {} cut short",
-                        and_list(&cut),
-                        if cut.len() == 1 { "is" } else { "are" }
-                    ));
+                    what.push(and_list(&cut));
                 }
                 format!(
                     " The manifest's per-part hashes ({rule}) locate the change: {}.{still}",
