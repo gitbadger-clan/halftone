@@ -28,6 +28,13 @@ pub struct SignalsReport {
     pub output: JValue,
     /// Statements that failed (each counts as "no signal").
     pub errors: Vec<StatementError>,
+    /// The manifest label of each entry in `output.manifests`, in the same order:
+    /// the crJSON label for a manifest, the synthesized `urn:c2pa:pseudo:...` label
+    /// for a flat ingredient. The output's own ingredient `index` values point
+    /// into this order, which follows the crJSON input and differs between
+    /// exporters, so labels are the stable way to name a node. Kept outside
+    /// `output` so the document stays exactly the reference's.
+    pub labels: Vec<String>,
 }
 
 struct Edge {
@@ -36,6 +43,7 @@ struct Edge {
 }
 
 struct DagNode {
+    urn: String,
     manifest: JValue,
     edges: Vec<Edge>,
     signals: Vec<JValue>,
@@ -105,6 +113,7 @@ impl Rubric {
             let Some(label) = label_of(m)? else { continue };
             let node_id = map_label(&label).unwrap_or_else(|| "Unknown".into());
             let mut node = DagNode {
+                urn: label.clone(),
                 manifest: (*m).clone(),
                 edges: Vec::new(),
                 signals: Vec::new(),
@@ -232,11 +241,12 @@ impl Rubric {
                             let mut asserts = Map::new();
                             asserts.insert("c2pa.actions.v2", JValue::Object(actions));
                             let mut pm = Map::new();
-                            pm.insert("label", JValue::Str(pseudo_label));
+                            pm.insert("label", JValue::Str(pseudo_label.clone()));
                             pm.insert("assertions", JValue::Object(asserts));
                             dag.push((
                                 pseudo_id.clone(),
                                 DagNode {
+                                    urn: pseudo_label,
                                     manifest: JValue::Object(pm),
                                     edges: Vec::new(),
                                     signals: Vec::new(),
@@ -431,6 +441,7 @@ impl Rubric {
         output.insert("rubricName", self.name.clone());
         output.insert("rubricVersion", self.version.clone());
         output.insert("manifests", JValue::Array(out_manifests));
+        let labels = order.iter().map(|&i| dag[i].1.urn.clone()).collect();
         let errors = failures
             .into_iter()
             .map(|(id, trait_id, error)| StatementError {
@@ -442,6 +453,7 @@ impl Rubric {
         Ok(SignalsReport {
             output: JValue::Object(output),
             errors,
+            labels,
         })
     }
 }

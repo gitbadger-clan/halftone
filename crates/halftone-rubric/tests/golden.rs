@@ -29,10 +29,35 @@ fn every_golden_case_matches_the_official_evaluator() {
             ));
         }
         assert!(got.errors.is_empty(), "{name}: {:?}", got.errors);
+        let nodes = got.output.get("manifests").and_then(|m| {
+            if let JValue::Array(a) = m {
+                Some(a.len())
+            } else {
+                None
+            }
+        });
+        assert_eq!(
+            Some(got.labels.len()),
+            nodes,
+            "{name}: one label per output entry"
+        );
     }
     assert!(
         names.len() >= 31,
         "fixtures missing: run scripts/rubric-golden.py"
+    );
+    // Labels follow the output order: real manifests first, pseudo nodes last.
+    let chain = JValue::from_json_str(
+        &std::fs::read_to_string(dir.join("in/31-flat-ingredient-dst.json")).unwrap(),
+    )
+    .unwrap();
+    let r = rubric.evaluate_signals(&chain).unwrap();
+    assert_eq!(
+        r.labels,
+        vec![
+            "urn:c2pa:top".to_string(),
+            "urn:c2pa:pseudo:urn:c2pa:top:photo.jpg_1".to_string()
+        ]
     );
     assert!(
         failures.is_empty(),
