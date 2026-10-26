@@ -1316,6 +1316,7 @@ dependencies = [
  "c2pa",
  "halftone-core",
  "halftone-packs",
+ "halftone-rubric",
  "hex",
  "serde",
  "serde_json",

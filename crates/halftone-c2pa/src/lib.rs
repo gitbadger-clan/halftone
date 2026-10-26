@@ -57,9 +57,15 @@
 //! says the result depends on that server and the time of checking. Files with an
 //! embedded manifest never touch the network either way. OCSP is never consulted.
 //!
+//! Signals ([`signals`]): `details.signals` holds the C2PA Asset Signals Rubric 1.0
+//! run over the whole store, from c2pa's crJSON export, with each node named by its
+//! manifest label. A signal classifies what a signer declared; it is reported next
+//! to the validation state and never changes the verdict.
+//!
 pub mod lineage;
 pub mod multi_asset;
 pub mod shelf_life;
+pub mod signals;
 pub mod source_type;
 pub mod trust;
 pub use trust::{AnchorKind, InternalList, TrustConfig};
@@ -628,6 +634,15 @@ mod imp {
             .get("validation_status")
             .cloned()
             .unwrap_or(serde_json::Value::Null);
+        // The C2PA signals rubric over the whole store, from c2pa's own crJSON export.
+        // Details only: a signal classifies what a signer declared and never changes
+        // the verdict (see `signals`).
+        let signals = match reader.to_crjson_value() {
+            Ok(crjson) => crate::signals::details(&crjson),
+            Err(e) => serde_json::json!({
+                "error": format!("c2pa could not export the store as crJSON: {e}"),
+            }),
+        };
 
         // C2PA 2.4 §15.12.4, which c2pa 0.91 does not apply (D-014). Only an Invalid
         // manifest can have a failed hard binding to fall back from.
@@ -909,6 +924,7 @@ mod imp {
             "digital_source_type_unknown": source_type.unknown,
             "digital_source_type_hits": source_type.hits,
             "lineage": lineage,
+            "signals": signals,
             "source_type_note": ai_note.clone(),
             "vocabulary_version": halftone_core::dst::VOCABULARY_VERSION,
             "trust": resolved.details(),
