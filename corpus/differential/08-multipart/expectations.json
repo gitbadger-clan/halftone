@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-25T19:58:50Z",
+  "collected_at": "2026-10-26T20:19:03Z",
   "corpus": "corpus/differential/08-multipart",
   "files": {
     "bytes__cut-clip__pixel9fold-motion__s02__1.jpg": {
@@ -67,6 +67,27 @@
         "xmp_tag_count": 9
       },
       "sha256": "57b723f31daf7c5f3f1c18b872ee8924e46454039422e8834eabe9c5f2e20ed5",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:416184a8-a719-7305-d629-47da44ec8281",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3705235
     },
     "bytes__flip-clip__pixel9fold-motion__s02__1.jpg": {
@@ -131,6 +152,27 @@
         "xmp_tag_count": 9
       },
       "sha256": "0b99d91f1bcfba6be61228f5e45398bd9a5b1833cc9fca6e61c661e6df584a3d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:416184a8-a719-7305-d629-47da44ec8281",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 5353659
     },
     "bytes__flip-still__pixel9fold-motion__s02__1.jpg": {
@@ -195,6 +237,27 @@
         "xmp_tag_count": 9
       },
       "sha256": "8e81212aadb8ce306d3887116a227346f67f3a06a270f87ff4ef2c336dfb4d79",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:416184a8-a719-7305-d629-47da44ec8281",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 5353659
     },
     "bytes__remove-clip__pixel9fold-motion__s02__1.jpg": {
@@ -255,6 +318,27 @@
         "xmp_tag_count": 9
       },
       "sha256": "2e4e8be15fdc39ff5da841469f00e52fee5a04214ff497580dcf34117a613e9b",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:416184a8-a719-7305-d629-47da44ec8281",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2056812
     },
     "bytes__remove-gainmap-and-clip__pixel9fold-motion__s02__1.jpg": {
@@ -314,15 +398,42 @@
         "xmp_tag_count": 9
       },
       "sha256": "964b325d25cee8a7b89844ef585b47ab01ec1d682783089c20d22fbfe7a2dc7d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:416184a8-a719-7305-d629-47da44ec8281",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2047094
     }
   },
   "match_by": "sha256",
   "schema": "halftone-differential-expectations/1",
+  "signals_rubric": {
+    "conformance_public": "da71a72",
+    "sha256": "0502e989e025b32a0b253645991abf56d2cd14860a1e7cda10e6921bc5ba19a8",
+    "version": "1.0"
+  },
   "tools": {
     "c2patool": "c2patool 0.28.0",
     "credentio": "ee4078b",
     "exiftool": "13.55",
+    "json-formula-py": "327a8d75669673c10db3051da816311ac2df8a32",
     "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",

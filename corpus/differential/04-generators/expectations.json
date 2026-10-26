@@ -1,13 +1,16 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-22T05:35:54Z",
+  "collected_at": "2026-10-26T20:18:57Z",
   "corpus": "corpus/differential/04-generators",
   "files": {
     "adobe-firefly__firefly-expand__edit-photo__e3__3.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-a265c0ac-55f4-486f-a7fb-0f20773e6c6c-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -19,12 +22,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "c721a63d5d3d06eb5da0e5d8cf724a047b860c554e76af19ad1762fe81ddb987",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 7238279
     },
     "adobe-firefly__firefly-fill__edit-photo__e1__1.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-30154e25-ea1f-48a9-90b8-e0ff91855f53-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -36,12 +45,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "a02ffb4854e2de11d12ffdaf579c13dc7c78acac4e57c77e826a63e830a309d8",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1270052
     },
     "adobe-firefly__firefly-fill__edit-photo__e2__2.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-dc58a299-3927-4dd3-aab9-fee4f9326522-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -53,12 +68,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "9db7382efae30c3566f9f18da5db89ff51c8f3b7dc6c27274db88ac592efd8bd",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1167060
     },
     "adobe-firefly__firefly-image-4-ultra-fill__edit-photo__e1__1.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-7ef2a9b1-8e98-4051-af93-6ed2d478c86c-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -70,11 +91,17 @@
         "xmp_tag_count": 4
       },
       "sha256": "4607d90182ccff4a242e33a07628f0813f7894719351646ba32e5c569d542dca",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1174890
     },
     "adobe-firefly__firefly-image-4-ultra__share-copy-thumb__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -86,12 +113,18 @@
         "xmp_tag_count": 5
       },
       "sha256": "d3fea3f04c1da0e9ea2bc62fda15fb1ce9ce0c438a80387f75b2a92452bbc7e8",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 6053385
     },
     "adobe-firefly__firefly-image-4-ultra__web-download-thumb__p1__1.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-38e41b3e-433d-4f05-a6a8-50b1d214dba4-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -103,12 +136,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "d97e26dfa442d9660702792f19b2577bb16b776072593be5b99b529127002b71",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1111847
     },
     "adobe-firefly__firefly-image-4-ultra__web-download-thumb__p2__2.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-3892f470-88e0-4760-bfb5-1213a5b2aa48-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -120,12 +159,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "6848348e0e388bfeaee8ec29d13dd915628964dc0b757af34f89d99a880cf4b4",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1529330
     },
     "adobe-firefly__firefly-image-5-2k__web-download-thumb__p1__1.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-79b9dd22-f566-4b67-ac8c-9d766216df74-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -137,12 +182,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "1716ba87956b168faad76e893465c85930953e578a4dd56af73cb3b45db50e2d",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 4457928
     },
     "adobe-firefly__firefly-image-5-upscaled__web-download-thumb__p1__1.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-ce43a138-7bec-4ecd-92cb-e986d4d6f647-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -154,11 +205,17 @@
         "xmp_tag_count": 4
       },
       "sha256": "d5e31c44866978dd6f334d0b1559fd51bb1df024105c49aa19b61c65633338ff",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 2619720
     },
     "adobe-firefly__firefly-image-5__share-copy__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -170,12 +227,18 @@
         "xmp_tag_count": 5
       },
       "sha256": "4bbc62a9e747e115948c910cc9b664dedff68a6f70a6b0fbfe94a64b7ecf9841",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 5704704
     },
     "adobe-firefly__firefly-image-5__web-download-open__p1__2.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-d7fe5531-c8e1-4190-a465-8f35662c59aa-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -187,12 +250,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "510aaccf07272d9aec1e3a46079aad599a147ad9ed873566686f2080aaf40e36",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1146991
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p1__1.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-db34c8cc-afe7-44a6-9de0-492b2a2c99ea-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -204,12 +273,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "f5e87bcd6f4ed8298602a56e2bd0c508e37a94931df2c166feab27c066ae2db6",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 4397672
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p1__2.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-c67e06a8-6be4-4328-a93b-051ee74373dc-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -221,12 +296,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "0383dc8aaba85738bd7cde0a7b4e6b8827584651d4a7e2390b333add99973b55",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1146991
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p1__3.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-fe46d670-bf34-4a57-9cd2-b025a0fcdae2-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -238,12 +319,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "41650ef23664080726de669c60ef7b6c4274faa7e40cf51eaed6c036ff08a747",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1164937
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p2__2.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-078d8888-ded8-456b-af60-656fe0718aa7-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -255,12 +342,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "26ae7f7e3ea939fe1de486ee561f6e1dbe7de9a66fae08772b7912ee84c775c3",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1815426
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p3__3.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-4f2937cc-2fe7-4fbe-84fd-2c3dd7d553d7-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -272,12 +365,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "a3cd9ca1a46cdbab86348801f8ba3d37f331373a2736c78405f4bb331d5e9d54",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 945026
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p4__4.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-bcc1eb1c-c17c-411d-8ff3-8a1ce09ab4b6-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -289,12 +388,18 @@
         "xmp_tag_count": 4
       },
       "sha256": "188e0298d223f851bfea1622600df93154e01afcbb272e4935e0f6f4beff4d1c",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1185578
     },
     "adobe-firefly__firefly-image-5__web-download-thumb__p5__5.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/urn-c2pa-5760fe6a-0940-4392-8918-cc7e9b0c1d1a-adobe"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -306,6 +411,9 @@
         "xmp_tag_count": 4
       },
       "sha256": "0bd5663eb4956de1f11ac761ed730b08e0dfd393fb1544250b07b13797cdf3ab",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 424261
     },
     "adobe-firefly__gpt-image-2.5-flare__web-download__p1__1.png": {
@@ -338,6 +446,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -348,6 +463,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "8c277e0262fd140947620bd5f5715c6222d686e9f05e1e444714838850755f1e",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:2b45b18d-1a6d-4c3a-9c7f-fbb47bf22a43",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1975956
     },
     "adobe-firefly__nano-banana-2__web-download__p1__1.png": {
@@ -381,6 +518,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "trainedAlgorithmicMedia"
@@ -395,11 +539,36 @@
         "xmp_tag_count": 4
       },
       "sha256": "bee090b577ec79ff6adf75c43dd25921cba1f69d5797fb7eb35efb25d99c5ee4",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:eaaa802d-a099-2ca1-4d9e-4475fbed43c0",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1803493
     },
     "aggregator-zimage__base__browser-save__p1__1.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -411,11 +580,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "32c4bb64a6bb77554f7fdcfcb8fb8a7d14b0505f76562bc04942e39465203b76",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 93224
     },
     "aggregator-zimage__base__copy-image__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -427,6 +602,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "15bf3d5e998e2d18271a215c80d9cf26d141a403996b33b3a6e9a39a9334d618",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1629285
     },
     "aggregator-zimage__base__web-download__p1__1.png": {
@@ -460,6 +638,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "trainedAlgorithmicMedia"
@@ -474,6 +659,28 @@
         "xmp_tag_count": 4
       },
       "sha256": "1e92b496cdff48c6febc049dd9b9002027e3a0bf0f685035ff599a05e126aae8",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:b5c491be-5d60-2e5c-46bd-4716e64ca949",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1687731
     },
     "bing-image__mai-image-2.5-flash-1x1__web-download__p2__2.jpg": {
@@ -511,6 +718,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -521,11 +737,36 @@
         "xmp_tag_count": 0
       },
       "sha256": "8099062b549b65c2175bc15310e228253dd63074bd74c3a99c2fab362c745c96",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:d5c4d528-c3c0-4b89-929a-78475df4cacc",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 627168
     },
     "bing-image__mai-image-2.5-flash__copy-image__p1__2.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -537,6 +778,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "3d84a292feb7c3180d16e5d1b450d4ab7218b6af35b9b9dbef495122b0cf8f53",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1240389
     },
     "bing-image__mai-image-2.5-flash__web-download__p1__1.jpg": {
@@ -574,6 +818,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -584,6 +837,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "ab47cc0a70aaf3232a81788c827c5c324dc88e755a5b60d9b39c10a9f9bb65ac",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:5d97f2d0-f956-48bb-a527-4e359e3ea57f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 398421
     },
     "bing-image__mai-image-2.5-flash__web-download__p1__2.jpg": {
@@ -620,6 +895,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -630,6 +914,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "ebb01703a10fed518665413f0cb31ec586a9eb73fc661b63577f1ed936fdf4bc",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:dfda9519-b39f-4653-8b3c-5b2096a3cc17",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 279598
     },
     "bing-image__mai-image-2.5-flash__web-download__p2__2.jpg": {
@@ -667,6 +973,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -677,6 +992,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "715a7b354d0873819b84056c2e769190078ea062a18af4dc346547590e78df90",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:ae4e4920-f7ce-4afc-9479-d350e5c7b67e",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 627886
     },
     "bing-image__mai-image-2.5-flash__web-download__p3__3.jpg": {
@@ -714,6 +1051,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -724,6 +1070,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "483a88388af922b151e0c88d837036abf3034fec1444564024b6e8bc65f34fcf",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:dc9b9e5f-6fde-488e-9f59-9648d6cf82a7",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 175899
     },
     "bing-image__mai-image-2.5-flash__web-download__p4__4.jpg": {
@@ -761,6 +1129,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -771,6 +1148,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "d61f67bd517249bc61b74e696069c09fd18aa27d629da268a476195843c53e87",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:be4d96dc-b4fd-49f2-94de-a9248c83f6e2",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 461040
     },
     "bing-image__mai-image-2.5-flash__web-download__p5__5.jpg": {
@@ -808,6 +1207,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -818,6 +1226,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "3e5cabf6ba5a17e7ee7a2237623eb35bf56c5dc413404613b88e845b005db29e",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:5bb7c2ca-9ac2-4135-9f89-ea5180ad28ba",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 235307
     },
     "canva__canva-ai-bg-removed-erase__web-download__p3__3.png": {
@@ -850,6 +1280,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -860,6 +1299,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "e4567ac4184e8e0444822a191261d9b82956ba045e7b38a2b39e8191d72b5406",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:5fd1e206-039c-4ed9-904e-df74f226eb0e",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 231702
     },
     "canva__canva-ai-bg-removed__web-download__p3__3.png": {
@@ -892,6 +1352,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -902,6 +1371,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "03fa568923e830095419bdc85a007dd567bd83a07ee36d9d8489d5bbb1dfa173",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:c0166798-e18a-40d5-9148-5cb593693cfa",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 236061
     },
     "canva__canva-ai-free__web-download-editor__p1__3.png": {
@@ -933,6 +1423,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -947,11 +1446,35 @@
         "xmp_tag_count": 4
       },
       "sha256": "02c67de1f3b4ee09aed189154d18841af33977ad9f438f31feaed53af64f4489",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:94d4b5ee-d8d3-490b-9676-c88ed874d71f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2431398
     },
     "canva__canva-ai-free__web-download__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -963,6 +1486,9 @@
         "xmp_tag_count": 0
       },
       "sha256": "3275f1cb1694bb51dc52016e7ce42eab9da6dcfd76e741ec23f3ec1d8eb1f857",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1361613
     },
     "canva__canva-ai-free__web-download__p1__3.png": {
@@ -995,6 +1521,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1009,6 +1544,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "86e812000bcfa1e8e3b3d69737de1b692f5cecb952bb88ba70054c56ed29a079",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:10a80f2b-4f7d-4164-ba7f-21658b914596",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3338204
     },
     "canva__canva-ai-free__web-download__p1__4.png": {
@@ -1040,6 +1596,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1054,6 +1619,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "160c06ab5c876595686a4d867d0471782ba6ba9e7c0ac2e2f6fded0018650085",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:bb8c06f2-18ad-4c7d-9551-b922704755a5",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3571714
     },
     "canva__canva-ai-free__web-download__p2__2.png": {
@@ -1086,6 +1672,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1100,6 +1695,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "246ae99fc066d327b9772acf07377f61f459ce4a83b0245d11839f43b157e199",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:c4cd5f29-e12d-4754-9202-1ff243b9f327",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3730290
     },
     "canva__canva-ai-larger__web-download__p3__3.png": {
@@ -1132,6 +1748,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1142,6 +1767,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "1263eecf0cf6ca8004d8f0ccd8615b5f07c96a3a5b7d7dc5a89013c901ed43c2",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:a37c0cd0-7eb1-4dda-8b97-70fb46ef21a9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 413136
     },
     "canva__canva-ai-magic-edit__edit-photo__e1__1.png": {
@@ -1174,6 +1820,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1188,6 +1843,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "5c82aaec39567b28e6fb9a57510a8dbf3e3d2d9886d05508b4ced4cb904dc69a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:07b1a1df-3cb9-4cf6-80af-8762fd96b001",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2581535
     },
     "canva__canva-ai-magic-edit__edit-photo__e1__2.png": {
@@ -1220,6 +1896,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1234,6 +1919,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "72842b0e794b8b4ebe096f6147d9f89055718a4368a93140020afcd8709d0054",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:c6ccd635-6541-4c3c-a021-a46feb9df7b0",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 10168731
     },
     "canva__canva-ai-magic-edit__edit-photo__e2__2.png": {
@@ -1266,6 +1972,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1280,6 +1995,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "0fc6e25b3bf3d81d261a01f85fe866e180bc20edf0514489b89e8d1b7a0e8a25",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:271a8f0e-8141-4c89-8033-5cd86df6aa87",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 5344622
     },
     "canva__canva-ai-magic-edit__web-download__p2__2.png": {
@@ -1312,6 +2048,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1322,6 +2067,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "dc74e47ee33a5f7423fb598bf1a4a6e918b495431742d199ed762819d52dcaed",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:60b37772-1849-443c-9572-f2d1e96d9f28",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3671213
     },
     "canva__canva-ai-magic-expand__edit-photo__e3__3.png": {
@@ -1354,6 +2120,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1368,6 +2143,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "af13e8ef952a52964e99ff006d45466f5b2a5c465be508eda72e0e118969418b",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:25b2b267-1bb8-40dd-858e-0ac90a70630d",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 25654032
     },
     "canva__canva-ai__edit-photo__e1__1.png": {
@@ -1400,6 +2196,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1414,6 +2219,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "fa3f7778ee66a7f6957a74c58f7a5227f128eef7092b0bacee6c4248d7c6f002",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:bd03f07b-7fab-4ba8-84c1-b8bff59dbefc",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2389612
     },
     "canva__canva-ai__edit-photo__e2__2.png": {
@@ -1446,6 +2272,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1460,6 +2295,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "547afd7a5b0e2ff1fb32a785a078485ad022dce344b37a553ace303cb34e50ad",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:3bb165c0-6d51-46b7-ab39-77181af5a6b6",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1740524
     },
     "canva__canva-ai__edit-photo__e3__3.png": {
@@ -1492,6 +2348,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
@@ -1506,6 +2371,27 @@
         "xmp_tag_count": 6
       },
       "sha256": "9ad108b1ba376ba6064b6ba37b8fb4279fb9afcf790d067f9a4bec2c3ec3d174",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:4ba11fd3-3547-4e55-adc9-5ae15cd8ea84",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3231551
     },
     "canva__canva-ai__web-download-editor__p1__1.png": {
@@ -1538,6 +2424,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1548,6 +2443,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "1e826ac5692fe3e63b38e71c7e552e132233b93c2aed61d817d903f108eba773",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:103939ba-b73a-4bca-9608-3de36314e24c",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2217508
     },
     "canva__canva-ai__web-download-jpg__p1__2.jpg": {
@@ -1580,6 +2496,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1590,6 +2515,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "88dc4c5a106c87ee5c3b5cbaa0c1eb2baf1a4a00fa7c81bfe92ca27556cc5d61",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:cc2d803c-c0e0-4005-a8be-c2156364c739",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 157437
     },
     "canva__canva-ai__web-download__p1__2.png": {
@@ -1622,6 +2568,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1632,6 +2587,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "6c368b8a3568c861655546b30a24bf0a06fab8713bdecf3ac4d50195a8278ab7",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:8b1ec267-aedd-4f3d-83d6-6a534fd00968",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2061831
     },
     "canva__canva-ai__web-download__p2__2.png": {
@@ -1664,6 +2640,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1674,6 +2659,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "4068767774a07971f51c0e1f2e1ff9aea81b4b1d02067ba714f456721f6a2556",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:1f130267-7604-48af-9b70-c2b72fb28fc9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3646251
     },
     "canva__canva-ai__web-download__p3__3.png": {
@@ -1706,6 +2712,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1716,6 +2731,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "10359189f551a8b26af3e83532d5be1129469eced25292b35cb1c7169cd6341c",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:9cada7aa-25bb-491f-a991-b9ae893fa903",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 326920
     },
     "canva__canva-ai__web-download__p4__4.png": {
@@ -1748,6 +2784,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1758,6 +2803,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "b5dd0788793332328d73ac331c58cdaf6a40c7f74c932c793bd829e5e5eb4652",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:ccfa9dae-34df-480f-97d9-57c7fdb08ea4",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3315958
     },
     "canva__canva-ai__web-download__p5__5.png": {
@@ -1790,6 +2856,15 @@
         ],
         "validation_state": "Invalid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1800,6 +2875,27 @@
         "xmp_tag_count": 3
       },
       "sha256": "15039a0c3b88f0583445d72ee761f854fff88e57a1dad80382ecb25c9b2bc62d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:903f975a-76a3-45ca-8c5b-862d30fc81a9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 617823
     },
     "chatgpt__base-bg-removed__web-download__p3__3.png": {
@@ -1832,6 +2928,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1842,11 +2945,36 @@
         "xmp_tag_count": 0
       },
       "sha256": "2c03cfe7489456e3bb15922f3970501c9ea1d7c538d6008a849878d8b5bfd87d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:05378430-2c06-4737-8756-ef8d3bc0eae5",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 650255
     },
     "chatgpt__base__copy-image__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -1858,6 +2986,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "79f409578b0ebe78328f4bb3ef969db4c7adb90b43d7391e11c2fe0dd0f1c5f4",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 2655908
     },
     "chatgpt__base__edit-photo__e1__1.png": {
@@ -1890,6 +3021,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1900,6 +3038,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "752a354dbc8f5907eea0bf38e21383a2b86fad758d25a2b05d9db68ea9832f17",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:f961f8f1-f44e-46d7-a4ac-54db8647bec4",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1987313
     },
     "chatgpt__base__edit-photo__e2__2.png": {
@@ -1932,6 +3092,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1942,6 +3109,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "145e0e9652af0ee09f27c8a13d89e1911901fd9adf3fef27f4b0f76abe411f97",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:5dfa7eee-d7e9-4f08-9a53-e9167000a39a",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2206721
     },
     "chatgpt__base__edit-photo__e3__3.png": {
@@ -1974,6 +3163,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1984,6 +3180,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "4983fda961027ed67be67cfcb6f667b69a5b5ec8960dd0c5e36a62dea5b6d31a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:c643fbfc-2779-49d1-8c0d-1b11212a7ac2",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3316469
     },
     "chatgpt__base__web-download__p1__1.png": {
@@ -2016,6 +3234,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2026,6 +3251,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "d7886446fe56120343d7e39dcdf454b74b23346610e507c1f3f0b14230ebe3c1",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:dca8e5f7-0303-40b6-a2d2-bdb24639eda2",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2101196
     },
     "chatgpt__base__web-download__p2__2.png": {
@@ -2058,6 +3305,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2068,6 +3322,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "15bc1ab10ecf31d69288905e47342b523790869b333a25869d50ae6707b70afd",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:6f0eded6-3212-40e6-8be6-7c215c185ee3",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3709327
     },
     "chatgpt__base__web-download__p3__3.png": {
@@ -2100,6 +3376,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2110,6 +3393,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "6d3f47d873008b360f91cc94f3021415aad1c0f02b9db345f6e2b7a885e88a65",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:d277543e-696c-4a39-a52e-0e35726bd549",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1802195
     },
     "chatgpt__base__web-download__p4__4.png": {
@@ -2142,6 +3447,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2152,6 +3464,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "c1a3bb77b8b964e15961cd128003d31c00ff3fe42f1a026319abc410afebe8a1",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:bb7ed5de-87db-4c3c-95f1-c978eb28c295",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3039369
     },
     "chatgpt__base__web-download__p5__5.png": {
@@ -2184,6 +3518,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2194,6 +3535,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "a18d8fe95cb4321433caaee334c7bb4bd5d5825e9e922ad1465abba5133d3edc",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:ebd10e64-9394-462e-b880-11f0a1df93f6",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1500352
     },
     "gemini-api__gemini-3-pro-image__api-jpeg__p1__1.jpg": {
@@ -2227,6 +3590,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2237,6 +3607,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "b25cf6f8c646f87fe94c165e8897f2e54c52b6a51db367ade43fad5f1a9341f8",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:f852be31-bbeb-8522-7252-43a95df79918",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 855769
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__e1__1.jpg": {
@@ -2270,6 +3662,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2280,6 +3679,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "60e6f563d383651fe6103cce1f62bd1dbc9f9cfb2dd5a0676b2d67a1ab0e4f29",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:f0c9b045-ed34-bff8-2777-45487d7508bc",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:25128bd3-b14d-abc7-73c0-4b1d5e7889fd",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:f0c9b045-ed34-bff8-2777-45487d7508bc",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 631032
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__e2__2.jpg": {
@@ -2313,6 +3765,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2323,6 +3782,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "aec48f9d860010ef38fe260f02d85057d35a826e09dd6971729150d1009d794a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:c52997fb-4639-ee33-0fb6-494fce2f9ee6",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:9b8baf1c-78e4-c639-0ad0-4d509b43cb83",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:c52997fb-4639-ee33-0fb6-494fce2f9ee6",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 635044
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__e3__3.jpg": {
@@ -2356,6 +3868,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2366,6 +3885,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "5419461c6770c8ea47e8bfbeda1fef4b1b2da5e95c4b4fe751a919e051e860b1",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:dbeba989-d3db-1356-c879-49ec9d1d16ea",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:c65a9d5e-3a82-d3de-d8f6-4606e01c797c",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:dbeba989-d3db-1356-c879-49ec9d1d16ea",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 885034
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__p1__1.jpg": {
@@ -2399,6 +3971,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2409,6 +3988,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "b5bfa902bdf9875a7f2e97b19522e7e1a810d518766484ab277333785626aba3",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:4cdcb1bc-4aba-9236-e5d2-4fbe3bfd10f1",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 847481
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__p2__2.jpg": {
@@ -2442,6 +4043,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2452,6 +4060,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "dc34ba7d23a2de99f40e8d8df0d09e90e3558faf1690ca7a771d92b8fd4091dc",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:0cd2b685-136e-9f2c-b0a9-467cfdba28c7",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1035845
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__p3__3.jpg": {
@@ -2485,6 +4115,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2495,6 +4132,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "7c6c8c2f28a097bb130af1615c330efcc8fcf2720f3fbbf5f03b53b69a6c1efe",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:370ebf36-1e5a-19b5-0d4c-43b88e159169",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 513822
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__p4__4.jpg": {
@@ -2528,6 +4187,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2538,6 +4204,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "7b64b0f6409740a5e057715f5ce6bdd43a80d69a90559a3e6c1100d1ec490c2f",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:0061bd1f-0066-bc72-c7f1-42f1b1d5852a",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 934111
     },
     "gemini-api__gemini-3.1-flash-image__api-jpeg__p5__5.jpg": {
@@ -2571,6 +4259,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2581,6 +4276,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "f756583af2c378cbd85746a4a709aacb0b99ecf33adc0975898bc4bd6b9f0d80",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:e0939c59-7545-6eee-177f-483feaf21fac",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 673372
     },
     "gemini-app__nano-banana-pro__web-download__p1__1.jpg": {
@@ -2615,6 +4332,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2625,11 +4349,51 @@
         "xmp_tag_count": 0
       },
       "sha256": "b267c0f25ed657a86c26b539da74e9538b1dc7901849032f7278a50239d73c0d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:fed38397-6001-b38a-86ff-4ef571fe1504",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:1d768c2f-0ac8-3c96-d18a-4062d847b16d",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:fed38397-6001-b38a-86ff-4ef571fe1504",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3591401
     },
     "gemini-app__nano-banana__browser-save__p1__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -2641,11 +4405,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "fbf2fbcc3fed227ceac3fa34279e99c2d57c93a3eadd8581fd5482141fee3c1d",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 93788
     },
     "gemini-app__nano-banana__copy-image__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -2657,6 +4427,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "348e6980e6ee8eacb850daedc4a89b7ade81a5a47bceab5e6115d7fdda095b6a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 793664
     },
     "gemini-app__nano-banana__edit-photo__e1__1.jpg": {
@@ -2691,6 +4464,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2701,6 +4481,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "54327e5544bf2b526332f52df63e34dedad1795d322dd63f44dd9ec8ea975829",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:291ab019-0722-18f6-eef2-4b0f69ca6477",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:eb93a5ee-d286-488d-3c99-48788a47ed0d",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:291ab019-0722-18f6-eef2-4b0f69ca6477",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2300385
     },
     "gemini-app__nano-banana__edit-photo__e2__2.jpg": {
@@ -2735,6 +4568,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2745,6 +4585,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "f9d5cad688ca78c2068e9be6718cf130c11401732b140c37efa21e1b47cee32c",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:f6598bb7-f0c5-064f-766b-4b9060ea8d8d",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:7e7f9265-be7c-4eba-3cb4-48d56ca7ac50",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:f6598bb7-f0c5-064f-766b-4b9060ea8d8d",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2529353
     },
     "gemini-app__nano-banana__edit-photo__e3__3.jpg": {
@@ -2779,6 +4672,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2789,6 +4689,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "8dd0bf69a20af6737a06efb749b4006290e26a9e7789cb0df32d603d110366e9",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:28339604-ee10-2ce8-1031-4f5229595fd3",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:dfb4a27d-07f9-f2da-efd3-4231b100ebdb",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:28339604-ee10-2ce8-1031-4f5229595fd3",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3434168
     },
     "gemini-app__nano-banana__share-link-download__e3__3.jpg": {
@@ -2823,6 +4776,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2833,11 +4793,67 @@
         "xmp_tag_count": 0
       },
       "sha256": "b7a5a4443cfb8312dc671c66eee39281007c592b7535b49288be4a82e81b4cc4",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:28339604-ee10-2ce8-1031-4f5229595fd3",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:47a6aee8-9bff-54f0-f16a-4f247d91d432",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:28339604-ee10-2ce8-1031-4f5229595fd3",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 274742
     },
     "gemini-app__nano-banana__ui-copy__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -2849,6 +4865,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "7b71ca165d20c4ae8ad6a935697f2f40c9c12e2af8529a249675078c47554b7a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1084160
     },
     "gemini-app__nano-banana__web-download__p1__1.jpg": {
@@ -2883,6 +4902,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2893,6 +4919,43 @@
         "xmp_tag_count": 0
       },
       "sha256": "e15b59104cdaab2a79cb68c3ca20d107d9cde58706ef9af9bfe2935c0e5664c6",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:86969e8f-ff9d-6817-2581-4f2266f7b794",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:e65b9a59-cc36-2bf1-2773-403cc930f679",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:86969e8f-ff9d-6817-2581-4f2266f7b794",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2888720
     },
     "gemini-app__nano-banana__web-download__p2__2.jpg": {
@@ -2927,6 +4990,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2937,6 +5007,43 @@
         "xmp_tag_count": 0
       },
       "sha256": "abbd697bfb5cdcca11d4a26a5d89a9e2f988d103b48ae49e972021f24abc6e4a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:be3cb34f-3fe2-1f65-c813-4f8873c9ef71",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:02f78678-8ddf-9a02-2920-41d0200505a8",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:be3cb34f-3fe2-1f65-c813-4f8873c9ef71",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 4182053
     },
     "gemini-app__nano-banana__web-download__p3__3.jpg": {
@@ -2971,6 +5078,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -2981,6 +5095,43 @@
         "xmp_tag_count": 0
       },
       "sha256": "21a8709df99e40889fc3adc46144ad4ff8ae29725bfb54b829a836eda926d0f6",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:8e1d8511-8994-ce53-594d-41791f2e205c",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:9a56b790-d5f8-19aa-d663-4493e36c3ac1",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:8e1d8511-8994-ce53-594d-41791f2e205c",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1792350
     },
     "gemini-app__nano-banana__web-download__p4__4.jpg": {
@@ -3015,6 +5166,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3025,6 +5183,43 @@
         "xmp_tag_count": 0
       },
       "sha256": "e8f05014ef5002655b26349d6fb320508e9045250231c9633d256fee2d9335de",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:2a9e9b1f-b8de-3684-2857-4c765b203d36",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:11e0b867-968e-c0ca-6f9d-4e53e4a495d3",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:2a9e9b1f-b8de-3684-2857-4c765b203d36",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3465309
     },
     "gemini-app__nano-banana__web-download__p5__5.jpg": {
@@ -3059,6 +5254,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3069,6 +5271,43 @@
         "xmp_tag_count": 0
       },
       "sha256": "67c40625bb6b2447e1f6f445197ff179bf689c0e200628873e5a3e0129ff392b",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:fecb9884-4843-61e4-1836-414f6091fb96",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:0c5e9b2d-a847-8714-eae9-4e64b39b2861",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:fecb9884-4843-61e4-1836-414f6091fb96",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1961098
     },
     "google-flow__nano-banana-2-1x1__web-download-thumb__p3__1.jpeg": {
@@ -3102,6 +5341,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3112,6 +5358,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "b888cd5f656e5a0311e8775571f0362265bd4a910208d02a2da1097b9f2e9dfe",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:eb54bf4f-49fa-003e-5db1-4469888f025a",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 520644
     },
     "google-flow__nano-banana-2-upscaled__web-download-thumb__p2__2.jpeg": {
@@ -3144,6 +5412,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3154,6 +5429,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "25b2ed027c7b0b8d49945b7fbef50d423ce0a31850c08569d21c555bedd32cd1",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_mediaUnknownProvenance"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:1229b2f9-aeb7-9f35-2799-450c4ad0dbc2",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 4527819
     },
     "google-flow__nano-banana-2.1__edit-photo-redownload__e2__2.jpg": {
@@ -3187,6 +5484,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3197,6 +5501,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "004f7e6d85be8fafa0754b68b441306097d7183615b54b68cea85a2754dd9574",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:cce89b63-21ef-7c8d-1b1c-46f4526fcec1",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:9df785e8-a301-d971-9ba2-4c0148722cca",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:cce89b63-21ef-7c8d-1b1c-46f4526fcec1",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 613856
     },
     "google-flow__nano-banana-2.1__edit-photo__e1__1.jpg": {
@@ -3230,6 +5587,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3240,6 +5604,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "57fe5c3a7656fe32ba8ce9d4fb2a10fdcde37b81b6c34387c6fd9428f6a75c11",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:52428631-6aed-401e-3d7f-41383ccda8b9",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:e6fda61e-ecf5-4fb7-c7ad-46cbe0b14180",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:52428631-6aed-401e-3d7f-41383ccda8b9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 624166
     },
     "google-flow__nano-banana-2.1__edit-photo__e2__2.jpg": {
@@ -3274,6 +5691,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3284,6 +5708,74 @@
         "xmp_tag_count": 0
       },
       "sha256": "77e3502801a1c8373798bf047dbaac2ee0d9e30b146e166b224a966ce34bfc48",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:9df785e8-a301-d971-9ba2-4c0148722cca",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:2a61ab60-5fd0-5c96-c1d6-4ad6861a347d",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:cce89b63-21ef-7c8d-1b1c-46f4526fcec1",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:9df785e8-a301-d971-9ba2-4c0148722cca",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:cce89b63-21ef-7c8d-1b1c-46f4526fcec1",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:81acade8-7b4d-9bbe-4b03-4665cbaddaa9",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 135734
     },
     "google-flow__nano-banana-2.1__edit-photo__e3__3.jpg": {
@@ -3317,6 +5809,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3327,11 +5826,67 @@
         "xmp_tag_count": 0
       },
       "sha256": "1df686a0db083a5ea1a7b801fce4ffe7686b91607cb7a70ff583c8c40fbed257",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:c0cf988e-bd95-9b35-362f-414e16f3f936",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:c98db6a8-59b4-6b7e-467c-4c8f40fafdb8",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:c0cf988e-bd95-9b35-362f-414e16f3f936",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:20e285f0-96a7-6710-2eb4-4c914b5479b0",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 852480
     },
     "google-flow__nano-banana-2__browser-save-open__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -3343,11 +5898,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "6beb27977b4388a61a131e737e32bf94f89c180c4faa6687d42d4e90f043b871",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 5886313
     },
     "google-flow__nano-banana-2__copy-image-open__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -3359,11 +5920,17 @@
         "xmp_tag_count": 5
       },
       "sha256": "9d75c81a39d5c553d1da3c86726653c2ee8db9a5c872b46bac4f45f5f30106f7",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 5906131
     },
     "google-flow__nano-banana-2__copy-image-thumb__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -3375,6 +5942,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "60c0dffc43ad10624814dc2e119f5dc7d4a5930930b81defd7e30fb860f0fdc9",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1981373
     },
     "google-flow__nano-banana-2__web-download-thumb__p1__1.jpeg": {
@@ -3408,6 +5978,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3418,6 +5995,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "5b25693a3fc1182de52912aa116eb094dd708e302a85d6296ad8d00fe7324b0d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:19839f5a-8c2d-8384-12d9-4247a00ceb91",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 828788
     },
     "google-flow__nano-banana-2__web-download-thumb__p2__2.jpeg": {
@@ -3451,6 +6050,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3461,6 +6067,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "e89a209aa0a960145d998e0c15756504404fa1d1aac52e6f2c5e44013f1c3ed8",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:623ea629-388c-fefc-0c7c-4c790bd8ad73",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1086943
     },
     "google-flow__nano-banana-2__web-download-thumb__p3__3.jpeg": {
@@ -3494,6 +6122,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3504,6 +6139,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "e86e34e6a3377080807dcb8cbf22d78d8941bae31b1c17a79774859c65475ec4",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:fcae808b-592b-32d2-7c48-45308493f3e7",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 496935
     },
     "google-flow__nano-banana-2__web-download-thumb__p4__4.jpeg": {
@@ -3537,6 +6194,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3547,6 +6211,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "283c51dd1d866ad7d6bde55fbcc11990b1843783a6dc10d96a63ddcf703d2478",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:743c95c2-cadb-efca-7a52-447f7d041d98",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 843324
     },
     "google-flow__nano-banana-2__web-download-thumb__p5__5.jpeg": {
@@ -3580,6 +6266,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3590,6 +6283,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "89ddf2c207d598f74e720577ef6ed004aeb9c693d9c9874c8570d72b0ed6473e",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:bbd48a9d-aaf3-7786-0ea2-4aa2471d4759",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 586921
     },
     "google-flow__nano-banana-lite__edit-photo__e1__1.jpg": {
@@ -3623,6 +6338,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3633,6 +6355,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "d94c531f922c6227c3abf8f02668bf206964f6434c3ab364bbc3716a7bda6ad2",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:019aa2e4-58e8-8f1f-9565-4de2e356a753",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:05f3b43d-c053-16fb-d232-409553b34657",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:019aa2e4-58e8-8f1f-9565-4de2e356a753",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 610154
     },
     "google-flow__nano-banana-pro__edit-photo__e1__1.jpg": {
@@ -3666,6 +6441,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3676,6 +6458,59 @@
         "xmp_tag_count": 0
       },
       "sha256": "00662f5204178f7c30ea4fc5a3abf4fa9c4e82cb8dc1b5eff61fdd8103e71ad7",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:32caa7df-90ba-c27f-23fa-4dfc8e62d376",
+                "relationship": "inputTo"
+              }
+            ],
+            "label": "urn:c2pa:c00bb00d-4d96-8c77-d21b-4a747e3964f1",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:32caa7df-90ba-c27f-23fa-4dfc8e62d376",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 609250
     },
     "google-flow__upload-unedited__edit-photo__e1__1.jpg": {
@@ -3710,6 +6545,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3720,6 +6562,42 @@
         "xmp_tag_count": 0
       },
       "sha256": "0b15178177c92a9fdda9645241e13ee755322679b1a7e1f5e8bf4b885d8b2e2a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:299ca2b0-6877-ed1a-d191-44dbe7aaeb3a",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2097731
     },
     "ideogram__ideogram-v4.5-magic-fill__edit-photo__e1__1.jpg": {
@@ -3752,6 +6630,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3762,11 +6649,35 @@
         "xmp_tag_count": 0
       },
       "sha256": "f330635e4f0ddfc52dc7ffa331bc65523b3a97539a796e6d7fd1a859bb387c49",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:123e82e4-3066-4253-b0a0-2406feec9a2a",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 441920
     },
     "ideogram__ideogram-v4__copy-image__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -3778,6 +6689,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "01606ef930cacab34b5e17dd30b165e4c666428df745cd718c2f54cc46393498",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 6833536
     },
     "ideogram__ideogram-v4__web-download__p1__1.jpg": {
@@ -3810,6 +6724,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3820,6 +6743,27 @@
         "xmp_tag_count": 0
       },
       "sha256": "302e98fce25d329dfcd0496de21f6c4e00290ce25064383d31d55d994d830a13",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:a5ab4417-7349-4a19-8777-f0daba5d8809",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 593931
     },
     "ideogram__p-image-ideogram-medium-3x1__web-download__p2__2.jpg": {
@@ -3852,6 +6796,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3862,11 +6815,35 @@
         "xmp_tag_count": 0
       },
       "sha256": "8df7d4560ddecc679653d72c990d7e1e799ddb9adabbcdb0436fae395dada983",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:4c40df86-f91d-486b-983c-3a21198e9b2c",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1011943
     },
     "ideogram__p-image-ideogram-medium-no-bg__web-download__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -3878,11 +6855,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "5aac16315a10e3bd2535c06085eed9766d20119f12e90b034fd05977296912d8",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 190885
     },
     "ideogram__p-image-ideogram-medium__browser-save__p1__1.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -3894,12 +6877,18 @@
         "xmp_tag_count": 0
       },
       "sha256": "25a48539b2d963a1fce25a560f383cb67abb0ced93355d766f4df522a1323f12",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 4419630
     },
     "ideogram__p-image-ideogram-medium__copy-image__p1__1.png": {
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3910,12 +6899,18 @@
         "xmp_tag_count": 5
       },
       "sha256": "cee8c4ccc04d36881075ccf53f1ff3009e44699e7dc04a03f4b775aeef028421",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 7226869
     },
     "ideogram__p-image-ideogram-medium__ui-copy__p1__1.png": {
       "c2patool": {
         "present": false
       },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3926,6 +6921,9 @@
         "xmp_tag_count": 5
       },
       "sha256": "cee8c4ccc04d36881075ccf53f1ff3009e44699e7dc04a03f4b775aeef028421",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 7226869
     },
     "ideogram__p-image-ideogram-medium__web-download__p1__1.jpg": {
@@ -3958,6 +6956,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -3968,6 +6975,27 @@
         "xmp_tag_count": 0
       },
       "sha256": "34d29ced12825c6040f18dcb9c099a2b330f14ba6eb218ff8fd937ae4a3c880d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:827daadc-f347-47db-b4b7-170d6915ff58",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 671134
     },
     "ideogram__p-image-ideogram-medium__web-download__p2__2.jpg": {
@@ -4000,6 +7028,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4010,6 +7047,27 @@
         "xmp_tag_count": 0
       },
       "sha256": "776850685ac18a66e2c1763f3f14654f79e0f0b37e90f9e8020811bca9bbf07e",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:c7304307-cade-478f-b20f-3eb2bfb268ac",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1577182
     },
     "ideogram__p-image-ideogram-medium__web-download__p3__3.jpg": {
@@ -4042,6 +7100,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4052,6 +7119,27 @@
         "xmp_tag_count": 0
       },
       "sha256": "0eb9ae9fe12a76f5e986dc9e31dd6cdc40523d2d2b851a48d0805e78c9cfe76f",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:349a8697-64b0-40b2-90f3-45ce380a27a4",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 289432
     },
     "ideogram__p-image-ideogram-medium__web-download__p4__4.jpg": {
@@ -4084,6 +7172,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4094,6 +7191,27 @@
         "xmp_tag_count": 0
       },
       "sha256": "d2600ea0625ab995b9149f5d6ede7faf5badf605fbeb907e6e3e9e62930af899",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:98b5d8d2-c7e5-418b-9586-899058471156",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 874307
     },
     "ideogram__p-image-ideogram-medium__web-download__p5__5.jpg": {
@@ -4126,6 +7244,15 @@
         ],
         "validation_state": "Valid"
       },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4136,11 +7263,35 @@
         "xmp_tag_count": 0
       },
       "sha256": "d40f53d0671269d775e239ca1717244796c9c07c69a169218c5bae834b0045d6",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:2c934b36-b5e6-42e4-a886-e6c7c5133971",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 494415
     },
     "meta-ai__base__whatsapp-save__p1__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -4152,11 +7303,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "c389b2402bc131636ee043f2f7fb02ce63bab46fc1ec30d250579260a276155e",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1030259
     },
     "meta-ai__base__whatsapp-save__p5__5.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -4168,11 +7325,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "64017c0f5876f4b44e35f50ac00cb3fedce6258d08af54f82ff1e21eea4690ee",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 387197
     },
     "meta-ai__instant__app-save-open__p1__2.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4188,11 +7351,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "b11ec91d761dd53607e1f9dd510c77b84f7174a8d6384b2ba60b6923dc63a314",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 161244
     },
     "meta-ai__instant__app-save-open__p2__3.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4208,11 +7377,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "1e4a8b791016c14346a44ebd5f534fc85180593fea82a1917b2e4668d82d7d7c",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 503704
     },
     "meta-ai__instant__app-save-open__p3__4.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4228,11 +7403,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "3ed37e2c4219293321ae3f085d239806c743b3092b8e9ae30515f187513b023c",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 53971
     },
     "meta-ai__instant__app-save-open__p4__5.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4248,11 +7429,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "d164fcc3736b9e08501c44974b66a40eebb215d77f1e2aac1ace6131eab5707b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 284636
     },
     "meta-ai__instant__app-save-open__p5__6.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4268,11 +7455,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "49d82b1bd4e8e819b3fee45745b87e8b8ccd609b6628391be256b8fef18dd2a0",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 78311
     },
     "meta-ai__instant__browser-save-open__p1__1.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4288,11 +7481,17 @@
         "xmp_tag_count": 1
       },
       "sha256": "9fe6e83f238813f4f327f621f93b0965bf6dbaf41ddcdbbedf8060e89f27088a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 364584
     },
     "meta-ai__instant__copy-image-open__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -4304,11 +7503,17 @@
         "xmp_tag_count": 5
       },
       "sha256": "e21542751f2c6fd4f7b4b06010f11e9e78f001d0e457c1beefbfbc00e5d3b232",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 2708122
     },
     "meta-ai__instant__edit-photo__e1__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4324,11 +7529,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "5b0aa98fbd9cdb646f1436498d13dc8046c0006e30bdfde2767bfd49c1a77e54",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 177004
     },
     "meta-ai__instant__edit-photo__e2__2.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4344,11 +7555,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "536a47071ed4e699ae5603588d892773f7ef485258809508a4ac7283d3f028ff",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 177481
     },
     "meta-ai__instant__edit-photo__e3__3.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4364,11 +7581,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "6546eff3470110f3c8621427aed012d4c8354b9c98b0f3a434e2185a697a412e",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 504142
     },
     "meta-ai__instant__share-instagram-browser-save__p1__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4384,11 +7607,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "c19e654d1cd3620988f08ce35efcc34b41ae3f80d2167f7576a776e2406804af",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 27181
     },
     "meta-ai__instant__web-download-thumb__p1__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4404,11 +7633,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "9a086197e09872456d7c48bae0257f4727db0762ca61c673b241cffd719e981b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 164373
     },
     "meta-ai__instant__web-download-thumb__p2__2.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4424,11 +7659,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "9a20fdd0bdcc6235e384c3dcd0e6f5ad55c292bb1e9e403e4fe76aab41beb69a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 520010
     },
     "meta-ai__instant__web-download-thumb__p3__3.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4444,11 +7685,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "a1b0a4031eab510d582c144ed41a2d2b5560916a8170f4453e06a9ce98eb5273",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 42774
     },
     "meta-ai__instant__web-download-thumb__p4__4.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4464,11 +7711,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "7f911a48ce15043768112355134dfdc087eb9a63bc2071156f47c8275a519275",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 255543
     },
     "meta-ai__instant__web-download-thumb__p5__5.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4484,11 +7737,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "2030c72d00e1338a0470302e6e6a925b06d767e20dda881a904b6ee3654fdf3d",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 70934
     },
     "meta-ai__thinking__app-save-open__p1__2.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4504,11 +7763,17 @@
         "xmp_tag_count": 2
       },
       "sha256": "b46a074e8fa70b890af6647d8d2332ccd037ef65c55873cc2708668a0dea1166",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 165024
     },
     "meta-ai__thinking__browser-save-thumb__p1__1.webp": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4524,11 +7789,17 @@
         "xmp_tag_count": 1
       },
       "sha256": "5f5c5f10da846f41b323be666f61f19f4190dc8036badf1f3865104ac13eb6e9",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 388436
     },
     "meta-ai__thinking__copy-image-thumb__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -4540,11 +7811,17 @@
         "xmp_tag_count": 5
       },
       "sha256": "956dca43af270fc740fb19b9fadcaa70e37b7990cf79f34176b8da41f296421b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 2920288
     },
     "meta-ai__thinking__web-download-thumb__p1__1.jpg": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [
@@ -4560,6 +7837,9 @@
         "xmp_tag_count": 2
       },
       "sha256": "5d11c414eaa7152863b12db3ed1e70fe6d1e4ce247ad88780fc33661323d3fcb",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 173734
     },
     "openai-api__chatgpt-image-latest__api-jpeg__p1__2.jpg": {
@@ -4592,6 +7872,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4602,6 +7889,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "ea3fe5b2dd12856fb88b0f77a7cc66068ca1b51e1cee62fe1c6e3db18b7a7561",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:178327de-800b-4ba5-952c-829a7044f657",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 122260
     },
     "openai-api__chatgpt-image-latest__api-png__e1__1.png": {
@@ -4634,6 +7943,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4644,6 +7960,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "def4d4161b2ee381ff00d3201d7434d0cae3cf50e1e6fd75162e943cd52e1b0d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7a6ca783-abde-430d-8253-32836d1847da",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1586565
     },
     "openai-api__chatgpt-image-latest__api-png__e2__2.png": {
@@ -4676,6 +8014,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4686,6 +8031,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "9e5b85993f4f1861fd32ab574c9b3f8ab6995dad98985f951c978aadfd64db78",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:867fca62-99e9-4164-998f-6dd9e04f47fd",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2211165
     },
     "openai-api__chatgpt-image-latest__api-png__e3__3.png": {
@@ -4718,6 +8085,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4728,6 +8102,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "173f70d4e8f3e2e5c45e85a32510f7d5224109c87f2a20007617880f13c3e182",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:44bd941d-0543-4eaa-9ac9-e81f6fc34ec5",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3527674
     },
     "openai-api__chatgpt-image-latest__api-png__p1__1.png": {
@@ -4760,6 +8156,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4770,6 +8173,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "05ecccc20964fbf28ad0e7167da5b64e693d8dfa3996deb06c2a3a67d27ef5ab",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:a905993a-1d9a-4019-8e46-74da5bfb3eec",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1504558
     },
     "openai-api__chatgpt-image-latest__api-png__p2__2.png": {
@@ -4802,6 +8227,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4812,6 +8244,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "f4d08a194145f5f5f1c50864b98a91d29f3b77cdcdcfab9e3190de017e2f397c",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:581b98c6-95c3-484e-a0dc-e82ae7cc81a5",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 3473588
     },
     "openai-api__chatgpt-image-latest__api-png__p3__3.png": {
@@ -4844,6 +8298,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4854,6 +8315,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "cb2061bd0bedacfe5988cf2f4c02b10a67746f601c19775f51dedcc07af01032",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:f8f49762-c22c-4d65-9be4-1ff01c4bafd2",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1966167
     },
     "openai-api__chatgpt-image-latest__api-png__p4__4.png": {
@@ -4886,6 +8369,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4896,6 +8386,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "dd4a59351cb806bd9d6b1463afcc78e34ef70872299938b83a448a9eba16e1a4",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:a07a9ced-0ec2-487a-aae2-fe7110024f96",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2063887
     },
     "openai-api__chatgpt-image-latest__api-png__p5__5.png": {
@@ -4928,6 +8440,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4938,6 +8457,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "bb4fbbc8886c013a647ae45a98ce6e76f0d0d8a14f5559425646a41f24ad3d57",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:6041038b-064d-488c-9b1a-8cdd8f429922",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 563847
     },
     "openai-api__chatgpt-image-latest__api-webp__p1__3.webp": {
@@ -4970,6 +8511,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -4980,6 +8528,28 @@
         "xmp_tag_count": 0
       },
       "sha256": "d4546fba215413c681168412c540b93aef87a941316aa54580fefd6190acd550",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:f49f5d93-1ae7-40cc-911e-e279b15dfe73",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 1488162
     },
     "openai-api__gpt-image-1.5-transparent__api-png__p3__3.png": {
@@ -5012,6 +8582,13 @@
         "validation_codes": [],
         "validation_state": "Trusted"
       },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -5022,11 +8599,36 @@
         "xmp_tag_count": 0
       },
       "sha256": "90059b856913010798f40b2dc8166089f9f633171058ffaf0eb1ac4d3a0b9576",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:12390ef3-2cd8-4ee9-b59d-d1e37c0e6058",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 2085025
     },
     "zai__glm-wm-off__web-download__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5038,11 +8640,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "b2ffac43fee7532d51bc9e2905290109c097a83c2ba9a8f6dbf6371cbd658f3c",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 170623
     },
     "zai__glm-wm-off__web-download__p2__2.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5054,11 +8662,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "9673904efbdca50880d9279479983ef6afe5974b6269cf3723c0795d94b4feda",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 376140
     },
     "zai__glm-wm-off__web-download__p3__3.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5070,11 +8684,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "b4c50eed5029ce1bdefa846cb9a77ea6c26d6343aebf84204bb0afdccbf131bb",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 196083
     },
     "zai__glm-wm-off__web-download__p4__4.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5086,11 +8706,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "bdcf955e8237a102ba62082e2156cdb9689fdca5f4e1224fd04d0b781d7ec759",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 189130
     },
     "zai__glm-wm-off__web-download__p5__5.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5102,11 +8728,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "09e043b68242735f000983a3d5e78376e84116641c12a1d2b7e2233bf88142be",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 174924
     },
     "zai__glm-wm-on__copy-image__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5118,11 +8750,17 @@
         "xmp_tag_count": 5
       },
       "sha256": "923b67459a2edd3f8af3b7214f8ab30941d898dccf77dfbcc992c635736c386a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 1851923
     },
     "zai__glm-wm-on__copy-image__p2__2.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5134,11 +8772,17 @@
         "xmp_tag_count": 5
       },
       "sha256": "24555a80346732620f0e2368d63a19d91efcfffb05ba3e77b4e36564d3bb9755",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 3170116
     },
     "zai__glm-wm-on__web-download__p1__1.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5150,11 +8794,17 @@
         "xmp_tag_count": 0
       },
       "sha256": "5f2aa6beafb25dba44d14ed4b1516433648fbbcb8c3cb8ad692a9873fbed4a76",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 161346
     },
     "zai__glm-wm-on__web-download__p2__2.png": {
       "c2patool": {
         "present": false
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -5166,14 +8816,24 @@
         "xmp_tag_count": 0
       },
       "sha256": "07738d2860f278394022628a8f4fba69b0b8084a8a2d1e55d6b46cf915cb3d0b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 332987
     }
   },
   "match_by": "sha256",
   "schema": "halftone-differential-expectations/1",
+  "signals_rubric": {
+    "conformance_public": "da71a72",
+    "sha256": "0502e989e025b32a0b253645991abf56d2cd14860a1e7cda10e6921bc5ba19a8",
+    "version": "1.0"
+  },
   "tools": {
     "c2patool": "c2patool 0.28.0",
+    "credentio": "ee4078b",
     "exiftool": "13.55",
+    "json-formula-py": "327a8d75669673c10db3051da816311ac2df8a32",
     "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
