@@ -44,6 +44,7 @@
 //! embedded manifest never touch the network either way. OCSP is never consulted.
 //!
 pub mod lineage;
+pub mod multi_asset;
 pub mod shelf_life;
 pub mod source_type;
 pub mod trust;
