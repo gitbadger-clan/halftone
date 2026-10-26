@@ -648,27 +648,28 @@ fn signal_nodes(v: &Value) -> std::collections::BTreeMap<String, &Value> {
 /// C2PA's evaluator on Credentio's crJSON. Only when the collector ran with
 /// `--rubrics` and both sides ran the same rubric file (by SHA-256): nodes are
 /// matched by label, never by position, and each node's inception and
-/// transformation traits and its ingredients must agree as sets.
+/// transformation traits and its ingredients must agree as sets. Returns how many
+/// reference nodes were compared, so a run can say what "no disagreements" covers.
 fn compare_signals(
     name: &str,
     exp: &Value,
     rubric_sha256: Option<&str>,
     insp: &Value,
     out: &mut Vec<Disagreement>,
-) {
+) -> usize {
     let sg = &exp["signals"];
     if !sg.is_object() || sg.get("error").is_some() || sg["present"] != true {
-        return;
+        return 0;
     }
     let Some(ev) = evidence(insp, "c2pa") else {
-        return;
+        return 0;
     };
     if ev["rationale"]
         .as_str()
         .unwrap_or("")
         .contains("built without")
     {
-        return;
+        return 0;
     }
     let mut push = |file: String, field: &'static str, expected: String, got: String| {
         out.push(Disagreement {
@@ -684,14 +685,14 @@ fn compare_signals(
             .get("error")
             .map_or("no details.signals".to_string(), |e| format!("error: {e}"));
         push(name.to_string(), "signals", "nodes".into(), got);
-        return;
+        return 0;
     }
     if let Some(want) = rubric_sha256 {
         let got = hs["rubric"]["sha256"].as_str();
         if got != Some(want) {
             // Different rubric files: nothing below is comparable.
             push(name.to_string(), "signals.rubric", want.into(), show(got));
-            return;
+            return 0;
         }
     }
     let ref_errors = sg["statement_errors"].as_u64().unwrap_or(0);
@@ -731,6 +732,7 @@ fn compare_signals(
         let file = format!("{name} [{}]", label.trim_start_matches("urn:c2pa:"));
         push(file, "signals.node", "absent".into(), "present".into());
     }
+    want.len()
 }
 
 fn render(rows: &[Disagreement]) -> String {
@@ -819,6 +821,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         let mut compared = 0;
         let mut aged: Vec<Aged> = Vec::new();
         let mut known: Vec<Known> = Vec::new();
+        let (mut signal_files, mut signal_nodes) = (0usize, 0usize);
         for (name, e) in files_obj {
             if !dir.join(name).is_file() {
                 continue; // already reported as missing
@@ -838,13 +841,17 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                     compared += 1;
                     compare_file(&name, e, row, insp, trust_exact, &mut dis, &mut aged);
                     compare_credentio(&name, e, insp, &mut dis, &mut known);
-                    compare_signals(
+                    let n = compare_signals(
                         &name,
                         e,
                         exp["signals_rubric"]["sha256"].as_str(),
                         insp,
                         &mut dis,
                     );
+                    if n > 0 {
+                        signal_files += 1;
+                        signal_nodes += n;
+                    }
                 }
                 None => dis.push(Disagreement {
                     file: name,
@@ -863,6 +870,11 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             files_obj.len(),
             dis.len(),
         );
+        if signal_files > 0 {
+            println!(
+                "differential[{label}]: signals rubric compared on {signal_nodes} nodes in {signal_files} files"
+            );
+        }
         for a in &aged {
             println!(
                 "differential[{label}]: {}: {} -> Invalid ({EXPIRED}), aged since {collected_at}: re-collect",
@@ -1285,6 +1297,20 @@ mod signals_rule {
         let mut out = Vec::new();
         compare_signals("f", e, Some(SHA), i, &mut out);
         out
+    }
+
+    #[test]
+    fn the_count_is_the_reference_nodes_compared() {
+        let mut out = Vec::new();
+        assert_eq!(
+            compare_signals("f", &exp(fold()), Some(SHA), &insp(fold(), SHA), &mut out),
+            1
+        );
+        assert_eq!(
+            compare_signals("f", &json!({}), Some(SHA), &insp(fold(), SHA), &mut out),
+            0
+        );
+        assert!(out.is_empty());
     }
 
     fn fold() -> Value {
