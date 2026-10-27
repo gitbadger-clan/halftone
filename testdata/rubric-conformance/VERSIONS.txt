@@ -1,0 +1,7 @@
+conformance-public: da71a72
+profile-evaluator: 1d947fb
+integrity sha256: f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76
+conformance0.2-spec2.4 sha256: 63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9
+mechanics sha256: d84031c7ab1a584c5aee66dbed42b4c5f130bba505afd47c95495a488af88b87
+json-formula-py: 327a8d75669673c10db3051da816311ac2df8a32
+cases: 16, rubrics: 3

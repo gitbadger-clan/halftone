@@ -45,6 +45,13 @@ impl Rubric {
     /// Parse rubric YAML. Errors only for YAML that does not load at all; problems
     /// inside expressions surface as statements that never fire.
     pub fn from_yaml(text: &str) -> Result<Rubric, Error> {
+        Self::from_yaml_with(text, &[])
+    }
+
+    /// Parse rubric YAML with extra global variables, set as the reference sets
+    /// them: the conformance evaluator adds `$expected_spec_version`, taken from the
+    /// rubric's file name, before evaluating any statement.
+    pub fn from_yaml_with(text: &str, extra_globals: &[(&str, JValue)]) -> Result<Rubric, Error> {
         let docs = YamlLoader::load_from_str(text)
             .map_err(|e| Error::syntax(format!("rubric YAML: {e}")))?;
         let docs: Vec<JValue> = docs.iter().map(yaml_to_json).collect::<Result<_, _>>()?;
@@ -56,7 +63,10 @@ impl Rubric {
             Some(JValue::Object(m)) => m.clone(),
             _ => Map::new(),
         };
-        let variables = section("variables");
+        let mut variables = section("variables");
+        for (k, v) in extra_globals {
+            variables.insert(*k, v.clone());
+        }
         let expressions = section("expressions");
         let rm = section("rubric_metadata");
         let name = rm
@@ -116,7 +126,10 @@ impl Rubric {
             for m in items {
                 let expr = m.get("expression").cloned().unwrap_or_default();
                 let id = m.get("id").cloned().unwrap_or_default();
-                let ast = if expr.py_truthy() && id.py_truthy() {
+                // Parsed whenever there is an expression: the conformance evaluator
+                // runs statements without an id too (as `unnamed_trait`); the signals
+                // evaluator skips them itself.
+                let ast = if expr.py_truthy() {
                     Some(match &expr {
                         JValue::Str(s) => parse(s.trim(), &statement_globals),
                         _ => Err(Error::eval("expression is not a string")),

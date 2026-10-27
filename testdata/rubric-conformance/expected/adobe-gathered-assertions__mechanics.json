@@ -1,0 +1,156 @@
+{
+  "rubricName": "Evaluator mechanics (synthetic, for golden tests)",
+  "rubricVersion": "0.1",
+  "true": {
+    "c2pa": [],
+    "custom": [],
+    "general": [
+      {
+        "trait": "Example Compliance",
+        "reportText": "Contains Example Compliance"
+      },
+      {
+        "trait": "Plain Compliance Name",
+        "reportText": "Plain Compliance Name"
+      },
+      {
+        "trait": "no_category",
+        "reportText": ""
+      },
+      {
+        "trait": "unnamed_trait",
+        "reportText": ""
+      }
+    ],
+    "inceptions": [
+      {
+        "trait": "fan_out_manifests",
+        "reportText": "Signed by {{matches}}",
+        "asserted_by": {
+          "CN": "Pixel Camera",
+          "O": "Google LLC"
+        }
+      },
+      {
+        "trait": "fan_out_then_non_object",
+        "reportText": "fanned out",
+        "asserted_by": {
+          "CN": "Pixel Camera",
+          "O": "Google LLC"
+        }
+      }
+    ],
+    "transformations": [],
+    "validation": [
+      {
+        "trait": "empty_string_result",
+        "reportText": ""
+      },
+      {
+        "trait": "fail_if_matched_empty",
+        "reportText": "nothing matched"
+      },
+      {
+        "trait": "float_result",
+        "reportText": ""
+      },
+      {
+        "trait": "helper_and_variable",
+        "reportText": ""
+      },
+      {
+        "trait": "list_of_strings",
+        "reportText": ""
+      },
+      {
+        "trait": "object_result",
+        "reportText": ""
+      },
+      {
+        "trait": "plain_string_text",
+        "reportText": "a plain string, not a language map"
+      },
+      {
+        "trait": "single_document_statement",
+        "reportText": ""
+      },
+      {
+        "trait": "string_result",
+        "reportText": ""
+      },
+      {
+        "trait": "warn_not_matched",
+        "reportText": ""
+      }
+    ]
+  },
+  "false": {
+    "c2pa": [],
+    "custom": [
+      {
+        "trait": "other_category",
+        "reportText": ""
+      }
+    ],
+    "general": [],
+    "inceptions": [
+      {
+        "trait": "fan_out_then_non_object",
+        "reportText": "Error: 'str' object has no attribute 'get'"
+      }
+    ],
+    "transformations": [
+      {
+        "trait": "fail_if_matched_strings",
+        "reportText": "labels: urn:c2pa:bbc6882f-c24f-2263-4516-43bec19c9255"
+      }
+    ],
+    "validation": [
+      {
+        "trait": "default_text",
+        "reportText": "the default text"
+      },
+      {
+        "trait": "empty_list",
+        "reportText": ""
+      },
+      {
+        "trait": "fail_if_matched_numbers",
+        "reportText": "numbers stay unreplaced: {{matches}}"
+      },
+      {
+        "trait": "negative_number",
+        "reportText": ""
+      },
+      {
+        "trait": "null_result",
+        "reportText": ""
+      },
+      {
+        "trait": "runtime_error",
+        "reportText": "Error: length cannot process type: number. Must be one of: string, array, object."
+      },
+      {
+        "trait": "syntax_error",
+        "reportText": "Error: Expecting one of: \"*\", \"[\", \"{\", name or quoted name after a dot"
+      }
+    ]
+  },
+  "warning": {
+    "c2pa": [],
+    "custom": [],
+    "general": [],
+    "inceptions": [],
+    "transformations": [],
+    "validation": [
+      {
+        "trait": "warn_with_text",
+        "reportText": "warned: w1, w2"
+      },
+      {
+        "trait": "warn_without_text",
+        "reportText": "falls back to false text: w"
+      }
+    ]
+  }
+}

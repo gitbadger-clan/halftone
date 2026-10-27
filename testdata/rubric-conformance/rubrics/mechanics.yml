@@ -1,0 +1,114 @@
+rubric_metadata:
+  name: Evaluator mechanics (synthetic, for golden tests)
+  version: '0.1'
+variables:
+  $codes:
+  - a
+  - b
+expressions:
+  _first: manifests[0]
+---
+- id: inception:fan_out_manifests
+  expression: manifests
+  reportText:
+    'true':
+      en: 'Signed by {{matches}}'
+    'false':
+      en: no manifests
+- id: inception:fan_out_then_non_object
+  expression: '[manifests[0], `"x"`]'
+  reportText:
+    'true':
+      en: fanned out
+- id: transformation:fail_if_matched_strings
+  failIfMatched: true
+  expression: manifests[].label
+  reportText:
+    'true':
+      en: no labels
+    'false':
+      en: 'labels: {{matches}}'
+- id: validation:fail_if_matched_numbers
+  failIfMatched: true
+  expression: '`[1, 2.5]`'
+  reportText:
+    'false':
+      en: 'numbers stay unreplaced: {{matches}}'
+- id: validation:fail_if_matched_empty
+  failIfMatched: true
+  expression: '`[]`'
+  reportText:
+    'true':
+      en: nothing matched
+- id: validation:warn_with_text
+  warnIfMatched: true
+  expression: '`["w1", "w2"]`'
+  reportText:
+    'true':
+      en: ok
+    warn:
+      en: 'warned: {{matches}}'
+    'false':
+      en: not used
+- id: validation:warn_without_text
+  warnIfMatched: true
+  expression: '`["w"]`'
+  reportText:
+    'false':
+      en: 'falls back to false text: {{matches}}'
+- id: validation:warn_not_matched
+  warnIfMatched: true
+  expression: '`[]`'
+- id: validation:default_text
+  expression: '`0`'
+  reportText:
+    default:
+      en: the default text
+- id: validation:plain_string_text
+  expression: '`1`'
+  reportText:
+    'true': a plain string, not a language map
+- id: validation:negative_number
+  expression: '`-1`'
+- id: validation:float_result
+  expression: '`0.5`'
+- id: validation:string_result
+  expression: '"s"'
+- id: validation:empty_string_result
+  expression: '""'
+- id: validation:object_result
+  expression: '`{}`'
+- id: validation:null_result
+  expression: nothing_here
+- id: validation:list_of_strings
+  expression: '`["x"]`'
+- id: validation:empty_list
+  expression: '`[]`'
+- id: validation:runtime_error
+  expression: length(`5`)
+- id: validation:syntax_error
+  expression: a.(
+- id: c2pa:signal_compliance
+  expression: '`true`'
+  reportText:
+    'true':
+      en: Contains Example Compliance
+- id: c2pa:signal_compliance
+  expression: '`true`'
+  reportText:
+    'true':
+      en: Plain Compliance Name
+- id: no_category
+  expression: '`true`'
+- expression: '`true`'
+- id: validation:no_expression
+- id: custom:other_category
+  expression: '`false`'
+- id: validation:helper_and_variable
+  expression: contains($codes, "a") && _first() != null
+- just a string
+---
+block: this document is skipped
+---
+id: validation:single_document_statement
+expression: '`true`'

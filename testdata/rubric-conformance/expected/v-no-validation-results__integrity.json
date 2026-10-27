@@ -1,0 +1,38 @@
+{
+  "rubricName": "C2PA Asset Integrity Rubric",
+  "rubricVersion": "1.0",
+  "true": {
+    "validation": []
+  },
+  "false": {
+    "validation": [
+      {
+        "trait": "trusted_data_present",
+        "reportText": "Missing validation results in the manifest"
+      },
+      {
+        "trait": "trusted_success",
+        "reportText": "Found trust failures: MISSING_VALIDATION_RESULTS"
+      },
+      {
+        "trait": "valid_data_present",
+        "reportText": "Missing validation results in the manifest"
+      },
+      {
+        "trait": "valid_success",
+        "reportText": "Found validation mismatches: MISSING_VALIDATION_RESULTS"
+      },
+      {
+        "trait": "well_formed_data_present",
+        "reportText": "Missing validation results in the manifest"
+      },
+      {
+        "trait": "well_formed_success",
+        "reportText": "Found structural failures: MISSING_VALIDATION_RESULTS"
+      }
+    ]
+  },
+  "warning": {
+    "validation": []
+  }
+}

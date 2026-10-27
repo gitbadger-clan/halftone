@@ -1,0 +1,38 @@
+{
+  "rubricName": "C2PA Asset Integrity Rubric",
+  "rubricVersion": "1.0",
+  "true": {
+    "validation": [
+      {
+        "trait": "trusted_data_present",
+        "reportText": "Validation results are present for trust analysis"
+      },
+      {
+        "trait": "trusted_success",
+        "reportText": "Asset is trusted"
+      },
+      {
+        "trait": "valid_data_present",
+        "reportText": "Validation results are present for integrity analysis"
+      },
+      {
+        "trait": "valid_success",
+        "reportText": "No validation mismatches found"
+      },
+      {
+        "trait": "well_formed_data_present",
+        "reportText": "Validation results are present for structural analysis"
+      },
+      {
+        "trait": "well_formed_success",
+        "reportText": "No structural failures found"
+      }
+    ]
+  },
+  "false": {
+    "validation": []
+  },
+  "warning": {
+    "validation": []
+  }
+}

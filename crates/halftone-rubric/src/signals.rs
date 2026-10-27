@@ -285,6 +285,10 @@ impl Rubric {
         let mut failures: Vec<(String, String, Error)> = Vec::new();
         for (node_id, node) in dag.iter_mut() {
             for s in &self.statements {
+                // The reference skips a statement without an expression or id.
+                if !s.id.py_truthy() {
+                    continue;
+                }
                 let trait_str = match &s.id {
                     JValue::Str(t) => t.clone(),
                     _ => continue,

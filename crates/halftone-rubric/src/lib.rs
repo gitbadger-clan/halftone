@@ -16,11 +16,13 @@
 //! A signal is a statement about what the signer declared, not a verification:
 //! callers report it next to the manifest's validation state, never instead of it.
 
+pub mod conformance;
 pub mod formula;
 pub mod rubric;
 pub mod signals;
 pub mod value;
 
+pub use conformance::ConformanceReport;
 pub use rubric::Rubric;
 pub use signals::{SignalsReport, StatementError};
 pub use value::JValue;
@@ -37,4 +39,38 @@ pub const SIGNALS_LOCAL_SHA256: &str =
 /// Load the vendored signals rubric.
 pub fn signals_local() -> Result<Rubric, formula::Error> {
     Rubric::from_yaml(SIGNALS_LOCAL_YAML)
+}
+
+/// The C2PA Asset Integrity Rubric 1.0, byte for byte as published (CC BY 4.0; see
+/// `rubrics/NOTICE.md`). Classifies the active manifest's validation failure codes
+/// as well-formedness, validity and trust problems.
+pub const INTEGRITY_YAML: &str = include_str!("../rubrics/asset-rubric-integrity.yml");
+
+/// SHA-256 of [`INTEGRITY_YAML`] as published in c2pa-org/conformance-public.
+pub const INTEGRITY_SHA256: &str =
+    "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76";
+
+/// The C2PA Asset Conformance 0.2 Spec 2.4 Rubric 1.0, byte for byte as published
+/// (CC BY 4.0; see `rubrics/NOTICE.md`): the Conformance Program 0.2 checks for
+/// manifests written to C2PA 2.4.
+pub const CONFORMANCE_0_2_SPEC_2_4_YAML: &str =
+    include_str!("../rubrics/asset-rubric-conformance0.2-spec2.4.yml");
+
+/// SHA-256 of [`CONFORMANCE_0_2_SPEC_2_4_YAML`] as published in
+/// c2pa-org/conformance-public.
+pub const CONFORMANCE_0_2_SPEC_2_4_SHA256: &str =
+    "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9";
+
+/// Load the vendored integrity rubric.
+pub fn integrity() -> Result<Rubric, formula::Error> {
+    Rubric::from_yaml(INTEGRITY_YAML)
+}
+
+/// Load the vendored conformance-0.2 rubric for spec 2.4, with
+/// `$expected_spec_version` set to `2.4` as the reference sets it from the file name.
+pub fn conformance_0_2_spec_2_4() -> Result<Rubric, formula::Error> {
+    Rubric::from_yaml_with(
+        CONFORMANCE_0_2_SPEC_2_4_YAML,
+        &[("$expected_spec_version", JValue::Str("2.4".into()))],
+    )
 }

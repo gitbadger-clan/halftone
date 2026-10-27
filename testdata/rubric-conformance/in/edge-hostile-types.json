@@ -1,0 +1,19 @@
+{
+ "manifests": [
+  {
+   "label": 5,
+   "claim.v2": {
+    "created_assertions": 5,
+    "claim_generator_info": 7
+   },
+   "assertions": {
+    "c2pa.actions.v2": {
+     "actions": "not a list"
+    }
+   },
+   "validationResults": {
+    "failure": "not a list"
+   }
+  }
+ ]
+}

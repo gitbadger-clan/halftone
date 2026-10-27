@@ -1,0 +1,139 @@
+{
+  "rubricName": "C2PA Asset Conformance 0.2 Spec 2.4 Rubric",
+  "rubricVersion": "1.0",
+  "true": {
+    "validation": [
+      {
+        "trait": "all_actions_included_opened",
+        "reportText": "allActionsIncluded is correctly set to true for open-and-re-save manifest (Spec 2.4 §18.15.3)"
+      },
+      {
+        "trait": "alternative_content_representation_choice",
+        "reportText": "Alternative content representation assertions have valid choice of parameters (Spec 2.4 §15.10.3.2.7)"
+      },
+      {
+        "trait": "discouraged_legacy_action_parameters",
+        "reportText": "No discouraged legacy action parameters found in parameters block (Spec 2.2 §18.14.4.1, §18.14.12)"
+      },
+      {
+        "trait": "forbidden_labels_in_external_references",
+        "reportText": "No external references point to forbidden labels (Spec 2.4 §15.10.3.2.2, §18.24.1)"
+      },
+      {
+        "trait": "ingredient_relationship_values",
+        "reportText": "All ingredient assertions have valid relationship values (Spec 2.2 §18.15.3)"
+      },
+      {
+        "trait": "ingredient_v3_choice",
+        "reportText": "No ingredient v3 assertion contains both activeManifest and digitalSourceType (Spec 2.4 §18.16.12.3)"
+      },
+      {
+        "trait": "ingredient_v3_mandatory_validation_results",
+        "reportText": "Ingredient v3 assertions with activeManifest correctly include validationResults (Spec 2.2 §18.15.12.4.3)"
+      },
+      {
+        "trait": "ingredient_v3_no_active_manifest",
+        "reportText": "Ingredient v3 assertions without activeManifest correctly omit validationResults (Spec 2.2 §18.15.12.4.3)"
+      },
+      {
+        "trait": "mandatory_dst_for_created_action",
+        "reportText": "All c2pa.created actions have a digitalSourceType (Spec 2.2 §18.14.2, §18.14.4.5)"
+      },
+      {
+        "trait": "mandatory_dst_for_perceptible_transformations",
+        "reportText": "Every predefined C2PA perceptible transformation action has a digitalSourceType"
+      },
+      {
+        "trait": "no_box_hash_for_tiff",
+        "reportText": "No deprecated box hash found for TIFF-based assets (Spec 2.4 §18.7.3.3, §15.10.1.2)"
+      },
+      {
+        "trait": "no_deprecated_actions",
+        "reportText": "No deprecated actions used (Spec 2.2 §18.14.11, App C.1)"
+      },
+      {
+        "trait": "no_deprecated_assertions",
+        "reportText": "No deprecated standard assertions found (Spec 2.2 §6.3, App C.1)"
+      },
+      {
+        "trait": "no_deprecated_claim_fields",
+        "reportText": "No deprecated claim fields found (Spec 2.4 §10.2.3.2, §10.2.1)"
+      },
+      {
+        "trait": "no_dst_for_opened_action",
+        "reportText": "No c2pa.opened actions have a digitalSourceType"
+      },
+      {
+        "trait": "no_unrecognized_custom_action_parameters",
+        "reportText": "All custom action parameters conform to entity-specific namespacing (contain a dot '.') (Spec 2.2 §18.14.4.7)"
+      },
+      {
+        "trait": "no_unrecognized_custom_assertions",
+        "reportText": "All custom assertions conform to entity-specific namespacing (contain a dot '.') (Spec 2.2 §6.2.2)"
+      },
+      {
+        "trait": "no_unsupported_actions",
+        "reportText": "All standard actions are supported for this spec version (Spec 2.2 §18.14, §18.14.12)"
+      },
+      {
+        "trait": "no_unsupported_assertions",
+        "reportText": "All standard assertions are supported for this spec version (Spec 2.2 §6.2, §6.2.2, §6.3)"
+      },
+      {
+        "trait": "no_url_in_hashes",
+        "reportText": "No deprecated url field found in hash assertions (Spec 2.4 §18.5, §18.6)"
+      },
+      {
+        "trait": "opened_action_ingredient_reference",
+        "reportText": "All c2pa.opened actions have exactly one ingredient reference (Spec 2.4 §15.10.3.2.3, §18.15.4.7)"
+      },
+      {
+        "trait": "review_ratings_datasource",
+        "reportText": "No invalid co-occurrence of reviewRatings and human entry dataSource (Spec 2.2 §18.3.3)"
+      },
+      {
+        "trait": "valid_data_present",
+        "reportText": "Validation results are present for integrity analysis"
+      },
+      {
+        "trait": "valid_success",
+        "reportText": "No validation mismatches found"
+      },
+      {
+        "trait": "well_formed_data_present",
+        "reportText": "Validation results are present for structural analysis"
+      },
+      {
+        "trait": "well_formed_success",
+        "reportText": "No structural failures found"
+      }
+    ]
+  },
+  "false": {
+    "validation": [
+      {
+        "trait": "active_manifest_urn",
+        "reportText": "Active manifest URN uses old 'urn:uuid' prefix (pre-v2.2) (Spec 2.2 §8.1, §10.2.1)"
+      },
+      {
+        "trait": "inception_action_position",
+        "reportText": "Inception action is not in the first actions assertion of created_assertions (or first item is not an actions assertion) (Spec 2.2 §18.14.2)"
+      },
+      {
+        "trait": "mandatory_all_actions_included",
+        "reportText": "Missing mandatory allActionsIncluded field in one or more actions assertions"
+      },
+      {
+        "trait": "mandatory_spec_version",
+        "reportText": "Missing or incorrect 'specVersion' in claim_generator_info: missing"
+      },
+      {
+        "trait": "no_unrecognized_custom_actions",
+        "reportText": "Found custom actions violating namespacing rules (missing a dot '.'): {{matches}} (Spec 2.2 §18.14, §18.14.12)"
+      }
+    ]
+  },
+  "warning": {
+    "validation": []
+  }
+}
