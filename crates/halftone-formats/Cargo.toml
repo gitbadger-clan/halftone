@@ -1,0 +1,15 @@
+[package]
+name = "halftone-formats"
+description = "File-format reading shared by Halftone's evidence layers: JPEG metadata segments, the Motion Photo / Ultra HDR container directory"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+serde.workspace = true
+
+[lints]
+workspace = true

@@ -49,7 +49,7 @@ use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, 
 use serde::Serialize;
 
 /// Upper bound on assembled XMP bytes per file, to keep hostile input cheap.
-const MAX_XMP_BYTES: usize = 4 * 1024 * 1024;
+use halftone_formats::MAX_XMP_BYTES;
 
 /// Syntactic form a value was found in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -135,123 +135,21 @@ pub fn scan(mime: &str, b: &[u8]) -> Result<MarkingScan, String> {
     Ok(s)
 }
 
-/// ExtendedXMP under reassembly: one GUID, declared full length, (offset, data) chunks.
-struct ExtendedXmp {
-    guid: Vec<u8>,
-    full: usize,
-    chunks: Vec<(usize, Vec<u8>)>,
-}
-
-/// Walk JPEG segments up to SOS: collect the standard XMP packet, reassemble
-/// ExtendedXMP, and decode the APP13 IPTC resource. Bounds-checked; never panics.
+/// The JPEG metadata segments, read by `halftone-formats`, recorded in `s`: the
+/// ExtendedXMP and C2PA-container flags, and the IIM datasets from the Photoshop
+/// IRB (a later block with IIM replaces an earlier one, as the segment walk always
+/// did). Returns the XMP packets.
 fn jpeg_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
-    const XMP: &[u8] = b"http://ns.adobe.com/xap/1.0/\0";
-    const EXT: &[u8] = b"http://ns.adobe.com/xmp/extension/\0";
-    const IRB: &[u8] = b"Photoshop 3.0\0";
-    if !b.starts_with(&[0xFF, 0xD8]) {
-        return Err("not a JPEG".into());
-    }
-    let mut packets = Vec::new();
-    let mut ext: Option<ExtendedXmp> = None;
-    let mut i = 2;
-    while i + 1 < b.len() {
-        if b[i] != 0xFF {
-            return Err(format!("marker expected at {i}"));
-        }
-        let mut m = i + 1;
-        while m < b.len() && b[m] == 0xFF {
-            m += 1;
-        }
-        if m >= b.len() {
-            break;
-        }
-        let marker = b[m];
-        i = m + 1;
-        match marker {
-            0xD9 | 0xDA => break,
-            0x01 | 0xD0..=0xD7 => continue,
-            _ => {}
-        }
-        if i + 2 > b.len() {
-            return Err("truncated segment header".into());
-        }
-        let len = u16::from_be_bytes([b[i], b[i + 1]]) as usize;
-        if len < 2 || i + len > b.len() {
-            return Err("bad segment length".into());
-        }
-        let seg = &b[i + 2..i + len];
-        match marker {
-            0xE1 => {
-                if let Some(rest) = seg.strip_prefix(XMP) {
-                    packets.push(rest.to_vec());
-                } else if let Some(rest) = seg.strip_prefix(EXT) {
-                    s.xmp_extended = true;
-                    // GUID (32 ASCII bytes), full length u32, offset u32, data.
-                    if rest.len() >= 40 {
-                        let guid = rest[..32].to_vec();
-                        let full =
-                            u32::from_be_bytes([rest[32], rest[33], rest[34], rest[35]]) as usize;
-                        let off =
-                            u32::from_be_bytes([rest[36], rest[37], rest[38], rest[39]]) as usize;
-                        let data = rest[40..].to_vec();
-                        let e = ext.get_or_insert_with(|| ExtendedXmp {
-                            guid: guid.clone(),
-                            full,
-                            chunks: Vec::new(),
-                        });
-                        if e.guid == guid && e.full == full && full <= MAX_XMP_BYTES {
-                            e.chunks.push((off, data));
-                        } else {
-                            s.xmp_extended_incomplete = true;
-                        }
-                    } else {
-                        s.xmp_extended_incomplete = true;
-                    }
-                }
-            }
-            0xEB => s.manifest_container_present |= seg.starts_with(b"JP"),
-            0xED => {
-                if let Some(rest) = seg.strip_prefix(IRB) {
-                    if let Some(iim) = parse_irb_iptc(rest) {
-                        s.iim = Some(iim);
-                    }
-                }
-            }
-            _ => {}
-        }
-        i += len;
-    }
-    if let Some(ExtendedXmp {
-        full, mut chunks, ..
-    }) = ext
-    {
-        chunks.sort_by_key(|c| c.0);
-        let mut buf = vec![0u8; full];
-        let mut covered = 0usize;
-        let mut ok = true;
-        for (off, data) in chunks {
-            if off != covered || off + data.len() > full {
-                ok = false;
-                break;
-            }
-            buf[off..off + data.len()].copy_from_slice(&data);
-            covered += data.len();
-        }
-        if ok && covered == full {
-            packets.push(buf);
-        } else {
-            s.xmp_extended_incomplete = true;
+    let m = halftone_formats::jpeg::metadata(b)?;
+    s.xmp_extended |= m.xmp_extended;
+    s.xmp_extended_incomplete |= m.xmp_extended_incomplete;
+    s.manifest_container_present |= m.c2pa_jumbf;
+    for irb in &m.photoshop_irb {
+        if let Some(iim) = parse_irb_iptc(irb) {
+            s.iim = Some(iim);
         }
     }
-    Ok(packets)
-}
-
-/// Every XMP packet in a JPEG's metadata segments: the standard packet and, when
-/// present and complete, the reassembled ExtendedXMP. Shared with
-/// [`crate::gcontainer`], which reads the container directory from them.
-pub fn jpeg_xmp_packets(b: &[u8]) -> Result<Vec<Vec<u8>>, String> {
-    let mut scratch = MarkingScan::default();
-    jpeg_packets(b, &mut scratch)
+    Ok(m.xmp_packets)
 }
 
 /// Decode the IPTC IIM datasets from the Photoshop image-resource block (resource

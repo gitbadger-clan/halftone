@@ -1,0 +1,30 @@
+# Fuzz target for halftone-formats (cargo-fuzz; needs a nightly toolchain).
+#
+#   cargo install cargo-fuzz
+#   cd crates/halftone-formats/fuzz
+#   mkdir -p corpus/formats
+#   cargo fuzz run formats corpus/formats seeds/formats -- -max_total_time=600
+#
+# Its own workspace, so the main build never compiles libFuzzer.
+[package]
+name = "halftone-formats-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+halftone-formats = { path = ".." }
+
+[[bin]]
+name = "formats"
+path = "fuzz_targets/formats.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]
+members = ["."]
