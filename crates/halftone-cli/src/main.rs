@@ -191,6 +191,14 @@ struct InspectArgs {
     /// details.lineage.
     #[arg(long)]
     provenance: bool,
+    /// Print the C2PA integrity and conformance rubric results under each file that
+    /// carries a manifest: one line per rubric, then only the checks not met, the
+    /// warnings and anything that could not be evaluated. A measurement of how the
+    /// manifest is written, not of the file, and not part of any verdict. Human
+    /// output only; with --json the results are in the c2pa source's
+    /// details.conformance.
+    #[arg(long)]
+    conformance: bool,
 }
 
 #[derive(Args)]
@@ -563,6 +571,20 @@ fn inspect(a: InspectArgs) -> Result<()> {
                     e.source.name,
                     rationale
                 );
+            }
+            if a.conformance {
+                let details = insp
+                    .evidence
+                    .iter()
+                    .find(|e| e.source.name == "c2pa")
+                    .and_then(|e| e.details.get("conformance"));
+                if let Some(c) = details {
+                    if c.get("rubrics").is_some() {
+                        print!("{}", halftone_c2pa::conformance::render(c));
+                    } else if let Some(err) = c.get("error").and_then(|v| v.as_str()) {
+                        println!("  conformance: not measured: {err}");
+                    }
+                }
             }
             if skipped > 0 {
                 println!("  ({skipped} sources not applicable to this format)");

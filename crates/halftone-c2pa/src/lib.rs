@@ -65,6 +65,12 @@
 //! manifest label. A signal classifies what a signer declared; it is reported next
 //! to the validation state and never changes the verdict.
 //!
+//! Conformance ([`conformance`]): `details.conformance` holds the C2PA Asset
+//! Integrity Rubric and the Conformance 0.2 Spec 2.4 Rubric over the same export:
+//! measurements of how the manifest is written, never of the file and never part of
+//! the verdict. `ht inspect --conformance` prints them.
+//!
+pub mod conformance;
 pub mod lineage;
 pub mod multi_asset;
 pub mod shelf_life;
@@ -651,14 +657,21 @@ mod imp {
             .get("validation_status")
             .cloned()
             .unwrap_or(serde_json::Value::Null);
-        // The C2PA signals rubric over the whole store, from c2pa's own crJSON export.
-        // Details only: a signal classifies what a signer declared and never changes
-        // the verdict (see `signals`).
-        let signals = match reader.to_crjson_value() {
-            Ok(crjson) => crate::signals::details(&crjson),
-            Err(e) => serde_json::json!({
-                "error": format!("c2pa could not export the store as crJSON: {e}"),
-            }),
+        // The C2PA's own rubrics over the whole store, from one crJSON export: the
+        // signals (what each signer declared) and the integrity and conformance
+        // measurements (how the manifest is written). Details only: none of them
+        // changes the verdict (see `signals` and `conformance`).
+        let (signals, conformance) = match reader.to_crjson_value() {
+            Ok(crjson) => (
+                crate::signals::details(&crjson),
+                crate::conformance::details(&crjson),
+            ),
+            Err(e) => {
+                let err = serde_json::json!({
+                    "error": format!("c2pa could not export the store as crJSON: {e}"),
+                });
+                (err.clone(), err)
+            }
         };
 
         // C2PA 2.4 §15.12.4, which c2pa 0.91 does not apply (D-014). Only an Invalid
@@ -942,6 +955,7 @@ mod imp {
             "digital_source_type_hits": source_type.hits,
             "lineage": lineage,
             "signals": signals,
+            "conformance": conformance,
             "source_type_note": ai_note.clone(),
             "vocabulary_version": halftone_core::dst::VOCABULARY_VERSION,
             "trust": resolved.details(),
