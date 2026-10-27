@@ -1,16 +1,24 @@
 #!/usr/bin/env fish
-# Frame for the Canva-vs-Flow post: the same signed camera photo (00-base
-# photo_bowl, E1 "replace the apples with lemons"), edited by Canva and by
-# Google Flow. Shows each file's manifest chain from the active manifest down.
-# Canva's output has one manifest and no ingredients; Flow's chain reaches the
-# camera capture. Structure only: validity is left out on purpose (Canva's
-# October certificate has since expired, which is a separate finding).
+# Manifest chains for publication frames. Default: the Canva-vs-Flow frame (the
+# same signed camera photo, 00-base photo_bowl, E1 "replace the apples with
+# lemons", edited by Canva and by Google Flow). Shows each file's manifest chain
+# from the active manifest down. Structure only: validity is left out on purpose
+# (Canva's October certificate has since expired, which is a separate finding).
 #
-#   fish scripts/pub/edit-chains.fish          # print the frame
-#   fish scripts/pub/edit-chains.fish --png    # render scripts/pub/out/edit-chains.png
+#   fish scripts/pub/edit-chains.fish                  # print the default frame
+#   fish scripts/pub/edit-chains.fish --png            # render scripts/pub/out/edit-chains.png
+#
+# Custom frame: pass rows as "label:path" (path relative to corpus/differential).
+# A custom frame needs --title, and --out when rendering, so it never overwrites
+# the default image.
+#
+#   fish scripts/pub/edit-chains.fish --title "..." --out scripts/pub/out/x.png --png \
+#       "the original:00-base/photo_bowl.jpg" "Flow, no prompt:04-generators/..."
 #
 # Requires: c2patool, jq; freeze for --png
 #   brew install charmbracelet/tap/freeze
+
+argparse png 'title=' 'out=' -- $argv; or exit 2
 
 set -l self (realpath (status filename)) # before `cd $repo`, so relative invocations still resolve
 set -l repo (git rev-parse --show-toplevel 2>/dev/null); or begin
@@ -21,17 +29,41 @@ cd $repo
 
 set -l c corpus/differential
 set -l out scripts/pub/out/edit-chains.png
+set -l title "One signed photo, one prompt (\"Replace the green apples in the bowl with lemons\"), two editors"
 set -l rows \
     "the original, straight from the camera:00-base/photo_bowl.jpg" \
     "Canva, edited by prompt:04-generators/canva__canva-ai__edit-photo__e1__1.png" \
     "Google Flow, edited by prompt:04-generators/google-flow__nano-banana-2.1__edit-photo__e1__1.jpg"
 
+# Under freeze the script runs again with no arguments; a custom frame reaches
+# it through these variables, which avoids quoting rows through freeze.
+if set -q EDIT_CHAINS_ROWS
+    set rows (string split \n -- $EDIT_CHAINS_ROWS)
+    set title $EDIT_CHAINS_TITLE
+else if test (count $argv) -gt 0
+    set -q _flag_title; or begin
+        echo "a custom frame needs --title" >&2
+        exit 2
+    end
+    set rows $argv
+    set title $_flag_title
+end
+
 # --- render mode: re-run this script under freeze and stop ------------------
-if contains -- --png $argv
+if set -q _flag_png
     type -q freeze; or begin
         echo "freeze not found: brew install charmbracelet/tap/freeze" >&2
         exit 2
     end
+    if test (count $argv) -gt 0
+        set -q _flag_out; or begin
+            echo "a custom frame needs --out, so the default image is not overwritten" >&2
+            exit 2
+        end
+        set -gx EDIT_CHAINS_ROWS (string join \n -- $rows | string collect) # one string; a bare (...) would split it again
+        set -gx EDIT_CHAINS_TITLE $title
+    end
+    set -q _flag_out; and set out $_flag_out
     mkdir -p (dirname $out)
     freeze --execute "fish $self" \
         --execute.timeout 120s \
@@ -81,10 +113,12 @@ set -l H (set_color --bold brcyan)
 set -l D (set_color brblack)
 set -l R (set_color normal)
 
-echo "$D# One signed photo, one prompt (\"Replace the green apples in the bowl with lemons\"), two editors, "(date -u '+%Y-%m-%d')$R
+# The date is when the frame was rendered, not when the files were collected
+# (SOURCE.md has the collection dates).
+echo "$D# $title (rendered "(date -u '+%Y-%m-%d')")$R"
 
 for row in $rows
-    set -l kv (string split : $row)
+    set -l kv (string split -m1 : -- $row)
     set -l f $c/$kv[2]
     test -f $f; or begin
         echo "missing $f" >&2
