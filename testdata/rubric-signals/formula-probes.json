@@ -712,5 +712,337 @@
   "expr": "a[? b",
   "data": {},
   "error": "SyntaxError"
+ },
+ {
+  "expr": "if(`true`, \"a\", \"b\")",
+  "data": null,
+  "result": "a"
+ },
+ {
+  "expr": "if(`0`, \"a\", \"b\")",
+  "data": null,
+  "result": "b"
+ },
+ {
+  "expr": "if(`[]`, \"a\", \"b\")",
+  "data": null,
+  "result": "b"
+ },
+ {
+  "expr": "if(a, b, c)",
+  "data": {
+   "a": "x",
+   "b": 1,
+   "c": 2
+  },
+  "result": 1
+ },
+ {
+  "expr": "if(@, \"a\", \"b\")",
+  "data": {},
+  "result": "b"
+ },
+ {
+  "expr": "if(`true`, \"ok\", nosuch())",
+  "data": null,
+  "result": "ok"
+ },
+ {
+  "expr": "if(`false`, nosuch(), \"ok\")",
+  "data": null,
+  "result": "ok"
+ },
+ {
+  "expr": "if(`true`, \"a\")",
+  "data": null,
+  "error": "FunctionError"
+ },
+ {
+  "expr": "if(`true`, \"a\", \"b\", \"c\")",
+  "data": null,
+  "error": "FunctionError"
+ },
+ {
+  "expr": "notNull(a, b, \"x\")",
+  "data": {
+   "b": 0
+  },
+  "result": 0
+ },
+ {
+  "expr": "notNull(a, b)",
+  "data": {},
+  "result": null
+ },
+ {
+  "expr": "notNull(`[]`, \"x\")",
+  "data": null,
+  "result": []
+ },
+ {
+  "expr": "notNull()",
+  "data": null,
+  "error": "FunctionError"
+ },
+ {
+  "expr": "split(\"a,b,,c\", \",\")",
+  "data": null,
+  "result": [
+   "a",
+   "b",
+   "",
+   "c"
+  ]
+ },
+ {
+  "expr": "split(\"abc\", \"\")",
+  "data": null,
+  "result": [
+   "a",
+   "b",
+   "c"
+  ]
+ },
+ {
+  "expr": "split(\"héllo\", \"\")",
+  "data": null,
+  "result": [
+   "h",
+   "é",
+   "l",
+   "l",
+   "o"
+  ]
+ },
+ {
+  "expr": "split(null, \",\")",
+  "data": null,
+  "result": [
+   ""
+  ]
+ },
+ {
+  "expr": "split(\"\", \",\")",
+  "data": null,
+  "result": [
+   ""
+  ]
+ },
+ {
+  "expr": "split(`[\"a-b\", \"c\"]`, \"-\")",
+  "data": null,
+  "result": [
+   [
+    "a",
+    "b"
+   ],
+   [
+    "c"
+   ]
+  ]
+ },
+ {
+  "expr": "split(\"a1b1c\", `1`)",
+  "data": null,
+  "result": [
+   "a",
+   "b",
+   "c"
+  ]
+ },
+ {
+  "expr": "split(`5`, \"\")",
+  "data": null,
+  "result": [
+   "5"
+  ]
+ },
+ {
+  "expr": "split(\"abc\", `[\"a\", \"c\"]`)",
+  "data": null,
+  "result": [
+   [
+    "",
+    "bc"
+   ],
+   [
+    "ab",
+    ""
+   ]
+  ]
+ },
+ {
+  "expr": "split(`{}`, \",\")",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "split(`true`, \"r\")",
+  "data": null,
+  "result": [
+   "t",
+   "ue"
+  ]
+ },
+ {
+  "expr": "split(label, \":\")[2]",
+  "data": {
+   "label": "urn:c2pa:1234-5678"
+  },
+  "result": "1234-5678"
+ },
+ {
+  "expr": "endsWith(\"abc\", \"c\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "endsWith(\"abc\", \"\")",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "endsWith(\"\", \"\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "endsWith(\"c\", \"abc\")",
+  "data": null,
+  "result": false
+ },
+ {
+  "expr": "endsWith(null, \"\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "endsWith(`[\"ab\", \"cb\", \"x\"]`, \"b\")",
+  "data": null,
+  "result": [
+   true,
+   true,
+   false
+  ]
+ },
+ {
+  "expr": "endsWith(`12`, \"2\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "endsWith(`1.0`, \"0\")",
+  "data": null,
+  "result": true
+ },
+ {
+  "expr": "endsWith(\"abc\", `{}`)",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "keys(a)",
+  "data": {
+   "a": {
+    "x": 1,
+    "y": 2
+   }
+  },
+  "result": [
+   "x",
+   "y"
+  ]
+ },
+ {
+  "expr": "values(a)",
+  "data": {
+   "a": {
+    "x": 1,
+    "y": [
+     2
+    ]
+   }
+  },
+  "result": [
+   1,
+   [
+    2
+   ]
+  ]
+ },
+ {
+  "expr": "keys(`{}`)",
+  "data": null,
+  "result": []
+ },
+ {
+  "expr": "keys(`[1]`)",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "keys(null)",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "values(\"s\")",
+  "data": null,
+  "error": "TypeError"
+ },
+ {
+  "expr": "type(`1`)",
+  "data": null,
+  "result": "number"
+ },
+ {
+  "expr": "type(`1.5`)",
+  "data": null,
+  "result": "number"
+ },
+ {
+  "expr": "type(\"s\")",
+  "data": null,
+  "result": "string"
+ },
+ {
+  "expr": "type(`[1]`)",
+  "data": null,
+  "result": "array"
+ },
+ {
+  "expr": "type(`[]`)",
+  "data": null,
+  "result": "array"
+ },
+ {
+  "expr": "type(`{}`)",
+  "data": null,
+  "result": "object"
+ },
+ {
+  "expr": "type(`true`)",
+  "data": null,
+  "result": "boolean"
+ },
+ {
+  "expr": "type(null)",
+  "data": null,
+  "result": "null"
+ },
+ {
+  "expr": "type(a)",
+  "data": {},
+  "result": "null"
+ },
+ {
+  "expr": "length(keys(a)) == `2` && contains(values(a), `1`)",
+  "data": {
+   "a": {
+    "x": 1,
+    "y": 2
+   }
+  },
+  "result": true
  }
 ]

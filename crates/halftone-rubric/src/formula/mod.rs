@@ -11,7 +11,10 @@
 //! argument coercions, the same lenient handling of `null`. Where Python and Rust
 //! differ (float formatting, string comparison), the Python behaviour is reproduced.
 //!
-//! Implemented built-ins: `length`, `contains`, `startsWith`. Calling any other
+//! Implemented built-ins: `length`, `contains`, `startsWith`, `endsWith`, `split`,
+//! `keys`, `values`, `type`, `notNull`, and `if` (lazy: only the chosen branch is
+//! evaluated). Together they cover the signals, integrity and conformance-0.2
+//! rubrics. Calling any other
 //! function is an error, so a rubric that needs more fails loudly rather than
 //! silently disagreeing with the reference.
 

@@ -207,7 +207,21 @@ impl Engine {
             Node::Global(name) => g.get(name).cloned().unwrap_or(V::Null),
             Node::Function(name, args) => {
                 if name == "if" && !self.user.contains_key(name) {
-                    return Err(Error::function("if() is not implemented"));
+                    // `if` receives its arguments unevaluated: only the chosen
+                    // branch runs, so an error in the other one never fires.
+                    if args.len() != 3 {
+                        return Err(Error::function(format!(
+                            "if() takes 3 arguments but received {}",
+                            args.len()
+                        )));
+                    }
+                    let cond = self.visit(&args[0], value, g)?;
+                    let branch = if to_boolean(&cond) {
+                        &args[1]
+                    } else {
+                        &args[2]
+                    };
+                    return self.visit(branch, value, g);
                 }
                 let mut resolved = Vec::with_capacity(args.len());
                 for a in args {
@@ -267,13 +281,27 @@ impl Engine {
             }
             return r;
         }
+        if name == "notNull" {
+            // Variadic, at least one argument: the first that is not null.
+            if args.is_empty() {
+                return Err(Error::function(
+                    "notNull() takes at least 1 arguments but received 0",
+                ));
+            }
+            return Ok(args
+                .into_iter()
+                .find(|v| !v.is_null())
+                .unwrap_or(JValue::Null));
+        }
         let sig: &[&[Ty]] = match name {
             "length" => &[&[Ty::String, Ty::Array, Ty::Object]],
             "contains" => &[&[Ty::String, Ty::Array], &[Ty::Any]],
-            "startsWith" => &[
+            "startsWith" | "endsWith" | "split" => &[
                 &[Ty::String, Ty::ArrayString],
                 &[Ty::String, Ty::ArrayString],
             ],
+            "keys" | "values" => &[&[Ty::Object]],
+            "type" => &[&[Ty::Any]],
             _ => return Err(Error::function(format!("No such function: {name}()"))),
         };
         if args.len() != sig.len() {
@@ -309,11 +337,50 @@ impl Engine {
                     ))
                 }
             },
-            _ => broadcast(&a, &|row: &[JValue]| {
+            "startsWith" => broadcast(&a, &|row: &[JValue]| {
                 Ok(JValue::Bool(
                     to_string(&row[0])?.starts_with(to_string(&row[1])?.as_str()),
                 ))
             }),
+            "endsWith" => broadcast(&a, &|row: &[JValue]| {
+                let s: Vec<char> = scalar_text(&row[0])?.chars().collect();
+                let suffix: Vec<char> = scalar_text(&row[1])?.chars().collect();
+                // The reference slices `list(s)[-len(suffix):]`, and `-0` is 0: an
+                // empty suffix compares against the whole string.
+                Ok(JValue::Bool(if suffix.is_empty() {
+                    s.is_empty()
+                } else {
+                    s.ends_with(&suffix)
+                }))
+            }),
+            "split" => broadcast(&a, &|row: &[JValue]| {
+                let s = scalar_text(&row[0])?;
+                let sep = scalar_text(&row[1])?;
+                let parts: Vec<JValue> = if sep.is_empty() {
+                    s.chars().map(|c| JValue::Str(c.to_string())).collect()
+                } else {
+                    s.split(sep.as_str())
+                        .map(|p| JValue::Str(p.to_string()))
+                        .collect()
+                };
+                Ok(JValue::Array(parts))
+            }),
+            "keys" | "values" => match &a[0] {
+                JValue::Object(m) => Ok(JValue::Array(
+                    m.iter()
+                        .map(|(k, v)| {
+                            if name == "keys" {
+                                JValue::Str(k.clone())
+                            } else {
+                                v.clone()
+                            }
+                        })
+                        .collect(),
+                )),
+                _ => Err(Error::ty(format!("{name}() requires an object"))),
+            },
+            "type" => Ok(JValue::Str(type_name(&a[0]).to_string())),
+            _ => Err(Error::function(format!("No such function: {name}()"))),
         }
     }
 }
@@ -558,6 +625,27 @@ fn strict_string_to_number(s: &str) -> Result<f64, Error> {
         return Err(fail());
     }
     Ok(f)
+}
+
+/// `_scalar_text`: `""` for null, the text of anything else.
+fn scalar_text(v: &JValue) -> Result<String, Error> {
+    match v {
+        JValue::Null => Ok(String::new()),
+        other => to_string(other),
+    }
+}
+
+/// `type()`: the json-formula type name of a value.
+fn type_name(v: &JValue) -> &'static str {
+    match get_type(v) {
+        Ty::Number => "number",
+        Ty::String => "string",
+        Ty::Object => "object",
+        Ty::Boolean => "boolean",
+        Ty::Null => "null",
+        Ty::Any => "any",
+        Ty::Array | Ty::ArrayNumber | Ty::ArrayString | Ty::ArrayArray | Ty::EmptyArray => "array",
+    }
 }
 
 /// json-formula's `toString`: Python `str()` for numbers, `"true"`/`"false"`,

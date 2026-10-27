@@ -117,6 +117,24 @@ PROBES = [
  # syntax errors
  ('a "b"', {}), ("(a, b)", {}), ("()", {}), ("a.", {}), ("[1, ]", {}), ("{}", {}), ("'unterminated", {}), ("a\r", {}),
  ("'f'(1)", {}), ("a[? b", {}),
+  # built-ins for the integrity and conformance rubrics (feature 5)
+  ('if(`true`, "a", "b")', None), ('if(`0`, "a", "b")', None), ('if(`[]`, "a", "b")', None),
+  ('if(a, b, c)', {"a": "x", "b": 1, "c": 2}), ('if(@, "a", "b")', {}),
+  ('if(`true`, "ok", nosuch())', None), ('if(`false`, nosuch(), "ok")', None),
+  ('if(`true`, "a")', None), ('if(`true`, "a", "b", "c")', None),
+  ('notNull(a, b, "x")', {"b": 0}), ('notNull(a, b)', {}), ('notNull(`[]`, "x")', None), ('notNull()', None),
+  ('split("a,b,,c", ",")', None), ('split("abc", "")', None), ('split("héllo", "")', None), ('split(null, ",")', None),
+  ('split("", ",")', None), ('split(`["a-b", "c"]`, "-")', None), ('split("a1b1c", `1`)', None),
+  ('split(`5`, "")', None), ('split("abc", `["a", "c"]`)', None), ('split(`{}`, ",")', None), ('split(`true`, "r")', None),
+  ('split(label, ":")[2]', {"label": "urn:c2pa:1234-5678"}),
+  ('endsWith("abc", "c")', None), ('endsWith("abc", "")', None), ('endsWith("", "")', None), ('endsWith("c", "abc")', None),
+  ('endsWith(null, "")', None), ('endsWith(`["ab", "cb", "x"]`, "b")', None), ('endsWith(`12`, "2")', None),
+  ('endsWith(`1.0`, "0")', None), ('endsWith("abc", `{}`)', None),
+  ('keys(a)', {"a": {"x": 1, "y": 2}}), ('values(a)', {"a": {"x": 1, "y": [2]}}), ('keys(`{}`)', None),
+  ('keys(`[1]`)', None), ('keys(null)', None), ('values("s")', None),
+  ('type(`1`)', None), ('type(`1.5`)', None), ('type("s")', None), ('type(`[1]`)', None), ('type(`[]`)', None),
+  ('type(`{}`)', None), ('type(`true`)', None), ('type(null)', None), ('type(a)', {}),
+  ('length(keys(a)) == `2` && contains(values(a), `1`)', {"a": {"x": 1, "y": 2}}),
 ]
 
 
@@ -170,3 +188,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

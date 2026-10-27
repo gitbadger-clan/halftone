@@ -3,4 +3,4 @@ rubric version: 1.0
 rubric sha256: 0502e989e025b32a0b253645991abf56d2cd14860a1e7cda10e6921bc5ba19a8
 json-formula-py: 327a8d75669673c10db3051da816311ac2df8a32
 cases: 31
-probes: 102
+probes: 152
