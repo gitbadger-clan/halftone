@@ -41,6 +41,16 @@
 //! file. Nodes are matched by manifest label, never by position; a pseudo node's
 //! trailing number (an exporter-order artifact) is ignored. Each node's traits and
 //! ingredients must agree as sets.
+//!
+//! Integrity and conformance rubrics: the same collector run also records the
+//! C2PA's conformance evaluator on Credentio's crJSON; Halftone's
+//! `details.conformance` must agree check by check, per rubric, where both ran the
+//! same rubric file. On a file where Halftone's §15.12.4 fallback ran, differences
+//! confined to `valid_success` and `well_formed_success` are D-014 (the exports'
+//! validation codes differ by design) and are printed as known. Likewise D-011: where
+//! the only difference is `well_formed_success` and Halftone's sole structural
+//! failure is `claim.malformed` (c2pa-rs decodes Bing's soft-binding assertion and
+//! rejects its region unit; Credentio does not decode it).
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -735,6 +745,208 @@ fn compare_signals(
     want.len()
 }
 
+/// The integrity checks that read the validation codes for well-formedness and
+/// validity: where Credentio applies C2PA 2.4 §15.12.4 and c2pa-rs does not (D-014),
+/// their crJSON exports carry different codes, and these two checks read them.
+const D014_CHECKS: [&str; 2] = ["valid_success", "well_formed_success"];
+
+/// The integrity rubric's text for a not-met `well_formed_success` lists the failure
+/// codes after its last ": ". D-011 check (2): since c2pa 0.91, c2pa-rs decodes
+/// soft-binding assertions and reports Bing's (`com.microsoft.invismark.1`, region
+/// unit "percentage", which the 2.4 CDDL does not allow) as `claim.malformed`;
+/// Credentio does not decode them. True when that is the only structural failure.
+fn only_claim_malformed(results: &Value) -> bool {
+    results
+        .as_array()
+        .into_iter()
+        .flatten()
+        .find(|r| r["trait"] == "well_formed_success")
+        .and_then(|r| r["text"].as_str())
+        .and_then(|t| t.rsplit_once(": "))
+        .is_some_and(|(_, codes)| codes.trim() == "claim.malformed")
+}
+
+/// A rubric's checks as `category trait` -> outcomes (sorted, normally one).
+fn conformance_checks(
+    v: &Value,
+    list: &str,
+) -> std::collections::BTreeMap<(String, String), Vec<String>> {
+    let mut m: std::collections::BTreeMap<(String, String), Vec<String>> =
+        std::collections::BTreeMap::new();
+    for c in v[list].as_array().into_iter().flatten() {
+        let key = (
+            c["category"].as_str().unwrap_or("?").to_string(),
+            c["trait"].as_str().unwrap_or("?").to_string(),
+        );
+        m.entry(key)
+            .or_default()
+            .push(c["outcome"].as_str().unwrap_or("?").to_string());
+    }
+    m.values_mut().for_each(|v| v.sort());
+    m
+}
+
+/// Compare Halftone's `details.conformance` (c2pa-rs crJSON, `halftone-rubric`) with
+/// the C2PA's conformance evaluator on Credentio's crJSON, rubric by rubric, check
+/// by check, where both ran the same rubric file (by SHA-256). On a file where
+/// Halftone's §15.12.4 fallback ran, disagreements confined to the validity and
+/// well-formedness checks are D-014: the two exports carry different validation
+/// codes, by design. Returns how many reference checks were compared.
+fn compare_conformance(
+    name: &str,
+    exp: &Value,
+    shas: &Value,
+    insp: &Value,
+    out: &mut Vec<Disagreement>,
+    known: &mut Vec<Known>,
+) -> usize {
+    let cf = &exp["conformance"];
+    if !cf.is_object() || cf.get("error").is_some() || cf["present"] != true {
+        return 0;
+    }
+    let Some(ev) = evidence(insp, "c2pa") else {
+        return 0;
+    };
+    if ev["rationale"]
+        .as_str()
+        .unwrap_or("")
+        .contains("built without")
+    {
+        return 0;
+    }
+    let hs = &ev["details"]["conformance"];
+    if !hs["rubrics"].is_array() {
+        let got = hs
+            .get("error")
+            .map_or("no details.conformance".to_string(), |e| {
+                format!("error: {e}")
+            });
+        out.push(Disagreement {
+            file: name.to_string(),
+            field: "conformance",
+            expected: "rubrics".into(),
+            got,
+        });
+        return 0;
+    }
+    let fallback_ran = ev["details"]["multi_asset"].is_object();
+    let mut compared = 0;
+    for (id, theirs) in cf["rubrics"].as_object().into_iter().flatten() {
+        let file = format!("{name} [{id}]");
+        let Some(ours) = hs["rubrics"]
+            .as_array()
+            .and_then(|rs| rs.iter().find(|r| r["id"] == id.as_str()))
+        else {
+            out.push(Disagreement {
+                file,
+                field: "conformance.rubric",
+                expected: "evaluated".into(),
+                got: "absent".into(),
+            });
+            continue;
+        };
+        if let Some(want) = shas[id.as_str()].as_str() {
+            if ours["sha256"].as_str() != Some(want) {
+                // Different rubric files: nothing below is comparable.
+                out.push(Disagreement {
+                    file,
+                    field: "conformance.rubric",
+                    expected: want.into(),
+                    got: show(ours["sha256"].as_str()),
+                });
+                continue;
+            }
+        }
+        match (theirs.get("error").is_some(), ours.get("error").is_some()) {
+            (true, true) => continue,
+            (false, false) => {}
+            (t, _) => {
+                out.push(Disagreement {
+                    file,
+                    field: "conformance.evaluated",
+                    expected: if t {
+                        "rejected".into()
+                    } else {
+                        "evaluated".into()
+                    },
+                    got: if t {
+                        "evaluated".into()
+                    } else {
+                        "rejected".into()
+                    },
+                });
+                continue;
+            }
+        }
+        let (want, got) = (
+            conformance_checks(theirs, "checks"),
+            conformance_checks(ours, "results"),
+        );
+        compared += want.values().map(Vec::len).sum::<usize>();
+        let keys: std::collections::BTreeSet<_> = want.keys().chain(got.keys()).collect();
+        let differing: Vec<_> = keys
+            .into_iter()
+            .filter(|k| want.get(*k) != got.get(*k))
+            .collect();
+        if differing.is_empty() {
+            continue;
+        }
+        let describe = |m: &std::collections::BTreeMap<(String, String), Vec<String>>,
+                        k: &(String, String)| {
+            m.get(k).map_or("absent".to_string(), |v| v.join(","))
+        };
+        let d011 = differing.iter().all(|(_, t)| t == "well_formed_success")
+            && differing.iter().all(|k| {
+                want.get(*k).is_some_and(|v| v == &["met"])
+                    && got.get(*k).is_some_and(|v| v == &["not_met"])
+            })
+            && only_claim_malformed(&ours["results"]);
+        if d011 {
+            known.push(Known {
+                file,
+                entry: "D-011",
+                detail: "well_formed_success: credentio met vs halftone not_met (claim.malformed, \
+                         soft-binding region unit)"
+                    .into(),
+            });
+            continue;
+        }
+        if fallback_ran
+            && differing
+                .iter()
+                .all(|(_, t)| D014_CHECKS.contains(&t.as_str()))
+        {
+            let detail = differing
+                .iter()
+                .map(|k| {
+                    format!(
+                        "{}: credentio {} vs halftone {}",
+                        k.1,
+                        describe(&want, k),
+                        describe(&got, k)
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join("; ");
+            known.push(Known {
+                file,
+                entry: "D-014",
+                detail,
+            });
+            continue;
+        }
+        for k in differing {
+            out.push(Disagreement {
+                file: format!("{name} [{id}: {}]", k.1),
+                field: "conformance.check",
+                expected: describe(&want, k),
+                got: describe(&got, k),
+            });
+        }
+    }
+    compared
+}
+
 fn render(rows: &[Disagreement]) -> String {
     let mut s = String::from("| file | field | expected | halftone |\n|---|---|---|---|\n");
     for d in rows {
@@ -822,6 +1034,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         let mut aged: Vec<Aged> = Vec::new();
         let mut known: Vec<Known> = Vec::new();
         let (mut signal_files, mut signal_nodes) = (0usize, 0usize);
+        let (mut conformance_files, mut conformance_checks) = (0usize, 0usize);
         for (name, e) in files_obj {
             if !dir.join(name).is_file() {
                 continue; // already reported as missing
@@ -852,6 +1065,18 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                         signal_files += 1;
                         signal_nodes += n;
                     }
+                    let c = compare_conformance(
+                        &name,
+                        e,
+                        &exp["conformance_rubrics"],
+                        insp,
+                        &mut dis,
+                        &mut known,
+                    );
+                    if c > 0 {
+                        conformance_files += 1;
+                        conformance_checks += c;
+                    }
                 }
                 None => dis.push(Disagreement {
                     file: name,
@@ -873,6 +1098,11 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         if signal_files > 0 {
             println!(
                 "differential[{label}]: signals rubric compared on {signal_nodes} nodes in {signal_files} files"
+            );
+        }
+        if conformance_files > 0 {
+            println!(
+                "differential[{label}]: integrity and conformance rubrics compared on {conformance_checks} checks in {conformance_files} files"
             );
         }
         for a in &aged {
@@ -1414,5 +1644,206 @@ mod signals_rule {
         let no_details =
             json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "", "details": {}}]});
         assert_eq!(run(&exp(fold()), &no_details)[0].field, "signals");
+    }
+}
+
+// ---- Conformance comparison: fabricated results, no corpus needed ----
+
+#[cfg(test)]
+mod conformance_rule {
+    use super::*;
+    use serde_json::json;
+
+    const SHA: &str = "f87ece6f";
+
+    fn check(trait_name: &str, outcome: &str) -> Value {
+        json!({"category": "validation", "trait": trait_name, "outcome": outcome})
+    }
+
+    fn exp(checks: Value) -> Value {
+        json!({"conformance": {"present": true, "rubrics": {"integrity": {"checks": checks}}}})
+    }
+
+    fn insp(results: Value, multi_asset: bool) -> Value {
+        let mut details = json!({"conformance": {"rubrics": [{"id": "integrity", "sha256": SHA, "results": results}]}});
+        if multi_asset {
+            details["multi_asset"] = json!({"outcome": "match"});
+        }
+        json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "", "details": details}]})
+    }
+
+    fn run(e: &Value, i: &Value) -> (usize, Vec<Disagreement>, Vec<Known>) {
+        let (mut out, mut known) = (Vec::new(), Vec::new());
+        let n = compare_conformance("f", e, &json!({"integrity": SHA}), i, &mut out, &mut known);
+        (n, out, known)
+    }
+
+    fn six(valid: &str) -> Value {
+        json!([
+            check("well_formed_data_present", "met"),
+            check("well_formed_success", "met"),
+            check("valid_data_present", "met"),
+            check("valid_success", valid),
+            check("trusted_data_present", "met"),
+            check("trusted_success", "met"),
+        ])
+    }
+
+    #[test]
+    fn agreement_counts_every_reference_check() {
+        let (n, out, known) = run(&exp(six("met")), &insp(six("met"), false));
+        assert_eq!((n, out.len(), known.len()), (6, 0, 0));
+    }
+
+    #[test]
+    fn a_differing_check_is_one_row_naming_rubric_and_check() {
+        let (_, out, known) = run(&exp(six("met")), &insp(six("not_met"), false));
+        assert!(known.is_empty());
+        assert_eq!(out.len(), 1);
+        assert_eq!(out[0].file, "f [integrity: valid_success]");
+        assert_eq!(
+            (out[0].expected.as_str(), out[0].got.as_str()),
+            ("met", "not_met")
+        );
+    }
+
+    #[test]
+    fn validity_differences_after_the_fallback_are_d014() {
+        let (n, out, known) = run(&exp(six("met")), &insp(six("not_met"), true));
+        assert_eq!((n, out.len()), (6, 0));
+        assert_eq!(known[0].entry, "D-014");
+        assert!(
+            known[0]
+                .detail
+                .contains("valid_success: credentio met vs halftone not_met")
+        );
+    }
+
+    #[test]
+    fn other_differences_after_the_fallback_are_not_excused() {
+        let mut ours = six("not_met");
+        ours[5] = check("trusted_success", "not_met");
+        let (_, out, known) = run(&exp(six("met")), &insp(ours, true));
+        assert!(known.is_empty());
+        assert_eq!(out.len(), 2);
+    }
+
+    #[test]
+    fn a_check_on_one_side_only_is_a_row() {
+        let mut ours = six("met");
+        ours.as_array_mut().unwrap().pop();
+        let (_, out, _) = run(&exp(six("met")), &insp(ours, false));
+        assert_eq!(
+            (out[0].expected.as_str(), out[0].got.as_str()),
+            ("met", "absent")
+        );
+    }
+
+    #[test]
+    fn another_rubric_file_is_one_row_and_nothing_else() {
+        let (mut out, mut known) = (Vec::new(), Vec::new());
+        let n = compare_conformance(
+            "f",
+            &exp(six("met")),
+            &json!({"integrity": "ffff"}),
+            &insp(six("not_met"), false),
+            &mut out,
+            &mut known,
+        );
+        assert_eq!((n, out.len()), (0, 1));
+        assert_eq!(out[0].field, "conformance.rubric");
+    }
+
+    #[test]
+    fn rejection_must_agree() {
+        let theirs = json!({"conformance": {"present": true, "rubrics": {"integrity": {"error": "evaluator failed"}}}});
+        let rejected = json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "", "details": {"conformance": {"rubrics": [{"id": "integrity", "sha256": SHA, "error": "x"}]}}}]});
+        assert_eq!(run(&theirs, &rejected).1.len(), 0);
+        let out = run(&theirs, &insp(six("met"), false)).1;
+        assert_eq!(out[0].field, "conformance.evaluated");
+    }
+
+    fn with_text(mut checks: Value, trait_name: &str, text: &str) -> Value {
+        for c in checks.as_array_mut().unwrap() {
+            if c["trait"] == trait_name {
+                c["text"] = json!(text);
+            }
+        }
+        checks
+    }
+
+    fn six_wf(wf: &str) -> Value {
+        let mut v = six("met");
+        v[1] = check("well_formed_success", wf);
+        v
+    }
+
+    #[test]
+    fn bings_claim_malformed_alone_is_d011() {
+        let ours = with_text(
+            six_wf("not_met"),
+            "well_formed_success",
+            "Found structural failures: claim.malformed",
+        );
+        let (n, out, known) = run(&exp(six("met")), &insp(ours, false));
+        assert_eq!((n, out.len()), (6, 0), "{out:?}");
+        assert_eq!(known[0].entry, "D-011");
+    }
+
+    #[test]
+    fn claim_malformed_with_another_code_is_not_excused() {
+        let ours = with_text(
+            six_wf("not_met"),
+            "well_formed_success",
+            "Found structural failures: claim.malformed, assertion.cbor.invalid",
+        );
+        let (_, out, known) = run(&exp(six("met")), &insp(ours, false));
+        assert!(known.is_empty());
+        assert_eq!(out.len(), 1);
+    }
+
+    #[test]
+    fn claim_malformed_plus_another_differing_check_is_not_excused() {
+        let mut ours = with_text(
+            six_wf("not_met"),
+            "well_formed_success",
+            "Found structural failures: claim.malformed",
+        );
+        ours[5] = check("trusted_success", "not_met");
+        let (_, out, known) = run(&exp(six("met")), &insp(ours, false));
+        assert!(known.is_empty());
+        assert_eq!(out.len(), 2);
+    }
+
+    #[test]
+    fn the_other_direction_is_not_d011() {
+        // Credentio not met, Halftone met: not the D-011 shape.
+        let ours = six("met");
+        let theirs = with_text(
+            six_wf("not_met"),
+            "well_formed_success",
+            "Found structural failures: claim.malformed",
+        );
+        let (_, out, known) = run(&exp(theirs), &insp(ours, false));
+        assert!(known.is_empty());
+        assert_eq!(out.len(), 1);
+    }
+
+    #[test]
+    fn nothing_to_compare_without_reference_results_or_a_c2pa_build() {
+        assert_eq!(run(&json!({}), &insp(six("met"), false)).0, 0);
+        assert_eq!(
+            run(
+                &json!({"conformance": {"error": "no crJSON (exit 1)"}}),
+                &insp(six("met"), false)
+            )
+            .0,
+            0
+        );
+        let built_without = json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "built without the c2pa feature", "details": null}]});
+        assert!(run(&exp(six("met")), &built_without).1.is_empty());
+        let missing =
+            json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "", "details": {}}]});
+        assert_eq!(run(&exp(six("met")), &missing).1[0].field, "conformance");
     }
 }
