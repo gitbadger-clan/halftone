@@ -3,7 +3,8 @@
 //! committed. Run with
 //!   cargo test -p halftone-container --test gcontainer_corpus -- --ignored --nocapture
 
-use halftone_container::gcontainer::{Magic, analyze};
+use halftone_container::gcontainer::{ContainerDirectory, Magic, analyze};
+use halftone_core::{Asset, EvidenceSource, Status};
 use std::path::PathBuf;
 
 fn stratum(name: &str) -> Vec<PathBuf> {
@@ -95,5 +96,44 @@ fn multipart_copies_disagree_exactly_where_bytes_were_removed() {
             // A new operation must get its own expectation, never pass unchecked.
             panic!("{name}: no expectation for this operation; add a branch");
         }
+    }
+}
+
+/// The source's verdict on the same files: removed or cut items are Inconclusive;
+/// a flipped bit inside an item moves nothing, so the structure still matches and
+/// the verdict is Present. That is this source's stated blind spot (only the C2PA
+/// part hashes see the flip), checked on real files.
+#[test]
+#[ignore = "needs the uncommitted corpus images"]
+fn source_verdicts_on_the_multipart_copies() {
+    for p in stratum("08-multipart") {
+        let name = p.file_name().unwrap().to_string_lossy().into_owned();
+        let asset = Asset::from_bytes(std::fs::read(&p).unwrap(), Some(p.clone())).unwrap();
+        let e = ContainerDirectory.assess(&asset).unwrap();
+        println!("{name}: {:?}\n    {}", e.status, e.rationale);
+        let want = if name.contains("flip") {
+            Status::Present
+        } else {
+            Status::Inconclusive
+        };
+        assert_eq!(e.status, want, "{name}: {}", e.rationale);
+    }
+    for p in stratum("06-phones")
+        .into_iter()
+        .filter(|p| p.to_string_lossy().contains("pixel9fold"))
+    {
+        let asset = Asset::from_bytes(std::fs::read(&p).unwrap(), Some(p.clone())).unwrap();
+        let e = ContainerDirectory.assess(&asset).unwrap();
+        println!(
+            "{}: {:?}\n    {}",
+            p.file_name().unwrap().to_string_lossy(),
+            e.status,
+            e.rationale
+        );
+        assert_ne!(
+            e.status,
+            Status::Inconclusive,
+            "an untouched capture must match its own directory"
+        );
     }
 }

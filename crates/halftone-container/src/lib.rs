@@ -15,6 +15,8 @@
 //! - [`marking::MarkingMetadata`] (`marking_metadata`): the IPTC `DigitalSourceType`
 //!   self-declaration in XMP (JPEG APP1 + ExtendedXMP, PNG iTXt, WebP), and the
 //!   legacy IPTC IIM block from APP13, as explicit fields.
+//! - [`gcontainer::ContainerDirectory`] (`container_directory`): the Motion Photo / Ultra HDR
+//!   container directory checked against the bytes the file holds.
 //!
 //! All sources report *encoder path* and *self-identification* facts. None of them
 //! claims authorship on its own; the rationale strings say so.

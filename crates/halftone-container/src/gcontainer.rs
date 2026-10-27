@@ -14,8 +14,14 @@
 //! agrees with the bytes says nothing about whether the content was edited; one
 //! that disagrees says the file no longer matches its own description, not why.
 //! Pure: no I/O, never panics on hostile input.
+//!
+//! [`ContainerDirectory`] (`container_directory`) is the evidence source: one
+//! question, "does this file contain what its own container directory declares?",
+//! answered from the bytes alone, with or without a C2PA manifest.
 
 use crate::marking::jpeg_xmp_packets;
+use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
+use serde::Serialize;
 
 /// Namespace of `Container:Directory` and `Container:Item`.
 pub const CONTAINER_NS: &str = "http://ns.google.com/photos/1.0/container/";
@@ -25,7 +31,7 @@ pub const ITEM_NS: &str = "http://ns.google.com/photos/1.0/container/item/";
 const MAX_ITEMS: usize = 64;
 
 /// One `Container:Item` as written in the directory.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Item {
     /// `Item:Semantic`, e.g. `Primary`, `GainMap`, `MotionPhoto`.
     pub semantic: String,
@@ -38,14 +44,15 @@ pub struct Item {
 }
 
 /// The directory as written, in order.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Directory {
     /// The items, in directory order.
     pub items: Vec<Item>,
 }
 
 /// Whether the bytes where an item should start look like its declared type.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Magic {
     /// The signature for the declared MIME type is there (JPEG `FF D8 FF`;
     /// MP4/QuickTime `ftyp` at offset 4).
@@ -58,7 +65,7 @@ pub enum Magic {
 }
 
 /// Where one secondary item should be, and what is there.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Placement {
     /// Position in the directory (0 is the primary).
     pub index: usize,
@@ -77,7 +84,7 @@ pub struct Placement {
 }
 
 /// The directory checked against the file.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Layout {
     /// The directory as written.
     pub directory: Directory,
@@ -99,6 +106,132 @@ impl Layout {
     /// The file matches its directory in every checked respect.
     pub fn agrees(&self) -> bool {
         self.disagreements.is_empty()
+    }
+}
+
+/// A readable name for an item's `Item:Semantic`.
+fn item_name(semantic: &str) -> &str {
+    match semantic {
+        "Primary" => "the primary image",
+        "GainMap" => "a gain map",
+        "MotionPhoto" => "a motion clip",
+        other => other,
+    }
+}
+
+/// "a, b and c".
+fn and_list(items: &[String]) -> String {
+    match items {
+        [] => String::new(),
+        [one] => one.clone(),
+        [init @ .., last] => format!("{} and {last}", init.join(", ")),
+    }
+}
+
+/// The container-directory evidence source (`container_directory`).
+///
+/// `Absent`: a JPEG with no container directory, which is most of them; it says
+/// nothing about origin. `Present`: the directory is there and the file holds every
+/// declared item where the directory places it, and nothing after. `Inconclusive`:
+/// the file and its directory disagree (an item missing, cut short, or not where
+/// declared; bytes after the motion clip), or the directory cannot be read. A
+/// disagreement is reported as fact, never as an accusation: the directory is
+/// unsigned, and apps and upload pipelines drop motion clips as a matter of course.
+/// Agreement, for its part, says nothing about edits inside an item.
+#[derive(Debug, Default)]
+pub struct ContainerDirectory;
+
+impl EvidenceSource for ContainerDirectory {
+    fn id(&self) -> SourceId {
+        SourceId {
+            name: "container_directory".into(),
+            version: env!("CARGO_PKG_VERSION").into(),
+        }
+    }
+    fn layer(&self) -> Layer {
+        Layer::Container
+    }
+    fn supports(&self, a: &Asset) -> bool {
+        a.modality == Modality::Image && a.mime == "image/jpeg"
+    }
+    fn assess(&self, a: &Asset) -> halftone_core::Result<Evidence> {
+        let (status, rationale, details) = match analyze(&a.bytes) {
+            Ok(None) => (
+                Status::Absent,
+                "No container directory (the XMP item list that Motion Photo and Ultra HDR \
+                 JPEGs carry). Most JPEGs have none; its absence says nothing about origin."
+                    .to_string(),
+                serde_json::json!({ "directory": false }),
+            ),
+            Err(e) => (
+                Status::Inconclusive,
+                format!(
+                    "The file declares a container directory, but it could not be checked: {e}."
+                ),
+                serde_json::json!({ "directory": true, "error": e }),
+            ),
+            Ok(Some(l)) => {
+                let details = serde_json::to_value(&l).unwrap_or(serde_json::Value::Null);
+                if l.agrees() {
+                    let mut items = vec![item_name("Primary").to_string()];
+                    for p in &l.placements {
+                        items.push(if p.length == 0 {
+                            format!(
+                                "{} (sharing the previous item's bytes)",
+                                item_name(&p.semantic)
+                            )
+                        } else {
+                            format!("{} ({} bytes)", item_name(&p.semantic), thousands(p.length))
+                        });
+                    }
+                    (
+                        Status::Present,
+                        format!(
+                            "The file holds what its container directory declares: {}, each \
+                             where the directory places it. The directory is unsigned metadata, \
+                             so this confirms the file's structure, not that any item is unedited.",
+                            and_list(&items)
+                        ),
+                        details,
+                    )
+                } else {
+                    let more = match l.disagreements.len() {
+                        1 => String::new(),
+                        n => format!(" ({} more in details)", n - 1),
+                    };
+                    // Only informative when it is the motion clip that is short.
+                    let clip_short = l
+                        .placements
+                        .iter()
+                        .any(|p| p.semantic == "MotionPhoto" && p.present_bytes < p.length);
+                    let why = if clip_short {
+                        " (some apps and upload pipelines drop the motion clip)"
+                    } else {
+                        ""
+                    };
+                    (
+                        Status::Inconclusive,
+                        format!(
+                            "The file does not match its own container directory: {}{more}. The \
+                             directory is what the writing app declared; a mismatch says the file \
+                             no longer matches that declaration, not who changed what or why{why}.",
+                            l.disagreements[0]
+                        ),
+                        details,
+                    )
+                }
+            }
+        };
+        Ok(Evidence {
+            layer: self.layer(),
+            source: self.id(),
+            status,
+            statistic: None,
+            calibration: None,
+            rationale,
+            details,
+            duration_ms: 0,
+        })
     }
 }
 
@@ -250,9 +383,11 @@ pub fn resolve(directory: Directory, primary_end: u64, file: &[u8]) -> Layout {
         if length != 0 {
             if present == 0 {
                 disagreements.push(format!(
-                    "item {index} ({}, {} bytes) is declared at byte {offset}, but the file ends at byte {file_len}",
+                    "item {index} ({}, {} bytes) is declared at byte {}, but the file ends at byte {}",
                     it.semantic,
-                    thousands(length)
+                    thousands(length),
+                    thousands(offset),
+                    thousands(file_len)
                 ));
             } else if present < length {
                 disagreements.push(format!(
@@ -264,8 +399,10 @@ pub fn resolve(directory: Directory, primary_end: u64, file: &[u8]) -> Layout {
             }
             if magic == Magic::Differs {
                 disagreements.push(format!(
-                    "the bytes at {offset}, where item {index} ({}) should start, are not {}",
-                    it.semantic, it.mime
+                    "the bytes at {}, where item {index} ({}) should start, are not {}",
+                    thousands(offset),
+                    it.semantic,
+                    it.mime
                 ));
             }
             prev_start = offset;
@@ -755,6 +892,140 @@ mod tests {
             r#"<d xmlns:Container="{CONTAINER_NS}" xmlns:Item="{ITEM_NS}"><Container:Directory></Container:Directory></d>"#
         );
         assert!(parse_directory(&empty).is_err());
+    }
+
+    fn asset(bytes: Vec<u8>, mime: &str) -> Asset {
+        Asset {
+            path: None,
+            bytes,
+            modality: Modality::Image,
+            mime: mime.into(),
+            sha256: String::new(),
+        }
+    }
+
+    /// No rationale may read as an accusation (principles: contradictions are
+    /// Inconclusive, never accusations).
+    fn neutral(r: &str) {
+        for w in ["removed", "tamper", "stripped", "manipulat", "fake"] {
+            assert!(!r.to_lowercase().contains(w), "{w:?} in {r:?}");
+        }
+    }
+
+    #[test]
+    fn source_verdicts_cover_absent_present_and_inconclusive() {
+        let src = ContainerDirectory;
+        let plain = src.assess(&asset(jpeg(None), "image/jpeg")).unwrap();
+        assert_eq!(plain.status, Status::Absent);
+        assert!(plain.rationale.contains("says nothing about origin"));
+
+        let (f, primary, gain, clip) = motion_photo();
+        let whole = src.assess(&asset(f.clone(), "image/jpeg")).unwrap();
+        assert_eq!(whole.status, Status::Present, "{}", whole.rationale);
+        assert!(
+            whole
+                .rationale
+                .contains(&format!("a gain map ({gain} bytes)")),
+            "{}",
+            whole.rationale
+        );
+        assert!(
+            whole
+                .rationale
+                .contains(&format!("a motion clip ({clip} bytes)")),
+            "{}",
+            whole.rationale
+        );
+        assert!(whole.rationale.contains("not that any item is unedited"));
+        assert_eq!(whole.details["placements"][1]["magic"], "matches");
+        assert_eq!(whole.details["declared_end"], whole.details["file_len"]);
+
+        let cut = src
+            .assess(&asset(
+                f[..(primary + gain) as usize].to_vec(),
+                "image/jpeg",
+            ))
+            .unwrap();
+        assert_eq!(cut.status, Status::Inconclusive);
+        assert!(
+            cut.rationale.contains("item 2 (MotionPhoto"),
+            "{}",
+            cut.rationale
+        );
+        assert!(cut.rationale.contains("not who changed what or why"));
+        assert!(
+            cut.rationale.contains("drop the motion clip"),
+            "{}",
+            cut.rationale
+        );
+        assert_eq!(cut.details["placements"][1]["present_bytes"], 0);
+
+        let both = src
+            .assess(&asset(f[..primary as usize].to_vec(), "image/jpeg"))
+            .unwrap();
+        assert!(
+            both.rationale.contains("(1 more in details)"),
+            "{}",
+            both.rationale
+        );
+
+        // Trailing bytes: a disagreement, but not a short clip, so no clip aside.
+        let mut tail = f.clone();
+        tail.extend_from_slice(b"appended");
+        let tail = src.assess(&asset(tail, "image/jpeg")).unwrap();
+        assert_eq!(tail.status, Status::Inconclusive);
+        assert!(
+            !tail.rationale.contains("drop the motion clip"),
+            "{}",
+            tail.rationale
+        );
+
+        for e in [&plain, &whole, &cut, &both, &tail] {
+            neutral(&e.rationale);
+        }
+    }
+
+    #[test]
+    fn offsets_and_sizes_are_written_with_separators() {
+        let dir = Directory {
+            items: vec![
+                Item {
+                    semantic: "Primary".into(),
+                    mime: "image/jpeg".into(),
+                    length: Some(0),
+                    padding: None,
+                },
+                Item {
+                    semantic: "MotionPhoto".into(),
+                    mime: "video/mp4".into(),
+                    length: Some(3_296_847),
+                    padding: None,
+                },
+            ],
+        };
+        let l = resolve(dir, 2_056_812, &vec![0u8; 2_056_812]);
+        assert_eq!(
+            l.disagreements[0],
+            "item 1 (MotionPhoto, 3,296,847 bytes) is declared at byte 2,056,812, but the file ends at byte 2,056,812"
+        );
+    }
+
+    #[test]
+    fn source_applies_to_jpeg_only_and_reports_an_unreadable_directory() {
+        let src = ContainerDirectory;
+        assert!(src.supports(&asset(jpeg(None), "image/jpeg")));
+        assert!(!src.supports(&asset(jpeg(None), "image/png")));
+        let bad =
+            xmp(&[("Primary", "image/jpeg", Some(0), None)]).replace("</Container:Directory>", "");
+        let e = src.assess(&asset(jpeg(Some(&bad)), "image/jpeg")).unwrap();
+        assert_eq!(e.status, Status::Inconclusive);
+        assert!(
+            e.rationale.contains("could not be checked"),
+            "{}",
+            e.rationale
+        );
+        assert_eq!(e.details["directory"], true);
+        neutral(&e.rationale);
     }
 
     #[test]
