@@ -112,18 +112,23 @@ pub fn metadata(b: &[u8]) -> Result<JpegMetadata, String> {
     }) = ext
     {
         chunks.sort_by_key(|c| c.0);
-        let mut buf = vec![0u8; full];
+        // Check that the chunks tile the declared length before allocating: the
+        // length comes from the file, so it is never an allocation size on its own
+        // (a 1 KB file once made this allocate 4 GB; found by the fuzz target).
         let mut covered = 0usize;
-        let mut ok = true;
-        for (off, data) in chunks {
-            if off != covered || off + data.len() > full {
+        let mut ok = full <= MAX_XMP_BYTES;
+        for (off, data) in &chunks {
+            if !ok || *off != covered || off + data.len() > full {
                 ok = false;
                 break;
             }
-            buf[off..off + data.len()].copy_from_slice(&data);
             covered += data.len();
         }
         if ok && covered == full {
+            let mut buf = Vec::with_capacity(full);
+            for (_, data) in chunks {
+                buf.extend_from_slice(&data);
+            }
             packets.push(buf);
         } else {
             s.xmp_extended_incomplete = true;
