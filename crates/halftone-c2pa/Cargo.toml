@@ -23,6 +23,7 @@ ureq = { workspace = true, optional = true }
 # The signing certificate's serial and validity window (`shelf_life`).
 x509-parser = { workspace = true, optional = true }
 halftone-rubric.workspace = true
+halftone-formats.workspace = true
 
 
 

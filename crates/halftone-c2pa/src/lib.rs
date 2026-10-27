@@ -25,7 +25,10 @@
 //! reported, so it still compares with c2patool; `details.multi_asset` holds the
 //! outcome, the status code and the per-part table. The fallback runs only when the
 //! claim signature validated, nothing else failed, and every assertion it reads is
-//! bound to the signed claim.
+//! bound to the signed claim. Parts are named ("part 2, the motion clip") from what
+//! the file itself declares at exactly the signed place (`parts[].declared_as`;
+//! `declared_parts_agree` says whether every signed part lines up). Declarations are
+//! unsigned: they name parts and never change an outcome.
 //!
 //! Shelf life ([`shelf_life`], DIFFERENTIAL.md D-010, D-012): for every manifest with
 //! a signature, `details.signing_cert` carries the signer certificate's serial and
@@ -233,18 +236,32 @@ mod imp {
         if let Err(why) = multi_asset::eligible(&failures, &successes, &labels) {
             return Some(Report::not_evaluated(why));
         }
-        Some(multi_asset::evaluate(ma, store, bytes, &C2paPartHasher))
+        let mut report = multi_asset::evaluate(ma, store, bytes, &C2paPartHasher);
+        // Names for the rationale, from what the file itself declares at exactly a
+        // signed part's place (its container directory, today). Naming only: the
+        // declaration is unsigned and never changes the outcome.
+        multi_asset::name_from_declared(
+            &mut report,
+            &halftone_formats::parts::declared_parts(bytes),
+        );
+        Some(report)
     }
 
-    /// "part 2 (MP4, optional)": index, what the bytes look like, and whether the
-    /// signer allowed it to be removed.
+    /// "part 2 (motion clip, MP4, optional)": index, what the file declares at that
+    /// place (when it declares something), what the bytes look like (when they are
+    /// there), and whether the signer allowed it to be removed.
     fn part_name(p: &PartReport) -> String {
-        let need = if p.optional { "optional" } else { "required" };
-        match p.kind {
-            Some("jpeg") => format!("part {} (JPEG, {need})", p.index),
-            Some("mp4") => format!("part {} (MP4, {need})", p.index),
-            _ => format!("part {} ({need})", p.index),
+        let mut what: Vec<&str> = Vec::new();
+        if let Some(name) = p.declared_as.as_deref() {
+            what.push(halftone_formats::parts::describe(name));
         }
+        match p.kind {
+            Some("jpeg") => what.push("JPEG"),
+            Some("mp4") => what.push("MP4"),
+            _ => {}
+        }
+        what.push(if p.optional { "optional" } else { "required" });
+        format!("part {} ({})", p.index, what.join(", "))
     }
 
     /// Names of the parts whose result satisfies `want`, in signed order.
@@ -269,7 +286,7 @@ mod imp {
         out
     }
 
-    /// "part 2 (MP4, optional) is cut short, 1,648,423 of 3,296,847 bytes present":
+    /// "part 2 (motion clip, MP4, optional) is cut short, 1,648,423 of 3,296,847 bytes present":
     /// an interrupted download and a deliberate trim leave different amounts.
     fn cut_short(p: &PartReport) -> String {
         match (&p.locator, p.present_bytes) {

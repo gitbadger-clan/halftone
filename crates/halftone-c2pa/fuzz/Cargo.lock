@@ -208,6 +208,7 @@ name = "halftone-c2pa"
 version = "0.1.0"
 dependencies = [
  "halftone-core",
+ "halftone-formats",
  "halftone-packs",
  "halftone-rubric",
  "hex",
@@ -237,6 +238,13 @@ dependencies = [
  "sha2",
  "thiserror",
  "tracing",
+]
+
+[[package]]
+name = "halftone-formats"
+version = "0.1.0"
+dependencies = [
+ "serde",
 ]
 
 [[package]]

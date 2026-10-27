@@ -7,9 +7,12 @@
 //!   JUMBF presence, Photoshop IRB) and the end of the first complete image.
 //! - [`gcontainer`]: the Motion Photo / Ultra HDR container directory and its
 //!   layout against the file.
+//! - [`parts`]: the parts a file declares itself to consist of, as named byte
+//!   ranges, independent of which declaration they come from.
 
 pub mod gcontainer;
 pub mod jpeg;
+pub mod parts;
 
 /// Upper bound on one XMP packet's size, for every container that carries XMP.
 pub const MAX_XMP_BYTES: usize = 4 * 1024 * 1024;

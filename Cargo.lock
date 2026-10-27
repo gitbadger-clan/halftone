@@ -1315,6 +1315,7 @@ version = "0.1.0"
 dependencies = [
  "c2pa",
  "halftone-core",
+ "halftone-formats",
  "halftone-packs",
  "halftone-rubric",
  "hex",

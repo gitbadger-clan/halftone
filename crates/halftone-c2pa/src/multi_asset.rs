@@ -98,6 +98,11 @@ pub struct PartReport {
     /// length, or fewer when the file ends inside it (a part cut short). `None`
     /// when the part is not in the file at all.
     pub present_bytes: Option<u64>,
+    /// What the file itself declares at exactly this part's signed place (offset
+    /// and length), e.g. `MotionPhoto` from its container directory: set by
+    /// [`name_from_declared`], `None` when the file declares nothing there. A name
+    /// for rationales, unsigned; it never changes a result.
+    pub declared_as: Option<String>,
     /// The result for this part.
     pub result: PartResult,
 }
@@ -145,6 +150,10 @@ pub struct Report {
     pub reason: Option<String>,
     /// One entry per signed part, in signed order. Empty when the table was unusable.
     pub parts: Vec<PartReport>,
+    /// Whether the file declares a part at exactly every signed part's place: the
+    /// signed table and the file's own (unsigned) description of itself agree.
+    /// `None` when the file declares no parts or no signed parts were read.
+    pub declared_parts_agree: Option<bool>,
 }
 
 impl Report {
@@ -156,6 +165,7 @@ impl Report {
             code,
             reason,
             parts,
+            declared_parts_agree: None,
         }
     }
 
@@ -404,6 +414,30 @@ fn part_hash(store: &Value, label: &str) -> Result<PartHash, String> {
     })
 }
 
+/// Name each signed part after the part the file declares at exactly the same
+/// place, and record whether the two agree. The match is on declarations (signed
+/// offset and length against declared offset and length), so a part whose bytes
+/// are gone is still named. Naming only: declarations are unsigned and never
+/// change an outcome.
+pub fn name_from_declared(report: &mut Report, declared: &[halftone_formats::parts::DeclaredPart]) {
+    if report.parts.is_empty() || declared.is_empty() {
+        return;
+    }
+    let mut all = true;
+    for p in &mut report.parts {
+        let Locator::Bytes { offset, length } = p.locator else {
+            all = false;
+            continue;
+        };
+        p.declared_as = declared
+            .iter()
+            .find(|d| d.offset == offset && d.length == length)
+            .map(|d| d.name.clone());
+        all &= p.declared_as.is_some();
+    }
+    report.declared_parts_agree = Some(all);
+}
+
 /// Run §15.12.4 on `file` (the whole asset's bytes) with the multi-asset assertion
 /// `multi_asset` and the manifest's `store` (`assertion_store` from c2pa's detailed
 /// JSON, where the part hash assertions live).
@@ -485,6 +519,7 @@ pub fn evaluate(
             optional: p.get("optional").and_then(Value::as_bool).unwrap_or(false),
             kind: None,
             present_bytes: None,
+            declared_as: None,
             result: PartResult::Absent, // set below
         });
     }
@@ -1114,5 +1149,119 @@ mod tests {
                 panic!("{e}\ntable: {ma}\nfile length: {len}\nreport: {r:?}");
             }
         }
+    }
+
+    // ---- naming parts from what the file declares ----
+
+    use halftone_formats::parts::DeclaredPart;
+
+    fn declared(offset: u64, length: u64, name: &str) -> DeclaredPart {
+        DeclaredPart {
+            offset,
+            length,
+            name: name.into(),
+            declared_by: "container directory",
+        }
+    }
+
+    /// What the Fold motion photo's container directory declares.
+    fn fold_declared() -> Vec<DeclaredPart> {
+        vec![
+            declared(0, 2_047_094, "Primary"),
+            declared(2_047_094, 9_718, "GainMap"),
+            declared(2_056_812, 3_296_847, "MotionPhoto"),
+        ]
+    }
+
+    fn signed(index: usize, offset: u64, length: u64) -> PartReport {
+        PartReport {
+            index,
+            hash_assertion: format!("c2pa.hash.data.part__{index}"),
+            locator: Locator::Bytes { offset, length },
+            optional: index > 0,
+            kind: None,
+            present_bytes: None,
+            declared_as: None,
+            result: PartResult::Match,
+        }
+    }
+
+    /// The Fold's signed table: still, gain map, clip.
+    fn fold_report() -> Report {
+        Report::new(
+            Outcome::Match,
+            None,
+            vec![
+                signed(0, 0, 2_047_094),
+                signed(1, 2_047_094, 9_718),
+                signed(2, 2_056_812, 3_296_847),
+            ],
+        )
+    }
+
+    fn names(r: &Report) -> Vec<Option<&str>> {
+        r.parts.iter().map(|p| p.declared_as.as_deref()).collect()
+    }
+
+    #[test]
+    fn the_fold_table_and_its_declarations_agree_part_for_part() {
+        let mut r = fold_report();
+        name_from_declared(&mut r, &fold_declared());
+        assert_eq!(
+            names(&r),
+            [Some("Primary"), Some("GainMap"), Some("MotionPhoto")]
+        );
+        assert_eq!(r.declared_parts_agree, Some(true));
+    }
+
+    #[test]
+    fn a_part_whose_bytes_are_gone_is_still_named() {
+        let mut r = fold_report();
+        r.parts[2].result = PartResult::Absent;
+        name_from_declared(&mut r, &fold_declared());
+        assert_eq!(r.parts[2].declared_as.as_deref(), Some("MotionPhoto"));
+        assert_eq!(r.declared_parts_agree, Some(true));
+    }
+
+    #[test]
+    fn only_what_lines_up_exactly_is_named() {
+        // The declared gain map is one byte longer than the signed part, so the
+        // declared clip starts one byte later: neither lines up; the still does.
+        let mut r = fold_report();
+        let off_by_one = vec![
+            declared(0, 2_047_094, "Primary"),
+            declared(2_047_094, 9_719, "GainMap"),
+            declared(2_056_813, 3_296_847, "MotionPhoto"),
+        ];
+        name_from_declared(&mut r, &off_by_one);
+        assert_eq!(names(&r), [Some("Primary"), None, None]);
+        assert_eq!(r.declared_parts_agree, Some(false));
+    }
+
+    #[test]
+    fn nothing_declared_or_nothing_signed_leaves_the_report_alone() {
+        let mut r = fold_report();
+        name_from_declared(&mut r, &[]);
+        assert_eq!(names(&r), [None, None, None]);
+        assert_eq!(r.declared_parts_agree, None);
+        let mut empty = Report::not_evaluated("x");
+        name_from_declared(&mut empty, &fold_declared());
+        assert_eq!(empty.declared_parts_agree, None);
+    }
+
+    #[test]
+    fn naming_never_changes_an_outcome_or_a_result() {
+        let mut r = fold_report();
+        r.parts[1].result = PartResult::Mismatch;
+        let (outcome, results): (Outcome, Vec<PartResult>) = (
+            r.outcome.clone(),
+            r.parts.iter().map(|p| p.result.clone()).collect(),
+        );
+        name_from_declared(&mut r, &fold_declared());
+        assert_eq!(r.outcome, outcome);
+        assert_eq!(
+            r.parts.iter().map(|p| p.result.clone()).collect::<Vec<_>>(),
+            results
+        );
     }
 }
