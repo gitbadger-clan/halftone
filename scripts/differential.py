@@ -107,6 +107,9 @@ import os
 import atexit, shutil
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from progress import Progress  # noqa: E402  (display only: a live line on interactive terminals)
+
 C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n"
 # The two generative terms of halftone-core's dst.rs; update with VOCABULARY_VERSION.
 GENERATIVE = {"trainedAlgorithmicMedia", "compositeWithTrainedAlgorithmicMedia"}
@@ -722,7 +725,8 @@ def main() -> int:
     files: dict[str, dict] = {}
     paths = sorted(p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in IMAGE_EXTS)
     skipped: list[str] = []
-    for p in paths:
+    bar = Progress(len(paths), corpus.name)
+    for p in bar.track(paths, lambda p: p.name):
         rel = p.relative_to(corpus).as_posix()
         ex = exiftool_facts(p)
         if ex.get("mime") not in HALFTONE_MIMES:
@@ -752,7 +756,7 @@ def main() -> int:
         cf = entry.get("conformance") or {}
         checks = "err" if cf.get("error") else str(sum(len(r.get("checks") or [])
                                                        for r in (cf.get("rubrics") or {}).values()))
-        print(f"{rel:60} xmp={'y' if ex.get('xmp_present') else 'n'} dst={','.join(dst) or '-':40} c2pa={state}"
+        bar.write(f"{rel:60} xmp={'y' if ex.get('xmp_present') else 'n'} dst={','.join(dst) or '-':40} c2pa={state}"
               + (f" multi-asset={multi}" if a.credentio else "")
               + (f" signal-nodes={nodes}" if signals_ev else "")
               + (f" conf-checks={checks}" if conf_ev else ""))

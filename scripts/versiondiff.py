@@ -35,6 +35,9 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from progress import Progress  # noqa: E402  (display only: a live line on interactive terminals)
+
 SHA = "ae61d4c5cee15cf641cd9455916c75db81753567"  # public-testfiles, v2.2 samples (c2pa-rs#2738)
 BASE = f"https://raw.githubusercontent.com/c2pa-org/public-testfiles/{SHA}/"
 CONF = Path("target/conformance-v22")
@@ -186,7 +189,8 @@ def snapshot(a) -> int:
             return f, row
 
         with ThreadPoolExecutor(max_workers=a.jobs) as pool:
-            rows = dict(pool.map(one, files))
+            bar = Progress(len(files), a.label)
+            rows = dict(bar.track(pool.map(one, files), lambda r: Path(r[0]).name))
 
     OUT.mkdir(parents=True, exist_ok=True)
     out = a.out or OUT / f"{a.label}.json"
