@@ -2,6 +2,9 @@
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.27"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Re-collect the differential ground truth, stratum by stratum, with the same
 references as last time.

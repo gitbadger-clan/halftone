@@ -2,6 +2,9 @@
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.27", "httpx>=0.28", "cryptography>=44"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Refresh the vendored C2PA trust-list snapshot in crates/halftone-c2pa/trust/.
 

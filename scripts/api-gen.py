@@ -2,6 +2,9 @@
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.12", "inquirer>=3.4", "httpx>=0.27", "rich>=13.7"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Generate and edit corpus images through the Gemini and OpenAI APIs.
 

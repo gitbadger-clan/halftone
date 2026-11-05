@@ -2,6 +2,9 @@
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.27"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Fetch a public fixture set into its stratum: c2pa-rs's test fixtures (01-c2pa-rs) or
 ExifTool's test images (02-exiftool).

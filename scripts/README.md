@@ -43,6 +43,12 @@ and checks the external tools (ExifTool, c2patool, Credentio, …). After that a
 starts in a fraction of a second without downloading anything, offline too
 (`UV_OFFLINE=1`). `--upgrade` re-resolves every lock; `--tools` only checks the tools.
 
+Every script with dependencies declares `exclude-newer = "14 days"` under `[tool.uv]`,
+so a lock never takes a release less than two weeks old: long enough for a broken or
+malicious upload to be noticed and yanked. The cutoff lives in the script, not on the
+command line, so `uv run --locked` (and `UV_LOCKED=1` in CI) accepts the lock without
+any extra flag. To move to newer versions, run `--upgrade`; it still respects the cutoff.
+
 ## Writing a script
 
 Python 3.14, run with `uv`, dependencies declared inline (PEP 723). No virtualenv.
@@ -52,6 +58,9 @@ Python 3.14, run with `uv`, dependencies declared inline (PEP 723). No virtualen
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.27"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """One line saying what it does.
 

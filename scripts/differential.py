@@ -6,6 +6,9 @@
 #   "PyYAML>=6.0",
 #   "json-formula @ git+https://github.com/adobe/json-formula-py.git@327a8d75669673c10db3051da816311ac2df8a32",
 # ]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Collect ground truth for the differential test from ExifTool and c2patool, and
 optionally Credentio.

@@ -2,6 +2,9 @@
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.27", "pillow>=11", "numpy>=2"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Stratum 03: synthetic DigitalSourceType edge cases, written with ExifTool onto plain
 base images, into corpus/differential/03-synthetic.

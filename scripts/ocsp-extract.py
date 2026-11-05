@@ -1,6 +1,9 @@
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["cbor2>=5.6", "cryptography>=43"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Extract stapled OCSP responses from a C2PA file and show what c2pa 0.91 checks.
 

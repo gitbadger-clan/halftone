@@ -5,6 +5,9 @@
 #   "PyYAML>=6.0",
 #   "json-formula @ git+https://github.com/adobe/json-formula-py.git@327a8d75669673c10db3051da816311ac2df8a32",
 # ]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Golden fixtures for the C2PA integrity and conformance rubrics: crJSON inputs run
 through the official conformance evaluator (c2pa-org/conformance-public), so the

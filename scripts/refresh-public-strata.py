@@ -2,6 +2,9 @@
 # /// script
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.27"]
+#
+# [tool.uv]
+# exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
 """Rebuild the public differential strata (01 c2pa-rs fixtures, 02 ExifTool images,
 03 synthetic), re-collect their ground truth, and run the differential test.

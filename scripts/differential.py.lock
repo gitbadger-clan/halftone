@@ -2,6 +2,10 @@ version = 1
 revision = 5
 requires-python = ">=3.14"
 
+[options]
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
+exclude-newer-span = "P14D"
+
 [manifest]
 requirements = [
     { name = "json-formula", git = "https://github.com/adobe/json-formula-py.git?rev=327a8d75669673c10db3051da816311ac2df8a32" },
