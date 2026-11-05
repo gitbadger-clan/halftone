@@ -3,12 +3,18 @@
 # requires-python = ">=3.14"
 # dependencies = ["typer>=0.27"]
 # ///
-"""Re-collect the differential ground truth with every reference, stratum by stratum.
+"""Re-collect the differential ground truth, stratum by stratum, with the same
+references as last time.
 
-Each stratum gets the same inputs: the vendored manifest anchors, TSA anchors and EKU
-policy (so every header passes preflight step 8 by construction), Credentio and the
-conformance-public checkout. 08-multipart refuses --no-credentio, because Credentio
-is its reference (D-014).
+Every stratum gets the vendored trust inputs: manifest anchors, TSA anchors and EKU
+policy, so every header passes preflight step 8. Whether a stratum also gets
+Credentio and the C2PA rubrics follows its own expectations.json: a re-collection
+reproduces the inputs the stratum was last collected with, so a plain run never
+changes what a stratum is compared on. A new stratum (no expectations.json yet) gets
+both. Changing a stratum's inputs is an explicit decision: --with-credentio /
+--no-credentio and --with-rubrics / --no-rubrics override the record for every
+stratum named. The rubrics read Credentio's crJSON, so they need it; 08-multipart
+cannot drop Credentio, its reference for the multi-asset hash (D-014).
 
 Before a stratum is collected, every file its expectations.json records must be on
 disk. A fresh checkout has the ground truth but not the uncommitted files, and
@@ -44,10 +50,11 @@ STRATUM = re.compile(r"^\d\d-")
 EXAMPLES = """
 Examples:
 
-    uv run scripts/collect.py                 # every stratum that has an expectations.json
+    uv run scripts/collect.py                 # every stratum, each with its recorded inputs
     uv run scripts/collect.py 04 06 07 08     # these strata (number or full name)
-    uv run scripts/collect.py 05-fold         # a new stratum: no expectations.json yet
-    uv run scripts/collect.py --dry-run       # the checks and commands, nothing run
+    uv run scripts/collect.py 05-fold         # a new stratum: Credentio and rubrics included
+    uv run scripts/collect.py 01 --with-credentio --with-rubrics   # change 01's inputs, on purpose
+    uv run scripts/collect.py --dry-run       # the checks, inputs and commands, nothing run
 """
 
 app = typer.Typer(
@@ -70,13 +77,33 @@ def resolve(name: str) -> Path:
     return hits[0]
 
 
-def missing_files(stratum: Path) -> tuple[int, list[str]]:
-    """How many files the stratum's expectations.json records, and which are not on disk."""
+def record(stratum: Path) -> dict | None:
     exp = stratum / "expectations.json"
-    if not exp.is_file():
-        return 0, []
-    files = json.loads(exp.read_text()).get("files", {})
-    return len(files), [rel for rel in sorted(files) if not (stratum / rel).is_file()]
+    return json.loads(exp.read_text()) if exp.is_file() else None
+
+
+def missing_files(rec: dict | None, stratum: Path) -> tuple[int, list[str]]:
+    """How many files the record lists, and which are not on disk."""
+    files = (rec or {}).get("files", {})
+    return len(files), [r for r in sorted(files) if not (stratum / r).is_file()]
+
+
+def recorded_inputs(rec: dict | None) -> tuple[bool, bool] | None:
+    """(credentio, rubrics) the stratum was last collected with; None for a new stratum."""
+    if rec is None:
+        return None
+    credentio = bool((rec.get("tools") or {}).get("credentio"))
+    rubrics = bool(rec.get("signals_rubric") or rec.get("conformance_rubrics"))
+    return credentio, rubrics
+
+
+AS_LAST_TIME = "as last time"
+
+
+def why_color(why: str) -> str:
+    """Green when a stratum keeps its recorded inputs, yellow when they change or
+    the stratum is new: either way it is compared on something it was not before."""
+    return C.GREEN if why == AS_LAST_TIME else C.YELLOW
 
 
 def rel(p: Path) -> str:
@@ -100,12 +127,20 @@ def main(
         Path,
         typer.Option(envvar="RUBRICS", help="conformance-public checkout; relative paths are from the repo root."),
     ] = Path("../conformance-public"),
-    no_credentio: Annotated[bool, typer.Option("--no-credentio", help="Collect without Credentio.")] = False,
-    no_rubrics: Annotated[bool, typer.Option("--no-rubrics", help="Collect without the C2PA rubrics.")] = False,
+    with_credentio: Annotated[
+        bool | None,
+        typer.Option("--with-credentio/--no-credentio", show_default=False,
+                     help="Override the recorded choice: collect with / without Credentio."),
+    ] = None,
+    with_rubrics: Annotated[
+        bool | None,
+        typer.Option("--with-rubrics/--no-rubrics", show_default=False,
+                     help="Override the recorded choice: collect with / without the C2PA rubrics."),
+    ] = None,
     allow_missing: Annotated[
         bool, typer.Option("--allow-missing", help="Collect even when recorded files are gone (the record shrinks).")
     ] = False,
-    dry_run: Annotated[bool, typer.Option("--dry-run", help="Show checks and commands, run nothing.")] = False,
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="Show checks, inputs and commands, run nothing.")] = False,
 ) -> None:
     if strata:
         chosen = list(dict.fromkeys(resolve(s) for s in strata))
@@ -121,67 +156,92 @@ def main(
         if not p.is_file():
             die(f"missing {rel(p)}", 2)
 
-    extra: list[str] = []
-    if no_credentio:
-        if not no_rubrics:
-            die("--no-credentio needs --no-rubrics too: the rubrics read Credentio's crJSON", 2)
-        if any(s.name == MULTIPART for s in chosen):
+    # Decide every stratum's inputs before running anything, so a bad combination
+    # stops the run instead of half-collecting it.
+    plan: list[tuple[Path, dict | None, bool, bool, str]] = []
+    for s in chosen:
+        rec = record(s)
+        before = recorded_inputs(rec)
+        use_cred = with_credentio if with_credentio is not None else (before[0] if before else True)
+        use_rub = with_rubrics if with_rubrics is not None else (before[1] if before else True)
+        if use_rub and not use_cred:
+            die(f"{s.name}: the rubrics need Credentio (they read its crJSON); "
+                "pass --with-credentio or --no-rubrics", 2)
+        if s.name == MULTIPART and not use_cred:
             die(f"{MULTIPART} needs Credentio: it is the reference for the multi-asset hash (D-014)", 2)
-    else:
+        if before is None:
+            why = "new stratum"
+        elif (use_cred, use_rub) == before:
+            why = AS_LAST_TIME
+        else:
+            why = f"CHANGED from {'with' if before[0] else 'without'} Credentio, " \
+                  f"{'with' if before[1] else 'without'} rubrics"
+        plan.append((s, rec, use_cred, use_rub, why))
+
+    cred = rub = None
+    if any(p[2] for p in plan):
         cred = credentio.expanduser()
         if not (cred.is_file() and os.access(cred, os.X_OK)):
             die(f"Credentio not executable at {cred} (set CREDENTIO, or pass --no-credentio)", 2)
-        extra += ["--credentio", str(cred)]
-    if not no_rubrics:
+    if any(p[3] for p in plan):
         rub = (ROOT / rubrics.expanduser()).resolve()
         if not (rub / "asset-rubrics" / "c2pa_signals_rubric_evaluator.py").is_file():
             die(f"no conformance-public checkout at {rub} (set RUBRICS, or pass --no-rubrics)", 2)
-        extra += ["--rubrics", str(rub)]
     need("uv", "git", "exiftool", "c2patool", "openssl")
 
     base = ["--trust-anchors", rel(anchors), "--tsa-anchors", rel(tsa), "--trust-config", rel(eku)]
-    results: list[tuple[str, str, bool]] = []  # stratum, result, ok
+    results: list[tuple[str, str, bool, str]] = []  # stratum, result, ok, why
     started = time.monotonic()
-    for i, s in enumerate(chosen, 1):
-        recorded, gone = missing_files(s)
-        print(f"\n{C.BOLD_CYAN}== {s.name}{C.RESET}  {C.DIM}[{i}/{len(chosen)}]{C.RESET}")
+    for i, (s, rec, use_cred, use_rub, why) in enumerate(plan, 1):
+        recorded, gone = missing_files(rec, s)
+        inputs = " · ".join(["trust"] + ["Credentio"] * use_cred + ["rubrics"] * use_rub)
+        print(f"\n{C.BOLD_CYAN}== {s.name}{C.RESET}  {C.DIM}[{i}/{len(plan)}]{C.RESET}  "
+              f"{why_color(why)}{inputs} ({why}){C.RESET}")
         if gone and not allow_missing:
             print(f"{C.RED}skip:{C.RESET} {len(gone)} of {recorded} recorded files are not on disk, e.g.")
             for g in gone[:3]:
                 print(f"  {g}")
-            results.append((s.name, f"skipped, {len(gone)} of {recorded} recorded files missing", False))
+            results.append((s.name, f"skipped, {len(gone)} of {recorded} recorded files missing", False, why))
             continue
+        extra = (["--credentio", str(cred)] if use_cred else []) + (["--rubrics", str(rub)] if use_rub else [])
         cmd = ["uv", "run", rel(COLLECTOR), rel(s), *base, *extra]
         if dry_run:
             print(shlex.join(cmd))
             note = f" ({len(gone)} recorded files missing, --allow-missing)" if gone else ""
-            results.append((s.name, "would collect" + note, True))
+            results.append((s.name, "would collect" + note, True, why))
             continue
         exp = s / "expectations.json"
-        before = exp.read_bytes() if exp.is_file() else None
+        before_bytes = exp.read_bytes() if exp.is_file() else None
         t = time.monotonic()
         rc = subprocess.run(cmd, cwd=ROOT).returncode
         took = clock(time.monotonic() - t)
         if rc != 0:
-            results.append((s.name, f"failed, exit {rc}, after {took}", False))
+            results.append((s.name, f"failed, exit {rc}, after {took}", False, why))
             continue
-        after = exp.read_bytes() if exp.is_file() else None
-        if before is None:
+        after_bytes = exp.read_bytes() if exp.is_file() else None
+        if before_bytes is None:
             result = "new"
-        elif after == before:
+        elif after_bytes == before_bytes:
             result = "unchanged"
         else:
             result = "rewritten" + (f", {len(gone)} recorded files dropped" if gone else "")
-        results.append((s.name, f"{result}, {took}", True))
+        results.append((s.name, f"{result}, {took}", True, why))
 
     print(f"\n{C.BOLD_CYAN}== summary{C.RESET}  {C.DIM}{clock(time.monotonic() - started)}{C.RESET}")
-    width = max(len(n) for n, _, _ in results)
-    for name, result, ok in results:
-        print(f"  {name:<{width}}  {(C.GREEN if ok else C.RED)}{result}{C.RESET}")
+    same = sum(why == AS_LAST_TIME for *_, why in results)
+    # Green: every stratum compared on what it was compared on before. Red: none
+    # was. Yellow: a mix, so read the rows below before trusting the diff.
+    tone = C.GREEN if same == len(results) else C.RED if same == 0 else C.YELLOW
+    print(f"  {tone}inputs: {same} of {len(results)} strata as last time{C.RESET}")
+    width = max(len(n) for n, *_ in results)
+    rwidth = max(len(r) for _, r, *_ in results)
+    for name, result, ok, why in results:
+        print(f"  {name:<{width}}  {(C.GREEN if ok else C.RED)}{result:<{rwidth}}{C.RESET}  "
+              f"{why_color(why)}{why}{C.RESET}")
     if not dry_run:
         print()
         subprocess.run(["git", "diff", "--stat", "--", rel(CORPUS)], cwd=ROOT)
-    raise typer.Exit(0 if all(ok for _, _, ok in results) else 1)
+    raise typer.Exit(0 if all(ok for _, _, ok, _ in results) else 1)
 
 
 if __name__ == "__main__":

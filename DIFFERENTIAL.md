@@ -1,22 +1,29 @@
 # Differential log
 
-Halftone's deterministic sources are checked against ExifTool and c2patool on a
-corpus of real files (`corpus/differential/`, ground truth in `expectations.json`,
-collected by `uv run scripts/differential.py`, asserted by
+Halftone's deterministic sources are checked against reference tools on a corpus of
+real files (`corpus/differential/`, ground truth in each stratum's
+`expectations.json`, collected by `scripts/collect.py`, which runs
+`scripts/differential.py` per stratum, asserted by
 `crates/halftone-cli/tests/differential.rs`). Every disagreement class ever seen is
 recorded here with its cause and resolution, whether the fix landed in Halftone, in
 the expectations, or in how a reference tool is invoked.
 
-From D-014 on, two more references are used for classes c2patool cannot speak to,
-run by scripts rather than the collector: Credentio, Google's C2PA validator
-(`scripts/multipart-evidence.fish`, `scripts/pub/multipart-reply.fish`), and the
-C2PA signals rubric from the conformance program (`scripts/rubric-signals.fish`).
-Each run records its tool versions in a `VERSIONS.txt` beside its raw output.
+References: ExifTool and c2patool for every stratum, always with the vendored
+manifest anchors, TSA anchors and EKU policy (D-008, D-011). From D-014 on, two more
+for classes c2patool cannot speak to: Credentio, Google's C2PA validator, and the
+C2PA's own signals, integrity and conformance rubrics, evaluated on Credentio's
+crJSON. Each stratum's header records which references it was collected with, and
+a re-collection keeps them; adding or removing one is an explicit change
+(`--with-credentio` / `--no-credentio`, `--with-rubrics` / `--no-rubrics`).
+Strata without C2PA manifests (02, 03) are collected without Credentio.
 
-Regenerate ground truth:
+Entries cite the script that produced their evidence at the time; those scripts are
+kept for that reason.
 
-    uv run scripts/differential.py corpus/differential \
-        --trust-anchors crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem
+Regenerate ground truth (every stratum with its recorded references, or the strata
+named):
+
+    uv run scripts/collect.py [01 04 …]
 
 Run:
 
