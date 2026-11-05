@@ -116,6 +116,7 @@ inherit dependencies from a module it imports. The exception is `lib/models.py`
 | `exiftool.py` | one long-running ExifTool process (`-stay_open`) for many commands |
 | `envstate.py` | whether bootstrap has prepared the scripts as they are now (read by `dev.py`) |
 | `progress.py` | `Progress` (count, percent, time left) and `step` (spinner) for long runs |
+| `models.py` | Pydantic models of `expectations.json` (`Expectations`, `Tools`); needs `pydantic` |
 
 ## c2patool
 
