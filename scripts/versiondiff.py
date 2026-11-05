@@ -3,13 +3,35 @@
 # ///
 """Snapshot Halftone (and optionally c2patool) over the corpus, then compare snapshots.
 
-Built for dependency upgrades (c2pa first): snapshot the build you have, snapshot the
-upgraded build, and review every change in what Halftone says, not just the state.
+Built for dependency upgrades (c2pa first) and for refactors that must not change
+behaviour: snapshot the build you have, snapshot the changed build, and review every
+change in what Halftone says, not just the state.
 
   snapshot   run one ht build (and optionally one c2patool) over corpus dirs and/or the
-             C2PA v2.2 conformance samples; write a JSON snapshot
+             C2PA v2.2 conformance samples; write a JSON snapshot. --whole keeps ht's
+             entire output (keys sorted, run-time fields removed), not only the
+             evidence records
   compare    diff two snapshots: every changed ht field, grouped; c2patool changes;
-             Halftone-vs-c2patool mismatches inside each snapshot; conformance hits
+             Halftone-vs-c2patool mismatches inside each snapshot; conformance hits.
+             --fail-on-change exits 1 on any Halftone change (the refactor gate)
+  upgrade    build <base-ref> in a worktree and HEAD in place, snapshot both over every
+             stratum plus the conformance samples, compare, and write the report to
+             target/versiondiff/; the base snapshot is reused on later runs
+
+Refactor gate (no behaviour change allowed):
+
+    cargo build -q -p halftone-cli --features halftone-cli/c2pa
+    uv run scripts/versiondiff.py snapshot corpus/differential/*/ --whole --label before --ht target/debug/ht
+    # ...refactor, rebuild...
+    uv run scripts/versiondiff.py snapshot corpus/differential/*/ --whole --label after --ht target/debug/ht
+    uv run scripts/versiondiff.py compare target/versiondiff/before.json target/versiondiff/after.json --fail-on-change
+
+Take both snapshots on the same day: shelf-life rationales count days to certificate
+expiry. Dependency upgrade:
+
+    uv run scripts/versiondiff.py upgrade main \
+        --old-c2patool /opt/homebrew/bin/c2patool --old-style legacy \
+        --new-c2patool ~/.local/c2patool-0.28/bin/c2patool --new-style typed
 
     uv run scripts/versiondiff.py snapshot --label 0.90 --ht /tmp/ht-base/target/release/ht \
         --c2patool /opt/homebrew/bin/c2patool --settings-style legacy \
@@ -25,8 +47,11 @@ about private corpus files.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -43,7 +68,9 @@ BASE = f"https://raw.githubusercontent.com/c2pa-org/public-testfiles/{SHA}/"
 CONF = Path("target/conformance-v22")
 OUT = Path("target/versiondiff")
 TRUST = Path("crates/halftone-c2pa/trust")
-SKIP_SUFFIXES = {".json", ".txt", ".md", ".toml", ".gitignore", ".fish", ".py"}
+# Notes, records and reports kept beside the files, never inputs (a saved `ht` HTML
+# report is the one that has turned up).
+SKIP_SUFFIXES = {".json", ".txt", ".md", ".toml", ".gitignore", ".fish", ".py", ".html", ".htm"}
 # Fields that change on every run, not with the library. Extend with --ignore.
 DEFAULT_IGNORE = {"evaluated_at", "inspected_at", "generated_at", "elapsed_ms", "duration_ms"}
 
@@ -146,7 +173,7 @@ def source_records(j) -> dict[str, dict]:
     return found
 
 
-def run_ht(exe: str, ignore: set[str], path: str) -> dict:
+def run_ht(exe: str, ignore: set[str], path: str, whole: bool = False) -> dict:
     p = subprocess.run([exe, "inspect", "--json", path], capture_output=True, text=True)
     try:
         j = json.loads(p.stdout)
@@ -155,7 +182,15 @@ def run_ht(exe: str, ignore: set[str], path: str) -> dict:
     recs = source_records(j)
     if not recs:
         return {"error": "no source records in ht JSON"}
-    return {"sources": {k: strip(v, ignore) for k, v in recs.items()}}
+    out = {"sources": {k: strip(v, ignore) for k, v in recs.items()}}
+    if whole:
+        # The whole document, as the refactor gate compares it: run-time fields
+        # removed everywhere, the inspection's own timestamp at the top level.
+        doc = strip(j, ignore)
+        if isinstance(doc, dict):
+            doc.pop("created_at", None)
+        out["whole"] = doc
+    return out
 
 
 def tool_version(exe: str) -> str:
@@ -181,7 +216,7 @@ def snapshot(a) -> int:
             settings.write_text(settings_toml(a.settings_style))
 
         def one(f: str) -> tuple[str, dict]:
-            row = {"ht": run_ht(a.ht, ignore, f)}
+            row = {"ht": run_ht(a.ht, ignore, f, a.whole)}
             if a.c2patool:
                 row["c2patool"] = run_c2patool(a.c2patool, settings, env, f)
             if f in expected:
@@ -197,7 +232,8 @@ def snapshot(a) -> int:
     meta = {"label": a.label, "note": a.note, "ht": tool_version(a.ht),
             "c2patool": tool_version(a.c2patool) if a.c2patool else None,
             "settings_style": a.settings_style if a.c2patool else None,
-            "conformance_commit": SHA if a.conformance else None, "ignored_fields": sorted(ignore)}
+            "conformance_commit": SHA if a.conformance else None, "ignored_fields": sorted(ignore),
+            "whole": bool(a.whole)}
     out.write_text(json.dumps({"meta": meta, "files": rows}, indent=2, sort_keys=True) + "\n")
     for d in a.dirs:
         print(f"  {sum(1 for f in rows if f.startswith(str(Path(d))))} from {d}")
@@ -282,12 +318,22 @@ def compare(a) -> int:
     if fa ^ fb:
         print(f"\nfile sets differ: {len(fa - fb)} only in {la}, {len(fb - fa)} only in {lb}; comparing the {len(fa & fb)} in both")
 
+    # --whole on both sides compares the entire document; otherwise the source records.
+    whole = bool(A["meta"].get("whole") and B["meta"].get("whole"))
+    if A["meta"].get("whole") != B["meta"].get("whole"):
+        print("\none snapshot was taken with --whole and one without; comparing source records only")
+
     # ht: every changed field, grouped by (source, field, old, new)
     groups: dict[tuple, list[str]] = defaultdict(list)
     for f in sorted(fa & fb):
         ha, hb = A["files"][f]["ht"], B["files"][f]["ht"]
+        if whole:
+            xa, xb = flatten(ha.get("whole", {})), flatten(hb.get("whole", {}))
+            for k in sorted(set(xa) | set(xb)):
+                if xa.get(k) != xb.get(k):
+                    groups[("document", k, xa.get(k, "∅"), xb.get(k, "∅"))].append(f)
         sa, sb = ha.get("sources", {}), hb.get("sources", {})
-        for src in sorted(set(sa) | set(sb)):
+        for src in sorted(set(sa) | set(sb)) if not whole else []:
             da, db = sa.get(src, {}).get("details", {}), sb.get(src, {}).get("details", {})
             if ("error" in da) != ("error" in db):
                 def state(d, r):
@@ -341,7 +387,80 @@ def compare(a) -> int:
         for f in sorted(set(ha_) & set(hb_)):
             if ha_[f] != hb_[f]:
                 print(f"- {Path(f).name}: {'hit' if ha_[f] else 'miss'} → {'hit' if hb_[f] else 'miss'}")
+    if getattr(a, "fail_on_change", False) and groups:
+        return 1
     return 1 if worst else 0
+
+
+# ---------------------------------------------------------------- upgrade
+
+def git(*args: str) -> str:
+    return subprocess.run(["git", *args], capture_output=True, text=True, check=True).stdout.strip()
+
+
+def c2pa_version(lock: str) -> str | None:
+    m = re.search(r'^name = "c2pa"\nversion = "([^"]+)"', lock, re.M)
+    return m.group(1) if m else None
+
+
+def build_ht(manifest: Path | None) -> None:
+    cmd = ["cargo", "build", "--release", "--locked", "--quiet", "-p", "halftone-cli", "--features", "c2pa"]
+    if manifest is not None:
+        cmd += ["--manifest-path", str(manifest)]
+    subprocess.run(cmd, check=True)
+
+
+def upgrade(a) -> int:
+    """What does Halftone say differently after a dependency upgrade? (D-011: the tools
+    both "worked" on c2pa 0.91; only a comparison showed that trust had gone.)"""
+    os.chdir(git("rev-parse", "--show-toplevel"))
+    base = git("rev-parse", "--short", a.base_ref)
+    head = git("rev-parse", "--short", "HEAD")
+    if git("status", "--porcelain", "--", "Cargo.toml", "Cargo.lock", "crates"):
+        head += "-dirty"
+    base_c2pa = c2pa_version(git("show", f"{base}:Cargo.lock"))
+    head_c2pa = c2pa_version(Path("Cargo.lock").read_text())
+    print(f"base {base} (c2pa {base_c2pa}) → head {head} (c2pa {head_c2pa})")
+
+    # Every numbered stratum, 00 to 99.
+    dirs = sorted(f"{p}/" for p in Path("corpus/differential").glob("[0-9][0-9]-*") if p.is_dir())
+    kind = "-whole" if a.whole else ""
+    base_snap, head_snap = OUT / f"base-{base}{kind}.json", OUT / f"head-{head}{kind}.json"
+    OUT.mkdir(parents=True, exist_ok=True)
+
+    def snap(ht: str, c2patool: str | None, style: str, label: str, note: str, out: Path) -> int:
+        return snapshot(argparse.Namespace(
+            dirs=dirs, label=label, ht=ht, c2patool=c2patool, settings_style=style, conformance=True,
+            note=note, ignore=[], jobs=a.jobs, out=out, whole=a.whole))
+
+    if base_snap.exists() and not a.rebuild:
+        print(f"reusing {base_snap}")
+    else:
+        wt = Path(tempfile.gettempdir()) / f"ht-base-{base}"
+        if not wt.is_dir():
+            subprocess.run(["git", "worktree", "add", "--detach", "--quiet", str(wt), base], check=True)
+        build_ht(wt / "Cargo.toml")
+        rc = snap(str(wt / "target/release/ht"), a.old_c2patool, a.old_style,
+                  f"c2pa-{base_c2pa}@{base}", f"base {a.base_ref}", base_snap)
+        if rc:
+            return rc
+        if not a.keep_worktree:
+            subprocess.run(["git", "worktree", "remove", "--force", str(wt)], check=False)
+
+    build_ht(None)
+    rc = snap("target/release/ht", a.new_c2patool, a.new_style, f"c2pa-{head_c2pa}@{head}", "HEAD", head_snap)
+    if rc:
+        return rc
+
+    report = OUT / f"report-{base}-{head}.md"
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        rc = compare(argparse.Namespace(old=str(base_snap), new=str(head_snap), verbose=False,
+                                        fail_on_change=False))
+    print(buf.getvalue(), end="")
+    report.write_text(buf.getvalue())
+    print(f"report -> {report}")
+    return rc
 
 
 def main() -> int:
@@ -358,12 +477,24 @@ def main() -> int:
     s.add_argument("--ignore", action="append", default=[], help="details field to drop (repeatable)")
     s.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
     s.add_argument("--out", type=Path)
+    s.add_argument("--whole", action="store_true", help="keep ht's whole output, not only the evidence records")
     c = sub.add_parser("compare")
     c.add_argument("old")
     c.add_argument("new")
     c.add_argument("-v", "--verbose", action="store_true", help="list every file per change")
+    c.add_argument("--fail-on-change", action="store_true", help="exit 1 on any Halftone change (refactor gate)")
+    u = sub.add_parser("upgrade", help="snapshot <base-ref> and HEAD, compare, write a report")
+    u.add_argument("base_ref", nargs="?", default="main")
+    u.add_argument("--old-c2patool")
+    u.add_argument("--old-style", choices=["legacy", "typed"], default="typed")
+    u.add_argument("--new-c2patool")
+    u.add_argument("--new-style", choices=["legacy", "typed"], default="typed")
+    u.add_argument("--rebuild", action="store_true", help="redo the base snapshot even if one exists")
+    u.add_argument("--keep-worktree", action="store_true", help="leave the base worktree in /tmp")
+    u.add_argument("--whole", action="store_true", help="snapshot ht's whole output")
+    u.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
     a = ap.parse_args()
-    return snapshot(a) if a.cmd == "snapshot" else compare(a)
+    return {"snapshot": snapshot, "compare": compare, "upgrade": upgrade}[a.cmd](a)
 
 
 if __name__ == "__main__":
