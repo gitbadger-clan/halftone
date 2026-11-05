@@ -51,7 +51,7 @@ TOOLS = [
     ("freeze", ["freeze", "--version"], "pub frames (--png)", False),
     ("adb", ["adb", "version"], "htc (phone)", False),
     ("magick", ["magick", "-version"], "corpus-inspect", False),
-    ("docker", ["docker", "--version"], "offline-docker", False),
+    ("docker", ["docker", "--version"], "references, offline-docker", False),
 ]
 
 
