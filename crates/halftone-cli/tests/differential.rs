@@ -51,6 +51,9 @@
 //! the only difference is `well_formed_success` and Halftone's sole structural
 //! failure is `claim.malformed` (c2pa-rs decodes Bing's soft-binding assertion and
 //! rejects its region unit; Credentio does not decode it).
+//! Signals and conformance are not compared for a file where one side had nothing
+//! to evaluate: Credentio declined the claim (D-017) or c2pa-rs could not read the
+//! store (D-018); such files are printed as known.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -547,6 +550,43 @@ fn is_d015(want: &[String], got: &[String], ma: &Value) -> bool {
             .any(|p| p["result"] == "truncated" && p["optional"] == true)
     });
     got == ["mismatch"] && truncated_optional && want.iter().any(|w| w == "missingPart")
+}
+
+/// Files whose signals and conformance cannot be compared because one side had
+/// nothing to evaluate. Checked before those two comparisons; the hard-binding
+/// comparison (`compare_credentio`) still runs.
+///
+/// - D-017: Credentio declined the claim (`com.google.unsupportedSpecVersion`, seen on
+///   version-1 claims). Its crJSON carries no validation results, so the rubrics
+///   report every check as met without anything having been evaluated.
+/// - D-018: c2pa-rs could not read the store (c2patool recorded an error and no
+///   validation state) and Halftone wrote no `details.signals`, so there is no
+///   Halftone crJSON to evaluate.
+fn rubric_exemption(exp: &Value, insp: &Value) -> Option<(&'static str, String)> {
+    let declined = exp["credentio"]["failures"]
+        .as_array()
+        .is_some_and(|f| f.iter().any(|c| c == "com.google.unsupportedSpecVersion"));
+    if declined {
+        return Some((
+            "D-017",
+            "credentio declined the claim (com.google.unsupportedSpecVersion); \
+             signals and conformance not compared"
+                .into(),
+        ));
+    }
+    let ct = &exp["c2patool"];
+    let unreadable = ct["validation_state"].is_null() && ct["error"].is_string();
+    let no_signals = evidence(insp, "c2pa").is_none_or(|ev| !ev["details"]["signals"].is_object());
+    if unreadable && no_signals {
+        return Some((
+            "D-018",
+            format!(
+                "c2pa-rs could not read the store ({}); signals and conformance not compared",
+                ct["error"].as_str().unwrap_or("")
+            ),
+        ));
+    }
+    None
 }
 
 /// Compare Halftone's §15.12.4 result with Credentio's (D-014). Only when the
@@ -1063,28 +1103,36 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                     compared += 1;
                     compare_file(&name, e, row, insp, trust_exact, &mut dis, &mut aged);
                     compare_credentio(&name, e, insp, &mut dis, &mut known);
-                    let n = compare_signals(
-                        &name,
-                        e,
-                        exp["signals_rubric"]["sha256"].as_str(),
-                        insp,
-                        &mut dis,
-                    );
-                    if n > 0 {
-                        signal_files += 1;
-                        signal_nodes += n;
-                    }
-                    let c = compare_conformance(
-                        &name,
-                        e,
-                        &exp["conformance_rubrics"],
-                        insp,
-                        &mut dis,
-                        &mut known,
-                    );
-                    if c > 0 {
-                        conformance_files += 1;
-                        conformance_checks += c;
+                    if let Some((entry, detail)) = rubric_exemption(e, insp) {
+                        known.push(Known {
+                            file: name.clone(),
+                            entry,
+                            detail,
+                        });
+                    } else {
+                        let n = compare_signals(
+                            &name,
+                            e,
+                            exp["signals_rubric"]["sha256"].as_str(),
+                            insp,
+                            &mut dis,
+                        );
+                        if n > 0 {
+                            signal_files += 1;
+                            signal_nodes += n;
+                        }
+                        let c = compare_conformance(
+                            &name,
+                            e,
+                            &exp["conformance_rubrics"],
+                            insp,
+                            &mut dis,
+                            &mut known,
+                        );
+                        if c > 0 {
+                            conformance_files += 1;
+                            conformance_checks += c;
+                        }
                     }
                 }
                 None => dis.push(Disagreement {
@@ -1854,5 +1902,47 @@ mod conformance_rule {
         let missing =
             json!({"evidence": [{"source": {"name": "c2pa"}, "rationale": "", "details": {}}]});
         assert_eq!(run(&exp(six("met")), &missing).1[0].field, "conformance");
+    }
+}
+
+#[cfg(test)]
+mod rubric_exemption_rule {
+    use super::*;
+    use serde_json::json;
+
+    fn insp(details: Value) -> Value {
+        json!({"evidence": [{"source": {"name": "c2pa"}, "details": details}]})
+    }
+
+    #[test]
+    fn declined_claim_is_d017() {
+        let e = json!({"credentio": {"failures": ["com.google.unsupportedSpecVersion"]},
+                       "c2patool": {"validation_state": "Valid"}});
+        let got = rubric_exemption(&e, &insp(json!({"signals": {"nodes": []}})));
+        assert_eq!(got.map(|(k, _)| k), Some("D-017"));
+    }
+
+    #[test]
+    fn unreadable_store_without_halftone_signals_is_d018() {
+        let e = json!({"credentio": {"failures": ["signingCredential.invalid"]},
+                       "c2patool": {"present": null, "validation_state": null, "error": "Error: unknown algorithm"}});
+        let (k, d) = rubric_exemption(&e, &insp(json!({}))).unwrap();
+        assert_eq!(k, "D-018");
+        assert!(d.contains("unknown algorithm"));
+    }
+
+    #[test]
+    fn unreadable_store_with_halftone_signals_is_compared() {
+        let e = json!({"c2patool": {"validation_state": null, "error": "Error: x"}});
+        assert!(rubric_exemption(&e, &insp(json!({"signals": {"nodes": []}}))).is_none());
+    }
+
+    #[test]
+    fn ordinary_files_are_compared() {
+        let e = json!({"credentio": {"failures": []}, "c2patool": {"validation_state": "Trusted"}});
+        assert!(rubric_exemption(&e, &insp(json!({"signals": {"nodes": []}}))).is_none());
+        let invalid = json!({"credentio": {"failures": ["assertion.dataHash.mismatch"]},
+                             "c2patool": {"validation_state": "Invalid"}});
+        assert!(rubric_exemption(&invalid, &insp(json!({}))).is_none());
     }
 }

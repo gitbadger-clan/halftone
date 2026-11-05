@@ -595,3 +595,53 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   sign of tampering.
 - Status: open; question to Google (whether Pixel Camera and Flow are meant to
   set the field) not yet asked.
+
+### D-017 · 2026-10-30 · Credentio does not evaluate version-1 claims; the C2PA rubrics then pass every check
+
+- Files: 14 in 01-c2pa-rs: C, CA, CACAE-uri-CA, CA_ct, CIE-sig-CA, E-sig-CA,
+  XCA, adobe-20220124-E-clm-CAICAI, boxhash, exp-test1, legacy_ingredient_hash,
+  ocsp, ocsp_with_assertion (all `claim_version` 1), and prerelease (c2patool
+  cannot read its claim).
+- Observed: Credentio ee4078b reports only `com.google.unsupportedSpecVersion`;
+  no data-hash result (`hard_binding` null), no signature or trust result. On its
+  crJSON the integrity and conformance-0.2-spec-2.4 rubrics report
+  `trusted_success`, `valid_success` and `well_formed_success` as met on all 14,
+  including four that c2patool reads as Invalid (E-sig-CA, XCA,
+  adobe-20220124-E-clm-CAICAI, exp-test1). Halftone evaluates the claims through
+  c2pa-rs and reports those checks as not met: 21 of the 23 disagreements when 01
+  was first collected with Credentio and the rubrics.
+- Rule: C2PA 2.2 §10.1 deprecates the `c2pa.claim` label: validators *should*
+  still accept it, generators shall not produce it. §5.1: a validator shall be
+  compatible with at least one version and may treat a manifest using constructs
+  it does not support as having unknown provenance, reported as
+  `manifest.unknownProvenance`. To check against the 2.4 text.
+- Cause: Credentio supports only 2.x claims; declining is permitted, but it
+  reports a vendor code instead of `manifest.unknownProvenance`. The rubrics test
+  for the absence of failure codes, and a crJSON with no validation results has
+  none, so every check passes without anything being evaluated.
+- Resolution: the ground truth records Credentio's output unchanged. The
+  differential test skips signals and conformance for a file whose Credentio
+  record carries `com.google.unsupportedSpecVersion` and reports it as
+  "known: D-017, not counted".
+- Status: open, to report to the Credentio team with D-015 (a vendor code in place
+  of `manifest.unknownProvenance`); possibly to the conformance program (a rubric
+  check met when nothing was validated).
+
+### D-018 · 2026-10-30 · A claim signature with an unknown algorithm: c2pa-rs cannot read the store, Credentio rejects the credential
+
+- File: `01-c2pa-rs/no_alg.jpg` (c2pa-rs test fixture).
+- Observed: c2patool 0.28.4 stops with "Error: unknown algorithm" and reports no
+  validation state. Halftone, built on the same library, writes no
+  `details.signals` or `details.conformance`. Credentio ee4078b reads the store
+  and reports `signingCredential.invalid`, with no data-hash result; its crJSON
+  gives the signals rubric one node, and the integrity and conformance rubrics run
+  on it.
+- Effect: neither accepts the file. They disagree on the stage at which it fails
+  (reading the store vs validating the credential), so only Credentio's side has
+  rubric results. The other 2 of the 23 disagreements of 2026-10-30.
+- Resolution: the differential test does not compare signals or conformance for a
+  file whose c2patool record holds an error and no validation state (c2pa-rs
+  could not read the store), and reports it as "known: D-018, not counted".
+- Status: open: which status code the specification expects for a claim signature
+  whose algorithm is unknown, and whether Halftone should report it as a
+  validation failure rather than an unreadable store.
