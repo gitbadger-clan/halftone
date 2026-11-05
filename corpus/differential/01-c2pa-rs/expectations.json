@@ -1,7 +1,11 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-10-14T18:49:55Z",
+  "collected_at": "2026-10-30T13:30:47Z",
+  "conformance_rubrics": {
+    "conformance-0.2-spec-2.4": "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9",
+    "integrity": "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76"
+  },
   "corpus": "corpus/differential/01-c2pa-rs",
   "files": {
     "C.jpg": {
@@ -37,6 +41,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -47,6 +258,25 @@
         "xmp_tag_count": 0
       },
       "sha256": "a2d14755db55de67a47c04090340d8266e892367be4104a45626d7a6fa6e9ffd",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 132518
     },
     "CA.jpg": {
@@ -78,6 +308,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -88,6 +525,25 @@
         "xmp_tag_count": 0
       },
       "sha256": "e71bff58fc57640803e6e65f7534e2fb0c2f99018c85276cc14b30f04427cc76",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 166864
     },
     "CACA.jpg": {
@@ -118,6 +574,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -128,6 +791,41 @@
         "xmp_tag_count": 0
       },
       "sha256": "e735fe9e50057f8280baf96182a38d516a4acfb144da7f1e6aad32de44c76aea",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:5259041e-8171-49c9-acc2-915f1a48e3a5:contentauth",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:fff4c43d-ffb0-4f23-bd0b-f47f1cf82057:contentauth",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_mediaUnknownProvenance"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:5259041e-8171-49c9-acc2-915f1a48e3a5:contentauth",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 279782
     },
     "CACAE-uri-CA.jpg": {
@@ -165,6 +863,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -175,6 +1080,43 @@
         "xmp_tag_count": 0
       },
       "sha256": "66baccd7a155946eec0bcffd1c26a635e462493816414f677baf336989a0482a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:a335af65-30be-42be-95a7-ac576ff692cc",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:9b461205-3f7e-4408-89b9-d30fc0459393",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:525beff5-9f15-4db3-838f-1c2c25dc0954",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 388188
     },
     "CA_ct.jpg": {
@@ -205,6 +1147,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -215,6 +1364,25 @@
         "xmp_tag_count": 0
       },
       "sha256": "e7d6cb48303593c0a34de44aadf9b6f4386a8b263c74e76b6c19ea97eb87e853",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 166864
     },
     "CIE-sig-CA.jpg": {
@@ -251,6 +1419,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -261,6 +1636,34 @@
         "xmp_tag_count": 0
       },
       "sha256": "0c343c0f7c07ff6a1e8a0ec3d69d79fe2990d72450e778702e0fdae6458206c5",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:9b627f23-7597-4d75-8b98-8b810b50a593",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:bc347336-f111-4c34-82da-a970150c5490",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 354543
     },
     "C_with_CAWG_data.jpg": {
@@ -298,6 +1701,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -308,6 +1918,23 @@
         "xmp_tag_count": 0
       },
       "sha256": "fa0b257c863cb5b367135a017813ce0c1fbfc690a03e94acdd047c25c2d1ed46",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "urn:c2pa:822f2ec0-ef27-4d95-88b4-74586c12873d",
+            "pseudo": false,
+            "transformation": []
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 139636
     },
     "E-sig-CA.jpg": {
@@ -339,6 +1966,213 @@
         ],
         "validation_state": "Invalid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -349,11 +2183,36 @@
         "xmp_tag_count": 0
       },
       "sha256": "20dc072a4c843d3b7d7cb4f4002fbb4d8f20d7ee859ca726f2458c1e0358a98c",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 166864
     },
     "IMG_0003.jpg": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -365,11 +2224,20 @@
         "xmp_tag_count": 132
       },
       "sha256": "f999fd78bfe8a83c96e468a078830ba94485bc1bc6fd086fb94a43bd29dd0f23",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 61720
     },
     "P1000827.jpg": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -381,6 +2249,9 @@
         "xmp_tag_count": 133
       },
       "sha256": "9d33d48863ac4f94711e289bebc43e849d45be1819ee16c479bd9a8385f1ae08",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 167548
     },
     "XCA.jpg": {
@@ -413,6 +2284,213 @@
         ],
         "validation_state": "Invalid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -423,6 +2501,25 @@
         "xmp_tag_count": 0
       },
       "sha256": "81f20702a2e81611b29aa773f811b59ade6095acd3d089d6ffdae6b591d6d5a5",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 142765
     },
     "adobe-20220124-E-clm-CAICAI.jpg": {
@@ -457,6 +2554,213 @@
         ],
         "validation_state": "Invalid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -467,6 +2771,34 @@
         "xmp_tag_count": 2
       },
       "sha256": "b3ff3f00c66602280977d3e4d962a836d33ab83953d0009f7c1e6490d0065feb",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:a4ec0a2e-2a4a-4652-bede-762c0362b236",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:8bb8ad50-ef2f-4f75-b709-a0e302d58019",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 656258
     },
     "boxhash.jpg": {
@@ -498,6 +2830,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -508,12 +3047,37 @@
         "xmp_tag_count": 2
       },
       "sha256": "b63a8df44b09d78cbe60b2c828b0a76b97b953407942fd9a2d0698c77c29b176",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:780b8445-8f68-4086-8083-ecdd6fc0d7cb",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 174308
     },
     "cloud.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifests.adobe.com/manifests/adobe-urn-uuid-5f37e182-3687-462e-a7fb-573462780391"
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -525,12 +3089,21 @@
         "xmp_tag_count": 15
       },
       "sha256": "e6ad9f51be5bb83f137322a3f260b5881738e3528aee208727e75b6daaba6092",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 183901
     },
     "cloudx.jpg": {
       "c2patool": {
         "present": null,
         "remote_manifest": "https://cai-manifestx.adobe.com/manifests/adobe-urn-uuid-5f37e182-3687-462e-a7fb-573462780391"
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -542,11 +3115,20 @@
         "xmp_tag_count": 15
       },
       "sha256": "15ca4263485f55bdb64e45a8c13cfa09fd0760fc2fbc628688d7fc5d74f3c194",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 183901
     },
     "earth_apollo17.jpg": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -558,6 +3140,9 @@
         "xmp_tag_count": 14
       },
       "sha256": "b7ffd2579d0921aae0c0b2edf3cf5ef22621b07f27d7c56a856a09e5428779ad",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 183712
     },
     "exp-test1.png": {
@@ -599,6 +3184,213 @@
         ],
         "validation_state": "Invalid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -609,11 +3401,81 @@
         "xmp_tag_count": 2
       },
       "sha256": "8794b09652ab0585b9337f9c85981407ee297eda20f5885964057fca59648bd3",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:2d14c018-8332-4600-93fe-cdb9eb9ec6e6",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:b6df3877-dbbc-48cf-8e56-d8cf2c3c2434",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:abf5c089-6e47-4d2e-8924-9deb90e7a350",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobetest:urn:uuid:120c2204-929d-4e97-a3b7-f5ecc9408b79",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:f25a8561-3004-4e41-97c8-24b97f215456",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:149010c3-a7d1-4756-8a89-03896b32b63c",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 5884439
     },
     "ingredient__contentauth_urn_uuid_b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3__c2pa.assertions__c2pa.thumbnail.claim.jpeg": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -625,6 +3487,9 @@
         "xmp_tag_count": 0
       },
       "sha256": "7e945945c21f096d5800930bcd22a55184c226c148af9c78d656770b6050e4f2",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 28486
     },
     "legacy_ingredient_hash.jpg": {
@@ -657,6 +3522,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -667,11 +3739,45 @@
         "xmp_tag_count": 2
       },
       "sha256": "e64168ba337fb8793f8577d4a9194f21df4bf0bce7b90485fe4dc46ccf0d2d2d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:ace0bb13-7dec-487c-90db-ae421548ea4c",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "contentauth:urn:uuid:091a2aad-db6f-48c1-aec2-a3ed4647368e",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 378962
     },
     "libpng-test.png": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -683,12 +3789,21 @@
         "xmp_tag_count": 0
       },
       "sha256": "c5c635a1dbbec9a768c3bb4527dbaea62a1be05efcee17d66799cc07b673b29b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 3700
     },
     "libpng-test_with_url.png": {
       "c2patool": {
         "present": null,
         "remote_manifest": "http://localhost:5000/libpng-test.c2pa"
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -700,11 +3815,20 @@
         "xmp_tag_count": 2
       },
       "sha256": "8ffdf61c6497696b4a18f8e04b416c749f7ad67f4a1529862f50231db86d1411",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 4104
     },
     "mars.webp": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -716,12 +3840,222 @@
         "xmp_tag_count": 0
       },
       "sha256": "e8402f9020e2e0152e9284525f2220afa79897918cc7db0d4815d86e892d3d13",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 174860
     },
     "no_alg.jpg": {
       "c2patool": {
         "error": "Error: unknown algorithm",
         "present": null
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
       },
       "exiftool": {
         "digital_source_type": [],
@@ -733,11 +4067,37 @@
         "xmp_tag_count": 0
       },
       "sha256": "7c91641416c18319b823c292ae603c5354892ac365c05543519154c48c6a1f8a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "urn:c2pa:922a9341-63ba-46f0-8065-21aa6399f22e",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 86499
     },
     "no_manifest.jpg": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -749,6 +4109,9 @@
         "xmp_tag_count": 13
       },
       "sha256": "9ac395ca04fc9d348acf6f81920f5e894d336341c3f764ca86c354eec6f7c2d6",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 97591
     },
     "ocsp.jpg": {
@@ -786,6 +4149,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -796,6 +4366,48 @@
         "xmp_tag_count": 0
       },
       "sha256": "49a6b089bf3fe610960ef91b2beb81c86b62e7d531c97f33fc029841d864b2cb",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:pseudo:adobe:urn:uuid:f3a46a78-8103-4e04-9f98-abcf03ebab19:ocsp.jpg_2",
+                "relationship": "componentOf"
+              }
+            ],
+            "label": "adobe:urn:uuid:f3a46a78-8103-4e04-9f98-abcf03ebab19",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "urn:uuid:83875007-1e81-4027-847f-4137f13027db",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:pseudo:adobe:urn:uuid:f3a46a78-8103-4e04-9f98-abcf03ebab19:ocsp.jpg_2",
+            "pseudo": true,
+            "transformation": []
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 285562
     },
     "ocsp_with_assertion.jpg": {
@@ -829,6 +4441,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "warning",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -839,12 +4658,256 @@
         "xmp_tag_count": 0
       },
       "sha256": "210fb95c6a766d3cd89ef0583898ec7248fe60f0ed651af216fb270cd9cbe17a",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:8208d145-e90c-43f6-b9a4-58bd7ba87f80",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:17d82661-2e6e-48f1-922c-2e853cbeadfd",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "urn:uuid:b82c36da-6dc9-418d-bd2c-9587009f797f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 599791
     },
     "prerelease.jpg": {
       "c2patool": {
         "error": "Error: Prerelease claim found",
         "present": null
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "error",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "com.google.unsupportedSpecVersion"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
       },
       "exiftool": {
         "digital_source_type": [],
@@ -856,11 +4919,36 @@
         "xmp_tag_count": 2
       },
       "sha256": "17ea3035caaa4eb6f7cb06c89bda6c86a74a92c40dc5b8119e9954ed9cd99831",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobetest:urn:uuid:7acbba1a-7473-4e1c-a8cb-1ee6f9f32a92",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 374959
     },
     "sample1.avif": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -872,11 +4960,20 @@
         "xmp_tag_count": 0
       },
       "sha256": "a10de8204aee73ba1786daca6390546bd7aa6b069aaa644012219a1c11246a43",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 97436
     },
     "sample1.heic": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -888,11 +4985,20 @@
         "xmp_tag_count": 1
       },
       "sha256": "46ac93516093b70bfed23d11f651819a4fb946088a6a933d6a5d34f4fb967bad",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 2503495
     },
     "sample1.heif": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -904,11 +5010,20 @@
         "xmp_tag_count": 0
       },
       "sha256": "00d9e0636b645036f77b3809fcd26a29df71b9ee66f2865fd8729b894aeabf59",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 293608
     },
     "sample1.png": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -920,11 +5035,20 @@
         "xmp_tag_count": 0
       },
       "sha256": "0bd72c972c14e5fd27d8473c5599e801031576e1398f384c40c3394696a2619a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 299257
     },
     "sample1.webp": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -936,11 +5060,20 @@
         "xmp_tag_count": 0
       },
       "sha256": "006ee0871284b06a311286b9b72b3d083951ea6e9c78aa14d7894742daebfad3",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 50408
     },
     "test.webp": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -952,11 +5085,20 @@
         "xmp_tag_count": 0
       },
       "sha256": "a3665d7a6fd48ff60137ae29ac6792207aed3f768c2c05ef324f64c78352d5a5",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 4928
     },
     "test_lossless.webp": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -968,11 +5110,20 @@
         "xmp_tag_count": 0
       },
       "sha256": "b90cb047e529364197e0435122e96be3e105c7e4b21688a56be9532af9a08609",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 12822
     },
     "test_xmp.webp": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -984,11 +5135,20 @@
         "xmp_tag_count": 21
       },
       "sha256": "769bf38d77496cc610ad0a0a5515f77e5c0ac185b64f99e4fa1ac4ede6dc290b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 25020
     },
     "thumbnail.jpg": {
       "c2patool": {
         "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
       },
       "exiftool": {
         "digital_source_type": [],
@@ -1000,6 +5160,9 @@
         "xmp_tag_count": 132
       },
       "sha256": "f999fd78bfe8a83c96e468a078830ba94485bc1bc6fd086fb94a43bd29dd0f23",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
       "size_bytes": 61720
     },
     "update_manifest.jpg": {
@@ -1029,6 +5192,213 @@
         ],
         "validation_state": "Valid"
       },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
       "exiftool": {
         "digital_source_type": [],
         "digital_source_type_raw": [],
@@ -1039,15 +5409,50 @@
         "xmp_tag_count": 14
       },
       "sha256": "c855bbce1e2ea50bfc1da939f55b7d1bce97a9afa5a0e671ed05d59dc7950b3b",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "urn:c2pa:d9702464-4d0f-4e39-98e3-4ad5f4fa6a44:update_manifest_vendor",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [],
+            "ingredients": [],
+            "label": "adobe:urn:uuid:6a6b4dbe-5ef9-40ec-81ec-d8955db3e95c",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
       "size_bytes": 227319
     }
   },
   "match_by": "sha256",
   "schema": "halftone-differential-expectations/1",
+  "signals_rubric": {
+    "conformance_public": "da71a72",
+    "sha256": "0502e989e025b32a0b253645991abf56d2cd14860a1e7cda10e6921bc5ba19a8",
+    "version": "1.0"
+  },
   "tools": {
-    "c2patool": "c2patool 0.28.0",
+    "c2patool": "c2patool 0.28.4",
+    "credentio": "ee4078b",
     "exiftool": "13.55",
-    "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)"
+    "json-formula-py": "327a8d75669673c10db3051da816311ac2df8a32",
+    "openssl": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)"
   },
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
   "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
