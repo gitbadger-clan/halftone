@@ -423,6 +423,13 @@ its token's time instead. Oracle: `scripts/cert-shelf-life.sh` and `ht` agree on
 serial, not_after and time-stamp status for all six, and for all 20 signed Canva
 files (2026-10-13). Microsoft serials share a long `33000000…` prefix: cite them
 in full or as prefix..suffix, never by the first six characters.
+Addendum 2026-11-05 · Upstream sync. The vendored lists moved to
+c2pa-org/conformance-public@d6dec63476e2 (2026-10-26): manifest anchors 30 → 32,
+TSA anchors 22 → 23, additions only, all NETLOCK Kft. (HU): NETLOCK ECC C2PA Root
+CA G2, NETLOCK ECC C2PA Claim Signing G2 CA 1, NETLOCK ECC C2PA TSA G2 CA 1.
+Microsoft's TSA is still not listed. Re-collecting every stratum with the new
+lists leaves every file entry unchanged, the six Bing rows included
+(`timeStamp.untrusted`, `signingCredential.expired`). Recheck at the next sync.
 
 ### D-013 · 2026-10-14 · Active-manifest-only reading understates a generative edit
 
