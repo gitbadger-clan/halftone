@@ -1,0 +1,9 @@
+# Check out every text file with LF on every platform. Git on Windows defaults to
+# core.autocrlf=true, which rewrites line endings at checkout; anything that hashes or
+# byte-compares a committed file then fails there (halftone-rubric's pin test did).
+* text=auto eol=lf
+
+# Vendored files pinned by SHA-256: never converted, in either direction.
+crates/halftone-rubric/rubrics/*.yml -text
+crates/halftone-c2pa/trust/*.pem -text
+crates/halftone-c2pa/trust/*.cfg -text
