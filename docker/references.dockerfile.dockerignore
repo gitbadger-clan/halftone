@@ -1,0 +1,3 @@
+# Build context for docker/references.dockerfile: nothing. Every tool is fetched
+# from its pinned source; the checkout and the corpus are mounted at run time.
+*
