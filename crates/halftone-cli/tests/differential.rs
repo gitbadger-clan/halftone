@@ -205,13 +205,16 @@ fn corpora() -> Vec<PathBuf> {
 }
 
 /// Run `ht inspect --batch --json` over the files in chunks and return every
-/// (summary row, inspection) pair.
-fn run_ht(files: &[PathBuf]) -> Vec<(Value, Value)> {
+/// (summary row, inspection) pair. Reports each chunk on stderr, since the
+/// largest stratum takes about a minute.
+fn run_ht(label: &str, files: &[PathBuf]) -> Vec<(Value, Value)> {
     if let Some(p) = std::env::var_os("HALFTONE_DIFFERENTIAL_BATCH") {
         let text = std::fs::read_to_string(p).expect("read HALFTONE_DIFFERENTIAL_BATCH");
         return pairs(serde_json::from_str(&text).expect("batch JSON"));
     }
+    let started = std::time::Instant::now();
     let mut out = Vec::new();
+    let mut done = 0;
     for chunk in files.chunks(40) {
         let res = Command::new(env!("CARGO_BIN_EXE_ht"))
             .arg("inspect")
@@ -230,6 +233,12 @@ fn run_ht(files: &[PathBuf]) -> Vec<(Value, Value)> {
         let text = String::from_utf8(res.stdout).unwrap();
         let batch: Value = serde_json::from_str(text.trim()).expect("batch JSON");
         out.extend(pairs(batch));
+        done += chunk.len();
+        eprintln!(
+            "differential[{label}]: inspected {done} of {} files ({:.0} s)",
+            files.len(),
+            started.elapsed().as_secs_f64()
+        );
     }
     out
 }
@@ -1014,7 +1023,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             continue;
         }
 
-        let results = run_ht(&files);
+        let results = run_ht(&label, &files);
         let keyed: HashMap<String, (Value, Value)> = results
             .into_iter()
             .filter_map(|(row, insp)| {
