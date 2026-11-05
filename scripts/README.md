@@ -118,6 +118,31 @@ inherit dependencies from a module it imports. The exception is `lib/models.py`
 | `progress.py` | `Progress` (count, percent, time left) and `step` (spinner) for long runs |
 | `models.py` | Pydantic models of `expectations.json` (`Expectations`, `Tools`); needs `pydantic` |
 
+## Reference tools in Docker
+
+The references the collector runs (ExifTool, OpenSSL, c2patool, Credentio, the
+conformance-public rubrics) are pinned in `docker/references.env` and built into one
+image by `docker/references.dockerfile`. Collecting in it gives every machine the
+same reference versions, and Credentio no longer has to be built by hand.
+
+```sh
+uv run scripts/references.py build                 # image for the current pins (first build 20–40 min)
+uv run scripts/references.py show                  # pins vs this machine vs the image
+uv run scripts/references.py collect 04 06         # collect.py, inside the image
+uv run scripts/references.py bump credentio <sha>  # the manual tool update
+```
+
+`collect` bind-mounts the checkout and runs as your user; ht and `cargo test` stay on
+the host. `bump` edits one pin, builds, re-collects every stratum, runs the
+differential test and prints the diff. It never commits, refuses to start with
+uncommitted corpus or pin changes, and takes c2patool only with `--c2pa-upgrade`,
+because c2patool moves with Halftone's c2pa. Fixture pins move separately, with
+`refresh-public-strata.py`, never in the same change. Commits are pinned in full.
+
+The image's tag hashes the pins and the Dockerfile: the same pins give the same
+recorded versions, but the base images, apt packages and Python patch release float,
+so a rebuild is not bit-for-bit identical.
+
 ## c2patool
 
 Always through `lib/c2p.py` (Python) or `pub/c2p.fish` (frames). A `c2pa.toml` under
