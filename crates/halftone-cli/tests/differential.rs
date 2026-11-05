@@ -998,7 +998,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                     file: format!("{label}/{k}"),
                     field: "file",
                     expected: "present on disk".into(),
-                    got: "missing (fetch the stratum: scripts/refresh-public-strata.fish)".into(),
+                    got: "missing (fetch the stratum: scripts/refresh-public-strata.py)".into(),
                 });
             }
         }

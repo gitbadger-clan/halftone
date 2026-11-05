@@ -29,7 +29,7 @@ use sha2::{Digest, Sha256};
 use std::path::{Path, PathBuf};
 
 /// Vendored snapshot of the official lists. Refresh with
-/// `scripts/refresh-trust-snapshot.fish`; `trust/SNAPSHOT` records the source
+/// `scripts/refresh-trust-snapshot.py`; `trust/SNAPSHOT` records the source
 /// commit and date.
 pub const VENDORED_TRUST_LIST: &str = include_str!("../trust/C2PA-TRUST-LIST.pem");
 /// Vendored C2PA time-stamp-authority trust list.
