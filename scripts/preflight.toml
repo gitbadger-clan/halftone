@@ -1,0 +1,28 @@
+# Text that must stay in the repo's docs: each line records a change other entries
+# or the code depend on. scripts/preflight.py step 12 checks every [[require]].
+# A row is removed only together with the change it guards.
+
+[[require]]
+file = "DIFFERENTIAL.md"
+text = "Follow-up 2026-09-25"
+why = "D-004 follow-up: the opt-in remote-manifest fetch"
+
+[[require]]
+file = "DIFFERENTIAL.md"
+text = "aged since"
+why = "D-010: expiry reported as ageing, not as a disagreement"
+
+[[require]]
+file = "DIFFERENTIAL.md"
+text = "Correction: Bing declares no spec version"
+why = "D-011 addendum 2026-10-02"
+
+[[require]]
+file = "DIFFERENTIAL.md"
+text = "headers must now carry the vendored EKU policy"
+why = "D-011: OpenAI and the EKU header rule"
+
+[[require]]
+file = "README.md"
+text = "fetch-remote-manifests"
+why = "the README documents the only networked inspection flag"
