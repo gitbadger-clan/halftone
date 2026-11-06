@@ -129,15 +129,34 @@ same reference versions, and Credentio no longer has to be built by hand.
 uv run scripts/references.py build                 # image for the current pins (first build 20–40 min)
 uv run scripts/references.py show                  # pins vs this machine vs the image
 uv run scripts/references.py collect 04 06         # collect.py, inside the image
-uv run scripts/references.py bump credentio <sha>  # the manual tool update
+uv run scripts/references.py bump credentio       # the manual tool update: newest commit
+uv run scripts/references.py bump c2patool --dry-run   # what it would pick, change nothing
+uv run scripts/references.py bump credentio c2patool   # several tools, one build and collection
+uv run scripts/references.py bump all --dry-run        # the newest of every tool, change nothing
+uv run scripts/references.py hold openssl <why>        # keep a pin put; bump passes over it
 ```
 
 `collect` bind-mounts the checkout and runs as your user; ht and `cargo test` stay on
 the host. `bump` edits one pin, builds, re-collects every stratum, runs the
-differential test and prints the diff. It never commits, refuses to start with
-uncommitted corpus or pin changes, and takes c2patool only with `--c2pa-upgrade`,
-because c2patool moves with Halftone's c2pa. Fixture pins move separately, with
+differential test and prints the diff. It never commits, and refuses to start with
+uncommitted corpus or pin changes. Without a value, a tool takes its newest release
+at least 14 days old (`--cooldown`), never an older one than the pin; `all` does that
+for every tool except llvm, which follows the Clang version Credentio asks for.
+OpenSSL stays on its pinned series (3.5.x) unless given a version. Lookups use git
+itself (`ls-remote` and a shallow fetch without file contents), so no API token is
+needed; c2patool's come from crates.io.
+
+A hold keeps a pin where it is, with the reason written next to it in
+`docker/references.env` (holds are not build inputs and never change the image tag).
+`bump all` passes over a held tool and says why, `bump <tool>` alone refuses, and a
+value given for it moves it and keeps the hold. `unhold` lifts it. A move to an older
+version is marked as a downgrade in the summary and the commit message. c2patool moves with Halftone's c2pa: `bump` reads the c2pa version in each
+c2patool's published Cargo.lock and takes one on another c2pa line (0.92 when
+Halftone has 0.91) only with `--c2pa-upgrade`. Fixture pins move separately, with
 `refresh-public-strata.py`, never in the same change. Commits are pinned in full.
+Several tools can move in one bump (`credentio=<sha> c2patool` mixes a fixed value
+and a lookup): every fact in `expectations.json` belongs to one tool's field, so the
+diff still says which tool changed what, and a changed fact gets that tool's D-entry.
 
 The image's tag hashes the pins and the Dockerfile: the same pins give the same
 recorded versions, but the base images, apt packages and Python patch release float,
