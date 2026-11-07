@@ -17,6 +17,8 @@
 //!   legacy IPTC IIM block from APP13, as explicit fields.
 //! - [`gcontainer::ContainerDirectory`] (`container_directory`): the Motion Photo / Ultra HDR
 //!   container directory checked against the bytes the file holds.
+//! - [`mpf::MpfIndex`] (`mpf_index`): the MPF index (CIPA DC-007) checked against the
+//!   bytes; the only declaration of an iPhone JPEG's gain map.
 //!
 //! All sources report *encoder path* and *self-identification* facts. None of them
 //! claims authorship on its own; the rationale strings say so.
@@ -27,6 +29,7 @@ pub mod fingerprints;
 pub mod gcontainer;
 pub mod jpeg;
 pub mod marking;
+pub mod mpf;
 pub mod png;
 pub mod png_rules;
 pub mod signatures;

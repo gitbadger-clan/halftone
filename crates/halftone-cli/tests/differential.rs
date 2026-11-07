@@ -314,7 +314,12 @@ fn compare_file(
     if ex.get("error").is_none() {
         let mime = ex["mime"].as_str().unwrap_or("");
         let marking_ev = evidence(insp, "marking_metadata");
-        let applicable = matches!(mime, "image/jpeg" | "image/png" | "image/webp");
+        // ExifTool's MIME for the HEIF family: image/heic (HEVC), image/heif
+        // (generic mif1), image/avif. Halftone reads XMP items from all three.
+        let applicable = matches!(
+            mime,
+            "image/jpeg" | "image/png" | "image/webp" | "image/heic" | "image/heif" | "image/avif"
+        );
         let status = marking_ev
             .map(|e| e["status"].as_str().unwrap_or("").to_string())
             .unwrap_or_else(|| "missing".into());

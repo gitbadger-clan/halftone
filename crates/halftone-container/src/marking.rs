@@ -15,6 +15,8 @@
 //!   resource `0x0404` for the IIM block.
 //! - PNG: `iTXt` with keyword `XML:com.adobe.xmp`.
 //! - WebP: the `XMP ` chunk.
+//! - HEIF / AVIF: each `mime` item with content type `application/rdf+xml`,
+//!   located through `iloc` (read by `halftone-formats`).
 //!
 //! Who holds the key: nobody. It is plain text written by whatever software last
 //! saved the file; anything can add it, anything can remove it. What it survives: only
@@ -113,15 +115,19 @@ pub struct MarkingScan {
     /// `C2PA`). Any `digitalSourceType` inside it is signed and belongs to the
     /// manifest layer; recorded here so the rationale can point the reader there.
     pub manifest_container_present: bool,
+    /// HEIF only: XMP items listed in the item inventory whose bytes could not be
+    /// read, with why. Any entry makes an empty result `Inconclusive`.
+    pub xmp_items_unreadable: Vec<String>,
 }
 
-/// Extract marking metadata from JPEG, PNG or WebP bytes.
+/// Extract marking metadata from JPEG, PNG, WebP or HEIF bytes.
 pub fn scan(mime: &str, b: &[u8]) -> Result<MarkingScan, String> {
     let mut s = MarkingScan::default();
     let packets = match mime {
         "image/jpeg" => jpeg_packets(b, &mut s)?,
         "image/png" => png_packets(b, &mut s)?,
         "image/webp" => webp_packets(b, &mut s)?,
+        "image/heif" => heif_packets(b, &mut s)?,
         _ => return Err(format!("unsupported container {mime}")),
     };
     for p in packets {
@@ -301,6 +307,15 @@ fn webp_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
     Ok(packets)
 }
 
+/// Collect the XMP items of a HEIF / AVIF file, read by `halftone-formats`; record
+/// unreadable XMP items and whether a C2PA `uuid` box is present.
+fn heif_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
+    let m = halftone_formats::heif::metadata(b)?;
+    s.manifest_container_present |= m.c2pa_uuid_box;
+    s.xmp_items_unreadable = m.xmp_unreadable;
+    Ok(m.xmp_packets)
+}
+
 /// Find every `DigitalSourceType` property in an XMP packet, in any prefix and form.
 pub fn find_dst(text: &str) -> Vec<DstValue> {
     const NAME: &str = "DigitalSourceType";
@@ -414,7 +429,10 @@ impl EvidenceSource for MarkingMetadata {
     }
     fn supports(&self, a: &Asset) -> bool {
         a.modality == Modality::Image
-            && matches!(a.mime.as_str(), "image/jpeg" | "image/png" | "image/webp")
+            && matches!(
+                a.mime.as_str(),
+                "image/jpeg" | "image/png" | "image/webp" | "image/heif"
+            )
     }
     fn assess(&self, a: &Asset) -> halftone_core::Result<Evidence> {
         let s = scan(&a.mime, &a.bytes).map_err(halftone_core::Error::Parse)?;
@@ -450,6 +468,8 @@ impl EvidenceSource for MarkingMetadata {
         let (status, rationale) = if codes.is_empty() {
             let where_ = if s.xmp_extended_incomplete {
                 "XMP present, ExtendedXMP could not be fully reassembled"
+            } else if !s.xmp_items_unreadable.is_empty() {
+                "an XMP item is listed but its bytes could not be read"
             } else if s.xmp_packets > 0 {
                 "XMP present but without the field"
             } else {
@@ -465,7 +485,7 @@ impl EvidenceSource for MarkingMetadata {
             } else {
                 ""
             };
-            let status = if s.xmp_extended_incomplete {
+            let status = if s.xmp_extended_incomplete || !s.xmp_items_unreadable.is_empty() {
                 Status::Inconclusive
             } else {
                 Status::Absent
@@ -529,6 +549,23 @@ impl EvidenceSource for MarkingMetadata {
         };
 
         let unbound = s.values.iter().any(|v| !v.namespace_bound);
+        let mut details = serde_json::json!({
+            "vocabulary_version": VOCABULARY_VERSION,
+            "digital_source_type": codes,
+            "values": s.values,
+            "prefix_not_bound_to_iptc_ext": unbound,
+            "iptc_ext_namespace_declared": s.iptc_ext_namespace_declared,
+            "xmp_packets": s.xmp_packets,
+            "xmp_bytes": s.xmp_bytes,
+            "xmp_extended": s.xmp_extended,
+            "xmp_extended_incomplete": s.xmp_extended_incomplete,
+            "iim": s.iim,
+            "manifest_container_present": s.manifest_container_present,
+        });
+        // HEIF only, so the details of every other format stay as they were.
+        if a.mime == "image/heif" {
+            details["xmp_items_unreadable"] = serde_json::json!(s.xmp_items_unreadable);
+        }
         Ok(Evidence {
             layer: self.layer(),
             source: self.id(),
@@ -536,19 +573,7 @@ impl EvidenceSource for MarkingMetadata {
             statistic: None,
             calibration: None,
             rationale,
-            details: serde_json::json!({
-                "vocabulary_version": VOCABULARY_VERSION,
-                "digital_source_type": codes,
-                "values": s.values,
-                "prefix_not_bound_to_iptc_ext": unbound,
-                "iptc_ext_namespace_declared": s.iptc_ext_namespace_declared,
-                "xmp_packets": s.xmp_packets,
-                "xmp_bytes": s.xmp_bytes,
-                "xmp_extended": s.xmp_extended,
-                "xmp_extended_incomplete": s.xmp_extended_incomplete,
-                "iim": s.iim,
-                "manifest_container_present": s.manifest_container_present,
-            }),
+            details,
             duration_ms: 0,
         })
     }
@@ -852,6 +877,62 @@ mod tests {
         // Empty and truncated IIM.
         assert_eq!(parse_iim(&[]).dataset_count, 0);
         assert_eq!(parse_iim(&[0x1C, 2, 65, 0x00, 0x10, b'x']).dataset_count, 0);
+    }
+
+    /// Minimal HEIC: ftyp, meta with one XMP item stored in idat (iloc v1,
+    /// construction method 1). `xmp_len_delta` makes the iloc length lie.
+    fn heic_with_xmp(xmp: &[u8], xmp_len_delta: i64) -> Vec<u8> {
+        fn bx(kind: &[u8; 4], payload: &[u8]) -> Vec<u8> {
+            let mut v = ((payload.len() + 8) as u32).to_be_bytes().to_vec();
+            v.extend_from_slice(kind);
+            v.extend_from_slice(payload);
+            v
+        }
+        fn full(kind: &[u8; 4], version: u8, payload: &[u8]) -> Vec<u8> {
+            let mut p = vec![version, 0, 0, 0];
+            p.extend_from_slice(payload);
+            bx(kind, &p)
+        }
+        let mut infe = 1u16.to_be_bytes().to_vec();
+        infe.extend_from_slice(&[0, 0]);
+        infe.extend_from_slice(b"mime\0application/rdf+xml\0");
+        let mut iinf = 1u16.to_be_bytes().to_vec();
+        iinf.extend(full(b"infe", 2, &infe));
+        let len = (xmp.len() as i64 + xmp_len_delta) as u32;
+        let mut iloc = vec![0x44, 0x00, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0];
+        iloc.extend_from_slice(&len.to_be_bytes());
+        let meta = [
+            full(b"hdlr", 0, b"\0\0\0\0pict\0\0\0\0\0\0\0\0\0\0\0\0\0"),
+            full(b"iinf", 0, &iinf),
+            full(b"iloc", 1, &iloc),
+            bx(b"idat", xmp),
+        ]
+        .concat();
+        [
+            bx(b"ftyp", b"heic\0\0\0\0mif1heic"),
+            full(b"meta", 0, &meta),
+        ]
+        .concat()
+    }
+
+    #[test]
+    fn heif_xmp_items_are_read() {
+        let xmp = b"<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"><rdf:RDF \
+            xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><rdf:Description \
+            xmlns:Iptc4xmpExt=\"http://iptc.org/std/Iptc4xmpExt/2008-02-29/\" \
+            Iptc4xmpExt:DigitalSourceType=\"http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia\"/>\
+            </rdf:RDF></x:xmpmeta>";
+        let ev = assess(heic_with_xmp(xmp, 0));
+        assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+        assert_eq!(ev.details["xmp_items_unreadable"], serde_json::json!([]));
+
+        let ev = assess(heic_with_xmp(xmp, 100));
+        assert_eq!(ev.status, Status::Inconclusive, "{}", ev.rationale);
+        assert!(
+            ev.rationale.contains("could not be read"),
+            "{}",
+            ev.rationale
+        );
     }
 
     fn png_chunk(ty: &[u8; 4], data: &[u8]) -> Vec<u8> {

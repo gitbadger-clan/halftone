@@ -1,13 +1,17 @@
 //! The parts a file declares itself to consist of: named byte ranges, read from
-//! the file's own description of its structure. Today that description is the
-//! Motion Photo / Ultra HDR container directory ([`crate::gcontainer`]); another
-//! reader (MPF, say) can add its declarations behind the same function.
+//! the file's own description of its structure: the Motion Photo / Ultra HDR
+//! container directory ([`crate::gcontainer`]) first, then the MPF index
+//! ([`crate::mpf`]). A Pixel Ultra HDR file declares its gain map in both; an
+//! iPhone JPEG only in MPF. Callers that take the first declaration at a place
+//! (C2PA part naming) therefore see the container directory's name wherever it
+//! has one, exactly as before MPF was read.
 //!
 //! A declaration is what the file's writer said, unsigned. Callers use it to name
 //! things (a C2PA part at the same place, for instance), never as evidence that
 //! the bytes there are what the name says.
 
 use crate::gcontainer::{self, Layout};
+use crate::mpf;
 
 /// One byte range the file declares, with the name its declaration gives it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -23,23 +27,45 @@ pub struct DeclaredPart {
 }
 
 /// What a declared part's name means, in plain words: `MotionPhoto` is a "motion
-/// clip". Unknown names are returned as written.
+/// clip", MPF's `Undefined` an "image of undefined MPF type". Unknown names are
+/// returned as written.
 pub fn describe(name: &str) -> &str {
     match name {
         "Primary" => "primary image",
         "GainMap" => "gain map",
         "MotionPhoto" => "motion clip",
-        other => other,
+        other => mpf::describe(other),
     }
 }
 
-/// Every part the file declares, in file order. Empty when the file declares none
-/// (most files) or its declaration cannot be read.
+/// Every part the file declares: the container directory's parts in file order,
+/// then the MPF index's in index order. Empty when the file declares none (most
+/// files); a declaration that cannot be read contributes nothing.
 pub fn declared_parts(file: &[u8]) -> Vec<DeclaredPart> {
-    match gcontainer::analyze(file) {
+    let mut out = match gcontainer::analyze(file) {
         Ok(Some(layout)) => parts_of(&layout),
         _ => Vec::new(),
+    };
+    if let Ok(Some(index)) = mpf::index(file) {
+        out.extend(mpf_parts(&index));
     }
+    out
+}
+
+/// The parts an MPF index declares, at the places it gives them. Entries of zero
+/// size declare no range.
+pub fn mpf_parts(index: &mpf::Index) -> Vec<DeclaredPart> {
+    index
+        .entries
+        .iter()
+        .filter(|e| e.size > 0)
+        .map(|e| DeclaredPart {
+            offset: e.offset,
+            length: e.size,
+            name: e.type_name.to_string(),
+            declared_by: "MPF index",
+        })
+        .collect()
 }
 
 /// The parts a container directory declares, placed by its layout rule. The
@@ -180,6 +206,46 @@ mod tests {
     fn names_read_as_plain_words() {
         assert_eq!(describe("MotionPhoto"), "motion clip");
         assert_eq!(describe("GainMap"), "gain map");
+        assert_eq!(describe("Undefined"), "image of undefined MPF type");
         assert_eq!(describe("Depth"), "Depth");
+    }
+
+    #[test]
+    fn mpf_entries_become_parts_at_their_file_offsets() {
+        let e = |index, type_code, size, offset| mpf::Entry {
+            index,
+            attribute: type_code,
+            type_code,
+            type_name: mpf::type_name(type_code),
+            data_format: 0,
+            dependent_parent: false,
+            dependent_child: false,
+            representative: index == 0,
+            size,
+            raw_offset: 0,
+            offset,
+            dependents: [0, 0],
+        };
+        let index = mpf::Index {
+            header_offset: 10,
+            big_endian: true,
+            version: Some("0100".into()),
+            number_of_images: Some(3),
+            entries: vec![
+                e(0, 0x030000, 1_000, 0),
+                e(1, 0, 200, 1_000),
+                e(2, 0, 0, 1_200),
+            ],
+            extra_segments: 0,
+        };
+        let parts = mpf_parts(&index);
+        assert_eq!(
+            summary(&parts),
+            [
+                (0, 1_000, "Baseline MP Primary Image"),
+                (1_000, 200, "Undefined")
+            ]
+        );
+        assert!(parts.iter().all(|p| p.declared_by == "MPF index"));
     }
 }

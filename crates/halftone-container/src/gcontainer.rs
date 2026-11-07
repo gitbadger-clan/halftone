@@ -58,7 +58,9 @@ impl EvidenceSource for ContainerDirectory {
             Ok(None) => (
                 Status::Absent,
                 "No container directory (the XMP item list that Motion Photo and Ultra HDR \
-                 JPEGs carry). Most JPEGs have none; its absence says nothing about origin."
+                 JPEGs carry). Most JPEGs have none; its absence says nothing about origin. \
+                 Only this directory is read here: images declared elsewhere, such as an \
+                 iPhone gain map in the MPF index, are reported by mpf_index."
                     .to_string(),
                 serde_json::json!({ "directory": false }),
             ),

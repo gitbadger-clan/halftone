@@ -142,6 +142,17 @@ fn scan(a: &Asset) -> MetaScan {
                 }
             }
         }
+        // XMP items only; frame dimensions (`ispe`) are not read yet, so the
+        // dimension check stays silent on HEIF.
+        "image/heif" => {
+            if let Ok(h) = halftone_formats::heif::metadata(&a.bytes) {
+                m.has_xmp = !h.xmp_packets.is_empty();
+                for x in &h.xmp_packets {
+                    hay.push(' ');
+                    hay.push_str(&String::from_utf8_lossy(x));
+                }
+            }
+        }
         _ => {}
     }
 

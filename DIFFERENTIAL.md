@@ -652,3 +652,30 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
 - Status: open: which status code the specification expects for a claim signature
   whose algorithm is unknown, and whether Halftone should report it as a
   validation failure rather than an unreadable store.
+
+### D-019 · 2026-11-07 · The MPF index's primary size is stale in every multi-part capture
+
+- Files: every multi-part JPEG in `06-phones` (Pixel 5 ×4, Pixel 9 Pro Fold ×3),
+  the five ExifTool GPS strips in `07-editors`, the `bytes__` copies in
+  `08-multipart`, and `01-c2pa-rs/{b,c,d-bad-01}.jpg`.
+- Observed: MPF entry 0's declared size differs from the primary JPEG's real
+  length in all 21 files; every later image sits exactly where its offset says.
+  On the 7 untouched captures the gap is the APP11 segment size (Fold only) plus
+  the main XMP segment size minus 972, to within one byte (`scripts/mpf-gap.py`).
+  EXIF and ExtendedXMP sizes do not track it. The ExifTool strips differ from the
+  same formula by −31 (Fold ×2), −56 (Pixel 5 default, motion) and −319/−320
+  (Pixel 5 raw variants).
+- Cause (inference): MPF offsets are relative to the MP header, so segments
+  rewritten or inserted in front of it leave every offset right and entry 0's
+  size stale. The pattern fits the index being written when the primary held a
+  ~972-byte main XMP and no APP11, before the camera wrote its final XMP and
+  (Fold) inserted the C2PA store. libultrahdr itself computes the size correctly
+  at write time (v1.4.0 and main). ExifTool's edits shift it again.
+- Effect: a strict size check made `mpf_index` report every untouched Pixel
+  capture as not matching its own index (versiondiff 27863b3 → -dirty, first run).
+- Resolution: `mpf_index` records `primary_size_found` and the declared size and
+  does not count the difference; the `present` rationale names both and states
+  that this source therefore cannot tell whether metadata in front of the index
+  changed. Later images are still checked for offset, size and completeness.
+- Status: open: the ±1 byte residual is unexplained; the ExifTool residuals cannot
+  be checked against the deleted location-on originals.

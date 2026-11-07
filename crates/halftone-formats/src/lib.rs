@@ -7,11 +7,18 @@
 //!   JUMBF presence, Photoshop IRB) and the end of the first complete image.
 //! - [`gcontainer`]: the Motion Photo / Ultra HDR container directory and its
 //!   layout against the file.
+//! - [`mpf`]: the MPF index (CIPA DC-007) of further images after a JPEG's
+//!   primary, and its layout against the file. iPhone JPEGs declare their gain map
+//!   here only.
+//! - [`heif`]: HEIF / AVIF brands, item inventory and XMP items; whether a C2PA
+//!   `uuid` box is present. No pixel decoding.
 //! - [`parts`]: the parts a file declares itself to consist of, as named byte
 //!   ranges, independent of which declaration they come from.
 
 pub mod gcontainer;
+pub mod heif;
 pub mod jpeg;
+pub mod mpf;
 pub mod parts;
 
 /// Upper bound on one XMP packet's size, for every container that carries XMP.
