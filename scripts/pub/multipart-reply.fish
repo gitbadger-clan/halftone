@@ -105,9 +105,13 @@ function c2patool_clean
         c2patool --settings $settings $argv 2>/dev/null
 end
 
-function ht_state
+# Halftone's own verdict (the evidence status), not details.validation_state: that
+# field deliberately keeps c2pa-rs's state for comparison with c2patool, from before
+# Halftone's C2PA 2.4 §15.12.4 multi-asset fallback.
+function ht_verdict
     $HT inspect --batch --json --only manifest --trust-list vendored $argv[1] 2>/dev/null | jq -r \
-        '.inspections[0].evidence[] | select(.source.name=="c2pa") | .details.validation_state // "-"'
+        '.inspections[0].evidence[] | select(.source.name=="c2pa") | .status // "-"
+         | (.[:1] | ascii_upcase) + .[1:]'
 end
 
 function c2patool_state
@@ -160,7 +164,7 @@ end
 # Pad first, colour after, so columns stay aligned.
 function paint
     switch $argv[1]
-        case Valid Trusted match
+        case Valid Trusted Present match
             set -f c brgreen
         case Invalid mismatch missingPart malformed '*+*'
             set -f c brred
@@ -253,7 +257,7 @@ for n in $names
     contains -- $n $skip; or set -a shown $n
 end
 echo "$H== "(count $shown)" copies of that file, two libraries: c2pa-rs (ht, c2patool) and Credentio$R"
-printf "$D%-13s %-22s %-9s %-10s %-10s %-10s %-10s %-22s %s$R\n" \
+printf "$D%-13s %-22s %-12s %-10s %-10s %-10s %-10s %-22s %s$R\n" \
     file change ht c2patool "part 0" "part 1" "part 2" "credentio result" "decided by"
 for i in (seq (count $names))
     contains -- $names[$i] $skip; and continue
@@ -273,7 +277,7 @@ for i in (seq (count $names))
         set via "whole file"
     end
     printf '%-13s %-22s ' $names[$i] $changes[$i]
-    paint (ht_state $f) 10
+    paint (ht_verdict $f) 13
     paint (c2patool_state $f) 11
     paint $pr[1] 11
     paint $pr[2] 11
@@ -283,6 +287,7 @@ for i in (seq (count $names))
 end
 
 echo
+echo "$D# ht: Halftone's verdict on the manifest (Present = valid, content binding holds; Inconclusive = does not validate)$R"
 if contains -- partial-clip $shown
     echo "$D# part columns: Credentio's hash result per part; with no result: absent / cut short (file length), — = not needed$R"
 else
