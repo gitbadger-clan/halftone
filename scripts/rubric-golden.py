@@ -145,6 +145,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--rubrics", default="../conformance-public")
     ap.add_argument("--out", default="testdata/rubric-signals")
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     rub = Path(a.rubrics) / "asset-rubrics"
     evaluator, rubric = rub / "c2pa_signals_rubric_evaluator.py", rub / "asset-rubric-signals-local.yml"
@@ -191,4 +195,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

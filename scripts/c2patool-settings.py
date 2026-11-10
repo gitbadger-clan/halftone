@@ -27,6 +27,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--trust", choices=["none", "eku", "vendored"], default="none")
     ap.add_argument("--fetch", action="store_true", help="remote_manifest_fetch = true")
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     try:
         sys.stdout.write(settings_text(a.trust, a.fetch))

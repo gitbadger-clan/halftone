@@ -103,6 +103,19 @@ paid per process, so never call such a script once per file. The same goes for
 ExifTool: use `lib/exiftool.py`, which keeps one ExifTool process for the whole run
 instead of paying Perl's start-up (~90 ms) per file.
 
+Every script answers tab completion: call `serve` from `lib/complete.py` on the
+argparse parser or Typer app right before parsing. It returns at once unless the shell
+is asking, and then prints the candidates and exits without running anything, so
+nothing with a side effect may come before it.
+
+```python
+from complete import serve
+
+serve(ap)                 # argparse: before ap.parse_args()
+serve(app)                # Typer: before app()
+serve(app, values={"strata": lambda: [d.name for d in strata_dirs()]})   # own values for an argument
+```
+
 Exit codes: 0 done, 1 the check or task found a problem, 2 usage or setup error.
 
 Anything that runs longer than a few seconds shows progress with `lib/progress.py`.
@@ -137,6 +150,7 @@ inherit dependencies from a module it imports. The exception is `lib/models.py`
 | `repo.py` | repo root, corpus and trust paths, `die`, `need`, terminal colours |
 | `c2p.py` | c2patool isolated from this machine's config, with the collector's settings |
 | `exiftool.py` | one long-running ExifTool process (`-stay_open`) for many commands |
+| `complete.py` | tab completion answered by the script itself: `serve(parser_or_app)`; self-test: `python scripts/lib/complete.py` |
 | `envstate.py` | whether bootstrap has prepared the scripts as they are now (read by `dev.py`) |
 | `progress.py` | `Progress` (count, percent, time left) and `step` (spinner) for long runs |
 | `models.py` | Pydantic models of `expectations.json` (`Expectations`, `Tools`); needs `pydantic` |

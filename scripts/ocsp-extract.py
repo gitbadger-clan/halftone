@@ -276,6 +276,10 @@ def main() -> int:
     ap.add_argument("--signed-at", help="UTC signing time, overrides ht")
     ap.add_argument("--ht", default="target/release/ht")
     ap.add_argument("--out", type=Path, help="write each response as <file>.<n>.der")
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     anchors, anchor_certs = trust_subjects(), trust_certs()
     if not anchors:

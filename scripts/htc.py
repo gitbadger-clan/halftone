@@ -807,4 +807,7 @@ def layout(files: Annotated[list[Path], typer.Argument(help="Images to describe.
 
 
 if __name__ == "__main__":
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(app)
     app()

@@ -59,6 +59,10 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("files", nargs="+", type=Path)
     ap.add_argument("--ht", default="ht", help="ht binary (default: ht on PATH).")
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
 
     shown = 0

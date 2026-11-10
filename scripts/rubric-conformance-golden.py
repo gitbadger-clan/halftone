@@ -224,6 +224,10 @@ def main() -> int:
     ap.add_argument("--rubrics", default="../conformance-public")
     ap.add_argument("--samples", default="../profile-evaluator")
     ap.add_argument("--out", default="testdata/rubric-conformance")
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     rub = Path(a.rubrics) / "asset-rubrics"
     evaluator = rub / "c2pa_conformance_rubric_evaluator.py"

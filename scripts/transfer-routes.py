@@ -112,6 +112,9 @@ def main() -> None:
     ap.add_argument("folder", type=Path, help="Folder with the route copies (not a corpus stratum).")
     ap.add_argument("--ht", default="ht", help="ht binary (default: ht on PATH).")
     ap.add_argument("--no-ht", action="store_true", help="Skip the ht verdict columns.")
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
 
     folder = a.folder.expanduser()

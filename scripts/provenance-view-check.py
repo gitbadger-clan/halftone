@@ -607,6 +607,10 @@ def main() -> int:
         type=int,
         help="view order: 1, 2, 3 put every view in every position once (default: random)",
     )
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     questions = load_questions(a.questions) if a.questions else None
     if a.write_questions:

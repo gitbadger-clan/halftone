@@ -27,6 +27,10 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("snapshot", nargs="?")
     ap.add_argument("--files", nargs="*", default=[])
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     snap = Path(a.snapshot) if a.snapshot else max(Path("target/versiondiff").glob("head-*.json"),
                                                   key=lambda p: p.stat().st_mtime)

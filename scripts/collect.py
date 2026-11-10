@@ -248,4 +248,7 @@ def main(
 
 
 if __name__ == "__main__":
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(app, values={"strata": lambda: [d.name for d in strata_dirs()]})
     app()

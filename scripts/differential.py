@@ -667,6 +667,9 @@ def main() -> int:
                          "(needs --credentio)")
     ap.add_argument("--no-trust", action="store_true",
                 help="collect without trust anchors; the EKU policy (--trust-config) is always passed")
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
 
     if a.no_trust:

@@ -66,6 +66,10 @@ def main() -> int:
     ap.add_argument("report", type=Path, help="captured output of the corpus test in report mode")
     ap.add_argument("--corpus", type=Path, default=Path("corpus/differential/04-generators"))
     ap.add_argument("--out", type=Path, default=Path("/tmp/corpus-inspect"))
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
 
     corpus = a.corpus.resolve()

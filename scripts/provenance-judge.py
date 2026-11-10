@@ -537,6 +537,10 @@ def main() -> int:
     rs = sub.add_parser("rescore", help="re-parse and re-score a saved run folder")
     rs.add_argument("folder")
     rs.set_defaults(func=cmd_rescore)
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     return a.func(a)
 

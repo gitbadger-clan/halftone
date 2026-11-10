@@ -161,4 +161,7 @@ def main(
 
 
 if __name__ == "__main__":
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(app)
     app()

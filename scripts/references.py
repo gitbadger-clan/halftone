@@ -885,6 +885,9 @@ def main() -> int:
     p.add_argument("--force", action="store_true", help="start even with uncommitted corpus or pin changes")
     p.set_defaults(fn=cmd_bump)
 
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap, values={"tool": lambda: list(TOOLS), "targets": lambda: ["all", *TOOLS]})
     a = ap.parse_args()
     return a.fn(a)
 

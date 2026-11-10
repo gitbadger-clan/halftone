@@ -493,6 +493,9 @@ def main() -> int:
     u.add_argument("--keep-worktree", action="store_true", help="leave the base worktree in /tmp")
     u.add_argument("--whole", action="store_true", help="snapshot ht's whole output")
     u.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
     return {"snapshot": snapshot, "compare": compare, "upgrade": upgrade}[a.cmd](a)
 
