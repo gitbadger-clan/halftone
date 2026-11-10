@@ -27,6 +27,29 @@ alias dev 'uv run scripts/dev.py'      # fish; bash/zsh: alias dev='uv run scrip
 Any `scripts/<name>.py` is a task; there is no list to maintain. Arguments after the
 task name go to the script unchanged. Running a script directly works too.
 
+## Collecting into a stratum: `htc`
+
+`htc.py` brings phone captures and browser downloads into `corpus/differential/<stratum>`
+(generator APIs have their own script, `api-gen.py`). A fish function keeps the commands
+short; define it once:
+
+```fish
+function htc; uv run (git rev-parse --show-toplevel)/scripts/htc.py $argv; end
+funcsave htc
+```
+
+```fish
+set -gx HT_STRATUM 06-phones
+htc android use fold | source      # Android over adb, one phone per terminal
+htc android mark                   # then save on the phone
+htc android grab <stem>            # the one new image, sha256-checked, inspected
+htc ios mark                       # iPhone / iPad over AFC
+htc ios grab <stem>
+htc desk mark                      # then download in the browser
+htc desk take <stem>
+htc --help                         # everything else: type, send, latest, range, tmp, layout
+```
+
 ## Setting up
 
 Once per machine, and again after pulling a change to a script's dependencies:

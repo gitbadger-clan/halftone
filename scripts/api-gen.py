@@ -27,7 +27,7 @@ What it guarantees, so the files can stand in the corpus:
     prompt, starting at the prompt number (every API call is a new generation,
     so three formats of p1 become p1__1, p1__2, p1__3). --n pins a number; an
     existing file is then never overwritten unless --force, which moves it to
-    /tmp/ht-replaced first, like ht-take -f.
+    /tmp/ht-replaced first, like `htc desk take -f`.
   - Edits send the base photo's bytes unchanged (e1 photo_bowl, e2 photo_flask,
     e3 photo_path from 00-base), so the provider sees the camera's C2PA record.
   - Progress while it runs: a bar over all calls, a spinner and timer on the call
