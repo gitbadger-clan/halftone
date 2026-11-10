@@ -20,9 +20,14 @@ as they are now. If not, and this is an interactive terminal outside CI, it expl
 why and asks once; a "no" is remembered until a script's dependencies change. In CI
 ($CI set) or without a terminal it never asks. --no-setup-check skips the check.
 
-Shortcut: `alias dev 'uv run scripts/dev.py'` (fish) or
-`alias dev='uv run scripts/dev.py'` (bash, zsh). Standard library only: it starts
-fast and works before anything is installed.
+Shortcut and tab completion (fish): scripts/README.md, "Running a task". bash, zsh:
+`alias dev='uv run scripts/dev.py'`. Standard library only: it starts fast and works
+before anything is installed.
+
+Completion: with HT_COMPLETE set, dev never prompts and never runs a task. Without a
+task name it prints the tasks (name, tab, first line of the docstring) that start
+with $HT_COMPLETE_CUR; with one, it hands over to that task, which answers for its
+own arguments (lib/complete.py). So the shell side only ever calls `dev`.
 """
 
 from __future__ import annotations
@@ -99,7 +104,30 @@ def offer_bootstrap() -> None:
               f"run `uv run scripts/dev.py bootstrap` any time.{C.RESET}\n")
 
 
+def complete_tasks() -> int:
+    """The completion answer for the task name: never prompts, never runs a task."""
+    cur = os.environ.get("HT_COMPLETE_CUR", "")
+    for name, line in tasks().items():
+        if name.startswith(cur):
+            print(f"{name}\t{line[:110]}")
+    return 0
+
+
+def complete(args: list[str]) -> int:
+    """A completion request: the task list, or the named task's own answer."""
+    args = [a for a in args if a != "--no-setup-check"]
+    if not args:
+        return complete_tasks()
+    script = SCRIPTS / f"{args[0]}.py"
+    if args[0] in NOT_TASKS or not script.is_file():
+        return 0
+    # The request is in the environment; the task's serve() reads it and exits.
+    os.execvp("uv", ["uv", "run", str(script)])
+
+
 def main() -> int:
+    if os.environ.get("HT_COMPLETE"):
+        return complete(sys.argv[1:])
     args = sys.argv[1:]
     check = True
     if args and args[0] == "--no-setup-check":
