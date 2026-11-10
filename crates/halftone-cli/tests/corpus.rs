@@ -377,7 +377,9 @@ fn corpus_files_are_what_their_names_say() {
             rows.push(row(
                 &file,
                 "expectations",
-                "not in expectations.json; re-run scripts/differential.py",
+                format!(
+                    "not in expectations.json; collect the stratum: uv run scripts/collect.py {STRATUM}"
+                ),
             ));
         }
         let sha = entry.and_then(|e| e["sha256"].as_str()).map(str::to_string);

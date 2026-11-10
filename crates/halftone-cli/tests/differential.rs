@@ -1,5 +1,6 @@
 //! Differential test: Halftone's `marking_metadata` and `c2pa` sources against
-//! ExifTool and c2patool ground truth collected by `scripts/differential.py`.
+//! ExifTool and c2patool ground truth collected by `scripts/differential.py`
+//! (run through `scripts/collect.py`, which supplies each stratum's recorded inputs).
 //!
 //! Corpus location: `$HALFTONE_DIFFERENTIAL_CORPUS`, else `<repo>/corpus/differential`.
 //! A relative `$HALFTONE_DIFFERENTIAL_CORPUS` is resolved against the repo root, not
@@ -156,7 +157,7 @@ fn header_disagreements(label: &str, exp: &Value) -> Vec<Disagreement> {
                 file: format!("{label}/expectations.json"),
                 field,
                 expected: want.to_string(),
-                got: format!("{got} (re-collect with scripts/differential.py)"),
+                got: format!("{got} (re-collect: uv run scripts/collect.py {label})"),
             });
         }
     };
@@ -1191,7 +1192,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
     );
     if total_aged > 0 {
         println!(
-            "differential: {total_aged} validation state(s) aged by certificate expiry, not counted as disagreements; re-collect those strata with scripts/differential.py"
+            "differential: {total_aged} validation state(s) aged by certificate expiry, not counted as disagreements; re-collect those strata with scripts/collect.py"
         );
     }
     assert!(
