@@ -21,33 +21,58 @@ ground truth Halftone is tested against. They never reuse Halftone's code or out
 ```sh
 uv run scripts/dev.py                  # every task, with one line on what it does
 uv run scripts/dev.py collect 04 06    # runs scripts/collect.py 04 06
-alias dev 'uv run scripts/dev.py'      # fish; bash/zsh: alias dev='uv run scripts/dev.py'
 ```
 
 Any `scripts/<name>.py` is a task; there is no list to maintain. Arguments after the
 task name go to the script unchanged. Running a script directly works too.
 
+To type `dev collect 04 06` instead, let bootstrap install the `dev` command and its
+fish completion:
+
+```sh
+uv run scripts/bootstrap.py --shell            # --shell --remove takes them away again
+```
+
+It writes a two-line wrapper to `~/.local/bin/dev` that runs this checkout's
+`scripts/dev.py` through uv, so no file in the repo needs the executable bit and `dev`
+works from any directory. If fish is set up, it also links
+`scripts/completions/dev.fish` into `~/.config/fish/completions`. It never replaces a
+`dev` or a completion file it did not write, and a plain bootstrap run only reports
+whether they are installed. Run it again after moving the checkout.
+
+(bash, zsh: `alias dev='uv run scripts/dev.py'`; there is no completion for them yet.
+The completion only ever calls `dev`, so a fish function works as well. A fish `alias`
+does too, but it makes `dev` inherit uv's completions on top of its own.)
+
+Then Tab completes the task name, and after it the task's own subcommands, options,
+choices and file arguments, each with its help line:
+
+```
+dev <Tab>                  →  api-gen  collect  htc  versiondiff  …
+dev htc android <Tab>      →  grab  mark  new  pull  range  send  type  …
+dev collect <Tab>          →  00-base  01-c2pa-rs  …
+dev references bump --<Tab>  →  --cooldown  --dry-run  --c2pa-upgrade  …
+```
+
+The candidates come from the scripts themselves (`lib/complete.py` reads the real
+argparse parser or Typer app), so they cannot go stale. A Tab never downloads
+anything: before `bootstrap` has run, a script with dependencies offers nothing.
+
 ## Collecting into a stratum: `htc`
 
 `htc.py` brings phone captures and browser downloads into `corpus/differential/<stratum>`
-(generator APIs have their own script, `api-gen.py`). A fish function keeps the commands
-short; define it once:
-
-```fish
-function htc; uv run (git rev-parse --show-toplevel)/scripts/htc.py $argv; end
-funcsave htc
-```
+(generator APIs have their own script, `api-gen.py`).
 
 ```fish
 set -gx HT_STRATUM 06-phones
-htc android use fold | source      # Android over adb, one phone per terminal
-htc android mark                   # then save on the phone
-htc android grab <stem>            # the one new image, sha256-checked, inspected
-htc ios mark                       # iPhone / iPad over AFC
-htc ios grab <stem>
-htc desk mark                      # then download in the browser
-htc desk take <stem>
-htc --help                         # everything else: type, send, latest, range, tmp, layout
+dev htc android use fold | source  # Android over adb, one phone per terminal
+dev htc android mark               # then save on the phone
+dev htc android grab <stem>        # the one new image, sha256-checked, inspected
+dev htc ios mark                   # iPhone / iPad over AFC
+dev htc ios grab <stem>
+dev htc desk mark                  # then download in the browser
+dev htc desk take <stem>
+dev htc --help                     # everything else: type, send, latest, range, tmp, layout
 ```
 
 ## Setting up

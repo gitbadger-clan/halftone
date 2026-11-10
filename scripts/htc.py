@@ -57,19 +57,19 @@ from exiftool import ExifTool  # noqa: E402
 from repo import CORPUS, C, die, need  # noqa: E402
 
 EXAMPLES = """
-Examples (fish, with `htc` defined as in scripts/README.md):
+Examples (`dev` as set up in scripts/README.md; or `uv run scripts/htc.py …`):
 
-    htc android use fold | source            # this terminal's phone
-    htc android mark                         # before saving on the phone
-    htc android type "A ceramic bowl of …"   # into the focused field
-    htc android send                         # tap the app's Send button
-    htc android grab gemini-app__nano-banana__app-save-open__p1__2
-    htc android range 2026-11-09 14:00 +45m  # candidates, outside the corpus
-    htc desk mark
-    htc desk take -f firefly__image-4__web-download__p1__1
-    htc ios mark
-    htc ios grab iphone13__default__afc-pull__s01__1
-    htc layout corpus/differential/06-phones/*.jpg
+    dev htc android use fold | source            # this terminal's phone
+    dev htc android mark                         # before saving on the phone
+    dev htc android type "A ceramic bowl of …"   # into the focused field
+    dev htc android send                         # tap the app's Send button
+    dev htc android grab gemini-app__nano-banana__app-save-open__p1__2
+    dev htc android range 2026-11-09 14:00 +45m  # candidates, outside the corpus
+    dev htc desk mark
+    dev htc desk take -f firefly__image-4__web-download__p1__1
+    dev htc ios mark
+    dev htc ios grab iphone13__default__afc-pull__s01__1
+    dev htc layout corpus/differential/06-phones/*.jpg
 """
 
 IMAGE = re.compile(r"\.(?:jpe?g|png|webp|gif|heic|heif|avif)$", re.I)

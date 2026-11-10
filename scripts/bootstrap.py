@@ -9,12 +9,20 @@ environment, and a check of the external tools.
     uv run scripts/bootstrap.py              # lock what has no lock yet, sync everything, check tools
     uv run scripts/bootstrap.py --upgrade    # re-resolve every lock to the newest allowed versions
     uv run scripts/bootstrap.py --tools      # only the tool check
+    uv run scripts/bootstrap.py --shell      # install the `dev` command and its fish completion
 
 Each script with dependencies (PEP 723) gets its lock file (`<script>.lock`, commit
 it) and its environment built in uv's cache. After that, `uv run` starts a script
 without resolving or downloading anything, and works offline (UV_OFFLINE=1).
 Downloads and installs happen here, once; re-run after pulling changes to a script's
 dependencies, or after `uv cache clean`.
+
+--shell is the only part that writes outside the repo and uv's cache, and only when
+asked: a two-line `dev` wrapper in ~/.local/bin that runs scripts/dev.py of this
+checkout through uv (so no file in the repo needs the executable bit), and, if fish
+is set up, a link to scripts/completions/dev.fish in ~/.config/fish/completions. It
+never replaces a `dev` or a completion file it did not write; run it again after
+moving the checkout. --shell --remove takes both away.
 
 Standard library only, so it runs on a machine where nothing is set up yet. When the
 environments are synced it records that in target/scripts/bootstrap.json, which
@@ -88,11 +96,86 @@ def check_tools() -> bool:
     return ok
 
 
+WRAPPER = Path.home() / ".local" / "bin" / "dev"
+WRAPPER_MARK = "# Halftone's `dev` command, written by scripts/bootstrap.py --shell. Safe to delete."
+FISH_DIR = Path.home() / ".config" / "fish"
+FISH_LINK = FISH_DIR / "completions" / "dev.fish"
+FISH_SOURCE = SCRIPTS / "completions" / "dev.fish"
+
+
+def wrapper_text() -> str:
+    return f'#!/bin/sh\n{WRAPPER_MARK}\nexec uv run "{SCRIPTS / "dev.py"}" "$@"\n'
+
+
+def shell_state() -> str:
+    """One line on whether `dev` and its completion are installed for this checkout."""
+    if not WRAPPER.exists():
+        return "not installed (uv run scripts/bootstrap.py --shell)"
+    if WRAPPER.read_text(errors="replace") != wrapper_text():
+        return f"{WRAPPER} is not this checkout's wrapper (uv run scripts/bootstrap.py --shell)"
+    on_path = str(WRAPPER.parent) in os.environ.get("PATH", "").split(os.pathsep)
+    fish = "with fish completion" if FISH_LINK.is_symlink() and FISH_LINK.resolve() == FISH_SOURCE else \
+        "no fish completion"
+    return f"installed, {fish}" + ("" if on_path else f"; {WRAPPER.parent} is not on PATH")
+
+
+def install_shell(remove: bool) -> int:
+    """Write (or remove) the `dev` wrapper and the fish completion link. Touches only
+    files this function wrote before: anything else in the way is reported, not replaced."""
+    ours = WRAPPER.exists() and WRAPPER_MARK in WRAPPER.read_text(errors="replace")
+    link_ours = FISH_LINK.is_symlink() and FISH_LINK.resolve().name == "dev.fish" \
+        and FISH_LINK.resolve().parent.name == "completions" and FISH_LINK.resolve().parent.parent.name == "scripts"
+    if remove:
+        for path, mine in ((WRAPPER, ours), (FISH_LINK, link_ours)):
+            if mine:
+                path.unlink()
+                print(f"removed {path}")
+            elif path.exists() or path.is_symlink():
+                print(f"left alone (not written by bootstrap): {path}")
+        return 0
+
+    problems = 0
+    if WRAPPER.exists() and not ours:
+        print(f"MISS  {WRAPPER} exists and was not written by bootstrap; move it away and run --shell again")
+        problems += 1
+    else:
+        WRAPPER.parent.mkdir(parents=True, exist_ok=True)
+        WRAPPER.write_text(wrapper_text())
+        WRAPPER.chmod(0o755)
+        print(f"ok    {WRAPPER} -> uv run {SCRIPTS / 'dev.py'}")
+        if str(WRAPPER.parent) not in os.environ.get("PATH", "").split(os.pathsep):
+            print(f"      {WRAPPER.parent} is not on PATH (fish: fish_add_path {WRAPPER.parent})")
+
+    if not FISH_DIR.is_dir():
+        print(f"-     fish completion skipped: no {FISH_DIR}")
+    elif (FISH_LINK.exists() or FISH_LINK.is_symlink()) and not link_ours:
+        print(f"MISS  {FISH_LINK} exists and is not a link to this repo's completion; move it away and run again")
+        problems += 1
+    else:
+        FISH_LINK.parent.mkdir(parents=True, exist_ok=True)
+        if FISH_LINK.is_symlink():
+            FISH_LINK.unlink()
+        FISH_LINK.symlink_to(FISH_SOURCE)
+        print(f"ok    {FISH_LINK} -> {FISH_SOURCE}")
+        print("      open a new terminal, then: dev <Tab>")
+    return 1 if problems else 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--upgrade", action="store_true", help="re-resolve every lock to the newest allowed versions")
     ap.add_argument("--tools", action="store_true", help="only check the external tools")
+    ap.add_argument("--shell", action="store_true",
+                    help="install the `dev` command (~/.local/bin) and its fish completion, nothing else")
+    ap.add_argument("--remove", action="store_true", help="with --shell: remove them again")
+    from complete import serve  # tab completion (lib/complete.py); returns unless asked
+
+    serve(ap)
     a = ap.parse_args()
+    if a.remove and not a.shell:
+        ap.error("--remove goes with --shell")
+    if a.shell:
+        return install_shell(a.remove)
     if shutil.which("uv") is None:
         print("uv not found: https://docs.astral.sh/uv/getting-started/installation/", file=sys.stderr)
         return 1
@@ -131,6 +214,7 @@ def main() -> int:
                                capture_output=True, text=True).stdout.strip()
     if new_locks:
         print(f"\nlock files to commit:\n{new_locks}")
+    print(f"\n== dev command: {shell_state()}")
     print("\nready" if not failed else "\nnot ready: see FAILED and MISS above")
     return 1 if failed else 0
 
