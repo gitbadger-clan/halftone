@@ -54,13 +54,27 @@ labelled corpus. The `jpeg_double` threshold is provisional and says so.
 
 ## Batch output
 
-`--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.1.0`):
+`--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.3.0`):
 the full inspections plus a `summary` row per file with every source's status and the
 named columns a marking scan is about — manifest `validation_state`, issuer, claim
-generator and declared `digitalSourceType`; XMP `DigitalSourceType`, packet count and
-whether a C2PA container is present. Rows are projections of the evidence, never a
-score; the report and the differential runner read rows, not `details`. Without
-`--json` the same run prints a numbered file × source matrix.
+generator, declared `digitalSourceType`, ingredient count and the actions that carry
+a source type; XMP `DigitalSourceType`, packet count and whether a C2PA container is
+present. Rows are projections of the evidence, never a score; the report and the
+differential runner read rows, not `details`. Without `--json` the same run prints a
+numbered file × source matrix.
+
+`--table` prints those named columns, one line per file, aligned for reading;
+`--tsv` prints the same with tabs and a header line:
+
+```
+ht inspect --table --only manifest,container corpus/differential/04-generators/*
+ht inspect --tsv a.jpg b.png | cut -f1,2,7
+```
+
+Columns: file · manifest (`Trusted` / `Valid` / `Invalid` / `remote` / `-`) · signer ·
+declared source type (with its distance when it sits behind the active manifest) ·
+ingredients · actions · xmp (the terms, `present`, `none`, or `n/a` when the marking
+source did not look at the file).
 
 ## Survival table
 

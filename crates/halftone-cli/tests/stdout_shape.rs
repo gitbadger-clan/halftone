@@ -67,3 +67,69 @@ fn batch_json_is_one_object_with_summary_rows() {
         "trainedAlgorithmicMedia"
     );
 }
+
+#[test]
+fn table_is_a_header_and_one_line_per_file() {
+    let run = |flag: &str| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ht"))
+            .args([
+                "inspect",
+                flag,
+                "--only",
+                "container",
+                &fixture("comfy.png"),
+                &fixture("dst_gen_exiftool.jpg"),
+            ])
+            .output()
+            .expect("run ht");
+        // Same exit code as any inspect: 2 because the second file carries the field.
+        assert_eq!(out.status.code(), Some(2), "{flag}");
+        String::from_utf8(out.stdout).unwrap()
+    };
+
+    let tsv = run("--tsv");
+    let rows: Vec<Vec<&str>> = tsv.lines().map(|l| l.split('\t').collect()).collect();
+    assert_eq!(rows.len(), 3, "header + two files\n{tsv}");
+    assert_eq!(
+        rows[0],
+        [
+            "file",
+            "manifest",
+            "signer",
+            "declared",
+            "ingredients",
+            "actions",
+            "xmp"
+        ]
+    );
+    assert!(rows.iter().all(|r| r.len() == 7), "{tsv}");
+    assert_eq!(rows[1][0], "comfy.png");
+    // The manifest layer did not run (--only container): its columns are empty.
+    assert_eq!(
+        &rows[2][..6],
+        ["dst_gen_exiftool.jpg", "-", "-", "-", "-", "-"]
+    );
+    assert_eq!(rows[2][6], "trainedAlgorithmicMedia");
+
+    let aligned = run("--table");
+    assert_eq!(aligned.lines().count(), 3);
+    assert!(!aligned.contains('\t'));
+    let header = aligned.lines().next().unwrap();
+    let last = aligned.lines().nth(2).unwrap();
+    assert_eq!(
+        header.find("xmp"),
+        last.find("trainedAlgorithmicMedia"),
+        "columns line up\n{aligned}"
+    );
+}
+
+#[test]
+fn table_and_json_are_refused_together() {
+    let out = Command::new(env!("CARGO_BIN_EXE_ht"))
+        .args(["inspect", "--table", "--json", &fixture("comfy.png")])
+        .output()
+        .expect("run ht");
+    assert_eq!(out.status.code(), Some(2), "clap usage error");
+    assert!(String::from_utf8_lossy(&out.stderr).contains("cannot be used with"));
+    assert!(out.stdout.is_empty());
+}

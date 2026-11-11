@@ -47,7 +47,9 @@
               "signing_cert_not_after": { "type": "string", "format": "date-time", "description": "end of the signer certificate's validity window" },
               "generative_depth": { "type": "integer", "minimum": 0, "description": "steps back from the active manifest to the nearest manifest declaring a generative term; 0 = the active manifest" },
               "lineage_digital_source_type": { "type": "array", "items": { "type": "string" }, "description": "term codes declared behind the active manifest on its parentOf lineage" },
-              "time_stamp": { "enum": ["trusted", "untrusted", "failed", "validated_only", "none"], "description": "signature time-stamp status under the TSA list the run loaded" }
+              "time_stamp": { "enum": ["trusted", "untrusted", "failed", "validated_only", "none"], "description": "signature time-stamp status under the TSA list the run loaded" },
+              "ingredients": { "type": "integer", "minimum": 0, "description": "ingredients the active manifest lists; absent when no manifest was read" },
+              "source_type_actions": { "type": "array", "items": { "type": "string" }, "description": "distinct actions in the active manifest that carry a digitalSourceType, in order" }
             }
           },
           "marking": {

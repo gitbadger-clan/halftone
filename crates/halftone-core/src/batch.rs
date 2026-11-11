@@ -12,6 +12,9 @@
 //! Column derivation reads `details` by field name and tolerates absence: a source
 //! that did not run, or an older tool version without a field, yields `None`, never
 //! a fabricated value.
+//!
+//! [`render_matrix`] shows every source's status per file; [`render_table`] shows the
+//! named columns, one line per file, aligned for reading or tab-separated.
 
 use serde::{Deserialize, Serialize};
 
@@ -83,6 +86,14 @@ pub struct ManifestColumns {
     /// can give another answer.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time_stamp: Option<String>,
+    /// Ingredients the active manifest lists; `Some(0)` is a manifest with none,
+    /// `None` no manifest read.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ingredients: Option<u64>,
+    /// Distinct actions in the active manifest that carry a `digitalSourceType`
+    /// (`c2pa.created`, `c2pa.edited`, …), in the order they appear.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub source_type_actions: Vec<String>,
 }
 
 /// Named columns from the XMP marking source (`marking_metadata`).
@@ -240,6 +251,19 @@ pub fn summarize(insp: &Inspection) -> FileRow {
                 manifest.signing_cert_serial = nested_str(d, "signing_cert", "serial");
                 manifest.signing_cert_not_after = nested_str(d, "signing_cert", "not_after");
                 manifest.time_stamp = nested_str(d, "time_stamp", "status");
+                manifest.ingredients = d.get("ingredients").and_then(|v| v.as_u64());
+                for hit in d
+                    .get("digital_source_type_hits")
+                    .and_then(|v| v.as_array())
+                    .into_iter()
+                    .flatten()
+                {
+                    if let Some(a) = hit.get("action").and_then(|v| v.as_str()) {
+                        if !manifest.source_type_actions.iter().any(|x| x == a) {
+                            manifest.source_type_actions.push(a.to_string());
+                        }
+                    }
+                }
             }
             SOURCE_MARKING => {
                 marking.digital_source_type = str_list(d, "digital_source_type");
@@ -354,6 +378,116 @@ pub fn render_matrix(batch: &Batch, glyph: impl Fn(Status) -> &'static str) -> S
         batch.files_with_present_in(Layer::Blind),
         batch.files_with_present_in(Layer::Container),
     ));
+    out
+}
+
+/// How [`render_table`] separates its columns.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TableFormat {
+    /// Columns padded to a common width, two spaces apart, for a terminal.
+    Aligned,
+    /// Tab-separated with a header line, for `cut`, `sort` and spreadsheets.
+    Tsv,
+}
+
+/// Header of [`render_table`], in column order.
+pub const TABLE_COLUMNS: [&str; 7] = [
+    "file",
+    "manifest",
+    "signer",
+    "declared",
+    "ingredients",
+    "actions",
+    "xmp",
+];
+
+/// The manifest column as one word: the validation state, `remote` when the file
+/// only references a manifest that was not fetched, `-` when there is none.
+pub fn manifest_cell(row: &FileRow) -> String {
+    let m = &row.manifest;
+    m.validation_state
+        .clone()
+        .or_else(|| m.remote_manifest_url.as_ref().map(|_| "remote".to_string()))
+        .unwrap_or_else(|| "-".to_string())
+}
+
+/// The XMP column: the `DigitalSourceType` terms; `present` for XMP without the
+/// field; `none` for a file without XMP; `n/a` when the marking source did not run
+/// or does not read this format, so "not looked at" never reads as "nothing there".
+pub fn xmp_cell(row: &FileRow) -> String {
+    let looked = row
+        .statuses
+        .iter()
+        .any(|s| s.source == SOURCE_MARKING && s.status != Status::NotApplicable);
+    let k = &row.marking;
+    match k.xmp_packets {
+        _ if !looked => "n/a".to_string(),
+        Some(n) if n > 0 && k.digital_source_type.is_empty() => "present".to_string(),
+        Some(n) if n > 0 => k.digital_source_type.join(","),
+        _ => "none".to_string(),
+    }
+}
+
+/// One line per file with the named columns ([`TABLE_COLUMNS`]): what the manifest
+/// layer and the XMP marking say, without digging into `details`. `declared` is
+/// [`manifest_terms`], so a generative declaration behind the active manifest shows
+/// with its distance (D-013). Empty cells print `-`. A projection of the rows:
+/// nothing is aggregated or scored.
+pub fn render_table(batch: &Batch, format: TableFormat) -> String {
+    let dash = |s: String| if s.is_empty() { "-".to_string() } else { s };
+    // Tabs and line breaks inside a value would break the columns.
+    let clean = |s: String| s.replace(['\t', '\n', '\r'], " ");
+    let mut lines: Vec<Vec<String>> = vec![TABLE_COLUMNS.iter().map(|c| c.to_string()).collect()];
+    for row in &batch.summary {
+        let m = &row.manifest;
+        lines.push(
+            [
+                display_name(row),
+                manifest_cell(row),
+                dash(m.issuer.clone().unwrap_or_default()),
+                dash(manifest_terms(m, ",")),
+                m.ingredients
+                    .map_or_else(|| "-".to_string(), |n| n.to_string()),
+                dash(m.source_type_actions.join(",")),
+                xmp_cell(row),
+            ]
+            .map(clean)
+            .to_vec(),
+        );
+    }
+    let mut out = String::new();
+    match format {
+        TableFormat::Tsv => {
+            for l in &lines {
+                out.push_str(&l.join("\t"));
+                out.push('\n');
+            }
+        }
+        TableFormat::Aligned => {
+            let widths: Vec<usize> = (0..TABLE_COLUMNS.len())
+                .map(|c| {
+                    lines
+                        .iter()
+                        .map(|l| l[c].chars().count())
+                        .max()
+                        .unwrap_or(0)
+                })
+                .collect();
+            for l in &lines {
+                let mut line = String::new();
+                for (c, cell) in l.iter().enumerate() {
+                    if c + 1 == l.len() {
+                        line.push_str(cell);
+                    } else {
+                        let w = widths[c];
+                        line.push_str(&format!("{cell:<w$}  "));
+                    }
+                }
+                out.push_str(line.trim_end());
+                out.push('\n');
+            }
+        }
+    }
     out
 }
 
@@ -565,6 +699,139 @@ mod tests {
             Some("2026-10-15T23:53:55Z")
         );
         assert_eq!(row.manifest.time_stamp.as_deref(), Some("none"));
+    }
+
+    #[test]
+    fn row_projects_ingredients_and_source_type_actions() {
+        let i = insp(
+            "/tmp/edit.jpg",
+            vec![ev(
+                Layer::Manifest,
+                "c2pa",
+                Status::Present,
+                json!({
+                    "validation_state": "Valid",
+                    "ingredients": 2,
+                    "digital_source_type_hits": [
+                        { "action": "c2pa.created", "code": "digitalCapture" },
+                        { "action": "c2pa.edited", "code": "compositeWithTrainedAlgorithmicMedia" },
+                        { "action": "c2pa.edited", "code": "trainedAlgorithmicMedia" },
+                        { "assertion": "stds.iptc", "code": "trainedAlgorithmicMedia" }
+                    ]
+                }),
+            )],
+        );
+        let row = summarize(&i);
+        assert_eq!(row.manifest.ingredients, Some(2));
+        assert_eq!(
+            row.manifest.source_type_actions,
+            ["c2pa.created", "c2pa.edited"],
+            "distinct, in order; a hit outside an action adds nothing"
+        );
+        // Both are optional in JSON: absent when there is nothing to say.
+        let plain = serde_json::to_value(summarize(&insp("/tmp/x.jpg", vec![]))).unwrap();
+        assert!(plain["manifest"].get("ingredients").is_none());
+        assert!(plain["manifest"].get("source_type_actions").is_none());
+    }
+
+    fn table_batch() -> Batch {
+        let marked = |status, details| ev(Layer::Container, "marking_metadata", status, details);
+        Batch::new(
+            tool(),
+            vec![
+                chatgpt_png(),
+                insp(
+                    "/tmp/dir/edit.jpg",
+                    vec![
+                        ev(
+                            Layer::Manifest,
+                            "c2pa",
+                            Status::Present,
+                            json!({
+                                "validation_state": "Valid",
+                                "issuer": "Example\tCA",
+                                "ingredients": 1,
+                                "generative_depth": 1,
+                                "lineage_digital_source_type": ["trainedAlgorithmicMedia"],
+                                "digital_source_type_hits": [{ "action": "c2pa.edited" }]
+                            }),
+                        ),
+                        marked(
+                            Status::Present,
+                            json!({ "xmp_packets": 1, "digital_source_type": ["trainedAlgorithmicMedia"] }),
+                        ),
+                    ],
+                ),
+                insp(
+                    "/tmp/remote.jpg",
+                    vec![
+                        ev(
+                            Layer::Manifest,
+                            "c2pa",
+                            Status::Inconclusive,
+                            json!({ "remote_manifest_url": "https://cai-manifests.adobe.com/x" }),
+                        ),
+                        marked(Status::Absent, json!({ "xmp_packets": 2 })),
+                    ],
+                ),
+                insp(
+                    "/tmp/clip.mp4",
+                    vec![marked(Status::NotApplicable, serde_json::Value::Null)],
+                ),
+                insp("/tmp/manifest-only.png", vec![]),
+            ],
+        )
+    }
+
+    #[test]
+    fn table_tsv_has_one_line_per_file_and_seven_columns() {
+        let t = render_table(&table_batch(), TableFormat::Tsv);
+        let lines: Vec<Vec<&str>> = t.lines().map(|l| l.split('\t').collect()).collect();
+        assert_eq!(lines.len(), 6);
+        assert!(lines.iter().all(|l| l.len() == 7), "{t}");
+        assert_eq!(lines[0], TABLE_COLUMNS);
+        assert_eq!(lines[1][0], "navy_suit.png");
+        assert_eq!(lines[1][1], "Trusted");
+        assert_eq!(lines[1][6], "none", "XMP looked at, none there");
+        assert_eq!(
+            lines[2],
+            [
+                "edit.jpg",
+                "Valid",
+                "Example CA",
+                "trainedAlgorithmicMedia one step back",
+                "1",
+                "c2pa.edited",
+                "trainedAlgorithmicMedia"
+            ],
+            "a tab inside a value becomes a space; lineage terms show their distance"
+        );
+        assert_eq!(&lines[3][1..], ["remote", "-", "-", "-", "-", "present"]);
+        assert_eq!(
+            lines[4][6], "n/a",
+            "the marking source does not read this format"
+        );
+        assert_eq!(
+            &lines[5][1..],
+            ["-", "-", "-", "-", "-", "n/a"],
+            "source did not run"
+        );
+    }
+
+    #[test]
+    fn table_aligned_pads_columns_and_has_no_trailing_space() {
+        let t = render_table(&table_batch(), TableFormat::Aligned);
+        let lines: Vec<&str> = t.lines().collect();
+        assert_eq!(lines.len(), 6);
+        assert!(lines.iter().all(|l| !l.ends_with(' ') && !l.contains('\t')));
+        // Every column starts at the same character position on every line.
+        let starts = |l: &str, word: &str| l.find(word).unwrap();
+        assert_eq!(starts(lines[0], "manifest"), starts(lines[1], "Trusted"));
+        assert_eq!(starts(lines[0], "manifest"), starts(lines[2], "Valid"));
+        assert_eq!(starts(lines[0], "xmp"), starts(lines[4], "n/a"));
+        assert!(lines[0].starts_with("file "));
+        let empty = render_table(&Batch::new(tool(), vec![]), TableFormat::Aligned);
+        assert_eq!(empty.lines().count(), 1, "header only");
     }
 
     #[test]

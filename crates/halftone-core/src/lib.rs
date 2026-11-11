@@ -13,7 +13,7 @@ pub mod evidence;
 pub mod registry;
 
 pub use asset::{Asset, AssetInfo, Modality, sha256_hex};
-pub use batch::{Batch, FileRow, render_matrix, summarize};
+pub use batch::{Batch, FileRow, TableFormat, render_matrix, render_table, summarize};
 pub use evidence::{
     CalibrationRef, Evidence, Inspection, Layer, SCHEMA_VERSION, SourceId, Statistic, Status,
     ToolInfo,

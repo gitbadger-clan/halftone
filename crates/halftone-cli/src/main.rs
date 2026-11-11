@@ -163,6 +163,16 @@ struct InspectArgs {
     /// per-file summary rows); otherwise a file × source matrix. Exit code unchanged.
     #[arg(long)]
     batch: bool,
+    /// One line per file with the named columns: manifest state, signer, declared
+    /// source type, ingredient count, actions that carry a source type, and the XMP
+    /// field. Aligned for reading; a projection of the same rows --batch --json
+    /// carries, with no score. Exit code unchanged.
+    #[arg(long, conflicts_with_all = ["json", "batch"])]
+    table: bool,
+    /// The --table columns, tab-separated with a header line (for cut, sort and
+    /// spreadsheets).
+    #[arg(long, conflicts_with_all = ["json", "batch", "table"])]
+    tsv: bool,
     /// Only run these layers.
     #[arg(long, value_delimiter = ',')]
     only: Option<Vec<LayerArg>>,
@@ -524,7 +534,7 @@ fn inspect(a: InspectArgs) -> Result<()> {
             let out = input.with_extension("halftone.html");
             std::fs::write(&out, halftone_report::to_html(&insp))?;
         }
-        if a.batch {
+        if a.batch || a.table || a.tsv {
             collected.push(insp);
             continue;
         }
@@ -597,7 +607,15 @@ fn inspect(a: InspectArgs) -> Result<()> {
             }
         }
     }
-    if a.batch {
+    if a.table || a.tsv {
+        let batch = halftone_core::Batch::new(tool(), collected);
+        let format = if a.tsv {
+            halftone_core::TableFormat::Tsv
+        } else {
+            halftone_core::TableFormat::Aligned
+        };
+        print!("{}", halftone_core::render_table(&batch, format));
+    } else if a.batch {
         let batch = halftone_core::Batch::new(tool(), collected);
         if a.json {
             println!("{}", serde_json::to_string(&batch)?);
