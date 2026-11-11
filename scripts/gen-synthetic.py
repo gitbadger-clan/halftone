@@ -157,7 +157,7 @@ def main(
         pad.unlink(missing_ok=True)
     (DEST / "cases.json").write_text(cases_json(rows))
     print(f"{len(rows)} files -> {DEST} (cases.json holds the intended verdicts)")
-    print(f"next: uv run scripts/collect.py {DEST.name}")
+    print(f"next: uv run scripts/references.py collect {DEST.name}")
 
 
 if __name__ == "__main__":

@@ -161,7 +161,7 @@ def ground_truth(_: bool) -> str:
             raise Fail(str(e).replace(f"{ROOT}/", "")) from None
         if not exp.full_trust(eku):
             raise Fail(f"{p.relative_to(ROOT)}: collected under other trust inputs; "
-                       f"re-collect with uv run scripts/collect.py {p.parent.name}")
+                       f"re-collect with uv run scripts/references.py collect {p.parent.name}")
     # The corpus rules are reviewed like code: they must be tracked, not ignored.
     rules = (GEN / "corpus-rules.json").relative_to(ROOT)
     if run("git", "check-ignore", "-q", str(rules)).returncode == 0:

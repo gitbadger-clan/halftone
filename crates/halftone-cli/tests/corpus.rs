@@ -378,7 +378,7 @@ fn corpus_files_are_what_their_names_say() {
                 &file,
                 "expectations",
                 format!(
-                    "not in expectations.json; collect the stratum: uv run scripts/collect.py {STRATUM}"
+                    "not in expectations.json; collect it: uv run scripts/references.py collect {STRATUM}"
                 ),
             ));
         }

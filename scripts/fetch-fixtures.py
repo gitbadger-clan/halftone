@@ -170,7 +170,7 @@ def main(
     )
     extra = f" ({relabeled} relabeled)" if src.relabel else ""
     print(f"kept {kept}{extra}, skipped {skipped} -> {dest} (commit {commit})")
-    print(f"next: uv run scripts/collect.py {src.stratum}")
+    print(f"next: uv run scripts/references.py collect {src.stratum}")
 
 
 if __name__ == "__main__":
