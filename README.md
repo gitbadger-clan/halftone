@@ -67,6 +67,11 @@ present. Rows are projections of the evidence, never a score; the report and the
 differential runner read rows, not `details`. Without `--json` the same run prints a
 numbered file × source matrix.
 
+`--metadata` adds a listing under each file of the fields those last four sources
+found (rights statements, identifiers, vendor AI flags, the data-mining value), each
+with its field name and value as written; with `--json` the same values are in the
+sources' `details`.
+
 `--table` prints those named columns, one line per file, aligned for reading;
 `--tsv` prints the same with tabs and a header line:
 

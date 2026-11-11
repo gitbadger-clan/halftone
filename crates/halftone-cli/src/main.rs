@@ -209,6 +209,13 @@ struct InspectArgs {
     /// details.conformance.
     #[arg(long)]
     conformance: bool,
+    /// Under each file, list the metadata fields the listing sources found, each with
+    /// its field name and value as written: rights statements, identifiers (names,
+    /// account and tracking records, device and document identifiers, location),
+    /// vendor AI flags and the data-mining value. Unsigned fields, quoted, not
+    /// judged. Human output only; with --json they are in those sources' details.
+    #[arg(long)]
+    metadata: bool,
 }
 
 #[derive(Args)]
@@ -594,6 +601,12 @@ fn inspect(a: InspectArgs) -> Result<()> {
                     format!("{:?}", e.layer),
                     e.source.name,
                     rationale
+                );
+            }
+            if a.metadata {
+                print!(
+                    "{}",
+                    halftone_container::embedded::render_listing(&insp.evidence)
                 );
             }
             if a.conformance {
