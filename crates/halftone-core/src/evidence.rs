@@ -1,12 +1,15 @@
 //! The verdict schema. Semver'd independently of the crates: bump [`SCHEMA_VERSION`]
-//! on any breaking change and keep `schemas/verdict.schema.json` in sync.
+//! with every change to what is emitted, and keep `schemas/verdict.schema.json` and
+//! `schemas/batch.schema.json` in sync. An addition (a new field or summary-row
+//! column) is a minor version, as 1.2.0 was for the certificate columns; a removed
+//! or changed field is a major one.
 
 use serde::{Deserialize, Serialize};
 
 use crate::AssetInfo;
 
 /// Version of the JSON verdict schema emitted by [`Inspection`].
-pub const SCHEMA_VERSION: &str = "1.3.0";
+pub const SCHEMA_VERSION: &str = "1.4.0";
 
 /// The four independent evidence layers. Order is cheapest-first and is the
 /// default execution order in [`crate::Registry`].

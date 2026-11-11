@@ -54,7 +54,7 @@ labelled corpus. The `jpeg_double` threshold is provisional and says so.
 
 ## Batch output
 
-`--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.3.0`):
+`--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.4.0`):
 the full inspections plus a `summary` row per file with every source's status and the
 named columns a marking scan is about — manifest `validation_state`, issuer, claim
 generator, declared `digitalSourceType`, ingredient count and the actions that carry
