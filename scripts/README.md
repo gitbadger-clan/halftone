@@ -175,6 +175,7 @@ inherit dependencies from a module it imports. The exception is `lib/models.py`
 | `repo.py` | repo root, corpus and trust paths, `die`, `need`, terminal colours |
 | `c2p.py` | c2patool isolated from this machine's config, with the collector's settings |
 | `exiftool.py` | one long-running ExifTool process (`-stay_open`) for many commands |
+| `pins.py` | the reference pins and how each tool's version is read; `drift()` lists where this machine differs |
 | `complete.py` | tab completion answered by the script itself: `serve(parser_or_app)`; self-test: `python scripts/lib/complete.py` |
 | `envstate.py` | whether bootstrap has prepared the scripts as they are now (read by `dev.py`) |
 | `progress.py` | `Progress` (count, percent, time left) and `step` (spinner) for long runs |

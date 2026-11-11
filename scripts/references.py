@@ -89,10 +89,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from progress import step  # noqa: E402
+from pins import PINS, host_versions, output, same  # noqa: E402
 from repo import ROOT, C, die, need  # noqa: E402
 
 DOCKERFILE = ROOT / "docker" / "references.dockerfile"
-PINS = ROOT / "docker" / "references.env"
 IMAGE = "halftone-references"
 UV_VOLUME = "halftone-references-uv"
 DIFFERENTIAL_TEST = [
@@ -198,40 +198,7 @@ def tag(pins: dict[str, str]) -> str:
     return h.hexdigest()[:12]
 
 
-# --- versions, read the same way on the host and in the image -------------------
-
-
-def output(cmd: list[str], cwd: Path | None = None) -> str | None:
-    if shutil.which(cmd[0]) is None:
-        return None
-    r = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
-    return (r.stdout or r.stderr).strip() if r.returncode == 0 else None
-
-
-def first(pattern: str, text: str | None) -> str | None:
-    m = re.search(pattern, text or "", re.M)
-    return m.group(1) if m else None
-
-
-def credentio_name(path: Path) -> str | None:
-    """The commit in `c2pa_validate-<commit>`, the name the symlink points to."""
-    real = path.expanduser().resolve()
-    if not real.is_file():
-        return None
-    return real.name.removeprefix("c2pa_validate-") if real.name.startswith("c2pa_validate-") else None
-
-
-def host_versions() -> dict[str, str | None]:
-    cred = Path(os.environ.get("CREDENTIO", "~/oss-bins/c2pa_validate"))
-    rub = (ROOT / os.environ.get("RUBRICS", "../conformance-public")).resolve()
-    return {
-        "UV_VERSION": first(r"^uv (\S+)", output(["uv", "--version"])),
-        "EXIFTOOL_VERSION": (output(["exiftool", "-ver"]) or "").strip() or None,
-        "OPENSSL_VERSION": first(r"^OpenSSL (\S+)", output(["openssl", "version"])),
-        "C2PATOOL_VERSION": first(r"(\d+\.\d+\.\d+\S*)", output(["c2patool", "--version"])),
-        "CREDENTIO_COMMIT": credentio_name(cred),
-        "CONFORMANCE_COMMIT": output(["git", "-C", str(rub), "rev-parse", "HEAD"]) if rub.is_dir() else None,
-    }
+# --- versions, read the same way on the host and in the image: lib/pins.py ---------
 
 
 IMAGE_PROBE = r"""
@@ -249,15 +216,6 @@ def image_versions(image: str) -> dict[str, str]:
     if r.returncode != 0:
         die(f"could not read versions from {image}:\n{r.stderr.strip()}", 1)
     return dict(line.split("=", 1) for line in r.stdout.splitlines() if "=" in line)
-
-
-def same(pin: str, got: str | None) -> bool:
-    """Commits match on a prefix (a pin may be short or full), versions exactly."""
-    if not got:
-        return False
-    if re.fullmatch(r"[0-9a-f]{7,40}", pin):
-        return got.startswith(pin) or pin.startswith(got)
-    return got == pin
 
 
 # --- docker -----------------------------------------------------------------------
