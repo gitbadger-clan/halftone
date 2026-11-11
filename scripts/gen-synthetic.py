@@ -12,8 +12,15 @@ base images, into corpus/differential/03-synthetic.
 Every file's intended Halftone verdict is known by construction and recorded in
 cases.json next to the files; scripts/differential.py merges it into
 expectations.json as `halftone`, and the differential test asserts it alongside the
-ExifTool/c2patool comparison. The stratum is matched by file name, not hash: ExifTool
-writes its version into the packets, so bytes differ between machines, facts do not.
+ExifTool/c2patool comparison. The stratum is matched by file name, not hash.
+
+Bytes do not depend on the ExifTool that wrote them. By default ExifTool stamps every
+XMP packet with its own version (x:xmptk='Image::ExifTool 13.59'), which made the
+files, and the sha256s recorded for them, differ between a Mac, the reference image
+and the CI runner. Every case that writes XMP sets that field to a constant instead
+(TOOLKIT). Measured with ExifTool 12.76, 13.55 and 13.59: all 38 files come out
+byte-identical. A case that writes no XMP gets no toolkit either, so `plain` and
+`iim_only` still carry no packet at all.
 
 Base images (00-base/base.{jpg,png,webp}) are made with Pillow and numpy from seed 0
 when absent; the script's lock file pins both, so they come out the same everywhere.
@@ -40,6 +47,9 @@ DEST = CORPUS / "03-synthetic"
 SCHEME = "http://cv.iptc.org/newscodes/digitalsourcetype"
 DST = "-XMP-iptcExt:DigitalSourceType"
 KEEP = {"expectations.json"}  # committed ground truth survives --refresh
+# In place of ExifTool's version stamp, so the bytes are the same whichever ExifTool
+# runs. Added only where a case writes XMP: on its own it would create a packet.
+TOOLKIT = "-XMP-x:XMPToolkit=Halftone gen-synthetic"
 
 GENERATIVE = ["trainedAlgorithmicMedia", "compositeWithTrainedAlgorithmicMedia"]
 NON_GENERATIVE = [
@@ -149,6 +159,8 @@ def main(
         with ExifTool() as et:
             for name, ext, status, code, note, args in cases(pad):
                 out = DEST / f"{name}.{ext}"
+                if any(a.startswith("-XMP") for a in args):
+                    args = [*args, TOOLKIT]
                 _, err = et.run("-q", "-q", "-o", str(out), *args, str(BASE / f"base.{ext}"))
                 if not out.is_file() or "Error" in err:
                     die(f"exiftool failed for {name}: {err.strip() or 'no output file'}", 1)

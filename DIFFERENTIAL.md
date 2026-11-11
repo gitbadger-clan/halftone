@@ -679,3 +679,16 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   changed. Later images are still checked for offset, size and completeness.
 - Status: open: the ±1 byte residual is unexplained; the ExifTool residuals cannot
   be checked against the deleted location-on originals.
+
+### D-020 · 2026-11-11 · 03-synthetic bytes depended on the generating ExifTool
+
+- Files: the 34 files in `03-synthetic` that carry XMP.
+- Observed: regenerating the stratum in the reference image (ExifTool 13.59) gave
+  different sha256s than the committed ones, which came from files generated on
+  the host (ExifTool 13.55 there on 2026-11-11); every reading was identical.
+  ExifTool stamps its version into each XMP packet (`x:xmptk`).
+- Resolution: `gen-synthetic.py` sets `XMP-x:XMPToolkit` to a constant wherever a
+  case writes XMP. Generated with ExifTool 12.76, 13.55 and 13.59, all 38 files are
+  byte-identical; `plain.*` and `iim_only.jpg` are unchanged by the fix.
+- Status: closed. The stratum is still matched by name: base images built on
+  different platforms have not been compared.
