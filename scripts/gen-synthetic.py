@@ -22,6 +22,13 @@ and the CI runner. Every case that writes XMP sets that field to a constant inst
 byte-identical. A case that writes no XMP gets no toolkit either, so `plain` and
 `iim_only` still carry no packet at all.
 
+Which ExifTool wrote the files is still recorded, next to them instead of inside
+them: SOURCE.txt names the generator, the ExifTool version, the toolkit constant and
+the sha256 of each base image. It has no date, so it only changes when one of those
+does. It is committed like the SOURCE.txt of 01 and 02; a run with another ExifTool
+changes its one version line and nothing else, and CI restores the committed copy
+after generating, so a different ExifTool on a runner cannot fail a build.
+
 Base images (00-base/base.{jpg,png,webp}) are made with Pillow and numpy from seed 0
 when absent; the script's lock file pins both, so they come out the same everywhere.
 Needs exiftool >= 12 on PATH. Offline. Never reads the clipboard.
@@ -30,6 +37,7 @@ Exit 0 written or already populated, 1 ExifTool failed, 2 setup error.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import sys
@@ -131,6 +139,22 @@ def cases_json(rows: list[tuple[str, dict]]) -> str:
     return "{\n" + body + "\n}\n"
 
 
+def source_txt(count: int, exiftool_version: str) -> str:
+    """Provenance of the generated files. No date: the same inputs give the same text."""
+    bases = "".join(
+        f"base.{e}: sha256 {hashlib.sha256((BASE / f'base.{e}').read_bytes()).hexdigest()}\n"
+        for e in ("jpg", "png", "webp")
+    )
+    return (
+        "generator: scripts/gen-synthetic.py\n"
+        f"files: {count} (cases.json holds the intended verdicts)\n"
+        f"exiftool: {exiftool_version}\n"
+        f"xmp toolkit: {TOOLKIT.split('=', 1)[1]} (in place of ExifTool's version stamp, so the\n"
+        "  files' bytes do not depend on the ExifTool version above; DIFFERENTIAL.md D-020)\n"
+        f"{bases}"
+    )
+
+
 app = typer.Typer(add_completion=False, pretty_exceptions_show_locals=False)
 
 
@@ -143,7 +167,7 @@ def main(
         for f in DEST.iterdir():
             if f.name not in KEEP:
                 shutil.rmtree(f) if f.is_dir() else f.unlink()
-    generated = [f for f in DEST.glob("*") if f.is_file() and f.name not in KEEP | {"cases.json"}] if DEST.is_dir() else []
+    generated = [f for f in DEST.glob("*") if f.is_file() and f.name not in KEEP | {"cases.json", "SOURCE.txt"}] if DEST.is_dir() else []
     if generated:
         print(f"{DEST} already populated ({len(generated)} files); use --refresh to regenerate")
         raise typer.Exit(0)
@@ -157,6 +181,7 @@ def main(
     rows: list[tuple[str, dict]] = []
     try:
         with ExifTool() as et:
+            exiftool_version = et.version()
             for name, ext, status, code, note, args in cases(pad):
                 out = DEST / f"{name}.{ext}"
                 if any(a.startswith("-XMP") for a in args):
@@ -168,6 +193,7 @@ def main(
     finally:
         pad.unlink(missing_ok=True)
     (DEST / "cases.json").write_text(cases_json(rows))
+    (DEST / "SOURCE.txt").write_text(source_txt(len(rows), exiftool_version))
     print(f"{len(rows)} files -> {DEST} (cases.json holds the intended verdicts)")
     print(f"next: uv run scripts/references.py collect {DEST.name}")
 

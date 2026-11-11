@@ -689,6 +689,8 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   ExifTool stamps its version into each XMP packet (`x:xmptk`).
 - Resolution: `gen-synthetic.py` sets `XMP-x:XMPToolkit` to a constant wherever a
   case writes XMP. Generated with ExifTool 12.76, 13.55 and 13.59, all 38 files are
-  byte-identical; `plain.*` and `iim_only.jpg` are unchanged by the fix.
+  byte-identical; `plain.*` and `iim_only.jpg` are unchanged by the fix. The
+  generating ExifTool's version is recorded in `03-synthetic/SOURCE.txt`
+  instead, with the sha256 of each base image.
 - Status: closed. The stratum is still matched by name: base images built on
   different platforms have not been compared.

@@ -1,0 +1,8 @@
+generator: scripts/gen-synthetic.py
+files: 38 (cases.json holds the intended verdicts)
+exiftool: 13.59
+xmp toolkit: Halftone gen-synthetic (in place of ExifTool's version stamp, so the
+  files' bytes do not depend on the ExifTool version above; DIFFERENTIAL.md D-020)
+base.jpg: sha256 b22cba5b89c0fa06c6640adc7e69b38e2bbdcd1842d37f9c6af091661a8b43d0
+base.png: sha256 0e140aa8c1060f954b3c61f54f4a4d8b06fe35a55b3e81af0a72532b81a71027
+base.webp: sha256 e9276c8264704e012f3a66940de76dbdffd04309e6aa64e09a3e092e5e0bab56
