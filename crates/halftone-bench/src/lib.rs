@@ -7,9 +7,11 @@
 //!
 //! [`survive`] is the metadata-survival runner behind `ht survive`: the same
 //! distortion suite, applied to marked files, reporting whether the manifest and
-//! the XMP field still read afterwards.
+//! the XMP field still read afterwards. [`multipart`] holds its byte-level edits of
+//! multi-part JPEGs (still image, gain map, motion clip).
 
 pub mod corpus;
 pub mod distort;
 pub mod metrics;
+pub mod multipart;
 pub mod survive;

@@ -10,6 +10,7 @@ homepage.workspace = true
 
 [dependencies]
 halftone-core.workspace = true
+halftone-formats.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true

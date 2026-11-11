@@ -1291,6 +1291,7 @@ name = "halftone-bench"
 version = "0.1.0"
 dependencies = [
  "halftone-core",
+ "halftone-formats",
  "image",
  "rayon",
  "serde",
