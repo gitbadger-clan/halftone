@@ -6,10 +6,20 @@
 # Credentio, the conformance-public checkout) are whatever the runner has installed.
 # Every stratum is re-collected with the references its committed header records
 # (scripts/collect.py), so a red night means one of three things:
-#   - upstream fixtures moved     -> uv run scripts/refresh-public-strata.py locally, bump the pins
-#   - a reference tool moved      -> re-collect the affected strata, commit the diff + a D-entry
+#   - upstream fixtures moved     -> refresh the public strata in the reference image
+#                                    (scripts/references.py run -- uv run
+#                                    scripts/refresh-public-strata.py --no-test), bump the
+#                                    fixture pins in differential.yml
+#   - a reference tool moved      -> uv run scripts/references.py bump <tool>, which moves
+#                                    the pin and re-collects in the image; commit the diff
+#                                    + a D-entry
 #   - Halftone regressed          -> the disagreement table is the bug report
 # Never fix a red night by editing expectations.json on an unrelated PR branch.
+#
+# --allow-unpinned, on both collections below: collect.py refuses tools that differ
+# from docker/references.env, because a committed header must record the pinned
+# tools. This job is the one place that wants the drift. Its headers record the
+# runner's tools, are uploaded as an artifact, and are never committed.
 name: differential-nightly
 
 on:
@@ -45,7 +55,7 @@ jobs:
         run: uv run scripts/bootstrap.py --tools
 
       - name: Rebuild public strata at upstream HEAD
-        run: uv run scripts/refresh-public-strata.py --no-test
+        run: uv run scripts/refresh-public-strata.py --no-test --allow-unpinned
 
       - name: Re-collect private strata
         run: |
@@ -63,7 +73,7 @@ jobs:
           # A stratum with files but no expectations.json yet (a new one) is collected
           # as new, with Credentio and the rubrics; the rest keep their recorded inputs.
           if [ ${#strata[@]} -gt 0 ]; then
-            uv run scripts/collect.py "${strata[@]}"
+            uv run scripts/collect.py --allow-unpinned "${strata[@]}"
           fi
 
       - name: Differential test (every stratum on disk)

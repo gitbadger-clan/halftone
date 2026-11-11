@@ -15,6 +15,11 @@ truth is collected by scripts/collect.py with the same trust inputs as every oth
 stratum, so the headers pass preflight step 8. A fetch just defined each file set,
 so files that upstream dropped are dropped from the record too (--allow-missing).
 
+collect.py refuses tools that differ from docker/references.env. To commit the
+result, run this where the tools are the pins (the reference image). The nightly
+runs it with --allow-unpinned instead: its job is to show what newer reference tools
+say, and its headers are never committed.
+
 Ground truth (expectations.json, cases.json) is what gets committed, not the files.
 Afterwards `git diff corpus/differential` shows what changed in the reference tools'
 view, and the two pins printed at the end go into .github/workflows/differential.yml.
@@ -85,9 +90,16 @@ def main(
     no_test: Annotated[bool, typer.Option("--no-test", help="Stop after collecting.")] = False,
     no_credentio: Annotated[bool, typer.Option("--no-credentio", help="Passed to collect.py.")] = False,
     no_rubrics: Annotated[bool, typer.Option("--no-rubrics", help="Passed to collect.py.")] = False,
+    allow_unpinned: Annotated[
+        bool,
+        typer.Option("--allow-unpinned",
+                     help="Passed to collect.py: collect with this machine's tools although they differ "
+                          "from docker/references.env. For the nightly, which exists to see that drift."),
+    ] = False,
 ) -> None:
     need("git", "uv", "exiftool")
-    flags = [f for f, on in (("--no-credentio", no_credentio), ("--no-rubrics", no_rubrics)) if on]
+    flags = [f for f, on in (("--no-credentio", no_credentio), ("--no-rubrics", no_rubrics),
+                             ("--allow-unpinned", allow_unpinned)) if on]
     collect = ["uv", "run", str(SCRIPTS / "collect.py"), "01", "02", "03", "--allow-missing", *flags]
     # Fail on a missing collector input now, not after a minute of cloning.
     r = subprocess.run([*collect, "--dry-run"], cwd=ROOT, capture_output=True, text=True)

@@ -24,6 +24,13 @@ disk. A fresh checkout has the ground truth but not the uncommitted files, and
 collecting there would replace the record with an empty one. Such a stratum is
 skipped; --allow-missing collects it anyway (after a deliberate rename or deletion).
 
+A header records the tools that wrote it, so the tools must be the pinned ones.
+If ExifTool, OpenSSL, c2patool, or (where used) Credentio and the rubrics checkout
+differ from docker/references.env, nothing is collected and the message names the
+command that runs the same collection in the reference image. --allow-unpinned
+collects anyway, for a comparison; those headers are not for committing. Inside the
+image the tools are the pins, so the check passes there by construction.
+
 Ends with `git diff --stat` over corpus/differential. Exit 1 if any stratum failed or
 was skipped, 2 on a usage or setup error. No network (c2patool runs with fetching
 off). Never reads the clipboard.
@@ -45,6 +52,7 @@ import typer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from progress import clock  # noqa: E402
+from pins import PINS, drift  # noqa: E402
 from repo import CORPUS, ROOT, TRUST_DIR, C, die, need  # noqa: E402
 
 COLLECTOR = ROOT / "scripts" / "differential.py"
@@ -58,6 +66,7 @@ Examples:
     uv run scripts/collect.py 05-fold         # a new stratum: Credentio and rubrics included
     uv run scripts/collect.py 01 --with-credentio --with-rubrics   # change 01's inputs, on purpose
     uv run scripts/collect.py --dry-run       # the checks, inputs and commands, nothing run
+    uv run scripts/references.py collect 04   # the same, in the image with the pinned tools
 """
 
 app = typer.Typer(
@@ -143,6 +152,12 @@ def main(
     allow_missing: Annotated[
         bool, typer.Option("--allow-missing", help="Collect even when recorded files are gone (the record shrinks).")
     ] = False,
+    allow_unpinned: Annotated[
+        bool,
+        typer.Option("--allow-unpinned",
+                     help="Collect although this machine's tools differ from docker/references.env "
+                          "(the headers will record them; not for committed strata)."),
+    ] = False,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Show checks, inputs and commands, run nothing.")] = False,
 ) -> None:
     if strata:
@@ -191,6 +206,29 @@ def main(
         if not (rub / "asset-rubrics" / "c2pa_signals_rubric_evaluator.py").is_file():
             die(f"no conformance-public checkout at {rub} (set RUBRICS, or pass --no-rubrics)", 2)
     need("uv", "git", "exiftool", "c2patool", "openssl")
+
+    # A header records the tools that wrote it. Tools that differ from the pins would
+    # write headers that disagree with docker/references.env and with every stratum
+    # collected in the image, so stop before anything is written.
+    keys = ["EXIFTOOL_VERSION", "OPENSSL_VERSION", "C2PATOOL_VERSION"]
+    keys += ["CREDENTIO_COMMIT"] * (cred is not None) + ["CONFORMANCE_COMMIT"] * (rub is not None)
+    unpinned = drift(keys, cred, rub)
+    if unpinned:
+        width = max(len(t) for t, _, _ in unpinned)
+        tone = C.YELLOW if allow_unpinned else C.RED
+        print(f"{tone}this machine's tools differ from {rel(PINS)}:{C.RESET}")
+        for tool, pinned, here in unpinned:
+            print(f"  {tool:<{width}}  pinned {pinned}  here {here}")
+        names = " ".join(s.name.split("-")[0] for s, *_ in plan)
+        if allow_unpinned:
+            print(f"{C.YELLOW}--allow-unpinned: collecting anyway; do not commit these headers{C.RESET}")
+        elif dry_run:
+            print(f"{C.RED}a real run would stop here; in the image: "
+                  f"uv run scripts/references.py collect {names}{C.RESET}")
+        else:
+            die("nothing collected. Collect in the reference image, where the tools are the pins:\n"
+                f"  uv run scripts/references.py collect {names}\n"
+                "or pass --allow-unpinned to collect with this machine's tools for a comparison", 2)
 
     base = ["--trust-anchors", rel(anchors), "--tsa-anchors", rel(tsa), "--trust-config", rel(eku)]
     results: list[tuple[str, str, bool, str]] = []  # stratum, result, ok, why
@@ -244,6 +282,11 @@ def main(
     if not dry_run:
         print()
         subprocess.run(["git", "diff", "--stat", "--", rel(CORPUS)], cwd=ROOT)
+    if dry_run and unpinned and not allow_unpinned:
+        # One line on stderr, for callers that report a failed dry run by its last line.
+        print(f"error: tools differ from {rel(PINS)} ({', '.join(t for t, _, _ in unpinned)}); "
+              "collect in the image or pass --allow-unpinned", file=sys.stderr)
+        raise typer.Exit(1)
     raise typer.Exit(0 if all(ok for _, _, ok, _ in results) else 1)
 
 

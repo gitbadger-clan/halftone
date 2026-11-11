@@ -200,7 +200,12 @@ uv run scripts/references.py hold openssl <why>        # keep a pin put; bump pa
 ```
 
 `collect` bind-mounts the checkout and runs as your user; ht and `cargo test` stay on
-the host. `bump` edits one pin, builds, re-collects every stratum, runs the
+the host. Collect committed strata this way: run directly, `collect.py` checks this
+machine's ExifTool, OpenSSL, c2patool, Credentio and rubrics against the pins and
+collects nothing if one differs (`--allow-unpinned` overrides, for a comparison or
+the nightly), so a committed header can never record a tool the pins do not name.
+
+`bump` edits the pins it is given, builds, re-collects every stratum, runs the
 differential test and prints the diff. It never commits, and refuses to start with
 uncommitted corpus or pin changes. Without a value, a tool takes its newest release
 at least 14 days old (`--cooldown`), never an older one than the pin; `all` does that
