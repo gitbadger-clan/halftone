@@ -240,12 +240,12 @@ impl Distortion {
                     Self::FlipClip => mp::flip_clip,
                     _ => mp::flip_still,
                 };
-                // Same container as the input: the bytes that remain are untouched.
-                let format = sniff_format(original)
-                    .ok_or_else(|| DistortError::Decode("unrecognised container".into()))?;
+                // The edit decides whether the input qualifies, so anything that is
+                // not a multi-part JPEG is left out, never an error. What remains is
+                // the input's own JPEG bytes.
                 return Ok(Derivative {
                     bytes: edit(original).map_err(DistortError::NotApplicable)?,
-                    ext: ext_of(format),
+                    ext: "jpg",
                 });
             }
             _ => {}
@@ -676,10 +676,16 @@ mod tests {
             }
             other => panic!("expected NotApplicable, got {other:?}"),
         }
-        assert!(matches!(
-            Distortion::KeepStill.apply(&png_bytes(8, 8)),
-            Err(DistortError::NotApplicable(_))
-        ));
+        // Other containers, recognised or not, are left out the same way.
+        for other in [png_bytes(8, 8), b"\0\0\0\x18ftypheic".to_vec(), Vec::new()] {
+            for d in Distortion::multipart_suite() {
+                assert!(
+                    matches!(d.apply(&other), Err(DistortError::NotApplicable(_))),
+                    "{}",
+                    d.name()
+                );
+            }
+        }
     }
 
     #[test]
