@@ -366,6 +366,14 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
         reg.push(Box::new(halftone_container::webp::WebpWriter));
         reg.push(Box::new(halftone_container::exif::ExifConsistency));
         reg.push(Box::new(halftone_container::marking::MarkingMetadata));
+        reg.push(Box::new(
+            halftone_container::data_mining::DataMiningReservation,
+        ));
+        reg.push(Box::new(halftone_container::vendor_ai::VendorAiFlag));
+        reg.push(Box::new(halftone_container::rights::RightsStatements));
+        reg.push(Box::new(
+            halftone_container::identifiers::EmbeddedIdentifiers,
+        ));
         reg.push(Box::new(halftone_container::gcontainer::ContainerDirectory));
         reg.push(Box::new(halftone_container::mpf::MpfIndex));
 
