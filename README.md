@@ -87,6 +87,26 @@ each row. The aggregate view groups by `<generator>__<variant>` and marks each c
 longer validates), + gained, · nothing to lose. No quality metric is computed:
 metadata survival does not depend on PSNR; the watermark robustness ladder will.
 
+A phone photo is often several files in one: the still image, a gain map, and in a
+Motion Photo an MP4 clip. `--suite none,multipart` adds five byte-level edits of such
+files, which re-encode nothing and leave every byte they do not touch as it was:
+
+| transform | edit |
+|---|---|
+| `keep_still` | cut right after the still image (gain map and clip go) |
+| `drop_clip` | cut where the motion clip starts |
+| `cut_clip` | cut in the middle of the motion clip |
+| `flip_clip` | flip one bit in the middle of the motion clip |
+| `flip_still` | flip one bit in the still's compressed data |
+
+```
+ht survive --suite none,multipart --keep /tmp/derived corpus/differential/06-phones/*.jpg
+```
+
+The parts are located from the file itself (the first complete JPEG; the container
+directory's `MotionPhoto` item). An edit is left out for an input without the part it
+needs, named on stderr, and shown as `-` in the table.
+
 ## Manifest layer
 
 Layer 1 (`c2pa`) is implemented behind the `c2pa` feature: `cargo build --features halftone-cli/c2pa`.

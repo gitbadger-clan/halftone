@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 use halftone_core::{Asset, Batch, FileRow, Inspection, Registry, ToolInfo, summarize};
 use rayon::prelude::*;
 
-use crate::distort::{Decoded, Distortion, decode};
+use crate::distort::{Decoded, DistortError, Distortion, decode};
 
 /// Error from a survival run.
 #[derive(Debug, thiserror::Error)]
@@ -157,10 +157,23 @@ pub fn dedup_inputs(inputs: &[PathBuf]) -> Dedup {
     Dedup { kept, dropped }
 }
 
+/// A transform that had nothing to act on in one input: a byte-level edit of a part
+/// the file does not have. There is no row for it; the aggregate shows `-`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Skipped {
+    /// The input, as given.
+    pub source: String,
+    /// The transform's name.
+    pub transform: String,
+    /// Why it does not apply, in plain words.
+    pub reason: String,
+}
+
 /// Run the suite over `inputs` (plus any captured files) and return one batch.
 /// Rows are ordered by input, then by suite order, then captured labels.
 /// Inputs are taken as given; call [`dedup_inputs`] first to fold byte-identical
-/// files (the CLI does, and reports what it folded).
+/// files (the CLI does, and reports what it folded). Transforms that do not apply
+/// to an input are left out; [`run_reporting`] also says which.
 pub fn run(
     registry: &Registry,
     tool: ToolInfo,
@@ -168,6 +181,18 @@ pub fn run(
     captured: &[Captured],
     cfg: &SurviveConfig,
 ) -> Result<Batch, SurviveError> {
+    run_reporting(registry, tool, inputs, captured, cfg).map(|(batch, _)| batch)
+}
+
+/// [`run`], plus every input × transform that was left out as not applicable, in
+/// input then suite order.
+pub fn run_reporting(
+    registry: &Registry,
+    tool: ToolInfo,
+    inputs: &[PathBuf],
+    captured: &[Captured],
+    cfg: &SurviveConfig,
+) -> Result<(Batch, Vec<Skipped>), SurviveError> {
     if let Some(dir) = &cfg.keep {
         std::fs::create_dir_all(dir).map_err(|e| SurviveError::Io {
             path: dir.clone(),
@@ -178,8 +203,10 @@ pub fn run(
 
     // (input index, column index, inspection, source, transform)
     type Row = (usize, usize, Inspection, String, String);
+    // A cell is a row, or the reason there is none.
+    type Cell = Result<Row, (usize, usize, Skipped)>;
 
-    let synthetic: Result<Vec<Vec<Row>>, SurviveError> = inputs
+    let synthetic: Result<Vec<Vec<Cell>>, SurviveError> = inputs
         .par_iter()
         .enumerate()
         .map(|(ix, path)| {
@@ -205,12 +232,23 @@ pub fn run(
                 .enumerate()
                 .map(|(cx, d)| {
                     let name = d.name();
-                    let out = d.apply_decoded(decoded.as_ref(), &bytes).map_err(|e| {
-                        SurviveError::Unsupported {
-                            path: path.clone(),
-                            reason: format!("{name}: {e}"),
+                    let out = match d.apply_decoded(decoded.as_ref(), &bytes) {
+                        Ok(out) => out,
+                        Err(DistortError::NotApplicable(reason)) => {
+                            let skipped = Skipped {
+                                source: source.clone(),
+                                transform: name,
+                                reason,
+                            };
+                            return Ok(Err((ix, cx, skipped)));
                         }
-                    })?;
+                        Err(e) => {
+                            return Err(SurviveError::Unsupported {
+                                path: path.clone(),
+                                reason: format!("{name}: {e}"),
+                            });
+                        }
+                    };
                     let derived_path = cfg
                         .keep
                         .as_ref()
@@ -233,12 +271,20 @@ pub fn run(
                         }
                     })?;
                     let insp = registry.inspect(&asset, tool.clone());
-                    Ok((ix, cx, insp, source.clone(), name))
+                    Ok(Ok((ix, cx, insp, source.clone(), name)))
                 })
-                .collect::<Result<Vec<Row>, SurviveError>>()
+                .collect::<Result<Vec<Cell>, SurviveError>>()
         })
         .collect();
-    let mut rows: Vec<Row> = synthetic?.into_iter().flatten().collect();
+    let mut rows: Vec<Row> = Vec::new();
+    let mut skipped: Vec<(usize, usize, Skipped)> = Vec::new();
+    for cell in synthetic?.into_iter().flatten() {
+        match cell {
+            Ok(row) => rows.push(row),
+            Err(s) => skipped.push(s),
+        }
+    }
+    skipped.sort_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)));
 
     // Captured files: read, inspect, label. Their column index continues after the
     // suite so they sort after the synthetic columns of the same input.
@@ -276,7 +322,7 @@ pub fn run(
         batch.summary.push(row);
         batch.inspections.push(insp);
     }
-    Ok(batch)
+    Ok((batch, skipped.into_iter().map(|(_, _, s)| s).collect()))
 }
 
 /// Transform name as a file-name token: `captured:whatsapp` → `captured-whatsapp`,
@@ -483,13 +529,23 @@ pub fn render_long(batch: &Batch) -> String {
 /// files of one writer disagree, the cell shows the count that kept, e.g. `M2/3`.
 pub fn render_aggregate(batch: &Batch) -> String {
     let per_source = fates(batch);
-    // Column order: first-seen transform order across all sources.
+    // Column order: each source lists its transforms in suite order, but a source
+    // may lack some (a byte-level edit that did not apply). A transform not seen
+    // before goes right after the one that precedes it in its own source, so the
+    // suite order survives whichever source comes first.
     let mut columns: Vec<String> = Vec::new();
     for (_, cells) in &per_source {
+        let mut after: Option<usize> = None;
         for (t, _) in cells {
-            if !columns.contains(t) {
-                columns.push(t.clone());
-            }
+            let at = match columns.iter().position(|c| c == t) {
+                Some(i) => i,
+                None => {
+                    let i = after.map_or(columns.len(), |a| a + 1);
+                    columns.insert(i, t.clone());
+                    i
+                }
+            };
+            after = Some(at);
         }
     }
     // writer -> transform -> Vec<Cell>
@@ -548,9 +604,14 @@ pub fn render_aggregate(batch: &Batch) -> String {
          \x20 ·  n/a       the original carried nothing in this layer, so there was \
          nothing to lose\n\
          \x20 k/n         the writer's files disagree: k of n kept it\n\
+         \x20 -           the transform does not apply to this writer's files (no such \
+         part to edit)\n\
          Synthetic transforms (jpeg_*, resize_*, crop_*, png, webp) are clean \
          re-encodes and strip everything by construction; captured:<label> columns \
-         are files a real application produced and are where survival is measured.\n",
+         are files a real application produced and are where survival is measured. \
+         keep_still, drop_clip, cut_clip, flip_clip and flip_still edit the bytes of \
+         a multi-part JPEG (still image, gain map, motion clip) without re-encoding: \
+         everything they do not touch is bit-identical to the original.\n",
     );
     out
 }
@@ -729,6 +790,100 @@ mod tests {
         assert!(long.lines().count() == 5);
         assert!(long.contains("\tjpeg_q80\t-\t-\t-\tnone"));
         let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn byte_level_edits_keep_what_they_do_not_touch_and_skip_what_is_not_there() {
+        use crate::multipart::fixtures::{motion_photo, ultra_hdr};
+        let dir = tmpdir("multipart");
+        // XMP field in the still; the stand-in manifest marker inside the clip, so
+        // the two fates differ depending on which part an edit removes.
+        let (mut motion, still, gain, _) = motion_photo(r#"x:t="DigitalSourceType""#);
+        let at = still + gain + 100;
+        motion[at..at + 8].copy_from_slice(b"MANIFEST");
+        let a = dir.join("phone__motion__adb-pull__s02__1.jpg");
+        let b = dir.join("phone__default__adb-pull__s01__1.jpg");
+        std::fs::write(&a, &motion).unwrap();
+        std::fs::write(&b, ultra_hdr().0).unwrap();
+
+        let mut suite = vec![Distortion::None];
+        suite.extend(Distortion::multipart_suite());
+        let cfg = SurviveConfig {
+            suite,
+            keep: Some(dir.join("out")),
+        };
+        let (batch, skipped) =
+            run_reporting(&registry(), tool(), &[b.clone(), a.clone()], &[], &cfg).unwrap();
+
+        // The motion photo takes every edit; the gain-map-only photo has no clip.
+        assert_eq!(batch.summary.len(), 6 + 3);
+        let left_out: Vec<(&str, &str)> = skipped
+            .iter()
+            .map(|s| (s.transform.as_str(), s.reason.as_str()))
+            .collect();
+        let no_clip = "the container directory declares no motion clip";
+        assert_eq!(
+            left_out,
+            [
+                ("drop_clip", no_clip),
+                ("cut_clip", no_clip),
+                ("flip_clip", no_clip)
+            ]
+        );
+        assert!(skipped.iter().all(|s| s.source == b.to_string_lossy()));
+
+        let f = fates(&batch);
+        let cells: BTreeMap<_, _> = f[1].1.iter().cloned().collect();
+        for (t, manifest) in [
+            ("keep_still", Fate::Stripped), // the marker went with the clip
+            ("drop_clip", Fate::Stripped),
+            ("cut_clip", Fate::Kept), // cut behind the marker
+            ("flip_clip", Fate::Kept),
+            ("flip_still", Fate::Kept),
+        ] {
+            assert_eq!(cells[t].manifest, manifest, "{t}");
+            assert_eq!(
+                cells[t].xmp,
+                Fate::Kept,
+                "{t}: the still's XMP is untouched"
+            );
+        }
+
+        // --keep wrote the edited bytes: the still alone is a prefix of the input.
+        let kept =
+            std::fs::read(dir.join("out/phone__motion__adb-pull__s02__1__keep_still.jpg")).unwrap();
+        assert_eq!(kept, motion[..still]);
+        assert!(
+            !dir.join("out/phone__default__adb-pull__s01__1__drop_clip.jpg")
+                .exists()
+        );
+
+        // The aggregate marks the cells that do not exist and explains the dash.
+        let table = render_aggregate(&batch);
+        // The clip-less input comes first, yet the columns keep the suite's order.
+        let header: Vec<&str> = table.lines().next().unwrap().split_whitespace().collect();
+        assert_eq!(
+            header,
+            [
+                "writer",
+                "none",
+                "keep_still",
+                "drop_clip",
+                "cut_clip",
+                "flip_clip",
+                "flip_still"
+            ]
+        );
+        let default_row = table
+            .lines()
+            .find(|l| l.starts_with("phone__default"))
+            .unwrap();
+        assert_eq!(
+            default_row.matches(" - ").count() + usize::from(default_row.ends_with(" -")),
+            3
+        );
+        assert!(table.contains("does not apply to this writer's files"));
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]

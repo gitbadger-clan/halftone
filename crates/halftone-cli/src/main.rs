@@ -214,7 +214,12 @@ struct SurviveArgs {
     #[arg(long)]
     captured: Option<PathBuf>,
     /// Comma-separated transforms; default is the survival suite
-    /// (none,jpeg_q95,jpeg_q80,jpeg_q70,resize_0.5,crop_0.1,png,webp).
+    /// (none,jpeg_q95,jpeg_q80,jpeg_q70,resize_0.5,crop_0.1,png,webp). `multipart`
+    /// stands for the byte-level edits of multi-part JPEGs, which re-encode nothing:
+    /// keep_still (cut after the still image), drop_clip, cut_clip, flip_clip (a
+    /// Motion Photo's clip removed, cut in the middle, one bit flipped) and
+    /// flip_still (one bit flipped in the still). Example: --suite none,multipart.
+    /// An edit is left out for inputs without the part it needs.
     #[arg(long)]
     suite: Option<String>,
     /// Write every derivative here as <stem>__<transform>.<ext> for reproduction.
@@ -613,7 +618,7 @@ fn inspect(a: InspectArgs) -> Result<()> {
 fn survive(a: SurviveArgs) -> Result<()> {
     use halftone_bench::distort::{Distortion, parse_suite};
     use halftone_bench::survive::{
-        SurviveConfig, dedup_inputs, match_captured, render_aggregate, render_long, run,
+        SurviveConfig, dedup_inputs, match_captured, render_aggregate, render_long, run_reporting,
     };
 
     let reg = registry(&RegistryOpts {
@@ -661,7 +666,10 @@ fn survive(a: SurviveArgs) -> Result<()> {
         suite,
         keep: a.keep.clone(),
     };
-    let batch = run(&reg, tool(), &inputs, &captured, &cfg)?;
+    let (batch, skipped) = run_reporting(&reg, tool(), &inputs, &captured, &cfg)?;
+    for s in &skipped {
+        eprintln!("{}: {} left out: {}", s.source, s.transform, s.reason);
+    }
     if a.json {
         println!("{}", serde_json::to_string(&batch)?);
     } else if a.long {

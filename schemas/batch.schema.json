@@ -16,7 +16,7 @@
         "properties": {
           "path": { "type": "string" },
           "source": { "type": "string", "description": "survival runs: the original file" },
-          "transform": { "type": "string", "description": "survival runs: none | jpeg_qN | resize_F | crop_F | png | webp | captured:<label>" },
+          "transform": { "type": "string", "description": "survival runs: none | jpeg_qN | resize_F | crop_F | png | webp | captured:<label> | keep_still | drop_clip | cut_clip | flip_clip | flip_still (byte-level edits of multi-part JPEGs)" },
           "sha256": { "type": "string" },
           "mime": { "type": "string" },
           "size_bytes": { "type": "integer" },

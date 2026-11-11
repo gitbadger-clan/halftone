@@ -1,7 +1,7 @@
 //! WAVES-style distortion suite. Each distortion is a pure function on bytes so
 //! the harness can run sources on the distorted output exactly as a user would.
 //!
-//! Two kinds of transform live here:
+//! Three kinds of transform live here:
 //! - **Synthetic**: decode → operate → encode with the `image` crate. Deterministic
 //!   and fast, but the JPEG/WebP encoders are not libjpeg/libwebp, so a `jpeg_q80`
 //!   from here is not byte-identical to Photoshop's or Pillow's q80. For metadata
@@ -10,6 +10,11 @@
 //! - **Captured**: files a real application produced (WhatsApp, a screenshot, a
 //!   CDN). They are not computed here; [`Distortion::Captured`] only names them so
 //!   they take a column next to the synthetic ones.
+//!
+//! - **Byte-level**: edits of a multi-part JPEG's bytes with no re-encode: the
+//!   parts after the still image dropped, cut or altered ([`crate::multipart`]).
+//!   Everything they do not touch stays bit-identical, metadata included. An input
+//!   without the part an edit needs yields [`DistortError::NotApplicable`].
 //!
 //! Every synthetic transform drops all metadata by construction (the `image` crate
 //! writes none), so the container after a synthetic transform is always a clean
@@ -33,6 +38,10 @@ pub enum DistortError {
     /// A parameter is outside its valid range.
     #[error("invalid parameter: {0}")]
     Param(&'static str),
+    /// The input has nothing for this transform to act on (a byte-level edit of a
+    /// part the file does not have). A fact about the input, not a failure.
+    #[error("not applicable: {0}")]
+    NotApplicable(String),
 }
 
 /// A named distortion.
@@ -59,6 +68,17 @@ pub enum Distortion {
     /// A file produced by a real application; `label` is the route it took
     /// (`whatsapp_photo`, `telegram_file`, `screenshot_macos`, …).
     Captured(String),
+    /// Byte-level: cut right after the still image of a multi-part JPEG, dropping
+    /// the gain map, motion clip and anything else behind it.
+    KeepStill,
+    /// Byte-level: cut where a Motion Photo's clip starts.
+    DropClip,
+    /// Byte-level: cut in the middle of a Motion Photo's clip.
+    CutClip,
+    /// Byte-level: flip one bit in the middle of a Motion Photo's clip.
+    FlipClip,
+    /// Byte-level: flip one bit in the still image's compressed data.
+    FlipStill,
 }
 
 /// The bytes a transform produced and the container they are in.
@@ -83,6 +103,11 @@ impl Distortion {
             Self::Png => "png".into(),
             Self::Webp => "webp".into(),
             Self::Captured(label) => format!("captured:{label}"),
+            Self::KeepStill => "keep_still".into(),
+            Self::DropClip => "drop_clip".into(),
+            Self::CutClip => "cut_clip".into(),
+            Self::FlipClip => "flip_clip".into(),
+            Self::FlipStill => "flip_still".into(),
         }
     }
 
@@ -96,6 +121,11 @@ impl Distortion {
             "none" | "identity" => return Some(Self::None),
             "png" => return Some(Self::Png),
             "webp" => return Some(Self::Webp),
+            "keep_still" => return Some(Self::KeepStill),
+            "drop_clip" => return Some(Self::DropClip),
+            "cut_clip" => return Some(Self::CutClip),
+            "flip_clip" => return Some(Self::FlipClip),
+            "flip_still" => return Some(Self::FlipStill),
             _ => {}
         }
         let (kind, arg) = name.split_once('_')?;
@@ -114,10 +144,19 @@ impl Distortion {
         }
     }
 
-    /// Whether this transform needs the decoded image (everything but identity
-    /// and captured files).
+    /// Whether this transform edits the file's bytes in place, without decoding or
+    /// re-encoding anything (the multi-part edits).
+    pub fn is_byte_level(&self) -> bool {
+        matches!(
+            self,
+            Self::KeepStill | Self::DropClip | Self::CutClip | Self::FlipClip | Self::FlipStill
+        )
+    }
+
+    /// Whether this transform needs the decoded image (everything but identity,
+    /// captured files and the byte-level edits).
     pub fn needs_decode(&self) -> bool {
-        !matches!(self, Self::None | Self::Captured(_))
+        !matches!(self, Self::None | Self::Captured(_)) && !self.is_byte_level()
     }
 
     /// The original WAVES-style robustness suite.
@@ -144,6 +183,19 @@ impl Distortion {
             Self::Crop(0.1),
             Self::Png,
             Self::Webp,
+        ]
+    }
+
+    /// The multi-part suite (`multipart` in a suite spec): what a multi-part JPEG
+    /// loses when the parts after its still image are dropped, cut or altered.
+    /// Without `none`; a suite needs that as its baseline.
+    pub fn multipart_suite() -> Vec<Self> {
+        vec![
+            Self::KeepStill,
+            Self::DropClip,
+            Self::CutClip,
+            Self::FlipClip,
+            Self::FlipStill,
         ]
     }
 
@@ -178,6 +230,23 @@ impl Distortion {
                 return Err(DistortError::Param(
                     "captured transforms are files, not computations",
                 ));
+            }
+            _ if self.is_byte_level() => {
+                use crate::multipart as mp;
+                let edit: fn(&[u8]) -> Result<Vec<u8>, String> = match self {
+                    Self::KeepStill => mp::keep_still,
+                    Self::DropClip => mp::drop_clip,
+                    Self::CutClip => mp::cut_clip,
+                    Self::FlipClip => mp::flip_clip,
+                    _ => mp::flip_still,
+                };
+                // Same container as the input: the bytes that remain are untouched.
+                let format = sniff_format(original)
+                    .ok_or_else(|| DistortError::Decode("unrecognised container".into()))?;
+                return Ok(Derivative {
+                    bytes: edit(original).map_err(DistortError::NotApplicable)?,
+                    ext: ext_of(format),
+                });
             }
             _ => {}
         }
@@ -222,18 +291,23 @@ impl Distortion {
                 }
                 encode_same(&add_noise(&d.image, *sigma), d.format)
             }
-            Self::None | Self::Captured(_) => unreachable!("handled above"),
+            _ => unreachable!("identity, captured and byte-level are handled above"),
         }
     }
 }
 
-/// Parse a comma-separated suite; unknown names are returned as errors.
+/// Parse a comma-separated suite; unknown names are returned as errors. The word
+/// `multipart` stands for [`Distortion::multipart_suite`].
 pub fn parse_suite(spec: &str) -> Result<Vec<Distortion>, String> {
-    spec.split(',')
-        .map(str::trim)
-        .filter(|s| !s.is_empty())
-        .map(|s| Distortion::parse(s).ok_or_else(|| format!("unknown transform `{s}`")))
-        .collect()
+    let mut out = Vec::new();
+    for s in spec.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+        if s == "multipart" {
+            out.extend(Distortion::multipart_suite());
+        } else {
+            out.push(Distortion::parse(s).ok_or_else(|| format!("unknown transform `{s}`"))?);
+        }
+    }
+    Ok(out)
 }
 
 /// A decoded input, kept alongside the container it came from so same-container
@@ -564,6 +638,67 @@ mod tests {
         assert!(src.windows(marker.len()).any(|w| w == marker));
         let out = Distortion::Png.apply(&src).unwrap();
         assert!(!out.bytes.windows(marker.len()).any(|w| w == marker));
+    }
+
+    #[test]
+    fn byte_level_edits_need_no_decode_and_keep_the_container() {
+        let (motion, still, gain, _) = crate::multipart::fixtures::motion_photo("");
+        for d in Distortion::multipart_suite() {
+            assert!(d.is_byte_level() && !d.needs_decode(), "{}", d.name());
+            assert_eq!(
+                Distortion::parse(&d.name()),
+                Some(d.clone()),
+                "{}",
+                d.name()
+            );
+            // The fixture is not a decodable picture; byte-level edits never try.
+            let out = d.apply(&motion).unwrap();
+            assert_eq!(out.ext, "jpg");
+            assert!(out.bytes.len() <= motion.len());
+        }
+        assert_eq!(
+            Distortion::KeepStill.apply(&motion).unwrap().bytes.len(),
+            still
+        );
+        assert_eq!(
+            Distortion::DropClip.apply(&motion).unwrap().bytes.len(),
+            still + gain
+        );
+        assert!(!Distortion::Jpeg(80).is_byte_level());
+    }
+
+    #[test]
+    fn a_missing_part_is_not_applicable_rather_than_an_error_to_fix() {
+        let (hdr, _) = crate::multipart::fixtures::ultra_hdr();
+        match Distortion::DropClip.apply(&hdr) {
+            Err(DistortError::NotApplicable(why)) => {
+                assert!(why.contains("no motion clip"), "{why}")
+            }
+            other => panic!("expected NotApplicable, got {other:?}"),
+        }
+        assert!(matches!(
+            Distortion::KeepStill.apply(&png_bytes(8, 8)),
+            Err(DistortError::NotApplicable(_))
+        ));
+    }
+
+    #[test]
+    fn the_word_multipart_expands_in_a_suite() {
+        let suite = parse_suite("none, multipart ,jpeg_q80").unwrap();
+        let names: Vec<String> = suite.iter().map(Distortion::name).collect();
+        assert_eq!(
+            names,
+            [
+                "none",
+                "keep_still",
+                "drop_clip",
+                "cut_clip",
+                "flip_clip",
+                "flip_still",
+                "jpeg_q80"
+            ]
+        );
+        assert!(parse_suite("none,multipartx").is_err());
     }
 
     #[test]
