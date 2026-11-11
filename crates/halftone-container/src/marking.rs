@@ -53,7 +53,7 @@ use serde::Serialize;
 /// Upper bound on assembled XMP bytes per file, to keep hostile input cheap.
 use halftone_formats::MAX_XMP_BYTES;
 
-/// Syntactic form a value was found in.
+/// Syntactic form a property value was found in (shown here for `DigitalSourceType`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Form {
@@ -120,8 +120,13 @@ pub struct MarkingScan {
     pub xmp_items_unreadable: Vec<String>,
 }
 
-/// Extract marking metadata from JPEG, PNG, WebP or HEIF bytes.
-pub fn scan(mime: &str, b: &[u8]) -> Result<MarkingScan, String> {
+/// The XMP packets of a JPEG, PNG, WebP or HEIF file, wherever the container puts
+/// them, plus what was noted while reading: the ExtendedXMP and unreadable-item
+/// flags, the IIM block and whether a C2PA container is present. The counts and
+/// values of the returned scan are still empty; [`scan`] fills them. Shared with the
+/// other sources that read one XMP property (`data_mining_reservation`), so every
+/// such source sees exactly the same packets.
+pub fn packets(mime: &str, b: &[u8]) -> Result<(Vec<Vec<u8>>, MarkingScan), String> {
     let mut s = MarkingScan::default();
     let packets = match mime {
         "image/jpeg" => jpeg_packets(b, &mut s)?,
@@ -130,6 +135,12 @@ pub fn scan(mime: &str, b: &[u8]) -> Result<MarkingScan, String> {
         "image/heif" => heif_packets(b, &mut s)?,
         _ => return Err(format!("unsupported container {mime}")),
     };
+    Ok((packets, s))
+}
+
+/// Extract marking metadata from JPEG, PNG, WebP or HEIF bytes.
+pub fn scan(mime: &str, b: &[u8]) -> Result<MarkingScan, String> {
+    let (packets, mut s) = packets(mime, b)?;
     for p in packets {
         s.xmp_packets += 1;
         s.xmp_bytes += p.len();
@@ -316,20 +327,37 @@ fn heif_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
     Ok(m.xmp_packets)
 }
 
-/// Find every `DigitalSourceType` property in an XMP packet, in any prefix and form.
-pub fn find_dst(text: &str) -> Vec<DstValue> {
-    const NAME: &str = "DigitalSourceType";
+/// One occurrence of a named XMP property, as written.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PropertyValue {
+    /// Namespace prefix the property was written with.
+    pub prefix: String,
+    /// The value exactly as written, trimmed and bounded.
+    pub raw: String,
+    /// Where the value sat.
+    pub form: Form,
+}
+
+/// Find every `prefix:<name>` property in an XMP packet, with any prefix, in
+/// attribute, element or resource form. The tolerant scan described in the module
+/// docs: no XML parser, closing tags and longer names skipped, empty values dropped.
+///
+/// `nested` also accepts an element whose value sits inside child elements, as a
+/// language alternative does (`<p:Name><rdf:Alt><rdf:li …>text</rdf:li>…`): the text
+/// between the tags up to the property's closing tag is the value. Off for
+/// `DigitalSourceType`, which is a plain value and is read exactly as before.
+pub fn find_property(text: &str, name: &str, nested: bool) -> Vec<PropertyValue> {
     let bytes = text.as_bytes();
     let mut out = Vec::new();
     let mut from = 0;
-    while let Some(rel) = text[from..].find(NAME) {
+    while let Some(rel) = text[from..].find(name) {
         let at = from + rel;
-        from = at + NAME.len();
-        // Must be `prefix:DigitalSourceType` and not a closing tag or a longer name.
+        from = at + name.len();
+        // Must be `prefix:Name` and not a closing tag or a longer name.
         if at == 0 || bytes[at - 1] != b':' {
             continue;
         }
-        let after = &text[at + NAME.len()..];
+        let after = &text[at + name.len()..];
         if after
             .chars()
             .next()
@@ -342,10 +370,12 @@ pub fn find_dst(text: &str) -> Vec<DstValue> {
             .map(|p| p + 1)
             .unwrap_or(0);
         if prefix_start > 0 && bytes[prefix_start - 1] == b'/' {
-            continue; // `</prefix:DigitalSourceType>`
+            continue; // `</prefix:Name>`
         }
         let prefix = &text[prefix_start..at - 1];
-        if prefix.is_empty() {
+        // `xmlns:Name="…"` declares a namespace prefix that happens to be called like
+        // the property (a vendor did exactly that); it is not a value.
+        if prefix.is_empty() || prefix == "xmlns" {
             continue;
         }
         let opened_by_tag = prefix_start > 0 && bytes[prefix_start - 1] == b'<';
@@ -370,7 +400,14 @@ pub fn find_dst(text: &str) -> Vec<DstValue> {
             } else {
                 let body = &after[gt + 1..];
                 let Some(lt) = body.find('<') else { continue };
-                (body[..lt].to_string(), Form::Element)
+                if nested && body[..lt].trim().is_empty() {
+                    let Some(end) = body.find(&format!("</{prefix}:{name}")) else {
+                        continue;
+                    };
+                    (text_between_tags(&body[..end]), Form::Element)
+                } else {
+                    (body[..lt].to_string(), Form::Element)
+                }
             }
         } else {
             continue;
@@ -379,18 +416,52 @@ pub fn find_dst(text: &str) -> Vec<DstValue> {
         if raw.is_empty() {
             continue;
         }
-        let code = code_of(&raw);
-        let namespace_bound = text.contains(&format!("xmlns:{prefix}=\"{IPTC_EXT_NS}\""))
-            || text.contains(&format!("xmlns:{prefix}='{IPTC_EXT_NS}'"));
-        out.push(DstValue {
+        out.push(PropertyValue {
             prefix: prefix.to_string(),
             raw,
-            code,
             form,
-            namespace_bound,
         });
     }
     out
+}
+
+/// The text of an XML fragment with its tags removed and whitespace collapsed.
+fn text_between_tags(fragment: &str) -> String {
+    let mut out = String::new();
+    let mut in_tag = false;
+    for c in fragment.chars() {
+        match c {
+            '<' => in_tag = true,
+            '>' => {
+                in_tag = false;
+                out.push(' ');
+            }
+            _ if !in_tag => out.push(c),
+            _ => {}
+        }
+    }
+    out.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+/// Whether `prefix` is bound to the namespace `ns` somewhere in the packet, with
+/// either kind of quote.
+pub fn prefix_bound(text: &str, prefix: &str, ns: &str) -> bool {
+    text.contains(&format!("xmlns:{prefix}=\"{ns}\""))
+        || text.contains(&format!("xmlns:{prefix}='{ns}'"))
+}
+
+/// Find every `DigitalSourceType` property in an XMP packet, in any prefix and form.
+pub fn find_dst(text: &str) -> Vec<DstValue> {
+    find_property(text, "DigitalSourceType", false)
+        .into_iter()
+        .map(|v| DstValue {
+            code: code_of(&v.raw),
+            namespace_bound: prefix_bound(text, &v.prefix, IPTC_EXT_NS),
+            prefix: v.prefix,
+            raw: v.raw,
+            form: v.form,
+        })
+        .collect()
 }
 
 /// Read a single- or double-quoted string at the start of `s`.
@@ -913,6 +984,19 @@ mod tests {
             full(b"meta", 0, &meta),
         ]
         .concat()
+    }
+
+    #[test]
+    fn a_namespace_prefix_named_like_the_property_is_not_a_value() {
+        let x = "<rdf:Description xmlns:Flag='urn:vendor' xmlns:q=\"urn:q\"><Flag:Flag>Yes</Flag:Flag>\
+                 </rdf:Description>";
+        let found = find_property(x, "Flag", false);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert_eq!(
+            (found[0].prefix.as_str(), found[0].raw.as_str()),
+            ("Flag", "Yes")
+        );
+        assert!(prefix_bound(x, "Flag", "urn:vendor") && prefix_bound(x, "q", "urn:q"));
     }
 
     #[test]
