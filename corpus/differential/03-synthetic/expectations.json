@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-11T06:35:35Z",
+  "collected_at": "2026-11-11T14:08:30Z",
   "conformance_rubrics": null,
   "corpus": "corpus/differential/03-synthetic",
   "files": {
@@ -10,6 +10,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -37,6 +38,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "TrainedAlgorithmicMedia"
         ],
@@ -59,11 +61,408 @@
       "sha256": "9d11dfd9b1f5dfab8656b683fd19f500e9c382c58ce046efdf32f208abb9c90b",
       "size_bytes": 10553
     },
+    "dm_allowed.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-ALLOWED"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-ALLOWED"
+          ],
+          "status": "absent"
+        },
+        "digital_source_type": [],
+        "note": "allowed: no reservation",
+        "status": "absent"
+      },
+      "sha256": "a0872c001604e13528ddfdf545f529add707093d8a06d682d166ddd4ae3ec162",
+      "size_bytes": 28263
+    },
+    "dm_and_generative.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED-AIMLTRAINING"
+        ],
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED-AIMLTRAINING"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "note": "reservation next to a generative marking: each source answers for itself",
+        "status": "present"
+      },
+      "sha256": "eefa1088bc184b3a208d6680918591f4189982a7e922aa3694acf5a1ef8ae1e1",
+      "size_bytes": 10753
+    },
+    "dm_attribute.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "attribute (shorthand) form",
+        "status": "absent"
+      },
+      "sha256": "37a1050ef9d9f4030aa479b608d4b08ff7cd29ed3971d17d3dd67d984abfadc9",
+      "size_bytes": 10449
+    },
+    "dm_doubled_uri.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "http://ns.useplus.org/ldf/vocab/DMI-PROHIBITED"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "http://ns.useplus.org/ldf/vocab/DMI-PROHIBITED"
+          ],
+          "status": "inconclusive"
+        },
+        "digital_source_type": [],
+        "note": "URI written twice by ExifTool: not in the vocabulary",
+        "status": "absent"
+      },
+      "sha256": "dfef7d2f6e23759cd714a77caf9a60217e810d7610ee57febbc7a10bc8119c73",
+      "size_bytes": 10517
+    },
+    "dm_extended_xmp.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "ExtendedXMP: packet over 64 KiB",
+        "status": "absent"
+      },
+      "sha256": "69f076ed32381d71653f75c8d93bf8181a0f2139bc6a5b3122e1535a8bea3f40",
+      "size_bytes": 81197
+    },
+    "dm_prohibited.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "prohibited, URI form (element)",
+        "status": "absent"
+      },
+      "sha256": "3ddc831e6d4baee8f2a9651e44244fc37689174557c63172e78a196a86697104",
+      "size_bytes": 10485
+    },
+    "dm_prohibited_aiml.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED-AIMLTRAINING"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED-AIMLTRAINING"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "prohibited for AI/ML training, PNG",
+        "status": "absent"
+      },
+      "sha256": "542c1847cd6c469ae33cb9224eedea296b957769fce263ccca902fcdb330099f",
+      "size_bytes": 28279
+    },
+    "dm_prohibited_genai.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED-GENAIMLTRAINING"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED-GENAIMLTRAINING"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "prohibited for generative AI/ML training, WebP",
+        "status": "absent"
+      },
+      "sha256": "b7b364286cee1cf9bb8467c0fb4374466ca192a650d666c38b592a341074a838",
+      "size_bytes": 9628
+    },
+    "dm_prohibited_search.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED-EXCEPTSEARCHENGINEINDEXING"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED-EXCEPTSEARCHENGINEINDEXING"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "prohibited except for search engine indexing",
+        "status": "absent"
+      },
+      "sha256": "ec64f601c345fe7c016db95f756607250e4f787d9c4a5dd47edaf26e1b1884df",
+      "size_bytes": 10512
+    },
+    "dm_see_constraint.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED-SEECONSTRAINT"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED-SEECONSTRAINT"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "defers to the Other Constraints text, which is present",
+        "status": "absent"
+      },
+      "sha256": "d1e77f6a173bbd296f3eab9f5c50a904daf74ca1bdf819d9bc4e9520a70105eb",
+      "size_bytes": 10650
+    },
+    "dm_see_linked.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-PROHIBITED-SEELINKEDRIGHTSEXPR"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-PROHIBITED-SEELINKEDRIGHTSEXPR"
+          ],
+          "status": "present"
+        },
+        "digital_source_type": [],
+        "note": "defers to a linked rights expression, which is not read",
+        "status": "absent"
+      },
+      "sha256": "0e2dcdacc29631b7c1b852207462a333b138700c138ed8f9d06076e514aa7f18",
+      "size_bytes": 10505
+    },
+    "dm_unknown_term.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-ALLOWED-noaitraining"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-ALLOWED-noaitraining"
+          ],
+          "status": "inconclusive"
+        },
+        "digital_source_type": [],
+        "note": "a term from the 2023 draft that the published vocabulary dropped",
+        "status": "absent"
+      },
+      "sha256": "3d167754970535af8684c9d400bcc785405f75dc997b9569cf021134b909705a",
+      "size_bytes": 10495
+    },
+    "dm_unspecified.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [
+          "DMI-UNSPECIFIED"
+        ],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "data_mining": {
+          "codes": [
+            "DMI-UNSPECIFIED"
+          ],
+          "status": "absent"
+        },
+        "digital_source_type": [],
+        "note": "unspecified: no reservation",
+        "status": "absent"
+      },
+      "sha256": "a724d326607646539aaf52352ff715e1e6e66894ec69344ab05cc6d0cd5ef3c5",
+      "size_bytes": 9614
+    },
     "extended_xmp.jpg": {
       "c2patool": {
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -91,6 +490,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": null,
@@ -112,6 +512,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -139,6 +540,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -166,6 +568,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
@@ -193,6 +596,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -220,6 +624,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "digitalCapture"
         ],
@@ -247,6 +652,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -274,6 +680,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": "SynthCam",
@@ -295,6 +702,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": null,
@@ -316,6 +724,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": null,
@@ -337,6 +746,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": null,
@@ -358,6 +768,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "algorithmicMedia"
         ],
@@ -385,6 +796,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "algorithmicallyEnhanced"
         ],
@@ -412,6 +824,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeCapture"
         ],
@@ -439,6 +852,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeSynthetic"
         ],
@@ -466,6 +880,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
@@ -493,6 +908,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "computationalCapture"
         ],
@@ -520,6 +936,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "dataDrivenMedia"
         ],
@@ -547,6 +964,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "digitalArt"
         ],
@@ -574,6 +992,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "digitalCapture"
         ],
@@ -601,6 +1020,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "digitalCreation"
         ],
@@ -628,6 +1048,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "humanEdits"
         ],
@@ -655,6 +1076,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "minorHumanEdits"
         ],
@@ -682,6 +1104,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "negativeFilm"
         ],
@@ -709,6 +1132,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "positiveFilm"
         ],
@@ -736,6 +1160,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "print"
         ],
@@ -763,6 +1188,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "screenCapture"
         ],
@@ -790,6 +1216,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -817,6 +1244,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "virtualRecording"
         ],
@@ -844,6 +1272,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -871,6 +1300,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
@@ -898,6 +1328,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "syntheticFoo"
         ],
@@ -925,6 +1356,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": null,
@@ -946,6 +1378,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": null,
@@ -967,6 +1400,7 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "iim_originating_program": null,

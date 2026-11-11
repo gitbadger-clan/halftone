@@ -359,6 +359,20 @@ fn compare_file(
                 show(opt_str(&ex["iim_program_version"])),
                 show(iim.and_then(|i| opt_str(&i["program_version"]))),
             );
+            // data_mining_reservation vs ExifTool's reading of plus:DataMining.
+            // Ground truth collected before the collector recorded the field has no
+            // such key and is not compared; a re-collection adds it.
+            if ex.get("data_mining").is_some() {
+                let dm = evidence(insp, "data_mining_reservation");
+                push(
+                    "xmp.data_mining",
+                    show(str_set(&ex["data_mining"])),
+                    show(
+                        dm.map(|e| str_set(&e["details"]["data_mining"]))
+                            .unwrap_or_default(),
+                    ),
+                );
+            }
         }
     }
 
@@ -379,6 +393,25 @@ fn compare_file(
             show(str_set(&want["digital_source_type"])),
             show(str_set(&row["marking"]["digital_source_type"])),
         );
+        // The `dm_*` cases also state what data_mining_reservation must say.
+        let want_dm = &want["data_mining"];
+        if want_dm.is_object() {
+            let dm = evidence(insp, "data_mining_reservation");
+            push(
+                "intended.data_mining.status",
+                want_dm["status"].as_str().unwrap_or("").to_string(),
+                dm.map(|e| e["status"].as_str().unwrap_or("").to_string())
+                    .unwrap_or_else(|| "missing".into()),
+            );
+            push(
+                "intended.data_mining.codes",
+                show(str_set(&want_dm["codes"])),
+                show(
+                    dm.map(|e| str_set(&e["details"]["data_mining"]))
+                        .unwrap_or_default(),
+                ),
+            );
+        }
     }
 
     // ---- manifest: c2pa vs c2patool ---------------------------------------------

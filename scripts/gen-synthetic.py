@@ -6,19 +6,21 @@
 # [tool.uv]
 # exclude-newer = "14 days"  # only releases at least two weeks old
 # ///
-"""Stratum 03: synthetic DigitalSourceType edge cases, written with ExifTool onto plain
-base images, into corpus/differential/03-synthetic.
+"""Stratum 03: synthetic DigitalSourceType and Data Mining edge cases, written with
+ExifTool onto plain base images, into corpus/differential/03-synthetic.
 
 Every file's intended Halftone verdict is known by construction and recorded in
 cases.json next to the files; scripts/differential.py merges it into
 expectations.json as `halftone`, and the differential test asserts it alongside the
 ExifTool/c2patool comparison. The stratum is matched by file name, not hash.
+`status` and `digital_source_type` are what marking_metadata must say; the
+`data_mining` object, on the `dm_*` cases, is what data_mining_reservation must say.
 
 Bytes do not depend on the ExifTool that wrote them. By default ExifTool stamps every
 XMP packet with its own version (x:xmptk='Image::ExifTool 13.59'), which made the
 files, and the sha256s recorded for them, differ between a Mac, the reference image
 and the CI runner. Every case that writes XMP sets that field to a constant instead
-(TOOLKIT). Measured with ExifTool 12.76, 13.55 and 13.59: all 38 files come out
+(TOOLKIT). Measured with ExifTool 12.76, 13.55 and 13.59: all 51 files come out
 byte-identical. A case that writes no XMP gets no toolkit either, so `plain` and
 `iim_only` still carry no packet at all.
 
@@ -121,6 +123,55 @@ def cases(pad: Path) -> list[tuple[str, str, str, str | None, str, list[str]]]:
     return out
 
 
+DATA_MINING = "-XMP-plus:DataMining#"  # `#`: the raw code; ExifTool adds the vocabulary URI
+PLUS_VOCAB = "http://ns.useplus.org/ldf/vocab/"
+
+
+def data_mining_cases(pad: Path) -> list[tuple[str, str, str, list[str], str, list[str], str, str | None]]:
+    """(stem, ext, intended data_mining_reservation status, its term codes, note,
+    exiftool args, intended marking status, marking term). The IPTC / PLUS Data
+    Mining property: every prohibiting kind, the two that prohibit nothing, the
+    spellings ExifTool can produce that are not in the vocabulary, the containers and
+    forms, and the property next to a generative marking (two sources, two answers)."""
+    t = f"{SCHEME}/trainedAlgorithmicMedia"
+
+    def case(stem, ext, status, codes, note, args, marking=("absent", None)):
+        return (stem, ext, status, codes, note, args, *marking)
+
+    def one(stem, ext, status, code, note, extra=()):
+        return case(stem, ext, status, [code], note, [*extra, f"{DATA_MINING}={code}"])
+
+    return [
+        one("dm_prohibited", "jpg", "present", "DMI-PROHIBITED", "prohibited, URI form (element)"),
+        one("dm_prohibited_aiml", "png", "present", "DMI-PROHIBITED-AIMLTRAINING", "prohibited for AI/ML training, PNG"),
+        one("dm_prohibited_genai", "webp", "present", "DMI-PROHIBITED-GENAIMLTRAINING",
+            "prohibited for generative AI/ML training, WebP"),
+        one("dm_prohibited_search", "jpg", "present", "DMI-PROHIBITED-EXCEPTSEARCHENGINEINDEXING",
+            "prohibited except for search engine indexing"),
+        one("dm_see_constraint", "jpg", "present", "DMI-PROHIBITED-SEECONSTRAINT",
+            "defers to the Other Constraints text, which is present",
+            ["-XMP-plus:OtherConstraints=Research use only, ask first"]),
+        one("dm_see_linked", "jpg", "present", "DMI-PROHIBITED-SEELINKEDRIGHTSEXPR",
+            "defers to a linked rights expression, which is not read"),
+        one("dm_allowed", "png", "absent", "DMI-ALLOWED", "allowed: no reservation"),
+        one("dm_unspecified", "webp", "absent", "DMI-UNSPECIFIED", "unspecified: no reservation"),
+        one("dm_attribute", "jpg", "present", "DMI-PROHIBITED", "attribute (shorthand) form", ["-api", "XMPShorthand=1"]),
+        one("dm_extended_xmp", "jpg", "present", "DMI-PROHIBITED", "ExtendedXMP: packet over 64 KiB",
+            [f"-XMP-dc:Description<={pad}"]),
+        one("dm_unknown_term", "jpg", "inconclusive", "DMI-ALLOWED-noaitraining",
+            "a term from the 2023 draft that the published vocabulary dropped"),
+        # Given a full URI as the raw value, ExifTool prepends the vocabulary URI again
+        # and reads the result back as unknown; so does Halftone.
+        case("dm_doubled_uri", "jpg", "inconclusive", [f"{PLUS_VOCAB}DMI-PROHIBITED"],
+             "URI written twice by ExifTool: not in the vocabulary",
+             [f"{DATA_MINING}={PLUS_VOCAB}DMI-PROHIBITED"]),
+        case("dm_and_generative", "jpg", "present", ["DMI-PROHIBITED-AIMLTRAINING"],
+             "reservation next to a generative marking: each source answers for itself",
+             [f"{DATA_MINING}=DMI-PROHIBITED-AIMLTRAINING", f"{DST}={t}"],
+             marking=("present", "trainedAlgorithmicMedia")),
+    ]
+
+
 def make_base() -> None:
     """96x96 noise from seed 0, saved as the three base images."""
     import numpy as np  # only needed the first time
@@ -182,14 +233,25 @@ def main(
     try:
         with ExifTool() as et:
             exiftool_version = et.version()
-            for name, ext, status, code, note, args in cases(pad):
+            def write(name: str, ext: str, args: list[str]) -> Path:
                 out = DEST / f"{name}.{ext}"
                 if any(a.startswith("-XMP") for a in args):
                     args = [*args, TOOLKIT]
                 _, err = et.run("-q", "-q", "-o", str(out), *args, str(BASE / f"base.{ext}"))
                 if not out.is_file() or "Error" in err:
                     die(f"exiftool failed for {name}: {err.strip() or 'no output file'}", 1)
+                return out
+
+            for name, ext, status, code, note, args in cases(pad):
+                out = write(name, ext, args)
                 rows.append((out.name, {"status": status, "digital_source_type": [code] if code else [], "note": note}))
+            # After the marking cases, so their lines in cases.json stay where they were.
+            for name, ext, dm_status, dm_codes, note, args, status, code in data_mining_cases(pad):
+                out = write(name, ext, args)
+                rows.append((out.name, {
+                    "status": status, "digital_source_type": [code] if code else [],
+                    "data_mining": {"status": dm_status, "codes": dm_codes}, "note": note,
+                }))
     finally:
         pad.unlink(missing_ok=True)
     (DEST / "cases.json").write_text(cases_json(rows))

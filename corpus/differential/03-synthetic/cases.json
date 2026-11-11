@@ -36,5 +36,18 @@
   "iim_and_capture.jpg": {"status": "absent", "digital_source_type": ["digitalCapture"], "note": "IIM plus capture XMP"},
   "plain.jpg": {"status": "absent", "digital_source_type": [], "note": "no metadata at all"},
   "plain.png": {"status": "absent", "digital_source_type": [], "note": "no metadata at all"},
-  "plain.webp": {"status": "absent", "digital_source_type": [], "note": "no metadata at all"}
+  "plain.webp": {"status": "absent", "digital_source_type": [], "note": "no metadata at all"},
+  "dm_prohibited.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED"]}, "note": "prohibited, URI form (element)"},
+  "dm_prohibited_aiml.png": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED-AIMLTRAINING"]}, "note": "prohibited for AI/ML training, PNG"},
+  "dm_prohibited_genai.webp": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED-GENAIMLTRAINING"]}, "note": "prohibited for generative AI/ML training, WebP"},
+  "dm_prohibited_search.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED-EXCEPTSEARCHENGINEINDEXING"]}, "note": "prohibited except for search engine indexing"},
+  "dm_see_constraint.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED-SEECONSTRAINT"]}, "note": "defers to the Other Constraints text, which is present"},
+  "dm_see_linked.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED-SEELINKEDRIGHTSEXPR"]}, "note": "defers to a linked rights expression, which is not read"},
+  "dm_allowed.png": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "absent", "codes": ["DMI-ALLOWED"]}, "note": "allowed: no reservation"},
+  "dm_unspecified.webp": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "absent", "codes": ["DMI-UNSPECIFIED"]}, "note": "unspecified: no reservation"},
+  "dm_attribute.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED"]}, "note": "attribute (shorthand) form"},
+  "dm_extended_xmp.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED"]}, "note": "ExtendedXMP: packet over 64 KiB"},
+  "dm_unknown_term.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "inconclusive", "codes": ["DMI-ALLOWED-noaitraining"]}, "note": "a term from the 2023 draft that the published vocabulary dropped"},
+  "dm_doubled_uri.jpg": {"status": "absent", "digital_source_type": [], "data_mining": {"status": "inconclusive", "codes": ["http://ns.useplus.org/ldf/vocab/DMI-PROHIBITED"]}, "note": "URI written twice by ExifTool: not in the vocabulary"},
+  "dm_and_generative.jpg": {"status": "present", "digital_source_type": ["trainedAlgorithmicMedia"], "data_mining": {"status": "present", "codes": ["DMI-PROHIBITED-AIMLTRAINING"]}, "note": "reservation next to a generative marking: each source answers for itself"}
 }

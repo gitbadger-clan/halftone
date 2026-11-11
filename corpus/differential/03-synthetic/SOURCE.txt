@@ -1,5 +1,5 @@
 generator: scripts/gen-synthetic.py
-files: 38 (cases.json holds the intended verdicts)
+files: 51 (cases.json holds the intended verdicts)
 exiftool: 13.59
 xmp toolkit: Halftone gen-synthetic (in place of ExifTool's version stamp, so the
   files' bytes do not depend on the ExifTool version above; DIFFERENTIAL.md D-020)

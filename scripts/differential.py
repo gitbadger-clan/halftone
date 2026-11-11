@@ -228,7 +228,8 @@ def tool_version(cmd: list[str]) -> str | None:
 
 
 def exiftool_facts(p: Path) -> dict:
-    """XMP presence, XMP DigitalSourceType values, IIM program fields, MIME."""
+    """XMP presence, XMP DigitalSourceType and Data Mining values, IIM program fields,
+    MIME."""
     rc, out, err = run([
         "exiftool", "-j", "-G1", "-a", "-struct", "-n",
         "-XMP:all", "-IPTC:OriginatingProgram", "-IPTC:ProgramVersion",
@@ -249,12 +250,22 @@ def exiftool_facts(p: Path) -> dict:
         c = code_of(str(v))
         if c not in codes:
             codes.append(c)
+    # plus:DataMining, as ExifTool reads it with -n: the vocabulary URI prefix removed
+    # once, nothing else interpreted (`DMI-PROHIBITED`; an unknown or doubled URI
+    # stays as it is). Distinct values, in file order.
+    data_mining: list[str] = []
+    for k in xmp_keys:
+        if k.split(":", 1)[-1] == "DataMining":
+            for v in d[k] if isinstance(d[k], list) else [d[k]]:
+                if str(v) not in data_mining:
+                    data_mining.append(str(v))
     return {
         "mime": d.get("File:MIMEType"),
         "xmp_present": bool(xmp_keys),
         "xmp_tag_count": len(xmp_keys),
         "digital_source_type_raw": [str(v) for v in dst_raw],
         "digital_source_type": codes,
+        "data_mining": data_mining,
         "iim_originating_program": d.get("IPTC:OriginatingProgram"),
         "iim_program_version": (
             str(d["IPTC:ProgramVersion"]) if "IPTC:ProgramVersion" in d else None
