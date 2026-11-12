@@ -14,13 +14,16 @@ cases.json next to the files; scripts/differential.py merges it into
 expectations.json as `halftone`, and the differential test asserts it alongside the
 ExifTool/c2patool comparison. The stratum is matched by file name, not hash.
 `status` and `digital_source_type` are what marking_metadata must say; the
-`data_mining` object, on the `dm_*` cases, is what data_mining_reservation must say.
+`data_mining` object, on the `dm_*` cases, is what data_mining_reservation must say;
+`vendor_ai`, `rights` and `identifiers`, on the `va_*`, `rs_*` and `id_*` cases, are
+what vendor_ai_flag, rights_statements and embedded_identifiers must say. Every name,
+address and number in those cases is invented.
 
 Bytes do not depend on the ExifTool that wrote them. By default ExifTool stamps every
 XMP packet with its own version (x:xmptk='Image::ExifTool 13.59'), which made the
 files, and the sha256s recorded for them, differ between a Mac, the reference image
 and the CI runner. Every case that writes XMP sets that field to a constant instead
-(TOOLKIT). Measured with ExifTool 12.76, 13.55 and 13.59: all 51 files come out
+(TOOLKIT). Measured with ExifTool 12.76 and 13.59: all 63 files come out
 byte-identical. A case that writes no XMP gets no toolkit either, so `plain` and
 `iim_only` still carry no packet at all.
 
@@ -172,6 +175,107 @@ def data_mining_cases(pad: Path) -> list[tuple[str, str, str, list[str], str, li
     ]
 
 
+def packet(xmlns: str, body: str) -> str:
+    """A whole XMP packet, for properties ExifTool cannot write by name (a vendor's own
+    namespace). Written into the file as a block (`-xmp<=`), byte for byte."""
+    return ("<?xpacket begin='\ufeff' id='W5M0MpCehiHzreSzNTczkc9d'?>\n"
+            "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Halftone gen-synthetic'>\n"
+            "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n"
+            f" <rdf:Description rdf:about=''\n  {xmlns}>\n{body}\n </rdf:Description>\n"
+            "</rdf:RDF>\n</x:xmpmeta>\n<?xpacket end='w'?>")
+
+
+# The shape measured on a design tool's exports: its own yes/no AI field (the prefix
+# has the field's name), an ads record with a JSON blob, an author in the PDF namespace.
+# Every value is invented.
+DESIGN_TOOL_NS = ("xmlns:Attrib='http://ns.attribution.com/ads/1.0/'\n  "
+                  "xmlns:pdf='http://ns.adobe.com/pdf/1.3/'\n  "
+                  "xmlns:ContainsAiGeneratedContent='https://canva.com/export'")
+
+
+def design_tool_packet(flag: str, with_account: bool) -> str:
+    account = ("""  <Attrib:Ads>
+   <rdf:Seq>
+    <rdf:li rdf:parseType='Resource'>
+     <Attrib:Created>2026-01-02</Attrib:Created>
+     <Attrib:Data>{&quot;doc&quot;:&quot;DOC-EXAMPLE&quot;,&quot;user&quot;:&quot;USER-EXAMPLE&quot;}</Attrib:Data>
+     <Attrib:ExtId>00000000-1111-2222-3333-444444444444</Attrib:ExtId>
+     <Attrib:FbId>123456789012345</Attrib:FbId>
+     <Attrib:TouchType>2</Attrib:TouchType>
+    </rdf:li>
+   </rdf:Seq>
+  </Attrib:Ads>
+  <pdf:Author>Example Author</pdf:Author>
+""" if with_account else "")
+    return packet(DESIGN_TOOL_NS, account + "  <ContainsAiGeneratedContent:ContainsAiGeneratedContent>"
+                  f"{flag}</ContainsAiGeneratedContent:ContainsAiGeneratedContent>")
+
+
+def listing_cases() -> list[tuple[str, str, dict[str, str], str, list[str], str | None]]:
+    """(stem, ext, intended status per listing source, note, exiftool args, XMP packet
+    or None). Cases for vendor_ai_flag, rights_statements and embedded_identifiers; a
+    source not named in the dict must say `absent`. Every name, address and number is
+    invented, so the stratum's ground truth can record the values in the clear."""
+    notice = "(c) 2026 Ada Example"
+    long_credit = "Example Agency for International Photography"  # over IIM's 32 bytes
+
+    def case(stem, ext, intent, note, args, xmp=None):
+        return (stem, ext, intent, note, args, xmp)
+
+    return [
+        case("va_flag_yes", "png", {"vendor_ai": "present", "identifiers": "present"},
+             "a design tool's export: its AI flag says Yes, with its ads record and author",
+             [], design_tool_packet("Yes", True)),
+        case("va_flag_no", "jpg", {}, "the same flag saying No, nothing else", [],
+             design_tool_packet("No", False)),
+        case("va_google_credit", "png", {"vendor_ai": "present", "rights": "present"},
+             "the credit line that is a vendor's AI statement", ["-XMP-photoshop:Credit=Made with Google AI"]),
+        case("rs_full", "jpg", {"rights": "present"},
+             "notice in all three copies, terms, licence, licensor, credit cut at IIM's limit",
+             [f"-IFD0:Copyright={notice}", f"-IPTC:CopyrightNotice={notice}", f"-XMP-dc:Rights={notice}",
+              "-XMP-xmpRights:Marked=True", "-XMP-xmpRights:UsageTerms=Editorial use only",
+              "-XMP-xmpRights:WebStatement=https://example.org/licence",
+              f"-IPTC:Credit={long_credit}", f"-XMP-photoshop:Credit={long_credit}",
+              "-IPTC:Source=Example Wire", "-XMP-photoshop:Source=Example Wire",
+              "-XMP-plus:LicensorName=Example Licensing", "-XMP-plus:LicensorURL=https://example.org/l",
+              "-XMP-cc:License=https://creativecommons.org/licenses/by/4.0/"]),
+        case("rs_disagree", "jpg", {"rights": "inconclusive"},
+             "EXIF and XMP copies of the notice differ",
+             ["-IFD0:Copyright=(c) Example One", "-XMP-dc:Rights=(c) Example Two"]),
+        case("rs_instructions", "jpg", {"rights": "present"}, "an instruction to editors",
+             ["-IPTC:SpecialInstructions=Not for resale"]),
+        case("id_camera", "jpg", {"identifiers": "present"},
+             "a camera file: names, contact, serial, owner, position, document id; lens serial N/A",
+             ["-IFD0:Artist=Ada Example", "-IPTC:By-line=Ada Example", "-XMP-dc:Creator=Ada Example",
+              "-XMP-iptcCore:CreatorWorkEmail=ada@example.org", "-ExifIFD:SerialNumber=SN-0042",
+              "-ExifIFD:OwnerName=Ada Example", "-ExifIFD:LensSerialNumber=N/A",
+              "-GPS:GPSLatitude=47.3769", "-GPS:GPSLatitudeRef=N",
+              "-GPS:GPSLongitude=8.5417", "-GPS:GPSLongitudeRef=E",
+              "-XMP-xmpMM:DocumentID=xmp.did:00000000-0000-4000-8000-000000000001"]),
+        case("id_marker", "jpg", {"identifiers": "present"},
+             "a platform's tracking marker in the instructions field: an identifier, not an instruction",
+             ["-IPTC:SpecialInstructions=FBMD0a000a880100003e0200000000"]),
+        case("id_placeholder", "jpg", {}, "serial fields holding placeholders identify nobody",
+             ["-ExifIFD:LensSerialNumber=N/A", "-ExifIFD:SerialNumber=0000000"]),
+        case("id_png_text", "png", {"identifiers": "present", "rights": "present"},
+             "PNG text chunks: Author and Copyright",
+             ["-PNG:Author=Ada Example", f"-PNG:Copyright={notice}"]),
+    ]
+
+
+def encoded_cases() -> list[tuple[str, str, str, str, str]]:
+    """(stem, ext, packet encoding, Python codec, note). XMP packets in the encodings
+    the specification allows besides UTF-8, each declaring trainedAlgorithmicMedia: a
+    reader that assumes UTF-8 finds no property in them. ExifTool cannot be told to
+    write these, so the packet is built here and embedded as a block. UTF-32 is left to
+    Halftone's unit tests: ExifTool does not embed such a block, so there is no second
+    reading to compare with."""
+    return [
+        ("utf16be_packet", "jpg", "UTF-16 big-endian", "utf-16-be", "what older Adobe and ExifTool writers produced"),
+        ("utf16le_packet", "png", "UTF-16 little-endian", "utf-16-le", "the other byte order, in a PNG"),
+    ]
+
+
 def make_base() -> None:
     """96x96 noise from seed 0, saved as the three base images."""
     import numpy as np  # only needed the first time
@@ -245,15 +349,36 @@ def main(
             for name, ext, status, code, note, args in cases(pad):
                 out = write(name, ext, args)
                 rows.append((out.name, {"status": status, "digital_source_type": [code] if code else [], "note": note}))
-            # After the marking cases, so their lines in cases.json stay where they were.
+            # After the earlier cases, so their lines in cases.json stay where they were.
             for name, ext, dm_status, dm_codes, note, args, status, code in data_mining_cases(pad):
                 out = write(name, ext, args)
                 rows.append((out.name, {
                     "status": status, "digital_source_type": [code] if code else [],
                     "data_mining": {"status": dm_status, "codes": dm_codes}, "note": note,
                 }))
+            block = DEST / ".packet.xmp"
+            marked = packet("xmlns:Iptc4xmpExt='http://iptc.org/std/Iptc4xmpExt/2008-02-29/'",
+                            f"  <Iptc4xmpExt:DigitalSourceType>{SCHEME}/trainedAlgorithmicMedia"
+                            "</Iptc4xmpExt:DigitalSourceType>")
+            for name, ext, encoding, codec, note in encoded_cases():
+                block.write_bytes(marked.encode(codec))
+                out = write(name, ext, [f"-xmp<={block}"])
+                rows.append((out.name, {"status": "present", "digital_source_type": ["trainedAlgorithmicMedia"],
+                                        "note": f"XMP packet in {encoding}: {note}"}))
+            for name, ext, intent, note, args, xmp in listing_cases():
+                if xmp is not None:
+                    block.write_text(xmp)
+                    args = [*args, f"-xmp<={block}"]  # lower case: a block, no toolkit to set
+                out = write(name, ext, args)
+                block.unlink(missing_ok=True)
+                rows.append((out.name, {
+                    "status": "absent", "digital_source_type": [],
+                    **{k: {"status": intent.get(k, "absent")} for k in ("vendor_ai", "rights", "identifiers")},
+                    "note": note,
+                }))
     finally:
         pad.unlink(missing_ok=True)
+        (DEST / ".packet.xmp").unlink(missing_ok=True)
     (DEST / "cases.json").write_text(cases_json(rows))
     (DEST / "SOURCE.txt").write_text(source_txt(len(rows), exiftool_version))
     print(f"{len(rows)} files -> {DEST} (cases.json holds the intended verdicts)")

@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-06T06:27:08Z",
+  "collected_at": "2026-11-12T05:28:25Z",
   "conformance_rubrics": null,
   "corpus": "corpus/differential/02-exiftool",
   "files": {
@@ -10,8 +10,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -26,8 +35,22 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:GPS",
+              "value": "53.38285 N, 1.45668 W"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -42,8 +65,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -58,8 +90,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -74,8 +115,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -90,8 +140,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -106,8 +165,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -122,8 +190,79 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:Artist",
+              "value": "Phil Harvey"
+            },
+            {
+              "field": "iim:By-line",
+              "value": "Phil Harvey"
+            },
+            {
+              "field": "dc:creator",
+              "value": "Phil Harvey"
+            },
+            {
+              "field": "xmpMM:DocumentID",
+              "value": "adobe:docid:photoshop:4cc7b857-69d0-11d8-8ac4-bb59c92f0d9a"
+            }
+          ],
+          "rights": [
+            {
+              "field": "exif:Copyright",
+              "value": "Copyright 2004 Phil Harvey"
+            },
+            {
+              "field": "iim:CopyrightNotice",
+              "value": "Copyright 2004 Phil Harvey"
+            },
+            {
+              "field": "dc:rights",
+              "value": "Copyright 2004 Phil Harvey"
+            },
+            {
+              "field": "xmpRights:Marked",
+              "value": "False"
+            },
+            {
+              "field": "xmpRights:WebStatement",
+              "value": "https://exiftool.org/"
+            },
+            {
+              "field": "iim:Credit",
+              "value": "My Credit"
+            },
+            {
+              "field": "photoshop:Credit",
+              "value": "My Credit"
+            },
+            {
+              "field": "iim:Source",
+              "value": "I'm the source"
+            },
+            {
+              "field": "photoshop:Source",
+              "value": "I'm the source"
+            },
+            {
+              "field": "iim:SpecialInstructions",
+              "value": "What instructions"
+            },
+            {
+              "field": "photoshop:Instructions",
+              "value": "What instructions"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -138,8 +277,22 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "value": "PhilToo"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -154,8 +307,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -170,8 +332,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -186,8 +357,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -202,8 +382,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -218,8 +407,47 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:Artist",
+              "value": "Ian Britton"
+            },
+            {
+              "field": "iim:By-line",
+              "value": "Ian Britton"
+            },
+            {
+              "field": "exif:GPS",
+              "value": "54.98967 N, 1.91417 W"
+            }
+          ],
+          "rights": [
+            {
+              "field": "exif:Copyright",
+              "value": "ian Britton - FreeFoto.com"
+            },
+            {
+              "field": "iim:CopyrightNotice",
+              "value": "ian Britton - FreeFoto.com"
+            },
+            {
+              "field": "iim:Credit",
+              "value": "Ian Britton"
+            },
+            {
+              "field": "iim:Source",
+              "value": "FreeFoto.com"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -234,8 +462,26 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:BodySerialNumber",
+              "value": "C3221324657219"
+            },
+            {
+              "field": "exif:GPS",
+              "value": "40.65842 N, 73.99335 W"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -250,8 +496,22 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:GPS",
+              "value": "40.40007 N, 3.71465 W"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -266,8 +526,39 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:By-line",
+              "value": "Phil Harvey"
+            }
+          ],
+          "rights": [
+            {
+              "field": "iim:CopyrightNotice",
+              "value": "Copyright 2004 Phil Harvey"
+            },
+            {
+              "field": "iim:Credit",
+              "value": "My Credit"
+            },
+            {
+              "field": "iim:Source",
+              "value": "I'm the source"
+            },
+            {
+              "field": "iim:SpecialInstructions",
+              "value": "What instructions"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -282,8 +573,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -298,8 +598,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -314,8 +623,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -330,8 +648,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -346,8 +673,43 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:Artist",
+              "value": "RIGHT1of2-EXIF-Creator; RIGHT2of2-EXIF-Creator"
+            },
+            {
+              "field": "iim:By-line",
+              "value": "WRONG1of2-IPTC-Creator"
+            },
+            {
+              "field": "iim:By-line",
+              "value": "WRONG2of2-IPTC-Creator"
+            },
+            {
+              "field": "dc:creator",
+              "value": "WRONG1of2-XMP-Creator WRONG2of2-XMP-Creator"
+            }
+          ],
+          "rights": [
+            {
+              "field": "iim:CopyrightNotice",
+              "value": "WRONG-IPTC-Copyright"
+            },
+            {
+              "field": "dc:rights",
+              "value": "RIGHT-XMP-Copyright"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -362,8 +724,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -378,8 +749,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -394,8 +774,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -410,8 +799,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -426,8 +824,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -442,8 +849,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -458,8 +874,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -474,8 +899,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -490,8 +924,22 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "dc:creator",
+              "value": "Phil Harvey"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -506,8 +954,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -522,8 +979,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -538,8 +1004,63 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:By-line",
+              "value": "Photographer"
+            },
+            {
+              "field": "dc:creator",
+              "value": "Photographer"
+            }
+          ],
+          "rights": [
+            {
+              "field": "iim:CopyrightNotice",
+              "value": "Copyright"
+            },
+            {
+              "field": "dc:rights",
+              "value": "Copyright"
+            },
+            {
+              "field": "xmpRights:Marked",
+              "value": "True"
+            },
+            {
+              "field": "iim:Credit",
+              "value": "Credit"
+            },
+            {
+              "field": "photoshop:Credit",
+              "value": "Credit"
+            },
+            {
+              "field": "iim:Source",
+              "value": "Source"
+            },
+            {
+              "field": "photoshop:Source",
+              "value": "Source"
+            },
+            {
+              "field": "iim:SpecialInstructions",
+              "value": "Special ins"
+            },
+            {
+              "field": "photoshop:Instructions",
+              "value": "Special ins"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -554,8 +1075,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/heif",
@@ -570,8 +1100,22 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:Artist",
+              "value": "me"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/webp",
@@ -586,8 +1130,22 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [
+            {
+              "field": "exif:Copyright",
+              "value": "(C) by Caplio RR1 User"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -602,8 +1160,27 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:GPS",
+              "value": "42.03457 N, 0.50750 W"
+            }
+          ],
+          "rights": [
+            {
+              "field": "exif:Copyright",
+              "value": "(C) by Caplio Pro G3 User"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -618,8 +1195,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -634,8 +1220,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -650,8 +1245,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -666,8 +1270,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -682,8 +1295,17 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -698,8 +1320,59 @@
         "present": false
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:Artist",
+              "value": "Phil Harvey"
+            },
+            {
+              "field": "dc:creator",
+              "value": "Phil Harvey"
+            },
+            {
+              "field": "xmpMM:DocumentID",
+              "value": "adobe:docid:photoshop:4cc7b857-69d0-11d8-8ac4-bb59c92f0d9a"
+            }
+          ],
+          "rights": [
+            {
+              "field": "exif:Copyright",
+              "value": "Copyright 2004 Phil Harvey"
+            },
+            {
+              "field": "dc:rights",
+              "value": "Copyright 2004 Phil Harvey"
+            },
+            {
+              "field": "xmpRights:Marked",
+              "value": "False"
+            },
+            {
+              "field": "xmpRights:WebStatement",
+              "value": "https://exiftool.org/"
+            },
+            {
+              "field": "photoshop:Credit",
+              "value": "My Credit"
+            },
+            {
+              "field": "photoshop:Source",
+              "value": "I'm the source"
+            },
+            {
+              "field": "photoshop:Instructions",
+              "value": "What instructions"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",

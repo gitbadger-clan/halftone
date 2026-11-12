@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-10T15:49:33Z",
+  "collected_at": "2026-11-12T05:29:10Z",
   "conformance_rubrics": {
     "conformance-0.2-spec-2.4": "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9",
     "integrity": "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76"
@@ -20,8 +20,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "b7c25497db845c81a6c03737c819c22b"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "b4a58175a41fdf0a95817ae9311f1c5d"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -46,8 +64,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "1402b3ba572ccc35931a98d26ea5f7a4"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "25b8bca1e9794ffe1424f853fa0ba841"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -72,8 +108,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "caaed496303f8959ab6c0b32ce300d90"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "4240181db46c399f3d6cd184e41900f1"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -98,8 +152,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "d43e982778359401caf0cbef4ac33a28"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "b93a0cf609e430049acb1ed7a11a1c65"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -123,8 +195,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -149,8 +230,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "7f3dfc29bc173423bc195c3ae90a2faa"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "7885ee5be9f6191284984ebc7b49e967"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -175,8 +274,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "8d3f56bcb8782bc645d9bd512f7ca336"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "adf9a6bbe81d13ac08e05f59a8540922"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -201,8 +318,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "adcfcedeb31c8a12b46153c85a3fdb25"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "ab4e0c16e1ccb2d314c0f06ab59b0872"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -227,8 +362,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "8988a7349cb6fa6a17965d0a867a195c"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "c14814f549ab0c16243c3ecadb936801"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -252,8 +405,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -278,8 +440,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "9b9f3842f679be4cce90f15e5c4e830e"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "9e9afcac25a8d0caed8a476166df7c09"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -304,8 +484,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "aee4b48aa337862830c892eda88b74fa"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "5a9812298f5ccd532b9178df3f3f9757"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -330,8 +528,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "edf25d377f98ef7d899dd321a0920fe7"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "7df3712c89259673821070a0bc26840f"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -356,8 +572,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "6a0629a7211ef4e42be16c901d13d3ac"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "4d1ed8ee2fbe42c5c63502ea6a80385c"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -382,8 +616,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "55749a187b35ea45bbc3c6ff302926f7"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "dec6ca13bc4b31b1913a63861638f5e1"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -408,8 +660,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "375934102b1d5e742bdeb020ec51265c"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "8f23fa0da322b5b04e5b3028d72d135a"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -434,8 +704,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "a0fc7634a8b977ccba61592bda22929b"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "1433d78e02fe004cb2cf421861b922d7"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -460,8 +748,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "xmpMM:DocumentID",
+              "hmac": "315fef08d72a62ee1f0dfd3f2b1888ef"
+            },
+            {
+              "field": "xmpMM:InstanceID",
+              "hmac": "2a456734aebd20c2af9f8a3022760791"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -710,8 +1016,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -980,12 +1295,30 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [],
+          "rights": [
+            {
+              "field": "iim:Credit",
+              "hmac": "fb7d2cb896a0f661f682ed007f0ccd08"
+            },
+            {
+              "field": "photoshop:Credit",
+              "hmac": "a3eb9c1961634eedb940c15d7c7b42b9"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": true
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -1028,8 +1361,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/webp",
@@ -1053,8 +1395,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -1304,12 +1655,30 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [],
+          "rights": [
+            {
+              "field": "iim:Credit",
+              "hmac": "0220a700570ce34a9b156f4a2034bfc1"
+            },
+            {
+              "field": "photoshop:Credit",
+              "hmac": "05beb9350ad84de649d1f19434f9f708"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": true
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -1584,8 +1953,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -1628,8 +2006,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -1885,8 +2272,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -2160,8 +2556,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -2436,8 +2841,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -2712,8 +3126,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -2988,8 +3411,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -3264,8 +3696,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -3535,8 +3976,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "a49128ef8b32e121dc854ec78d20b99b"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "68b7f2f86b9b634739e2743dace1722d"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "13cf46f54e1eca53524a9f0f00566b70"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "657db2288cf64585d0246c679b21b441"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "df2f45be4682f13aacaecb6fa530c8f3"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -3805,8 +4278,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "75a3a4a52e9d957e5c82e0b4d7c384fd"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "f3d8322b142fc0fbe9bf649d4990f333"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "642f54f994b193fff453449ea3dab851"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "0be949f6449e854010857175d7c6de27"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "aa2017bbc6e74994f364e70b6115cc0c"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -4075,12 +4580,44 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "f867d748980a69ebfe92fe128958083e"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "31ac46852d7e1948f79a23e096813ec4"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "baad9c60d99d47b8b224ca9699811f35"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "5753474b14f8d499a94338a050e291ef"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "427e2462122308a74563ea943a93ce89"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -4122,8 +4659,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -4374,12 +4920,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "0ba949994801f2c379a30edfe2a96890"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "e2da9db3360508192ac08b4b91a80b59"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "b861860d1b3f27e7cc051441c118aa87"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "df27af639608e8d1e0a875e423c21ed4"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "114d99b9739f83b18467783b8d67361e"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "43066697f1e57d1517a3640e192eb09c"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -4648,12 +5230,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "23eec5396bb1aa9772a97a0286b12cf3"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "2fd11b2f400de31b62b47acef49abeef"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "a9a59fcf3b499b03a6915f0b5f785390"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "58b94911e8d56f78acd0af2dedf7c512"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "5739400d3480bdb379e41e04077ffe0d"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "b8f12fd9ba165a82a055ad0fe58f999c"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -4922,12 +5540,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "31da5c8dec38b400f4707c82bcc7c2cc"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "e05495b4591ad0a9c826078cdefb05e2"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "4f833a3f2fe5f1b8e089c9d0b419e706"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "d06f5364f53231b9b388c60b1613d25d"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "908d66aed7c7b1d1938b6205c422709c"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "54c55b4d18fec5e93abc7f2671362d47"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -5196,8 +5850,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "ca7dc01c19a3e15f5aa852601338eb7a"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "cc449cf7b9ec7812c7d2db3d351e081f"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "20e176754e039c35db80f9cd3bd69a60"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "4335e309c40e481094e467cf4d616851"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "660497f763a6024fbda0c9720ab24f50"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -5466,12 +6152,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "35d8367d52070e7caf1ba66439b0b4d4"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "1b4ab0464ad9ee2aaaba18ccba5d0180"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "22ed91647834ac4c0590cce32229c96b"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "48e9b5304fe0c8fa5d9f4abfaff91795"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "66fa5576acb1fcd7597097a5c4bf1e1c"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "b66e0c7d9357f1e6e9b715258c8c6e52"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -5740,12 +6462,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "46c689d974f8719c3beb24ae915228c4"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "0f0081c6e15d2850ebde785080519776"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "712630531511d278aab71843a660a6d4"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "c9038ef89f24f4f06fb7a25458f3d731"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "496944ff5b403b7f5515e070e9c50949"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "1a3ef02f4441f82346ddf5fe7266ae56"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -6014,12 +6772,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "38003b363cbff9e76cb9879910e6a9d7"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "44f44cdc2e16b82521da830e07786bbb"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "8af6363ce0732d24d827588eac237225"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "ad10c0a687adc3e5b323c8155dfd71ae"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "0f3af0653fff8ff7e4288a4f8654b518"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "a235c21af77b8b2d494a7e69ff455489"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -6288,8 +7082,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "90739152e0303a997eaded8bb2db62ee"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "f1cac681428e570b42b775015cbde708"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "63dc8a30489c19b63813c289e2ffc92a"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "61fd121ee55c8ddb761cdaf2b1aca9f0"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "6deec0e136c65593129e07f667bc24b6"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -6558,12 +7384,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "8ad658105740e283968a682ed68c7355"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "0d29ff66df93dc473a385207b92b6dc6"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "124b9501a0030adc4410bffff35f4c79"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "66f9f6b687ab6ac2e46d8e0ee9b2154c"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "df15a623af82f6e18cee66ea02433137"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "2b210f423e2edff57063f8c9d1b4e2b8"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -6832,12 +7694,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "f5a72bf545f4e38710b691a866af231d"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "4f4642f15326f8560f37a634e0ae908c"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "5d1e7390649b39ccadf31f9b9665453b"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "9da7dcdce3eb9cc82ed2787aad025822"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "f543b976e6245f7f3907070eb07425a7"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "b4dfc711f15e97f1b7020c2396fcd368"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -7106,12 +8004,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "2bf56ff2fe60039c5ff7b63d99e12ab5"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "b7f82d3005d0964bd6e179f1f1f08342"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "f1df815a07bfc0794bdf06ab4f34e833"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "43f28388c2887ec8fc604818df07c4c5"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "9f27a67ffa3fe26836f20557ad6ef538"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "f3086de4eef9e90057a050c3a87c0505"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -7380,12 +8314,48 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "compositeWithTrainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "pdf:Author",
+              "hmac": "a362fee34389481af480e7b7a0e11d90"
+            },
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "2bcf5518d928d41cdb93da2d813f600f"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "51a6012277a3b7a8e30a7e2f1dcfcc89"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "bab67498ef9499d7f7496683cc450d10"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "5c172773145090d44d7aa2d589481716"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "ffb24194b7b72ab575f52677d5079386"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -7654,8 +8624,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "a1550f1e501413cf982dcf244b1e02b4"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "2cf8bb1ecd92a10f70629c27777b49a1"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "84b1bd86cf1bbef06fb47c44eb47f1dc"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "bac551d47912e0246405e02b37d4b877"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "8ec32ea5e313f90bde83afb033adfbeb"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -7924,8 +8926,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "d5b26aad34d94bdef83a7d774ebc1189"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "959c8a7676bcfdd221f5f3fd6144bd28"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "91a9d203ea064aac81597e31d4cba27d"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "7d9ef5791125251586dabcc77a1cf9e0"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "5921822e97a2baac10e77edc0060857a"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -8194,8 +9228,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "c14dca55012462fc63c6fa65737666bf"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "c46319df1be0a58c7d37680c4845cc9a"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "7a524d97aec47e35ea705b19fd060c3b"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "e0c2f60d4138e9fa4e28a04aee92ad6a"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "152afdcae6e4fc531aadeff1c8dd3258"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -8464,8 +9530,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "a95035799de5fa5aba832a4a50755dee"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "479c7943a6b2b4f0036fc685bae76d94"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "e5a672c5af82354f6951bab475526789"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "b1872c736ac73ccd8c83be405454ac9b"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "b47ab678178f13096af7c3939d7af72b"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -8734,8 +9832,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "29174b7b2c87dc296e3fb218c439e4ff"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "a0fc0e57fe076be79cdd7876618de7dd"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "fab2e18c706f74a5d72213407e9b7d18"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "08334158ca7d8a381c3e631d503879c4"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "f417ee79e60b33d1525b0d8e24e7a538"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -9004,8 +10134,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "278076ba80779f2e1b957223aad1e7fb"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "71b2fd2d8c652213b2abe0d6eae4e468"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "7707b669078aeca129d6e05266b020de"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "7b2494c2f6a8cfa1591ff6b83b505283"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "3e58848c4fd9e9e0469bfb64a2f0c9ca"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -9274,8 +10436,40 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "3c9f5cb6626929f2ef13836b8afee2e4"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "49cf9e32f73e423661e82679fb9d5568"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "de5e2fd243d2b15f05d0e88a1302f1ba"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "e52a393c9b4c5f5837effac09e9c4e88"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "100a5ce80b683267aae5d20a6f544396"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -9542,8 +10736,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -9586,8 +10789,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -9836,8 +11048,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -10105,8 +11326,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -10374,8 +11604,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -10643,8 +11882,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -10912,8 +12160,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -11181,8 +12438,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -11450,8 +12716,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -11719,8 +12994,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -11989,8 +13273,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -12259,8 +13552,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -12560,8 +13862,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -12861,8 +14172,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -13162,8 +14482,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -13432,8 +14761,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -13702,8 +15040,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -13972,8 +15319,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -14242,8 +15598,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -14513,8 +15878,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -14799,8 +16173,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -14873,8 +16256,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -14898,8 +16290,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -15150,8 +16551,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -15452,8 +16862,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -15754,8 +17173,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -16056,8 +17484,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -16131,8 +17568,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -16383,8 +17829,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -16669,8 +18124,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -16955,8 +18419,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -17241,8 +18714,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -17527,8 +19009,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -17812,8 +19303,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -18081,8 +19581,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -18351,8 +19860,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -18652,8 +20170,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -18954,8 +20481,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -19270,8 +20806,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -19345,8 +20890,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -19370,8 +20924,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -19395,8 +20958,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -19646,8 +21218,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -19916,8 +21497,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -20186,8 +21776,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -20456,8 +22055,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -20726,8 +22334,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -20996,8 +22613,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -21297,8 +22923,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -21599,8 +23234,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -21884,8 +23528,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -21927,8 +23580,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -22179,8 +23841,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -22449,8 +24120,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -22492,8 +24172,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -22517,8 +24206,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/webp",
@@ -22542,8 +24240,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -22567,8 +24274,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -22819,8 +24535,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -23089,8 +24814,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -23359,8 +25093,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -23629,8 +25372,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -23899,8 +25651,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -23942,8 +25703,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -23967,8 +25737,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -23992,12 +25771,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "c54ca13176bf9dfe601ee88724108acb"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24021,12 +25814,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "8d0a74dbf1765d1b9ef74c8bcc4029c5"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24050,12 +25857,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "4083fec247bce0dc588cae8ba0627e8e"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24079,12 +25900,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "ca0d50b7e39030dbb784244c8451affe"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24108,12 +25943,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "a81222337107640fba1a6e333c317c01"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24137,12 +25986,21 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/webp",
@@ -24166,8 +26024,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -24191,12 +26058,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "c38a78e7a2c7428f7ca355b5fbb0cdc0"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24220,12 +26101,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "01e2e1bd2bc158d9c0ad8edecab31f45"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24249,12 +26144,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "d6db558ff3ebaf85340ed855cec2a7fe"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24278,12 +26187,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "396c4163d86d7c34aa6ed3bea2fd14bf"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24307,12 +26230,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "86df0a83d08a8b397492a35bf54e3d5a"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24336,12 +26273,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "5ba7ba2482eba4ab12b9d7519239ed10"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24365,12 +26316,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "8054e16a8b921552053c89aaad3b02d0"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24394,12 +26359,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "a090a6e05eb30a73fafd65810c366811"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24423,12 +26402,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "bf31f680fee4b1cfbbbd17a3de53f522"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24452,12 +26445,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "05ebd28431af6c91a6173ae009af10d5"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24481,12 +26488,21 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/webp",
@@ -24510,8 +26526,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -24535,12 +26560,26 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [
           "trainedAlgorithmicMedia"
         ],
         "digital_source_type_raw": [
           "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
         ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "f27d1d67164ed4ebf059cee967ac7838"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -24789,8 +26828,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -25058,8 +27106,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -25327,8 +27384,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -25596,8 +27662,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -25865,8 +27940,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -26134,8 +28218,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -26403,8 +28496,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -26672,8 +28774,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -26941,8 +29052,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -27210,8 +29330,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/webp",
@@ -27479,8 +29608,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -27523,8 +29661,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -27548,8 +29695,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -27573,8 +29729,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -27598,8 +29763,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -27623,8 +29797,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -27648,8 +29831,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -27673,8 +29865,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/png",
@@ -27698,8 +29899,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -27723,8 +29933,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -27755,5 +29974,9 @@
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
   "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
   "trust_config_sha256": "c1f1b183e854cd6f5784f0eb687fd5da691c51f8aec67dfd7b3e42368f840afa",
-  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem"
+  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem",
+  "value_fingerprints": {
+    "algorithm": "HMAC-SHA256/128 over file NUL field NUL value",
+    "key_id": "479d5f32"
+  }
 }

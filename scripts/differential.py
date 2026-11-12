@@ -228,12 +228,172 @@ def tool_version(cmd: list[str]) -> str | None:
     return out.strip().splitlines()[0] if rc == 0 and out.strip() else None
 
 
+PLUS_VOCAB = "http://ns.useplus.org/ldf/vocab/"
+VENDOR_CREDIT_PHRASES = ("made with google ai",)
+PLACEHOLDERS = {"", "n/a", "na", "none", "unknown", "null", "-", "--"}
+
+
+def tidy(v) -> str:
+    """A value in the form both sides compare: text, whitespace collapsed, at most 256
+    characters (then cut, with an ellipsis). The same rule Halftone applies."""
+    if isinstance(v, bool):
+        v = "True" if v else "False"
+    t = " ".join(str(v).split())
+    return t[:256] + "…" if len(t) > 256 else t
+
+
+def is_placeholder(v: str) -> bool:
+    t = v.strip().lower()
+    return t in PLACEHOLDERS or (t != "" and set(t) == {"0"})
+
+
+def each(v) -> list:
+    return [] if v is None else v if isinstance(v, list) else [v]
+
+
+def embedded_facts(d: dict) -> dict:
+    """What ExifTool reads from the fields Halftone's vendor_ai_flag, rights_statements
+    and embedded_identifiers sources list, under Halftone's field names. An independent
+    reading: ExifTool's parsers, its structure handling, its character decoding. Shared
+    with Halftone by design: which fields are listed, the tidy() form of a value, the
+    FBMD marker being an identifier and not an instruction, placeholders not being
+    identifiers, and GPS as decimal degrees with five places."""
+    rights: list[tuple[str, str]] = []
+    ids: list[tuple[str, str]] = []
+
+    def put(dst: list, field: str, value) -> None:
+        t = tidy(value)
+        if t and (field, t) not in dst and not (dst is ids and is_placeholder(t)):
+            dst.append((field, t))
+
+    def text(key: str) -> list:
+        """A simple, repeated or language-alternative value as a list of strings."""
+        out = []
+        for v in each(d.get(key)):
+            if isinstance(v, dict):  # lang-alt with several languages
+                v = v.get("x-default", next(iter(v.values()), ""))
+            out.append(v)
+        return out
+
+    def joined(key: str) -> list:
+        """A bag or sequence as Halftone reads it: one value, items space-separated."""
+        items = [tidy(v) for v in text(key)]
+        return [" ".join(i for i in items if i)] if items else []
+
+    def structs(key: str, member: str) -> list:
+        return [s[member] for s in each(d.get(key)) if isinstance(s, dict) and member in s]
+
+    # --- rights statements ---------------------------------------------------------
+    for field, values in (
+        ("exif:Copyright", text("IFD0:Copyright")),
+        ("iim:CopyrightNotice", text("IPTC:CopyrightNotice")),
+        ("dc:rights", text("XMP-dc:Rights")),
+        ("png:Copyright", text("PNG:Copyright")),
+        ("xmpRights:Owner", joined("XMP-xmpRights:Owner")),
+        ("plus:CopyrightOwnerName", structs("XMP-plus:CopyrightOwner", "CopyrightOwnerName")),
+        ("plus:LicensorName", structs("XMP-plus:Licensor", "LicensorName")),
+        ("plus:LicensorURL", structs("XMP-plus:Licensor", "LicensorURL")),
+        ("plus:LicensorEmail", structs("XMP-plus:Licensor", "LicensorEmail")),
+        ("plus:ImageSupplierName", structs("XMP-plus:ImageSupplier", "ImageSupplierName")),
+        ("xmpRights:UsageTerms", text("XMP-xmpRights:UsageTerms")),
+        ("xmpRights:Marked", text("XMP-xmpRights:Marked")),
+        ("xmpRights:Certificate", text("XMP-xmpRights:Certificate")),
+        ("plus:CreditLineRequired", text("XMP-plus:CreditLineRequired")),
+        ("plus:Reuse", text("XMP-plus:Reuse")),
+        ("png:Disclaimer", text("PNG:Disclaimer")),
+        ("xmpRights:WebStatement", text("XMP-xmpRights:WebStatement")),
+        ("cc:license", text("XMP-cc:License")),
+        ("cc:morePermissions", text("XMP-cc:MorePermissions")),
+        ("cc:attributionName", text("XMP-cc:AttributionName")),
+        ("cc:attributionURL", text("XMP-cc:AttributionURL")),
+        ("iim:Credit", text("IPTC:Credit")),
+        ("photoshop:Credit", text("XMP-photoshop:Credit")),
+        ("iim:Source", text("IPTC:Source")),
+        ("photoshop:Source", text("XMP-photoshop:Source")),
+        ("png:Source", text("PNG:Source")),
+        ("plus:ModelReleaseStatus", text("XMP-plus:ModelReleaseStatus")),
+        ("plus:PropertyReleaseStatus", text("XMP-plus:PropertyReleaseStatus")),
+        ("plus:MinorModelAgeDisclosure", text("XMP-plus:MinorModelAgeDisclosure")),
+        ("Iptc4xmpExt:LinkedRightsExpr", structs("XMP-iptcExt:LinkedEncRightsExpr", "LinkedRightsExpr")),
+        ("Iptc4xmpExt:RightsExprEncType",
+         structs("XMP-iptcExt:LinkedEncRightsExpr", "RightsExprEncType")
+         + structs("XMP-iptcExt:EmbdEncRightsExpr", "RightsExprEncType")),
+    ):
+        for v in values:
+            put(rights, field, v)
+
+    # --- identifiers ---------------------------------------------------------------
+    for field, values in (
+        ("exif:Artist", text("IFD0:Artist")),
+        ("iim:By-line", text("IPTC:By-line")),
+        ("dc:creator", joined("XMP-dc:Creator")),
+        ("pdf:Author", text("XMP-pdf:Author")),
+        ("png:Author", text("PNG:Author")),
+        *((f"Iptc4xmpCore:{m}", structs("XMP-iptcCore:CreatorContactInfo", m))
+          for m in ("CiEmailWork", "CiTelWork", "CiUrlWork", "CiAdrExtadr", "CiAdrCity",
+                    "CiAdrPcode", "CiAdrRegion", "CiAdrCtry")),
+        *((f"Attrib:{m}", structs("XMP-Attrib:Ads", m))
+          for m in ("ExtId", "FbId", "Data", "TouchType", "Created")),
+        ("exif:BodySerialNumber", text("ExifIFD:SerialNumber")),
+        ("exif:LensSerialNumber", text("ExifIFD:LensSerialNumber")),
+        ("exif:CameraOwnerName", text("ExifIFD:OwnerName")),
+        ("aux:SerialNumber", text("XMP-aux:SerialNumber")),
+        ("aux:OwnerName", text("XMP-aux:OwnerName")),
+        ("exifEX:BodySerialNumber", text("XMP-exifEX:SerialNumber")),
+        ("exifEX:LensSerialNumber", text("XMP-exifEX:LensSerialNumber")),
+        ("exifEX:CameraOwnerName", text("XMP-exifEX:OwnerName")),
+        ("xmpMM:DocumentID", text("XMP-xmpMM:DocumentID")),
+        ("xmpMM:OriginalDocumentID", text("XMP-xmpMM:OriginalDocumentID")),
+        ("xmpMM:InstanceID", text("XMP-xmpMM:InstanceID")),
+    ):
+        for v in values:
+            put(ids, field, v)
+
+    # The instructions field: a platform marker is a tracking record, anything else
+    # an instruction to editors.
+    for field, key in (("iim:SpecialInstructions", "IPTC:SpecialInstructions"),
+                       ("photoshop:Instructions", "XMP-photoshop:Instructions")):
+        for v in text(key):
+            put(ids if tidy(v).startswith("FBMD") else rights, field, v)
+
+    lat, lon = d.get("GPS:GPSLatitude"), d.get("GPS:GPSLongitude")
+    if isinstance(lat, (int, float)) and isinstance(lon, (int, float)) and (lat, lon) != (0, 0) \
+            and lat == lat and lon == lon:
+        def hemi(key: str) -> str:
+            r = str(d.get(key) or "")[:1]
+            return f" {r}" if r.isalpha() else ""
+        put(ids, "exif:GPS", f"{abs(lat):.5f}{hemi('GPS:GPSLatitudeRef')}, "
+                             f"{abs(lon):.5f}{hemi('GPS:GPSLongitudeRef')}")
+
+    flags = [tidy(v) for k, vs in d.items() if k.split(":", 1)[-1] == "ContainsAiGeneratedContent"
+             for v in each(vs)]
+    credit = any(tidy(v).lower() in VENDOR_CREDIT_PHRASES
+                 for v in text("XMP-photoshop:Credit") + text("IPTC:Credit"))
+    return {
+        "vendor_ai": {"contains_ai_generated_content": flags, "credit_phrase": credit},
+        "rights": [{"field": f, "value": v} for f, v in rights],
+        "identifiers": [{"field": f, "value": v} for f, v in ids],
+    }
+
+
+def fingerprinted(facts: dict, key: bytes, file: str) -> dict:
+    """The same facts with every rights and identifier value replaced by its keyed
+    fingerprint (lib/corpuskey.py). The vendor flag is not personal and stays."""
+    def fp(items: list) -> list:
+        return [{"field": i["field"], "hmac": corpuskey.fingerprint(key, file, i["field"], i["value"])}
+                for i in items]
+    return {**facts, "rights": fp(facts["rights"]), "identifiers": fp(facts["identifiers"])}
+
+
 def exiftool_facts(p: Path) -> dict:
     """XMP presence, XMP DigitalSourceType and Data Mining values, IIM program fields,
-    MIME."""
+    MIME, and the embedded fields the listing sources read (embedded_facts)."""
     rc, out, err = run([
         "exiftool", "-j", "-G1", "-a", "-struct", "-n",
-        "-XMP:all", "-IPTC:OriginatingProgram", "-IPTC:ProgramVersion",
+        "-XMP:all", "-IPTC:all", "-IFD0:Artist", "-IFD0:Copyright",
+        "-ExifIFD:SerialNumber", "-ExifIFD:LensSerialNumber", "-ExifIFD:OwnerName",
+        "-GPS:GPSLatitude", "-GPS:GPSLatitudeRef", "-GPS:GPSLongitude", "-GPS:GPSLongitudeRef",
+        "-PNG:Copyright", "-PNG:Author", "-PNG:Source", "-PNG:Disclaimer",
         "-File:MIMEType", str(p),
     ])
     if rc != 0 or not out.strip():
@@ -267,6 +427,7 @@ def exiftool_facts(p: Path) -> dict:
         "digital_source_type_raw": [str(v) for v in dst_raw],
         "digital_source_type": codes,
         "data_mining": data_mining,
+        "embedded": embedded_facts(d),
         "iim_originating_program": d.get("IPTC:OriginatingProgram"),
         "iim_program_version": (
             str(d["IPTC:ProgramVersion"]) if "IPTC:ProgramVersion" in d else None

@@ -694,3 +694,22 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   instead, with the sha256 of each base image.
 - Status: closed. The stratum is still matched by name: base images built on
   different platforms have not been compared.
+
+### D-021 · 2026-11-12 · IPTC IIM outside a JPEG is not read
+
+- Files: `04-generators/adobe-firefly__nano-banana-2__web-download__p1__1.png`,
+  `04-generators/aggregator-zimage__base__web-download__p1__1.png`.
+- Observed: ExifTool reads an IPTC credit from these PNGs; Halftone reads IIM only
+  from a JPEG's image-resource block. The XMP copy of the credit is read by both.
+- Status: open, known blind spot. The differential test names such fields on
+  non-JPEG files and does not count them.
+
+### D-022 · 2026-11-12 · UTF-16 XMP packets were read as empty
+
+- Files: `02-exiftool/ExifTool.jpg`, `02-exiftool/XMP.jpg`.
+- Observed: ExifTool read eleven rights and identifier fields from the XMP; Halftone
+  read none. The packets are UTF-16 and were decoded as UTF-8. The same reader
+  serves `marking_metadata`, so a marking in such a packet would have been missed.
+- Resolution: packets are decoded as UTF-8, UTF-16 or UTF-32 by byte-order mark or
+  byte pattern. Stratum 03 gained a marked UTF-16 case in each byte order.
+- Status: closed.

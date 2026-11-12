@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-06T06:28:07Z",
+  "collected_at": "2026-11-12T05:29:26Z",
   "conformance_rubrics": {
     "conformance-0.2-spec-2.4": "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9",
     "integrity": "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76"
@@ -19,8 +19,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -44,8 +53,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -69,8 +87,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -94,8 +121,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -119,8 +155,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -144,8 +189,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -169,8 +223,17 @@
         "error": "no result (exit 1)"
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -434,8 +497,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -718,8 +790,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -991,8 +1072,17 @@
         "present": true
       },
       "exiftool": {
+        "data_mining": [],
         "digital_source_type": [],
         "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
         "iim_originating_program": null,
         "iim_program_version": null,
         "mime": "image/jpeg",
@@ -1041,5 +1131,9 @@
   "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
   "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
   "trust_config_sha256": "c1f1b183e854cd6f5784f0eb687fd5da691c51f8aec67dfd7b3e42368f840afa",
-  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem"
+  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem",
+  "value_fingerprints": {
+    "algorithm": "HMAC-SHA256/128 over file NUL field NUL value",
+    "key_id": "479d5f32"
+  }
 }

@@ -225,6 +225,9 @@ fn run_ht(label: &str, files: &[PathBuf]) -> Vec<(Value, Value)> {
             .arg("inspect")
             .arg("--batch")
             .arg("--json")
+            // The rights and identifier values are compared with ExifTool's, in the
+            // clear or as keyed fingerprints; they never leave this process.
+            .arg("--reveal")
             .args(["--only", "manifest,container"])
             .args(chunk)
             .output()
@@ -286,6 +289,240 @@ fn evidence<'a>(insp: &'a Value, source: &str) -> Option<&'a Value> {
         .as_array()?
         .iter()
         .find(|e| e["source"]["name"] == source)
+}
+
+/// How a stratum's ground truth records the rights and identifier values ExifTool
+/// read, and whether this run can check them.
+enum Values {
+    /// In the clear: public and synthetic strata, whose values are nobody's secret.
+    Clear,
+    /// As keyed fingerprints (scripts/lib/corpuskey.py), and the key is on this machine.
+    Keyed(Vec<u8>),
+    /// As keyed fingerprints this run cannot check; the field names still are.
+    Unchecked(String),
+}
+
+/// HMAC-SHA256 (RFC 2104), spelled out so the test needs no further dependency.
+fn hmac_sha256(key: &[u8], msg: &[u8]) -> Vec<u8> {
+    use sha2::{Digest, Sha256};
+    let mut block = [0u8; 64];
+    if key.len() > 64 {
+        block[..32].copy_from_slice(&Sha256::digest(key));
+    } else {
+        block[..key.len()].copy_from_slice(key);
+    }
+    let pad = |x: u8| block.iter().map(|b| b ^ x).collect::<Vec<u8>>();
+    let inner = Sha256::new()
+        .chain_update(pad(0x36))
+        .chain_update(msg)
+        .finalize();
+    Sha256::new()
+        .chain_update(pad(0x5c))
+        .chain_update(inner)
+        .finalize()
+        .to_vec()
+}
+
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+/// The corpus key from `$HALFTONE_CORPUS_KEY` (hex) or `~/.config/halftone/corpus.key`.
+fn corpus_key() -> Option<Vec<u8>> {
+    let text = std::env::var("HALFTONE_CORPUS_KEY").ok().or_else(|| {
+        let home = std::env::var_os("HOME")?;
+        std::fs::read_to_string(Path::new(&home).join(".config/halftone/corpus.key")).ok()
+    })?;
+    let text = text.trim();
+    if text.len() != 64 || !text.is_ascii() {
+        return None;
+    }
+    (0..32)
+        .map(|i| u8::from_str_radix(&text[2 * i..2 * i + 2], 16).ok())
+        .collect()
+}
+
+/// The fingerprint the collector records for one value: see lib/corpuskey.py.
+fn fingerprint(key: &[u8], file: &str, field: &str, value: &str) -> String {
+    let msg = [file.as_bytes(), field.as_bytes(), value.as_bytes()].join(&0u8);
+    hex(&hmac_sha256(key, &msg)[..16])
+}
+
+fn values_mode(header: &Value) -> Values {
+    let Some(fp) = header.get("value_fingerprints") else {
+        return Values::Clear;
+    };
+    let Some(key) = corpus_key() else {
+        return Values::Unchecked(
+            "no corpus key on this machine ($HALFTONE_CORPUS_KEY or ~/.config/halftone/corpus.key)"
+                .into(),
+        );
+    };
+    let id = hex(&hmac_sha256(&key, b"halftone corpus key id")[..4]);
+    match fp["key_id"].as_str() {
+        Some(want) if want == id => Values::Keyed(key),
+        want => Values::Unchecked(format!(
+            "fingerprinted with key {}, this machine has key {id}: re-collect the stratum",
+            want.unwrap_or("?")
+        )),
+    }
+}
+
+/// PLUS fields whose value is a vocabulary term: ExifTool reports the code, the file
+/// holds the concept URI.
+const PLUS_TERMS: [&str; 5] = [
+    "plus:CreditLineRequired",
+    "plus:Reuse",
+    "plus:ModelReleaseStatus",
+    "plus:PropertyReleaseStatus",
+    "plus:MinorModelAgeDisclosure",
+];
+
+/// One side's list for a source, as comparable strings: `field=value` in the clear,
+/// `field#fingerprint` when keyed, `field` alone when the values cannot be checked.
+fn listed(items: &Value, file: &str, values: &Values, halftone: bool) -> Vec<String> {
+    let mut out: Vec<String> = items
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|i| {
+            let field = i["field"].as_str().unwrap_or("?");
+            let value = || {
+                let v = i["value"]
+                    .as_str()
+                    .unwrap_or("<no value: was ht run with --reveal?>");
+                match v.strip_prefix("http://ns.useplus.org/ldf/vocab/") {
+                    Some(code) if halftone && PLUS_TERMS.contains(&field) => code.to_string(),
+                    _ => v.to_string(),
+                }
+            };
+            match values {
+                Values::Clear => format!("{field}={}", value()),
+                Values::Keyed(key) if halftone => {
+                    format!("{field}#{}", fingerprint(key, file, field, &value()))
+                }
+                Values::Keyed(_) => format!("{field}#{}", i["hmac"].as_str().unwrap_or("?")),
+                Values::Unchecked(_) => field.to_string(),
+            }
+        })
+        .collect();
+    out.sort();
+    out
+}
+
+/// vendor_ai_flag, rights_statements and embedded_identifiers against ExifTool's
+/// reading of the same fields (`exiftool.embedded`, collected under Halftone's field
+/// names), and against the intended statuses of the synthetic cases. Ground truth
+/// collected before the collector recorded these fields has no such key and is not
+/// compared.
+fn compare_embedded(
+    name: &str,
+    file: &str,
+    exp: &Value,
+    insp: &Value,
+    values: &Values,
+    out: &mut Vec<Disagreement>,
+    known: &mut Vec<Known>,
+) {
+    let mut push = |field: &'static str, expected: String, got: String| {
+        if expected != got {
+            out.push(Disagreement {
+                file: name.to_string(),
+                field,
+                expected,
+                got,
+            });
+        }
+    };
+    let status = |source: &str| {
+        evidence(insp, source)
+            .map(|e| e["status"].as_str().unwrap_or("").to_string())
+            .unwrap_or_else(|| "missing".into())
+    };
+    let ex = &exp["exiftool"]["embedded"];
+    if ex.is_object() {
+        let flags = evidence(insp, "vendor_ai_flag").map(|e| &e["details"]["flags"]);
+        let of = |field: &str| -> Vec<String> {
+            let mut v: Vec<String> = flags
+                .and_then(|f| f.as_array())
+                .into_iter()
+                .flatten()
+                .filter(|f| f["field"] == field)
+                .filter_map(|f| f["value"].as_str().map(str::to_string))
+                .collect();
+            v.sort();
+            v
+        };
+        push(
+            "vendor_ai.flag",
+            show(str_set(&ex["vendor_ai"]["contains_ai_generated_content"])),
+            show({
+                let mut v = of("ContainsAiGeneratedContent");
+                v.dedup();
+                v
+            }),
+        );
+        push(
+            "vendor_ai.credit_phrase",
+            show(ex["vendor_ai"]["credit_phrase"].as_bool().unwrap_or(false)),
+            show(!of("Credit").is_empty()),
+        );
+        for (field, list, source, key) in [
+            (
+                "rights.statements",
+                "rights",
+                "rights_statements",
+                "statements",
+            ),
+            (
+                "identifiers",
+                "identifiers",
+                "embedded_identifiers",
+                "identifiers",
+            ),
+        ] {
+            let got = evidence(insp, source)
+                .map(|e| listed(&e["details"][key], file, values, true))
+                .unwrap_or_default();
+            let mut want = listed(&ex[list], file, values, false);
+            // D-021: Halftone reads IPTC IIM from a JPEG's image-resource block only.
+            // ExifTool also finds it in other containers (a PNG text profile); those
+            // fields are a known blind spot, named and not counted.
+            if exp["exiftool"]["mime"] != "image/jpeg" {
+                let missed: Vec<String> = want
+                    .iter()
+                    .filter(|w| w.starts_with("iim:") && !got.contains(w))
+                    .map(|w| w.split(['=', '#']).next().unwrap_or(w).to_string())
+                    .collect();
+                if !missed.is_empty() {
+                    want.retain(|w| !w.starts_with("iim:") || got.contains(w));
+                    known.push(Known {
+                        file: name.to_string(),
+                        entry: "D-021",
+                        detail: format!(
+                            "IPTC IIM outside a JPEG is not read: {}",
+                            missed.join(", ")
+                        ),
+                    });
+                }
+            }
+            push(field, show(want), show(got));
+        }
+    }
+    // The synthetic cases also state what each source must say.
+    for (field, key, source) in [
+        ("intended.vendor_ai.status", "vendor_ai", "vendor_ai_flag"),
+        ("intended.rights.status", "rights", "rights_statements"),
+        (
+            "intended.identifiers.status",
+            "identifiers",
+            "embedded_identifiers",
+        ),
+    ] {
+        if let Some(want) = exp["halftone"][key]["status"].as_str() {
+            push(field, want.to_string(), status(source));
+        }
+    }
 }
 
 /// Compare one file. `trust_exact` is whether c2patool ran with the same anchors as ht.
@@ -1073,6 +1310,7 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             .map(|f| f.to_string_lossy().into_owned())
             .unwrap_or_default();
         let collected_at = exp["collected_at"].as_str().unwrap_or("undated");
+        let values = values_mode(&exp);
         // Only hand ht files that exist: one missing file would abort the whole
         // batch. Missing ones are reported as rows instead.
         let mut dis = Vec::new();
@@ -1142,6 +1380,8 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                 Some((row, insp)) => {
                     compared += 1;
                     compare_file(&name, e, row, insp, trust_exact, &mut dis, &mut aged);
+                    let file = name.strip_prefix(&format!("{label}/")).unwrap_or(&name);
+                    compare_embedded(&name, file, e, insp, &values, &mut dis, &mut known);
                     compare_credentio(&name, e, insp, &mut dis, &mut known);
                     if let Some((entry, detail)) = rubric_exemption(e, insp) {
                         known.push(Known {
@@ -1192,6 +1432,15 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
             files_obj.len(),
             dis.len(),
         );
+        match &values {
+            Values::Clear => {}
+            Values::Keyed(_) => println!(
+                "differential[{label}]: rights and identifier values compared by keyed fingerprint"
+            ),
+            Values::Unchecked(why) => println!(
+                "differential[{label}]: rights and identifier values not compared, field names only: {why}"
+            ),
+        }
         if signal_files > 0 {
             println!(
                 "differential[{label}]: signals rubric compared on {signal_nodes} nodes in {signal_files} files"
@@ -1984,5 +2233,143 @@ mod rubric_exemption_rule {
         let invalid = json!({"credentio": {"failures": ["assertion.dataHash.mismatch"]},
                              "c2patool": {"validation_state": "Invalid"}});
         assert!(rubric_exemption(&invalid, &insp(json!({}))).is_none());
+    }
+}
+
+#[cfg(test)]
+mod embedded_values {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn hmac_matches_rfc_4231_and_the_collector() {
+        // RFC 4231, test case 2.
+        assert_eq!(
+            hex(&hmac_sha256(b"Jefe", b"what do ya want for nothing?")),
+            "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843"
+        );
+        // The same key, file, field and value through scripts/lib/corpuskey.py.
+        let key: Vec<u8> = (0u8..32).collect();
+        assert_eq!(
+            fingerprint(&key, "a.jpg", "exif:Artist", "Ada Example"),
+            "7f4df0ef231ec0d6e81df843981d45fa"
+        );
+        assert_eq!(
+            hex(&hmac_sha256(&key, b"halftone corpus key id")[..4]),
+            "f21ba467"
+        );
+    }
+
+    fn inspection(statements: Value, identifiers: Value, flags: Value) -> Value {
+        json!({ "evidence": [
+            { "source": { "name": "rights_statements" }, "status": "present",
+              "details": { "statements": statements } },
+            { "source": { "name": "embedded_identifiers" }, "status": "present",
+              "details": { "identifiers": identifiers } },
+            { "source": { "name": "vendor_ai_flag" }, "status": "present",
+              "details": { "flags": flags } },
+        ]})
+    }
+
+    #[test]
+    fn clear_and_keyed_values_agree_or_disagree_alike() {
+        let key: Vec<u8> = (0u8..32).collect();
+        let insp = inspection(
+            json!([{ "field": "plus:ModelReleaseStatus", "value": "http://ns.useplus.org/ldf/vocab/MR-NON" }]),
+            json!([{ "field": "exif:Artist", "value": "Ada Example" }]),
+            json!([{ "field": "ContainsAiGeneratedContent", "value": "Yes" }]),
+        );
+        let embedded = |artist: Value| {
+            json!({ "exiftool": { "mime": "image/jpeg", "embedded": {
+                "vendor_ai": { "contains_ai_generated_content": ["Yes"], "credit_phrase": false },
+                "rights": [{ "field": "plus:ModelReleaseStatus", "value": "MR-NON",
+                             "hmac": fingerprint(&key, "a.jpg", "plus:ModelReleaseStatus", "MR-NON") }],
+                "identifiers": [artist],
+            }}})
+        };
+        let run = |exp: &Value, values: &Values| {
+            let (mut out, mut known) = (Vec::new(), Vec::new());
+            compare_embedded("s/a.jpg", "a.jpg", exp, &insp, values, &mut out, &mut known);
+            assert!(known.is_empty());
+            out.into_iter().map(|d| d.field).collect::<Vec<_>>()
+        };
+        // In the clear.
+        assert!(
+            run(
+                &embedded(json!({ "field": "exif:Artist", "value": "Ada Example" })),
+                &Values::Clear
+            )
+            .is_empty()
+        );
+        assert_eq!(
+            run(
+                &embedded(json!({ "field": "exif:Artist", "value": "Someone Else" })),
+                &Values::Clear
+            ),
+            ["identifiers"]
+        );
+        // Keyed: the same verdicts from fingerprints alone.
+        let fp = |v: &str| json!({ "field": "exif:Artist", "hmac": fingerprint(&key, "a.jpg", "exif:Artist", v) });
+        assert!(run(&embedded(fp("Ada Example")), &Values::Keyed(key.clone())).is_empty());
+        assert_eq!(
+            run(&embedded(fp("Someone Else")), &Values::Keyed(key.clone())),
+            ["identifiers"]
+        );
+        // Without the key the field names are still compared, the values are not.
+        let unchecked = Values::Unchecked("no key".into());
+        assert!(run(&embedded(fp("Someone Else")), &unchecked).is_empty());
+        assert_eq!(
+            run(
+                &embedded(json!({ "field": "iim:By-line", "hmac": "00" })),
+                &unchecked
+            ),
+            ["identifiers"]
+        );
+        // Ground truth from before these fields: nothing to compare.
+        assert!(run(&json!({ "exiftool": {} }), &Values::Clear).is_empty());
+    }
+
+    #[test]
+    fn iim_outside_a_jpeg_is_a_known_blind_spot_not_a_disagreement() {
+        let insp = inspection(
+            json!([{ "field": "photoshop:Credit", "value": "Agency" }]),
+            json!([]),
+            json!([]),
+        );
+        let exp = |mime: &str| {
+            json!({ "exiftool": { "mime": mime, "embedded": {
+                "vendor_ai": { "contains_ai_generated_content": [], "credit_phrase": false },
+                "rights": [{ "field": "iim:Credit", "value": "Agency" },
+                           { "field": "photoshop:Credit", "value": "Agency" }],
+                "identifiers": [],
+            }}})
+        };
+        let run = |mime: &str| {
+            let (mut out, mut known) = (Vec::new(), Vec::new());
+            compare_embedded(
+                "s/a",
+                "a",
+                &exp(mime),
+                &insp,
+                &Values::Clear,
+                &mut out,
+                &mut known,
+            );
+            let known: Vec<(&str, String)> =
+                known.iter().map(|k| (k.entry, k.detail.clone())).collect();
+            (out.len(), known)
+        };
+        assert_eq!(
+            run("image/png"),
+            (
+                0,
+                vec![(
+                    "D-021",
+                    "IPTC IIM outside a JPEG is not read: iim:Credit".to_string()
+                )]
+            )
+        );
+        // In a JPEG the same miss is a real disagreement.
+        assert_eq!(run("image/jpeg"), (1, vec![]));
     }
 }
