@@ -52,10 +52,15 @@ import typer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from progress import clock  # noqa: E402
+import corpuskey  # noqa: E402
 from pins import PINS, drift  # noqa: E402
 from repo import CORPUS, ROOT, TRUST_DIR, C, die, need  # noqa: E402
 
 COLLECTOR = ROOT / "scripts" / "differential.py"
+# Strata anyone can rebuild from public sources. Every other stratum holds private
+# files, and its committed ground truth carries keyed fingerprints of the personal
+# values in them, never the values (lib/corpuskey.py).
+PUBLIC_STRATA = corpuskey.PUBLIC_STRATA
 MULTIPART = "08-multipart"
 STRATUM = re.compile(r"^\d\d-")
 EXAMPLES = """
@@ -158,8 +163,26 @@ def main(
                      help="Collect although this machine's tools differ from docker/references.env "
                           "(the headers will record them; not for committed strata)."),
     ] = False,
+    new_key: Annotated[
+        bool,
+        typer.Option("--new-key",
+                     help="Create the corpus key (~/.config/halftone/corpus.key) and exit. It "
+                          "fingerprints personal values in the private strata's ground truth."),
+    ] = False,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Show checks, inputs and commands, run nothing.")] = False,
 ) -> None:
+    if new_key:
+        try:
+            key = corpuskey.create()
+        except FileExistsError:
+            have = corpuskey.load()
+            ident = f" (key id {corpuskey.key_id(have)})" if have else ", but it is not a valid key"
+            die(f"{corpuskey.PATH} already exists{ident}. Move it away first if you mean to replace it: "
+                "every private stratum must then be re-collected.", 2)
+        print(f"{C.GREEN}ok{C.RESET}    {corpuskey.PATH} (key id {corpuskey.key_id(key)}), readable by you only")
+        print("      Fingerprints in the private strata's expectations.json depend on it. If it is lost,\n"
+              "      create a new one and re-collect those strata; nothing else is lost with it.")
+        raise typer.Exit(0)
     if strata:
         chosen = list(dict.fromkeys(resolve(s) for s in strata))
     else:
@@ -207,6 +230,14 @@ def main(
             die(f"no conformance-public checkout at {rub} (set RUBRICS, or pass --no-rubrics)", 2)
     need("uv", "git", "exiftool", "c2patool", "openssl")
 
+    # Private strata record keyed fingerprints of personal values; that needs the key.
+    private = [s.name for s, *_ in plan if s.name not in PUBLIC_STRATA]
+    if private and corpuskey.load() is None:
+        die(f"{', '.join(private)} hold private files: their ground truth records keyed fingerprints of "
+            f"personal values, which needs the corpus key (${corpuskey.ENV} or {corpuskey.PATH}).\n"
+            "Create one on this machine, outside the image:\n"
+            "  uv run scripts/collect.py --new-key", 2)
+
     # A header records the tools that wrote it. Tools that differ from the pins would
     # write headers that disagree with docker/references.env and with every stratum
     # collected in the image, so stop before anything is written.
@@ -245,6 +276,8 @@ def main(
             results.append((s.name, f"skipped, {len(gone)} of {recorded} recorded files missing", False, why))
             continue
         extra = (["--credentio", str(cred)] if use_cred else []) + (["--rubrics", str(rub)] if use_rub else [])
+        if s.name not in PUBLIC_STRATA:
+            extra.append("--fingerprint-values")
         cmd = ["uv", "run", rel(COLLECTOR), rel(s), *base, *extra]
         if dry_run:
             print(shlex.join(cmd))

@@ -46,6 +46,7 @@ from typing import Annotated
 import typer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+import corpuskey  # noqa: E402
 from models import ModelError, load_expectations  # noqa: E402
 from progress import clock  # noqa: E402
 from repo import CORPUS, ROOT, TRUST_DIR, C, die, need  # noqa: E402
@@ -162,6 +163,15 @@ def ground_truth(_: bool) -> str:
         if not exp.full_trust(eku):
             raise Fail(f"{p.relative_to(ROOT)}: collected under other trust inputs; "
                        f"re-collect with uv run scripts/references.py collect {p.parent.name}")
+        # A private stratum's ground truth is public: it may hold keyed fingerprints of
+        # the rights and identifier values ExifTool read, never the values themselves.
+        if p.parent.name not in corpuskey.PUBLIC_STRATA:
+            for name, entry in json.loads(p.read_text()).get("files", {}).items():
+                embedded = (entry.get("exiftool") or {}).get("embedded") or {}
+                if any("value" in item for part in ("rights", "identifiers") for item in embedded.get(part, [])):
+                    raise Fail(f"{p.relative_to(ROOT)}: {name} records rights or identifier values in the "
+                               f"clear. Do not commit it. Re-collect so it records keyed fingerprints: "
+                               f"uv run scripts/references.py collect {p.parent.name}")
     # The corpus rules are reviewed like code: they must be tracked, not ignored.
     rules = (GEN / "corpus-rules.json").relative_to(ROOT)
     if run("git", "check-ignore", "-q", str(rules)).returncode == 0:

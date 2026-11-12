@@ -89,6 +89,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from progress import step  # noqa: E402
+import corpuskey  # noqa: E402
 from pins import PINS, host_versions, output, same  # noqa: E402
 from repo import ROOT, C, die, need  # noqa: E402
 
@@ -257,9 +258,17 @@ def run_in(image: str, cmd: list[str]) -> int:
     for name in ("TERM", "NO_COLOR", "CI"):
         if name in os.environ:
             env += ["-e", name]
+    # The corpus key (lib/corpuskey.py) lives in this user's home, which the container
+    # does not see. Hand it over by name only: `-e NAME` takes the value from docker's
+    # own environment, so the key never appears on a command line.
+    child_env = dict(os.environ)
+    key = corpuskey.load()
+    if key is not None:
+        child_env[corpuskey.ENV] = key.hex()
+        env += ["-e", corpuskey.ENV]
     full = ["docker", "run", "--rm", "-i", *tty, "--user", f"{os.getuid()}:{os.getgid()}",
             "-v", f"{ROOT}:/work", "-w", "/work", "-v", f"{UV_VOLUME}:/cache", *env, image, *cmd]
-    return subprocess.run(full).returncode
+    return subprocess.run(full, env=child_env).returncode
 
 
 def built_image(pins: dict[str, str]) -> str:

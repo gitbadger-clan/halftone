@@ -176,6 +176,7 @@ inherit dependencies from a module it imports. The exception is `lib/models.py`
 | `c2p.py` | c2patool isolated from this machine's config, with the collector's settings |
 | `exiftool.py` | one long-running ExifTool process (`-stay_open`) for many commands |
 | `pins.py` | the reference pins and how each tool's version is read; `drift()` lists where this machine differs |
+| `corpuskey.py` | the corpus key and the keyed fingerprint that stands in for personal values in the private strata's ground truth |
 | `complete.py` | tab completion answered by the script itself: `serve(parser_or_app)`; self-test: `python scripts/lib/complete.py` |
 | `envstate.py` | whether bootstrap has prepared the scripts as they are now (read by `dev.py`) |
 | `progress.py` | `Progress` (count, percent, time left) and `step` (spinner) for long runs |
@@ -204,6 +205,32 @@ the host. Collect committed strata this way: run directly, `collect.py` checks t
 machine's ExifTool, OpenSSL, c2patool, Credentio and rubrics against the pins and
 collects nothing if one differs (`--allow-unpinned` overrides, for a comparison or
 the nightly), so a committed header can never record a tool the pins do not name.
+
+### Personal values in the ground truth
+
+`expectations.json` is committed and the repo is public, but the private strata hold
+files whose metadata names people and accounts. For those strata the collector records
+a keyed fingerprint of every rights and identifier value ExifTool reads, never the
+value: `HMAC-SHA256(key, file NUL field NUL value)`, 16 bytes. The differential test
+computes the same from what `ht inspect --reveal` reads and compares. The public
+strata (01, 02, 03) record values in the clear: theirs are published or invented.
+
+The key is 32 random bytes in `~/.config/halftone/corpus.key` (or
+`$HALFTONE_CORPUS_KEY`), outside the repo. `references.py collect` hands it to the
+container by environment.
+
+```sh
+uv run scripts/collect.py --new-key          # once per machine that holds the private files
+```
+
+- Without the key the test still compares the field names of a private stratum and
+  says that the values were not compared.
+- A lost key costs one re-collection: make a new key, `references.py collect` the
+  private strata, commit. Nothing else depends on it.
+- A leaked key is worse than a lost one: fingerprints already in the git history can
+  then be guessed against. Treat those values as disclosed, then rotate the same way.
+- Preflight step 8 fails if a private stratum's `expectations.json` holds a value in
+  the clear, so one cannot be committed by accident.
 
 `bump` edits the pins it is given, builds, re-collects every stratum, runs the
 differential test and prints the diff. It never commits, and refuses to start with

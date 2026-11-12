@@ -111,6 +111,7 @@ import atexit, shutil
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+import corpuskey  # noqa: E402  (the key that fingerprints values of private strata)
 from progress import Progress  # noqa: E402  (display only: a live line on interactive terminals)
 
 C2PATOOL_SETTINGS = "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n"
@@ -678,6 +679,10 @@ def main() -> int:
                          "(needs --credentio)")
     ap.add_argument("--no-trust", action="store_true",
                 help="collect without trust anchors; the EKU policy (--trust-config) is always passed")
+    ap.add_argument("--fingerprint-values", action="store_true",
+                    help="for a stratum of private files: record keyed fingerprints of the rights and "
+                         "identifier values ExifTool reads, never the values (needs the corpus key, "
+                         "lib/corpuskey.py)")
     from complete import serve  # tab completion (lib/complete.py); returns unless asked
 
     serve(ap)
@@ -690,6 +695,15 @@ def main() -> int:
     if not corpus.is_dir():
         print(f"not a directory: {corpus}", file=sys.stderr)
         return 2
+
+    value_key: bytes | None = None
+    if a.fingerprint_values:
+        value_key = corpuskey.load()
+        if value_key is None:
+            print(f"--fingerprint-values needs the corpus key: ${corpuskey.ENV} (64 hex digits) or "
+                  f"{corpuskey.PATH}. Create one with: uv run scripts/collect.py --new-key",
+                  file=sys.stderr)
+            return 2
     out_path = a.out or corpus / "expectations.json"
     exif_ver = tool_version(["exiftool", "-ver"])
     if not exif_ver:
@@ -749,6 +763,8 @@ def main() -> int:
         if ex.get("mime") not in HALFTONE_MIMES:
             skipped.append(f"{rel} ({ex.get('mime') or ex.get('error') or 'unknown'})")
             continue
+        if value_key and "embedded" in ex:
+            ex["embedded"] = fingerprinted(ex["embedded"], value_key, rel)
         entry = {
             "sha256": sha256(p),
             "size_bytes": p.stat().st_size,
@@ -827,6 +843,10 @@ def main() -> int:
         "match_by": match_by,
         "files": files,
     }
+    if value_key:
+        # Which key fingerprinted the values, without revealing it: a test holding
+        # another key reports that, not a disagreement.
+        doc["value_fingerprints"] = {"algorithm": corpuskey.ALGORITHM, "key_id": corpuskey.key_id(value_key)}
     settings_file.unlink(missing_ok=True)
     new_text = json.dumps(doc, indent=2, sort_keys=True) + "\n"
     if out_path.exists():
