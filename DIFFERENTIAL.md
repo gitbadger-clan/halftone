@@ -703,6 +703,8 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   from a JPEG's image-resource block. The XMP copy of the credit is read by both.
 - Status: open, known blind spot. The differential test names such fields on
   non-JPEG files and does not count them.
+- Location: a compressed `zTXt` text chunk (both files list IHDR/zTXt/iTXt/caBX).
+  Reading it needs inflate, which halftone-container does not depend on.
 
 ### D-022 · 2026-11-12 · UTF-16 XMP packets were read as empty
 

@@ -48,12 +48,40 @@ pub struct PngInfo {
     pub icc_name: Option<String>,
     /// pHYs pixels-per-unit (x, y, unit), if present.
     pub phys: Option<(u32, u32, u8)>,
+    /// Number of IDAT chunks the image data is split into.
+    pub idat_chunks: usize,
+    /// Data length of the largest IDAT chunk, in bytes.
+    pub idat_max: usize,
+    /// When there are at least two IDAT chunks and all but the last have the same
+    /// length (the last being no longer): that length. An encoder that flushes a
+    /// fixed-size buffer writes this pattern; one that compresses the whole image and
+    /// writes it at once produces a single chunk.
+    pub idat_block: Option<usize>,
+    /// The two-byte zlib header that opens the image data (compression method and
+    /// level hint), from the first IDAT chunk.
+    pub zlib_header: Option<[u8; 2]>,
+    /// Up to 16 bytes of the compressed stream right after the zlib header: the
+    /// start of the first deflate block. Its low bits say how the block is coded,
+    /// and an encoder with a hard-coded Huffman table writes the same bytes here in
+    /// every file.
+    pub deflate_head: Vec<u8>,
 }
 
 impl PngInfo {
     /// Whether a chunk type is present.
     pub fn has(&self, ty: &str) -> bool {
         self.chunks.iter().any(|c| c == ty)
+    }
+
+    /// How the first deflate block is coded: `stored`, `fixed` or `dynamic` Huffman.
+    /// `None` when the stream is too short to say.
+    pub fn deflate_block(&self) -> Option<&'static str> {
+        match (self.deflate_head.first()? >> 1) & 3 {
+            0 => Some("stored"),
+            1 => Some("fixed"),
+            2 => Some("dynamic"),
+            _ => None,
+        }
     }
 
     /// Writer family from the built-in rules (see [`crate::png_rules`]); a short
@@ -112,6 +140,9 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
         return Err("not a PNG".into());
     }
     let mut info = PngInfo::default();
+    // IDAT shape: length of the first chunk, of the latest one, and whether every
+    // chunk before the latest had the first one's length.
+    let (mut idat_first, mut idat_last, mut idat_even) = (0usize, 0usize, true);
     let mut i = SIG.len();
     while i + 8 <= b.len() {
         let len = u32::from_be_bytes([b[i], b[i + 1], b[i + 2], b[i + 3]]) as usize;
@@ -144,6 +175,18 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
                     info.text.push(entry);
                 }
             }
+            b"IDAT" => {
+                if info.idat_chunks == 0 {
+                    idat_first = len;
+                    info.zlib_header = data.get(..2).map(|h| [h[0], h[1]]);
+                    info.deflate_head = data.iter().skip(2).take(16).copied().collect();
+                } else {
+                    idat_even &= idat_last == idat_first;
+                }
+                idat_last = len;
+                info.idat_chunks += 1;
+                info.idat_max = info.idat_max.max(len);
+            }
             b"eXIf" => info.has_exif = true,
             b"caBX" => info.has_c2pa = true,
             b"iCCP" => {
@@ -168,6 +211,9 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
     }
     if info.chunks.first().map(String::as_str) != Some("IHDR") {
         return Err("missing IHDR".into());
+    }
+    if info.idat_chunks >= 2 && idat_even && idat_last <= idat_first {
+        info.idat_block = Some(idat_first);
     }
     Ok(info)
 }
@@ -335,9 +381,12 @@ impl EvidenceSource for PngWriter {
                     (None, None, None) => (
                         Status::Inconclusive,
                         format!(
-                            "No self-identifying metadata and no known writer layout. {} chunks, \
-                             colour type {}, {}interlaced{}.",
+                            "No self-identifying metadata and no known writer layout. {} chunks \
+                             ({} of image data, the largest {} bytes), colour type {}, \
+                             {}interlaced{}.",
                             info.chunks.len(),
+                            info.idat_chunks,
+                            info.idat_max,
                             info.color_type,
                             if info.interlace == 0 { "non-" } else { "" },
                             match &info.icc_name {
@@ -367,7 +416,15 @@ impl EvidenceSource for PngWriter {
                 "has_exif_chunk": info.has_exif,
                 "has_c2pa_chunk": info.has_c2pa,
                 "icc_name": info.icc_name,
-                "xmp_excerpt": info.text.iter().find(|t| t.keyword == "XML:com.adobe.xmp").map(|t| t.value.chars().take(600).collect::<String>()),
+                // Whether an XMP packet is there, not what it says: a packet can name
+                // people and accounts, and the sources that list such fields mask them.
+                "xmp_present": info.text.iter().any(|t| t.keyword == "XML:com.adobe.xmp"),
+                "idat_chunks": info.idat_chunks,
+                "idat_max": info.idat_max,
+                "idat_block": info.idat_block,
+                "zlib_header": info.zlib_header.map(hex::encode),
+                "deflate_block": info.deflate_block(),
+                "deflate_head": hex::encode(&info.deflate_head),
                 "phys": info.phys,
                 "fingerprint": fp,
                 "writer": db_hit.map(|w| &w.writer),
@@ -414,6 +471,112 @@ mod tests {
         v.extend(chunk(b"IDAT", &[0u8; 4]));
         v.extend(chunk(b"IEND", &[]));
         v
+    }
+
+    /// A bare PNG whose image data is split into IDAT chunks of the given lengths; the
+    /// first starts with the zlib header `78 01`.
+    fn png_with_idat(lens: &[usize]) -> Vec<u8> {
+        let mut v = vec![0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
+        v.extend(ihdr());
+        for (k, &n) in lens.iter().enumerate() {
+            let mut data = vec![0u8; n];
+            if k == 0 && n >= 2 {
+                data[..2].copy_from_slice(&[0x78, 0x01]);
+            }
+            v.extend(chunk(b"IDAT", &data));
+        }
+        v.extend(chunk(b"IEND", &[]));
+        v
+    }
+
+    #[test]
+    fn the_idat_shape_is_recorded() {
+        let shape = |lens: &[usize]| {
+            let i = parse_png(&png_with_idat(lens)).unwrap();
+            (i.idat_chunks, i.idat_max, i.idat_block)
+        };
+        assert_eq!(shape(&[70_000]), (1, 70_000, None));
+        assert_eq!(
+            shape(&[65_536, 65_536, 65_536, 100]),
+            (4, 65_536, Some(65_536))
+        );
+        assert_eq!(shape(&[8_192, 8_192]), (2, 8_192, Some(8_192)));
+        // Uneven chunks, or a last one longer than the rest, are not a block pattern.
+        assert_eq!(shape(&[100, 200, 100]), (3, 200, None));
+        assert_eq!(shape(&[100, 100, 300]), (3, 300, None));
+        assert_eq!(shape(&[]), (0, 0, None));
+        assert_eq!(
+            parse_png(&png_with_idat(&[70_000])).unwrap().zlib_header,
+            Some([0x78, 0x01])
+        );
+        assert_eq!(parse_png(&png_with_idat(&[1])).unwrap().zlib_header, None);
+    }
+
+    #[test]
+    fn a_bare_stream_names_a_writer_only_as_far_as_the_shape_allows() {
+        let assess = |lens: &[usize]| {
+            let a = Asset::from_bytes(png_with_idat(lens), None).unwrap();
+            PngWriter::default().assess(&a).unwrap()
+        };
+        // One large chunk: what candle's Stable Diffusion example writes. Not Pillow.
+        let one = assess(&[440_932]);
+        assert_eq!(one.status, Status::Inconclusive);
+        assert!(!one.rationale.contains("Pillow"), "{}", one.rationale);
+        assert!(
+            one.rationale.contains("a one-shot PNG encoder"),
+            "{}",
+            one.rationale
+        );
+        assert_eq!(one.details["deflate_block"], "stored");
+        assert_eq!(one.details["idat_chunks"], 1);
+        assert_eq!(one.details["idat_max"], 440_932);
+        assert_eq!(one.details["zlib_header"], "7801");
+        // 64 KiB blocks: Pillow.
+        let blocks = assess(&[65_536, 65_536, 1_000]);
+        assert!(
+            blocks.rationale.contains("Pillow default"),
+            "{}",
+            blocks.rationale
+        );
+        assert_eq!(blocks.details["idat_block"], 65_536);
+        // Small: no writer named.
+        let small = assess(&[4_851]);
+        assert!(
+            small.rationale.contains("writer cannot be told"),
+            "{}",
+            small.rationale
+        );
+        // 8 KiB blocks: libpng's default buffer, as OpenCV writes a bare file.
+        let libpng = assess(&[8_192, 8_192, 100]);
+        assert!(
+            libpng.rationale.contains("OpenCV writes this"),
+            "{}",
+            libpng.rationale
+        );
+        // A shape nobody was measured to write: no known layout, with the facts.
+        let other = assess(&[16_384, 16_384, 100]);
+        assert!(
+            other.rationale.contains(
+                "no known writer layout. 5 chunks (3 of image data, the largest 16384 bytes)"
+            ),
+            "{}",
+            other.rationale
+        );
+    }
+
+    #[test]
+    fn details_say_that_xmp_is_there_not_what_it_says() {
+        let mut itxt = b"XML:com.adobe.xmp\0\0\0\0\0".to_vec();
+        itxt.extend_from_slice(b"<x:xmpmeta><pdf:Author>Some Person</pdf:Author></x:xmpmeta>");
+        let a = Asset::from_bytes(png_with(&[(b"iTXt", itxt)]), None).unwrap();
+        let ev = PngWriter::default().assess(&a).unwrap();
+        assert_eq!(ev.details["xmp_present"], true);
+        assert!(!serde_json::to_string(&ev).unwrap().contains("Some Person"));
+        let plain = Asset::from_bytes(png_with(&[]), None).unwrap();
+        assert_eq!(
+            PngWriter::default().assess(&plain).unwrap().details["xmp_present"],
+            false
+        );
     }
 
     #[test]

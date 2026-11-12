@@ -110,14 +110,17 @@ fn png_and_webp_sources_on_real_files() {
     let ev = png_src.assess(&fixture("comfy.png")).unwrap();
     assert_eq!(ev.status, Status::Present);
     assert!(ev.rationale.contains("ComfyUI"));
+    // plain.png was written by Pillow, but it is small: its image data fits one IDAT
+    // chunk, which every encoder writes below its block size. The layout is a
+    // library's, and it names no writer. (This test used to expect "Pillow default",
+    // a name the layout could not support.)
     let ev = png_src.assess(&fixture("plain.png")).unwrap();
     assert_eq!(ev.status, Status::Inconclusive);
     assert_eq!(ev.details["writer_hint"], "library");
+    assert_eq!(ev.details["idat_chunks"], 1);
+    let rule = ev.details["writer_rule"]["name"].as_str().unwrap();
     assert!(
-        ev.details["writer_rule"]["name"]
-            .as_str()
-            .unwrap()
-            .starts_with("Pillow default"),
+        rule.contains("writer cannot be told") && !rule.contains("Pillow"),
         "{}",
         ev.rationale
     );
