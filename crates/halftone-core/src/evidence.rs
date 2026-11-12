@@ -1,8 +1,18 @@
-//! The verdict schema. Semver'd independently of the crates: bump [`SCHEMA_VERSION`]
-//! with every change to what is emitted, and keep `schemas/verdict.schema.json` and
-//! `schemas/batch.schema.json` in sync. An addition (a new field or summary-row
-//! column) is a minor version, as 1.2.0 was for the certificate columns; a removed
-//! or changed field is a major one.
+//! The verdict schema. Semver'd independently of the crates.
+//!
+//! [`SCHEMA_VERSION`] covers what `schemas/verdict.schema.json` and
+//! `schemas/batch.schema.json` define: the inspection envelope, the fields of an
+//! evidence entry, and the batch summary rows. Bump it when one of those changes, and
+//! keep both files in sync. An addition (a new field or summary-row column) is a minor
+//! version, as 1.2.0 was for the certificate columns; a removed or changed field is a
+//! major one.
+//!
+//! An evidence entry's `details` is outside that contract. The schema declares it as
+//! any value: it is each source's own format, and a source may add, rename or reshape
+//! what it puts there, or mask it, without a schema version. A new source needs none
+//! either. The only version `details` carries is the entry's `source.version`, the
+//! crate version. A value that consumers should be able to rely on belongs in a
+//! summary-row column, which the schema does define and version.
 
 use serde::{Deserialize, Serialize};
 
