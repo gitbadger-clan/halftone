@@ -5,6 +5,14 @@
 //! them from a fixed set of fields ([`FIELDS`] documents every one) in XMP, EXIF, IPTC
 //! IIM and PNG text chunks, quoted as written. Nothing is judged: a name may be a
 //! pseudonym, an identifier may be stale. The point is what the file discloses.
+//! Placeholders (`N/A`, `Unknown`, all zeros) and GPS tags without a position are
+//! not identifiers and are left out.
+//!
+//! Values are masked unless the source is built with `reveal` (`ht inspect --reveal`):
+//! `details` then names each field and kind and gives the value's length, not the
+//! value. The listing exists to show what a file discloses, and a report that
+//! repeated every name and account number would disclose them a second time. The
+//! status and the counts in the rationale are the same either way.
 //!
 //! Status semantics:
 //! - `Present`: at least one identifier is there.
@@ -21,7 +29,7 @@ use exif::Tag;
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
 use serde::Serialize;
 
-use crate::embedded::Embedded;
+use crate::embedded::{Embedded, is_placeholder};
 
 const DC: &str = "http://purl.org/dc/elements/1.1/";
 const PDF: &str = "http://ns.adobe.com/pdf/1.3/";
@@ -106,6 +114,10 @@ pub struct Identifier {
 pub fn scan(e: &Embedded) -> Vec<Identifier> {
     let mut out: Vec<Identifier> = Vec::new();
     let mut add = |kind: Kind, field: &str, value: String| {
+        // "N/A", "Unknown", all zeros: a field with no value identifies nobody.
+        if is_placeholder(&value) {
+            return;
+        }
         let id = Identifier {
             kind,
             field: field.to_string(),
@@ -210,7 +222,25 @@ pub fn scan(e: &Embedded) -> Vec<Identifier> {
 
 /// Embedded identifiers evidence source (`embedded_identifiers`).
 #[derive(Debug, Default)]
-pub struct EmbeddedIdentifiers;
+pub struct EmbeddedIdentifiers {
+    /// Put the values themselves into `details`. Off by default: fields, kinds and
+    /// lengths only.
+    pub reveal: bool,
+}
+
+/// How an identifier appears in `details`: with its value, or masked.
+fn shown(i: &Identifier, reveal: bool) -> serde_json::Value {
+    if reveal {
+        serde_json::json!({ "kind": i.kind, "field": i.field, "value": i.value })
+    } else {
+        serde_json::json!({
+            "kind": i.kind,
+            "field": i.field,
+            "masked": true,
+            "length": i.value.chars().count(),
+        })
+    }
+}
 
 impl EvidenceSource for EmbeddedIdentifiers {
     fn id(&self) -> SourceId {
@@ -266,10 +296,15 @@ impl EvidenceSource for EmbeddedIdentifiers {
                 Status::Present,
                 format!(
                     "The file's metadata carries {}. Anyone who receives the file can read \
-                     them; details lists each one with its field. They are quoted as written: \
+                     them; details lists each one with its field{}. They are read as written: \
                      this says what the file discloses, not that any of it is accurate or who \
                      put it there. {BLIND}",
-                    join_and(&summary)
+                    join_and(&summary),
+                    if self.reveal {
+                        " and value"
+                    } else {
+                        ", with the values masked here (--reveal includes them)"
+                    }
                 ),
             )
         };
@@ -281,7 +316,8 @@ impl EvidenceSource for EmbeddedIdentifiers {
             calibration: None,
             rationale,
             details: serde_json::json!({
-                "identifiers": found,
+                "identifiers": found.iter().map(|i| shown(i, self.reveal)).collect::<Vec<_>>(),
+                "values_masked": !self.reveal,
                 "xmp_packets": e.xmp.len(),
                 "xmp_incomplete": e.xmp_incomplete(),
                 "has_exif": e.has_exif,
@@ -305,9 +341,10 @@ mod tests {
     use super::*;
     use crate::embedded::testutil::{exif, jpeg, packet, png};
 
+    /// Revealed, so the tests can check what was read.
     fn assess(bytes: Vec<u8>) -> Evidence {
         let a = Asset::from_bytes(bytes, None).unwrap();
-        EmbeddedIdentifiers.assess(&a).unwrap()
+        EmbeddedIdentifiers { reveal: true }.assess(&a).unwrap()
     }
 
     fn fields(ev: &Evidence) -> Vec<(String, String)> {
@@ -430,6 +467,73 @@ mod tests {
             fields(&author),
             [("png:Author".to_string(), "Some Person".to_string())]
         );
+    }
+
+    #[test]
+    fn values_are_masked_unless_revealed() {
+        let x = packet(
+            "xmlns:pdf='http://ns.adobe.com/pdf/1.3/' xmlns:Attrib='http://ns.attribution.com/ads/1.0/'",
+            "<pdf:Author>Some Person</pdf:Author><Attrib:FbId>525265914179580</Attrib:FbId>",
+        );
+        let bytes = jpeg(
+            Some(&x),
+            Some(&exif(&[(0x013B, "Some Person")], &[])),
+            &[(40, b"FBMD0a000a88")],
+        );
+        let a = Asset::from_bytes(bytes, None).unwrap();
+
+        let masked = EmbeddedIdentifiers::default().assess(&a).unwrap();
+        let text = serde_json::to_string(&masked).unwrap();
+        for secret in ["Some Person", "525265914179580", "FBMD0a000a88"] {
+            assert!(!text.contains(secret), "{secret} leaked: {text}");
+        }
+        assert_eq!(masked.details["values_masked"], true);
+        assert_eq!(
+            masked.details["identifiers"][0],
+            serde_json::json!({ "kind": "person", "field": "exif:Artist", "masked": true, "length": 11 })
+        );
+        assert!(
+            masked
+                .rationale
+                .contains("values masked here (--reveal includes them)")
+        );
+
+        let open = EmbeddedIdentifiers { reveal: true }.assess(&a).unwrap();
+        assert_eq!(open.details["values_masked"], false);
+        assert_eq!(open.details["identifiers"][0]["value"], "Some Person");
+        assert!(open.details["identifiers"][0].get("masked").is_none());
+        // Same finding either way: status, count and order do not depend on the flag.
+        assert_eq!(masked.status, open.status);
+        assert_eq!(
+            masked.details["identifiers"].as_array().unwrap().len(),
+            open.details["identifiers"].as_array().unwrap().len()
+        );
+        let strip = |r: &str| {
+            r.replace(" and value", "")
+                .replace(", with the values masked here (--reveal includes them)", "")
+        };
+        assert_eq!(strip(&masked.rationale), strip(&open.rationale));
+    }
+
+    #[test]
+    fn placeholders_and_decoded_values() {
+        // A lens serial of "N/A" next to a real body serial: one identifier, not two.
+        let ev = assess(jpeg(
+            None,
+            Some(&exif(&[], &[(0xA431, "XCR17"), (0xA435, "N/A")])),
+            &[],
+        ));
+        assert_eq!(
+            fields(&ev),
+            [("exif:BodySerialNumber".to_string(), "XCR17".to_string())]
+        );
+        // The tracking blob is shown as the JSON it is, not with XML entities.
+        let x = packet(
+            "xmlns:Attrib='http://ns.attribution.com/ads/1.0/'",
+            "<Attrib:Data>{&quot;doc&quot;:&quot;D1&quot;,&quot;user&quot;:&quot;U1&quot;}</Attrib:Data>",
+        );
+        let ev = assess(jpeg(Some(&x), None, &[]));
+        assert_eq!(fields(&ev)[0].1, "{\"doc\":\"D1\",\"user\":\"U1\"}");
     }
 
     #[test]

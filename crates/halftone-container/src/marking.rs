@@ -89,7 +89,8 @@ pub struct IimInfo {
     pub originating_program: Option<String>,
     /// 2:70 Program Version.
     pub program_version: Option<String>,
-    /// 2:40 Special Instructions, bounded.
+    /// 2:40 Special Instructions: that it is present, its length and which source
+    /// lists it. Never the text, which can be a tracking marker or name a person.
     pub special_instructions: Option<String>,
 }
 
@@ -138,13 +139,57 @@ pub fn packets(mime: &str, b: &[u8]) -> Result<(Vec<Vec<u8>>, MarkingScan), Stri
     Ok((packets, s))
 }
 
+/// An XMP packet as text. A packet is UTF-8, UTF-16 or UTF-32, in either byte order
+/// (XMP specification part 1, 7.3.2); most are UTF-8, but older Adobe and ExifTool
+/// writers produced UTF-16, and read as UTF-8 such a packet holds no property at all.
+/// The encoding is taken from a byte-order mark if there is one, else from the zero
+/// bytes around the first `<`. Invalid sequences become U+FFFD; never an error.
+pub fn xmp_text(p: &[u8]) -> String {
+    let utf16 = |b: &[u8], be: bool| -> String {
+        let units = b.chunks_exact(2).map(|c| {
+            if be {
+                u16::from_be_bytes([c[0], c[1]])
+            } else {
+                u16::from_le_bytes([c[0], c[1]])
+            }
+        });
+        char::decode_utf16(units)
+            .map(|r| r.unwrap_or(char::REPLACEMENT_CHARACTER))
+            .collect()
+    };
+    let utf32 = |b: &[u8], be: bool| -> String {
+        b.chunks_exact(4)
+            .map(|c| {
+                let u = if be {
+                    u32::from_be_bytes([c[0], c[1], c[2], c[3]])
+                } else {
+                    u32::from_le_bytes([c[0], c[1], c[2], c[3]])
+                };
+                char::from_u32(u).unwrap_or(char::REPLACEMENT_CHARACTER)
+            })
+            .collect()
+    };
+    match p {
+        [0, 0, 0xFE, 0xFF, rest @ ..] => utf32(rest, true),
+        [0xFF, 0xFE, 0, 0, rest @ ..] => utf32(rest, false),
+        [0xFE, 0xFF, rest @ ..] => utf16(rest, true),
+        [0xFF, 0xFE, rest @ ..] => utf16(rest, false),
+        [0xEF, 0xBB, 0xBF, rest @ ..] => String::from_utf8_lossy(rest).into_owned(),
+        [0, 0, 0, b'<', ..] => utf32(p, true),
+        [b'<', 0, 0, 0, ..] => utf32(p, false),
+        [0, b'<', ..] => utf16(p, true),
+        [b'<', 0, ..] => utf16(p, false),
+        _ => String::from_utf8_lossy(p).into_owned(),
+    }
+}
+
 /// Extract marking metadata from JPEG, PNG, WebP or HEIF bytes.
 pub fn scan(mime: &str, b: &[u8]) -> Result<MarkingScan, String> {
     let (packets, mut s) = packets(mime, b)?;
     for p in packets {
         s.xmp_packets += 1;
         s.xmp_bytes += p.len();
-        let text = String::from_utf8_lossy(&p);
+        let text = xmp_text(&p);
         let bound = text.contains(IPTC_EXT_NS);
         s.iptc_ext_namespace_declared |= bound;
         s.values.extend(find_dst(&text));
@@ -227,7 +272,19 @@ fn parse_iim(b: &[u8]) -> IimInfo {
             match dataset {
                 65 => info.originating_program = Some(text()),
                 70 => info.program_version = Some(text()),
-                40 => info.special_instructions = Some(text()),
+                // The text of this field is nothing this source needs: it is an
+                // instruction to editors or, on some platforms, a tracking marker. Say
+                // that it is there and which source lists it (masked unless revealed),
+                // not what it says.
+                40 => {
+                    let t = text();
+                    let n = t.chars().count();
+                    info.special_instructions = Some(if t.starts_with("FBMD") {
+                        format!("FBMD… (platform marker, {n} characters; see embedded_identifiers)")
+                    } else {
+                        format!("({n} characters; see rights_statements)")
+                    });
+                }
                 _ => {}
             }
         }
@@ -984,6 +1041,66 @@ mod tests {
             full(b"meta", 0, &meta),
         ]
         .concat()
+    }
+
+    #[test]
+    fn utf16_and_utf32_packets_are_read_like_utf8() {
+        let packet = "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?><x:xmpmeta \
+            xmlns:x='adobe:ns:meta/'><rdf:Description \
+            xmlns:Iptc4xmpExt='http://iptc.org/std/Iptc4xmpExt/2008-02-29/'>\
+            <Iptc4xmpExt:DigitalSourceType>trainedAlgorithmicMedia</Iptc4xmpExt:DigitalSourceType>\
+            <dc:title>caf\u{e9} \u{1F600}</dc:title></rdf:Description></x:xmpmeta>";
+        let u16be: Vec<u8> = packet.encode_utf16().flat_map(u16::to_be_bytes).collect();
+        let u16le: Vec<u8> = packet.encode_utf16().flat_map(u16::to_le_bytes).collect();
+        let u32be: Vec<u8> = packet
+            .chars()
+            .flat_map(|c| (c as u32).to_be_bytes())
+            .collect();
+        let u32le: Vec<u8> = packet
+            .chars()
+            .flat_map(|c| (c as u32).to_le_bytes())
+            .collect();
+        let with_bom = |bom: &[u8], body: &[u8]| [bom, body].concat();
+        for (name, bytes) in [
+            ("utf-8", packet.as_bytes().to_vec()),
+            (
+                "utf-8 with BOM",
+                with_bom(&[0xEF, 0xBB, 0xBF], packet.as_bytes()),
+            ),
+            ("utf-16 BE", u16be.clone()),
+            ("utf-16 LE", u16le.clone()),
+            ("utf-16 BE with BOM", with_bom(&[0xFE, 0xFF], &u16be)),
+            ("utf-16 LE with BOM", with_bom(&[0xFF, 0xFE], &u16le)),
+            ("utf-32 BE", u32be),
+            ("utf-32 LE", u32le),
+        ] {
+            assert_eq!(xmp_text(&bytes), packet, "{name}");
+            let found = find_dst(&xmp_text(&bytes));
+            assert_eq!(found.len(), 1, "{name}");
+            assert_eq!(found[0].code, "trainedAlgorithmicMedia", "{name}");
+        }
+        // Odd lengths and broken sequences decode to something, never panic.
+        for n in 0..u16be.len().min(64) {
+            let _ = xmp_text(&u16be[..n]);
+        }
+        assert!(xmp_text(&[0, b'<', 0xD8, 0x00]).contains('\u{FFFD}'));
+        assert_eq!(xmp_text(b""), "");
+    }
+
+    #[test]
+    fn the_platform_marker_is_named_but_not_printed() {
+        let mut sets = vec![0x1C, 2, 40, 0, 22];
+        sets.extend_from_slice(b"FBMD0a000a880100003e02");
+        assert_eq!(
+            parse_iim(&sets).special_instructions.as_deref(),
+            Some("FBMD… (platform marker, 22 characters; see embedded_identifiers)")
+        );
+        let mut sets = vec![0x1C, 2, 40, 0, 14];
+        sets.extend_from_slice(b"Not for resale");
+        assert_eq!(
+            parse_iim(&sets).special_instructions.as_deref(),
+            Some("(14 characters; see rights_statements)")
+        );
     }
 
     #[test]

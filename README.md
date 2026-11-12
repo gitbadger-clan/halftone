@@ -72,6 +72,13 @@ found (rights statements, identifiers, vendor AI flags, the data-mining value), 
 with its field name and value as written; with `--json` the same values are in the
 sources' `details`.
 
+Values that can name a person or an account are masked by default, in every output
+including JSON: identifier values, and the free text of rights statements (notices,
+credits, owners, terms, links). A masked entry keeps its field name, its kind and the
+value's length, so a report shows what a file discloses without disclosing it again.
+`--reveal` includes the values. Fixed terms (`Marked`, release status, a Creative
+Commons licence URL), the vendor AI flag and the data-mining term are never masked.
+
 `--table` prints those named columns, one line per file, aligned for reading;
 `--tsv` prints the same with tabs and a header line:
 

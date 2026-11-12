@@ -16,7 +16,7 @@ use std::io::Cursor;
 use exif::{In, Tag};
 use halftone_core::Asset;
 
-use crate::marking::{Form, find_property, packets, prefix_bound};
+use crate::marking::{Form, find_property, packets, prefix_bound, xmp_text};
 
 /// Longest value kept, in characters. A longer one is cut and ends in `…`.
 pub const MAX_VALUE: usize = 256;
@@ -77,6 +77,62 @@ pub fn tidy(s: &str) -> String {
     }
 }
 
+/// Decode the XML character references in an XMP value: the five named entities
+/// and numeric references (`&#34;`, `&#x22;`). Anything else is left as written.
+pub fn unescape(s: &str) -> String {
+    if !s.contains('&') {
+        return s.to_string();
+    }
+    let mut out = String::with_capacity(s.len());
+    let mut rest = s;
+    while let Some(amp) = rest.find('&') {
+        out.push_str(&rest[..amp]);
+        rest = &rest[amp..];
+        let decoded = rest.find(';').filter(|&end| end <= 10).and_then(|end| {
+            let name = &rest[1..end];
+            let c = match name {
+                "quot" => Some('"'),
+                "amp" => Some('&'),
+                "lt" => Some('<'),
+                "gt" => Some('>'),
+                "apos" => Some('\''),
+                _ => name
+                    .strip_prefix("#x")
+                    .or_else(|| name.strip_prefix("#X"))
+                    .map(|h| u32::from_str_radix(h, 16))
+                    .or_else(|| name.strip_prefix('#').map(str::parse::<u32>))
+                    .and_then(Result::ok)
+                    .and_then(char::from_u32),
+            };
+            c.map(|c| (c, end + 1))
+        });
+        match decoded {
+            Some((c, used)) => {
+                out.push(c);
+                rest = &rest[used..];
+            }
+            None => {
+                out.push('&');
+                rest = &rest[1..];
+            }
+        }
+    }
+    out.push_str(rest);
+    out
+}
+
+/// A value that stands for "nothing": what cameras and tools write into a field they
+/// have no value for. Such a value identifies nobody and is not listed.
+pub fn is_placeholder(v: &str) -> bool {
+    let t = v.trim().to_ascii_lowercase();
+    t.is_empty()
+        || matches!(
+            t.as_str(),
+            "n/a" | "na" | "none" | "unknown" | "null" | "-" | "--"
+        )
+        || t.chars().all(|c| c == '0')
+}
+
 /// The namespace URI bound to `prefix` in an XMP packet (`xmlns:prefix="…"`).
 pub fn namespace_of(text: &str, prefix: &str) -> Option<String> {
     let key = format!("xmlns:{prefix}=");
@@ -97,10 +153,7 @@ impl Embedded {
             "image/jpeg" | "image/png" | "image/webp" | "image/heif"
         ) {
             let (pk, scan) = packets(&a.mime, &a.bytes)?;
-            e.xmp = pk
-                .iter()
-                .map(|p| String::from_utf8_lossy(p).into_owned())
-                .collect();
+            e.xmp = pk.iter().map(|p| xmp_text(p)).collect();
             e.xmp_extended_incomplete = scan.xmp_extended_incomplete;
             e.xmp_items_unreadable = scan.xmp_items_unreadable;
             e.manifest_container_present = scan.manifest_container_present;
@@ -147,7 +200,7 @@ impl Embedded {
                     out.push(XmpValue {
                         namespace: namespace_of(text, &v.prefix),
                         prefix: v.prefix,
-                        value: tidy(&v.raw),
+                        value: tidy(&unescape(&v.raw)),
                         form: v.form,
                     });
                 }
@@ -164,7 +217,7 @@ impl Embedded {
                 out.push(XmpValue {
                     namespace: namespace_of(text, &v.prefix),
                     prefix: v.prefix,
-                    value: tidy(&v.raw),
+                    value: tidy(&unescape(&v.raw)),
                     form: v.form,
                 });
             }
@@ -172,28 +225,69 @@ impl Embedded {
         out
     }
 
-    /// An EXIF text field of the primary image, trimmed; `None` when absent or empty.
-    pub fn exif_text(&self, tag: Tag) -> Option<String> {
-        let f = self.exif.as_ref()?.get_field(tag, In::PRIMARY)?;
-        let s = f.display_value().to_string();
-        let t = tidy(s.trim().trim_matches('"'));
-        (!t.is_empty()).then_some(t)
+    /// The non-empty parts of an EXIF text field of the primary image. An ASCII field
+    /// can hold several NUL-separated strings (the copyright tag: photographer, then
+    /// editor) and cameras pad with empty ones; those are dropped.
+    pub fn exif_parts(&self, tag: Tag) -> Vec<String> {
+        let Some(f) = self
+            .exif
+            .as_ref()
+            .and_then(|x| x.get_field(tag, In::PRIMARY))
+        else {
+            return Vec::new();
+        };
+        let parts: Vec<String> = match &f.value {
+            exif::Value::Ascii(parts) => parts
+                .iter()
+                .map(|p| tidy(&String::from_utf8_lossy(p)))
+                .collect(),
+            _ => vec![tidy(f.display_value().to_string().trim().trim_matches('"'))],
+        };
+        parts.into_iter().filter(|p| !p.is_empty()).collect()
     }
 
-    /// The GPS position as EXIF states it (`lat ref, lon ref`), when both are present.
+    /// An EXIF text field of the primary image, its parts joined with `; `; `None`
+    /// when absent or empty.
+    pub fn exif_text(&self, tag: Tag) -> Option<String> {
+        let parts = self.exif_parts(tag);
+        (!parts.is_empty()).then(|| parts.join("; "))
+    }
+
+    /// The GPS position EXIF states, as decimal degrees with the hemisphere letters
+    /// (`47.37690 N, 8.54170 E`). `None` unless both coordinates are present and are
+    /// numbers: cameras without a fix write the tags with zero denominators or all
+    /// zeros, which is not a position.
     pub fn exif_gps(&self) -> Option<String> {
         let x = self.exif.as_ref()?;
-        let get = |t: Tag| {
-            x.get_field(t, In::PRIMARY)
-                .map(|f| f.display_value().to_string())
+        let degrees = |t: Tag| -> Option<f64> {
+            match &x.get_field(t, In::PRIMARY)?.value {
+                exif::Value::Rational(v) if v.len() >= 3 && v.iter().all(|r| r.denom != 0) => {
+                    Some(v[0].to_f64() + v[1].to_f64() / 60.0 + v[2].to_f64() / 3600.0)
+                }
+                _ => None,
+            }
+            .filter(|d| d.is_finite())
         };
-        let lat = get(Tag::GPSLatitude)?;
-        let lon = get(Tag::GPSLongitude)?;
-        let (lr, nr) = (
-            get(Tag::GPSLatitudeRef).unwrap_or_default(),
-            get(Tag::GPSLongitudeRef).unwrap_or_default(),
-        );
-        Some(tidy(&format!("{lat} {lr}, {lon} {nr}")))
+        let hemi = |t: Tag| -> String {
+            match x.get_field(t, In::PRIMARY).map(|f| &f.value) {
+                Some(exif::Value::Ascii(p)) => p
+                    .first()
+                    .and_then(|s| s.first())
+                    .filter(|c| c.is_ascii_alphabetic())
+                    .map(|c| format!(" {}", *c as char))
+                    .unwrap_or_default(),
+                _ => String::new(),
+            }
+        };
+        let (lat, lon) = (degrees(Tag::GPSLatitude)?, degrees(Tag::GPSLongitude)?);
+        if lat == 0.0 && lon == 0.0 {
+            return None;
+        }
+        Some(format!(
+            "{lat:.5}{}, {lon:.5}{}",
+            hemi(Tag::GPSLatitudeRef),
+            hemi(Tag::GPSLongitudeRef)
+        ))
     }
 
     /// Every non-empty value of IIM dataset `2:<dataset>`, in file order.
@@ -217,8 +311,9 @@ impl Embedded {
 
 /// The listing behind `ht inspect --metadata`: every field the listing sources found
 /// (`rights_statements`, `embedded_identifiers`, `vendor_ai_flag`,
-/// `data_mining_reservation`), one per line with its value as written. Reads the
-/// sources' `details`; adds no judgement. Empty when none of them ran.
+/// `data_mining_reservation`), one per line with its value as written. Identifier
+/// values and free-text rights values are masked unless the sources ran revealed. Reads the sources' `details`;
+/// adds no judgement. Empty when none of them ran.
 pub fn render_listing(evidence: &[halftone_core::Evidence]) -> String {
     let details = |name: &str| {
         evidence
@@ -242,11 +337,19 @@ pub fn render_listing(evidence: &[halftone_core::Evidence]) -> String {
             }
         }
     };
+    // A value as listed: itself, or its length when the source masked it.
+    let cell = |v: &serde_json::Value| match v["value"].as_str() {
+        Some(x) => x.to_string(),
+        None => match v["length"].as_u64().unwrap_or(0) {
+            1 => "[masked, 1 character]".to_string(),
+            n => format!("[masked, {n} characters]"),
+        },
+    };
     section(
         "rights statements",
         "rights_statements",
         "statements",
-        &|s| (text(s, "field"), text(s, "value")),
+        &|s| (text(s, "field"), cell(s)),
     );
     section("identifiers", "embedded_identifiers", "identifiers", &|i| {
         (
@@ -255,7 +358,7 @@ pub fn render_listing(evidence: &[halftone_core::Evidence]) -> String {
                 text(i, "field"),
                 text(i, "kind").replace('_', " ")
             ),
-            text(i, "value"),
+            cell(i),
         )
     });
     section("vendor AI flags", "vendor_ai_flag", "flags", &|f| {
@@ -614,8 +717,12 @@ mod tests {
         )
         .unwrap();
         let ev = vec![
-            crate::rights::RightsStatements.assess(&a).unwrap(),
-            crate::identifiers::EmbeddedIdentifiers.assess(&a).unwrap(),
+            crate::rights::RightsStatements { reveal: true }
+                .assess(&a)
+                .unwrap(),
+            crate::identifiers::EmbeddedIdentifiers { reveal: true }
+                .assess(&a)
+                .unwrap(),
             crate::vendor_ai::VendorAiFlag.assess(&a).unwrap(),
             crate::data_mining::DataMiningReservation
                 .assess(&a)
@@ -628,14 +735,76 @@ mod tests {
             plus:DataMining  DMI-PROHIBITED\n";
         assert_eq!(out, expected);
 
+        let masked = vec![
+            crate::identifiers::EmbeddedIdentifiers::default()
+                .assess(&a)
+                .unwrap(),
+        ];
+        assert_eq!(
+            render_listing(&masked),
+            "  metadata fields (as written; unsigned)\n    identifiers\n      \
+             pdf:Author (person)  [masked, 11 characters]\n"
+        );
+
         let plain = Asset::from_bytes(jpeg(None, None, &[]), None).unwrap();
-        let ev = vec![crate::rights::RightsStatements.assess(&plain).unwrap()];
+        let ev = vec![
+            crate::rights::RightsStatements { reveal: true }
+                .assess(&plain)
+                .unwrap(),
+        ];
         assert!(render_listing(&ev).contains("none of the listed fields is present"));
         assert_eq!(
             render_listing(&[]),
             "",
             "no listing source ran: say nothing"
         );
+    }
+
+    #[test]
+    fn xml_character_references_are_decoded() {
+        assert_eq!(
+            unescape(
+                "{&quot;doc&quot;:&quot;D1&quot;,&quot;n&quot;:1} &amp; &lt;b&gt; &apos;x&apos;"
+            ),
+            "{\"doc\":\"D1\",\"n\":1} & <b> 'x'"
+        );
+        assert_eq!(unescape("&#34;a&#x22; &#xe9;"), "\"a\" é");
+        // Not a reference: left exactly as written.
+        assert_eq!(
+            unescape("AT&T &unknown; &; a & b &#zz;"),
+            "AT&T &unknown; &; a & b &#zz;"
+        );
+        let x = packet(
+            "xmlns:Attrib='http://ns.attribution.com/ads/1.0/'",
+            "<Attrib:Data>{&quot;u&quot;:1}</Attrib:Data>",
+        );
+        let e = read(jpeg(Some(&x), None, &[]));
+        let v = e.xmp_values(
+            "http://ns.attribution.com/ads/1.0/",
+            "Attrib",
+            "Data",
+            false,
+        );
+        assert_eq!(v[0].value, "{\"u\":1}");
+    }
+
+    #[test]
+    fn padded_exif_text_and_placeholders() {
+        // A serial number followed by NUL padding, as a GoPro writes it.
+        let e = read(jpeg(
+            None,
+            Some(&exif(&[(0x8298, "A\0B\0\0")], &[(0xA431, "C322\0\0\0\0")])),
+            &[],
+        ));
+        assert_eq!(e.exif_text(Tag::BodySerialNumber).as_deref(), Some("C322"));
+        assert_eq!(e.exif_parts(Tag::Copyright), ["A", "B"]);
+        assert_eq!(e.exif_text(Tag::Copyright).as_deref(), Some("A; B"));
+        for v in ["N/A", "n/a", "Unknown", "0000000", "-", " "] {
+            assert!(is_placeholder(v), "{v}");
+        }
+        for v in ["000023990c", "SN-0", "NA-1"] {
+            assert!(!is_placeholder(v), "{v}");
+        }
     }
 
     #[test]

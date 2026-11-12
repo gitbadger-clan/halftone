@@ -38,7 +38,7 @@
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
 use serde::Serialize;
 
-use crate::marking::{Form, find_property, packets, prefix_bound};
+use crate::marking::{Form, find_property, packets, prefix_bound, xmp_text};
 
 /// Namespace URI of the PLUS License Data Format in XMP, where `DataMining` lives.
 pub const PLUS_NS: &str = "http://ns.useplus.org/ldf/xmp/1.0/";
@@ -183,7 +183,7 @@ pub fn scan(mime: &str, b: &[u8]) -> Result<DataMiningScan, String> {
     };
     for p in packets {
         s.xmp_packets += 1;
-        let text = String::from_utf8_lossy(&p);
+        let text = xmp_text(&p);
         for v in find_property(&text, "DataMining", false) {
             s.values.push(DataMiningValue {
                 code: code_of(&v.raw),
@@ -197,7 +197,7 @@ pub fn scan(mime: &str, b: &[u8]) -> Result<DataMiningScan, String> {
             s.other_constraints = find_property(&text, "OtherConstraints", true)
                 .into_iter()
                 .next()
-                .map(|v| v.raw);
+                .map(|v| crate::embedded::unescape(&v.raw));
         }
     }
     Ok(s)

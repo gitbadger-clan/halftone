@@ -214,8 +214,18 @@ struct InspectArgs {
     /// account and tracking records, device and document identifiers, location),
     /// vendor AI flags and the data-mining value. Unsigned fields, quoted, not
     /// judged. Human output only; with --json they are in those sources' details.
+    /// Identifier values and free-text rights values are masked unless --reveal is
+    /// given.
     #[arg(long)]
     metadata: bool,
+    /// Include the values of embedded identifiers (names, contact details, account and
+    /// tracking records, serial numbers, document identifiers, coordinates) and the
+    /// free text of rights statements (notices, credits, owners, terms, links) in the
+    /// output. Without it every output, JSON included, carries their field names,
+    /// kinds and lengths only, so a report can be shared without repeating what the
+    /// file discloses.
+    #[arg(long)]
+    reveal: bool,
 }
 
 #[derive(Args)]
@@ -343,6 +353,9 @@ struct RegistryOpts {
     trust: TrustConfig,
     /// Only `inspect` exposes this; every other command stays offline.
     fetch_remote_manifests: bool,
+    /// Only `inspect` exposes this; every other command keeps identifier and free-text
+    /// rights values masked.
+    reveal: bool,
 }
 
 fn registry(o: &RegistryOpts) -> Result<Registry> {
@@ -377,9 +390,11 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
             halftone_container::data_mining::DataMiningReservation,
         ));
         reg.push(Box::new(halftone_container::vendor_ai::VendorAiFlag));
-        reg.push(Box::new(halftone_container::rights::RightsStatements));
+        reg.push(Box::new(halftone_container::rights::RightsStatements {
+            reveal: o.reveal,
+        }));
         reg.push(Box::new(
-            halftone_container::identifiers::EmbeddedIdentifiers,
+            halftone_container::identifiers::EmbeddedIdentifiers { reveal: o.reveal },
         ));
         reg.push(Box::new(halftone_container::gcontainer::ContainerDirectory));
         reg.push(Box::new(halftone_container::mpf::MpfIndex));
@@ -424,6 +439,7 @@ fn main() -> Result<()> {
                 fingerprints: None,
                 trust: TrustConfig::default(),
                 fetch_remote_manifests: false,
+                reveal: false,
             })?;
             for (layer, id) in reg.ids() {
                 println!("{layer:?}\t{}\t{}", id.name, id.version);
@@ -536,6 +552,7 @@ fn inspect(a: InspectArgs) -> Result<()> {
             home: None,
         },
         fetch_remote_manifests: a.fetch_remote_manifests,
+        reveal: a.reveal,
     })?;
     let glyphs = Glyphs::detect();
     let mut any_present = false;
@@ -675,6 +692,7 @@ fn survive(a: SurviveArgs) -> Result<()> {
         // A survival table measures what the bytes carry; a fetched manifest is not
         // carried by the file, so survive never fetches.
         fetch_remote_manifests: false,
+        reveal: false,
     })?;
     let suite = match &a.suite {
         Some(s) => parse_suite(s).map_err(|e| anyhow::anyhow!(e))?,
@@ -846,6 +864,7 @@ fn bench(
         fingerprints: None,
         trust: TrustConfig::default(),
         fetch_remote_manifests: false,
+        reveal: false,
     })?;
 
     // (source → (label, value)) for every statistic-bearing evidence.

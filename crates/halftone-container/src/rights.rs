@@ -21,6 +21,12 @@
 //! A copy cut at IIM's field limit (128 bytes for the notice, 32 for the credit) is
 //! the same statement, not a disagreement.
 //!
+//! Free-text values are masked unless the source is built with `reveal`
+//! (`ht inspect --reveal`): notices, credits, owners, terms and links name people and
+//! organisations, and a report should not repeat them unasked. Fields whose value is
+//! a fixed term or a licence URL ([`OPEN_FIELDS`]) are always shown. The status and
+//! the kinds named in the rationale are the same either way.
+//!
 //! Unsigned throughout: these fields record what the last writer stated.
 
 use exif::Tag;
@@ -111,6 +117,28 @@ pub const FIELDS: &[(Kind, &str)] = &[
     ),
 ];
 
+/// Fields shown even when values are masked: a flag, a term from a fixed vocabulary,
+/// or a public licence URL. None of them can name a person.
+pub const OPEN_FIELDS: &[&str] = &[
+    "xmpRights:Marked",
+    "plus:CreditLineRequired",
+    "plus:Reuse",
+    "plus:ModelReleaseStatus",
+    "plus:PropertyReleaseStatus",
+    "plus:MinorModelAgeDisclosure",
+    "cc:license",
+    "Iptc4xmpExt:RightsExprEncType",
+];
+
+/// A field and value as they appear in `details`: with the value, or masked.
+fn shown(field: &str, value: &str, reveal: bool) -> serde_json::Value {
+    if reveal || OPEN_FIELDS.contains(&field) {
+        serde_json::json!({ "field": field, "value": value })
+    } else {
+        serde_json::json!({ "field": field, "masked": true, "length": value.chars().count() })
+    }
+}
+
 /// One statement found.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Statement {
@@ -165,7 +193,9 @@ pub fn scan(e: &Embedded) -> (Vec<Statement>, Vec<Disagreement>) {
             .collect()
     };
 
-    // Copyright notice: three copies, plus PNG's own.
+    // Copyright notice: three copies, plus PNG's own. EXIF can hold two parts
+    // (photographer, then editor); the first is the one the other copies mirror.
+    let exif_first = e.exif_parts(Tag::Copyright).into_iter().next();
     let exif_c = e.exif_text(Tag::Copyright);
     let iim_c = e.iim_values(116);
     let xmp_c = xmp(DC, "dc", "rights", true);
@@ -301,7 +331,7 @@ pub fn scan(e: &Embedded) -> (Vec<Statement>, Vec<Disagreement>) {
         }
     };
     let mut copies: Vec<(&str, &String, bool)> = Vec::new();
-    if let Some(v) = &exif_c {
+    if let Some(v) = &exif_first {
         copies.push(("exif:Copyright", v, false));
     }
     if let Some(v) = iim_c.first() {
@@ -324,7 +354,10 @@ pub fn scan(e: &Embedded) -> (Vec<Statement>, Vec<Disagreement>) {
 
 /// Rights statements evidence source (`rights_statements`).
 #[derive(Debug, Default)]
-pub struct RightsStatements;
+pub struct RightsStatements {
+    /// Put free-text values into `details` and the rationale. Off by default.
+    pub reveal: bool,
+}
 
 impl EvidenceSource for RightsStatements {
     fn id(&self) -> SourceId {
@@ -357,18 +390,29 @@ impl EvidenceSource for RightsStatements {
         kinds.dedup();
         let nouns: Vec<String> = kinds.iter().map(|k| k.noun().to_string()).collect();
 
+        let masked_note = if self.reveal {
+            ""
+        } else {
+            " Free-text values are masked here (--reveal includes them)."
+        };
         let (status, rationale) = if let Some(d) = disagreements.first() {
             let copies: Vec<String> = d
                 .copies
                 .iter()
-                .map(|(f, v)| format!("{f} = \"{v}\""))
+                .map(|(f, v)| {
+                    if self.reveal {
+                        format!("{f} = \"{v}\"")
+                    } else {
+                        f.clone()
+                    }
+                })
                 .collect();
             (
                 Status::Inconclusive,
                 format!(
                     "The copies of the {} disagree: {}. They are meant to be identical, so \
                      something rewrote one and not the others; this source does not pick which \
-                     one counts. {CAVEAT}",
+                     one counts.{masked_note} {CAVEAT}",
                     d.statement,
                     copies.join("; ")
                 ),
@@ -397,7 +441,7 @@ impl EvidenceSource for RightsStatements {
                 Status::Present,
                 format!(
                     "The file's metadata carries {}; details lists each statement with its \
-                     field. {CAVEAT}",
+                     field.{masked_note} {CAVEAT}",
                     join_and(&nouns)
                 ),
             )
@@ -410,8 +454,28 @@ impl EvidenceSource for RightsStatements {
             calibration: None,
             rationale,
             details: serde_json::json!({
-                "statements": found,
-                "disagreements": disagreements,
+                "statements": found
+                    .iter()
+                    .map(|s| {
+                        let mut v = shown(&s.field, &s.value, self.reveal);
+                        v["kind"] = serde_json::json!(s.kind);
+                        v
+                    })
+                    .collect::<Vec<_>>(),
+                "disagreements": disagreements
+                    .iter()
+                    .map(|d| {
+                        serde_json::json!({
+                            "statement": d.statement,
+                            "copies": d
+                                .copies
+                                .iter()
+                                .map(|(f, v)| shown(f, v, self.reveal))
+                                .collect::<Vec<_>>(),
+                        })
+                    })
+                    .collect::<Vec<_>>(),
+                "values_masked": !self.reveal,
                 "xmp_packets": e.xmp.len(),
                 "xmp_incomplete": e.xmp_incomplete(),
                 "has_exif": e.has_exif,
@@ -432,9 +496,10 @@ mod tests {
         xmlns:plus='http://ns.useplus.org/ldf/xmp/1.0/' \
         xmlns:cc='http://creativecommons.org/ns#'";
 
+    /// Revealed, so the tests can check what was read.
     fn assess(bytes: Vec<u8>) -> Evidence {
         let a = Asset::from_bytes(bytes, None).unwrap();
-        RightsStatements.assess(&a).unwrap()
+        RightsStatements { reveal: true }.assess(&a).unwrap()
     }
 
     fn has(ev: &Evidence, field: &str, value: &str) -> bool {
@@ -566,6 +631,75 @@ mod tests {
 
         assert!(same("abc", "abc", None));
         assert!(!same("abc", "abcd", None));
+    }
+
+    #[test]
+    fn free_text_is_masked_unless_revealed_and_fixed_terms_stay_visible() {
+        let x = packet(
+            NS,
+            &format!(
+                "{}<xmpRights:Marked>True</xmpRights:Marked>\
+                 <cc:license rdf:resource='https://creativecommons.org/licenses/by/4.0/'/>\
+                 <photoshop:Credit>Someone Else Agency</photoshop:Credit>",
+                rights("(c) 2026 Ada Example")
+            ),
+        );
+        let bytes = jpeg(
+            Some(&x),
+            Some(&exif(&[(0x8298, "(c) 2026 Another Name")], &[])),
+            &[],
+        );
+        let a = Asset::from_bytes(bytes, None).unwrap();
+
+        let masked = RightsStatements::default().assess(&a).unwrap();
+        let text = serde_json::to_string(&masked).unwrap();
+        for secret in ["Ada Example", "Another Name", "Someone Else Agency"] {
+            assert!(!text.contains(secret), "{secret} leaked: {text}");
+        }
+        // The disagreement is still reported, by field.
+        assert_eq!(masked.status, Status::Inconclusive);
+        assert!(
+            masked
+                .rationale
+                .contains("disagree: exif:Copyright; dc:rights.")
+        );
+        assert!(
+            masked
+                .rationale
+                .contains("masked here (--reveal includes them)")
+        );
+        assert_eq!(
+            masked.details["disagreements"][0]["copies"][0],
+            serde_json::json!({ "field": "exif:Copyright", "masked": true, "length": 21 })
+        );
+        // Fixed terms and the licence URL say nothing about a person.
+        assert!(has(&masked, "xmpRights:Marked", "True"));
+        assert!(has(
+            &masked,
+            "cc:license",
+            "https://creativecommons.org/licenses/by/4.0/"
+        ));
+        assert_eq!(masked.details["values_masked"], true);
+
+        let open = RightsStatements { reveal: true }.assess(&a).unwrap();
+        assert!(
+            open.rationale
+                .contains("exif:Copyright = \"(c) 2026 Another Name\"")
+        );
+        assert!(has(&open, "photoshop:Credit", "Someone Else Agency"));
+        assert_eq!(masked.status, open.status);
+    }
+
+    #[test]
+    fn a_two_part_exif_copyright_is_compared_by_its_first_part() {
+        let x = packet(NS, &rights("(c) A. Person"));
+        let ev = assess(jpeg(
+            Some(&x),
+            Some(&exif(&[(0x8298, "(c) A. Person\0(c) An Editor")], &[])),
+            &[],
+        ));
+        assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+        assert!(has(&ev, "exif:Copyright", "(c) A. Person; (c) An Editor"));
     }
 
     #[test]
