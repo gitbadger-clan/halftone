@@ -6,8 +6,11 @@
 //! `DigitalSourceType` and nothing else; a vendor's own yes/no field is a different
 //! statement, in a different vocabulary, and is reported here so it is not lost.
 //!
-//! Only fields in [`FIELDS`] are looked for. That list holds what has been measured in
-//! the corpus, not what might exist: a field is added when a real file carries it.
+//! Two kinds of statement are recognised, both measured on corpus files and nothing
+//! else: a yes/no field ([`FIELDS`]; `ContainsAiGeneratedContent` in the namespace
+//! `https://canva.com/export`), and a fixed phrase in the credit line
+//! ([`CREDIT_PHRASES`]; `Made with Google AI`). The lists hold what real files
+//! carry, not what might exist: an entry is added when a file is measured with it.
 //!
 //! Status semantics:
 //! - `Present`: a known field says yes.
@@ -38,12 +41,19 @@ pub const FIELDS: &[Field] = &[Field {
             content",
 }];
 
+/// Credit-line texts that are a vendor's AI statement, matched whole (letter case
+/// aside) in `photoshop:Credit` and the IIM credit. Any other credit line is a credit
+/// line and is reported by `rights_statements` only.
+pub const CREDIT_PHRASES: &[&str] = &["Made with Google AI"];
+
+const PHOTOSHOP: &str = "http://ns.adobe.com/photoshop/1.0/";
+
 /// One occurrence of a known field.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Flag {
-    /// The field's local name.
+    /// The field's local name (`Credit` for a credit-line phrase).
     pub field: &'static str,
-    /// Prefix as written.
+    /// Prefix as written (`iim` for the IIM credit).
     pub prefix: String,
     /// Namespace URI the prefix is bound to, when the packet declares it.
     pub namespace: Option<String>,
@@ -98,10 +108,42 @@ impl EvidenceSource for VendorAiFlag {
                 });
             }
         }
+        let is_phrase = |v: &str| {
+            CREDIT_PHRASES
+                .iter()
+                .any(|p| p.eq_ignore_ascii_case(v.trim()))
+        };
+        for v in e.xmp_values(PHOTOSHOP, "photoshop", "Credit", false) {
+            if is_phrase(&v.value) {
+                flags.push(Flag {
+                    field: "Credit",
+                    says: Some(true),
+                    prefix: v.prefix,
+                    namespace: v.namespace,
+                    value: v.value,
+                });
+            }
+        }
+        for v in e.iim_values(110) {
+            if is_phrase(&v) {
+                flags.push(Flag {
+                    field: "Credit",
+                    says: Some(true),
+                    prefix: "iim".into(),
+                    namespace: None,
+                    value: v,
+                });
+            }
+        }
         let yes = flags.iter().any(|f| f.says == Some(true));
         let no = flags.iter().any(|f| f.says == Some(false));
         let unknown: Vec<&Flag> = flags.iter().filter(|f| f.says.is_none()).collect();
-        let known: Vec<&str> = FIELDS.iter().map(|f| f.name).collect();
+        let mut known: Vec<String> = FIELDS.iter().map(|f| f.name.to_string()).collect();
+        known.extend(
+            CREDIT_PHRASES
+                .iter()
+                .map(|p| format!("the credit line \"{p}\"")),
+        );
 
         const CAVEAT: &str = "This is an unsigned statement by whatever software last saved the \
             file: it records what that software stated, verifies nothing about how the content \
@@ -162,8 +204,8 @@ impl EvidenceSource for VendorAiFlag {
             (
                 Status::Present,
                 format!(
-                    "XMP carries the vendor field {}: the writing application states that the \
-                     file contains AI-generated content. This field is not part of the IPTC \
+                    "The file's metadata carries a vendor AI statement, {}: the writing \
+                     application states that the content is AI-generated. This is not the IPTC \
                      DigitalSourceType vocabulary, so marking_metadata does not report it. \
                      {CAVEAT}",
                     shown(f)
@@ -284,6 +326,39 @@ mod tests {
             assert!(ev.rationale.contains("Absence says nothing about origin"));
             assert_eq!(ev.details["flags"], serde_json::json!([]));
         }
+    }
+
+    #[test]
+    fn the_measured_credit_phrase_is_a_statement_and_other_credits_are_not() {
+        let credit = |text: &str| {
+            packet(
+                "xmlns:photoshop='http://ns.adobe.com/photoshop/1.0/'",
+                &format!("<photoshop:Credit>{text}</photoshop:Credit>"),
+            )
+        };
+        let ev = assess(Some(&credit("Made with Google AI")));
+        assert_eq!(ev.status, Status::Present);
+        assert!(
+            ev.rationale
+                .contains("photoshop:Credit = Made with Google AI"),
+            "{}",
+            ev.rationale
+        );
+        assert_eq!(ev.details["flags"][0]["field"], "Credit");
+
+        for other in ["Example Agency", "Made with Google AI and a camera", ""] {
+            assert_eq!(
+                assess(Some(&credit(other))).status,
+                Status::Absent,
+                "{other}"
+            );
+        }
+        // The IIM copy counts too.
+        let a =
+            Asset::from_bytes(jpeg(None, None, &[(110, b"made with google ai")]), None).unwrap();
+        let ev = VendorAiFlag.assess(&a).unwrap();
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(ev.details["flags"][0]["prefix"], "iim");
     }
 
     #[test]
