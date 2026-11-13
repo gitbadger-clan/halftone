@@ -19,7 +19,8 @@ they refuse: a missing value once filed phone shots under 04. Files keep
 the extension they were delivered with (SOURCE.md naming rule). `-f` on grab and take
 replaces an existing file of the same stem, under any extension, once the new copy
 has passed its check, and keeps the old copy in /tmp/ht-replaced/ (cleared on
-restart).
+restart). When the new copy has the same sha256 as the file it replaces, a warning
+says so: the capture probably produced no new file.
 
 Every copy is checked before it gets its name: Android pulls by the sha256 the phone
 computes, iOS pulls by the size before and after reading plus the SHA-1 the device
@@ -120,15 +121,20 @@ def refuse_existing(folder: Path, stem: str, force: bool, again: str) -> None:
 def install(new: Path, folder: Path, stem: str) -> Path:
     """Give a checked file its name: move every old <stem>.* to /tmp/ht-replaced/
     first, so one name never holds two versions. Runs only after the new copy passed
-    its check, so a failed copy never costs the old file its place."""
+    its check, so a failed copy never costs the old file its place. An old file with
+    the new copy's sha256 is still replaced, with a warning."""
     old = existing(folder, stem)
     if old:
+        new_sha = sha256_of(new)
         REPLACED.mkdir(parents=True, exist_ok=True)
         stamp = time.strftime("%Y%m%d-%H%M%S")
         for o in old:
+            same = sha256_of(o) == new_sha
             kept = REPLACED / f"{stamp}-{o.name}"
             shutil.move(o, kept)
             print(f"replaced: {o} (old copy: {kept})")
+            if same:
+                warn_same(o.name, new_sha)
     dst = folder / f"{stem}.{new.name.rsplit('.', 1)[-1]}"
     os.replace(new, dst)
     return dst
@@ -151,6 +157,12 @@ def sha256_of(p: Path) -> str:
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def warn_same(name: str, sha: str) -> None:
+    """Say that a replacement changed nothing: the new copy has the old file's bytes."""
+    print(f"{C.YELLOW}warning: the new copy is byte-identical to the {name} it replaced "
+          f"(sha256 {sha[:16]}…); the capture may not have produced a new file{C.RESET}")
 
 
 def mime(p: Path) -> str:
@@ -760,10 +772,13 @@ def ios_pull(remote: Annotated[str, typer.Argument(help="Device path, e.g. /DCIM
         dst = dst / posixpath.basename(remote)
     if dst.exists() and not force:
         die(f"exists: {dst} (-f overwrites)", 1)
+    old_sha = sha256_of(dst) if dst.is_file() else None
 
     async def go(udid, info, afc):
         sha = await ios_pull_verified(afc, remote, dst)
         print(f"ok  {dst}  {mime(dst)}  sha256 {sha}")
+        if sha == old_sha:
+            warn_same(dst.name, sha)
     asyncio.run(with_afc(device, go))
 
 
