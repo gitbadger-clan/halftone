@@ -29,7 +29,7 @@ as `ht inspect` reads it.
   Signal `file-android` row ran the other way (2026-11-13).
 - Receiving on a second device is deliberate: the sending client can show its
   own cached original.
-- Devices: macOS TODO version; Pixel 9 Pro Fold, Android TODO version.
+- Devices: macOS 27.2.1; Pixel 9 Pro Fold, Android 17.
 - Modes: `document` / `file` = the app's send-as-file path; `photo` = its
   default compressed image path; `photo-hd` = its HD option, collected for the
   Gemini and Fold inputs only, in all three apps.
@@ -49,10 +49,30 @@ as `ht inspect` reads it.
 Every compressed or HD send removed the C2PA manifest and all XMP, and with the
 XMP the Meta DigitalSourceType marking and the Canva vendor flag. Both PNG
 inputs came back as JPEG on every such route. Only a byte-identical file send
-kept anything. TODO: pixel sizes per mode, and whether the Fold gain map and
-any EXIF survive (`dev htc layout`, `ht inspect`).
+kept anything.
 
-## WhatsApp — desktop 26.37.76, Android 2.26.43.76
+Delivered pixel sizes (inputs: Gemini 2752×1536, ChatGPT 1448×1086, Meta
+1920×1280, Canva 1264×1264, Fold 3000×4000):
+
+| Route | What it does to the frame |
+|---|---|
+| WhatsApp `photo` | longest side capped at 1600 (Gemini 1600×893, Fold 1200×1600); ChatGPT and Canva, already smaller, keep their size |
+| WhatsApp `photo-hd` | full size kept (Gemini 2752×1536, Fold 3000×4000) |
+| Telegram `photo` | longest side capped at 1280 (Gemini 1280×714, Fold 960×1280) |
+| Telegram `photo-hd` | Gemini 2560×1429; the Fold file is 960×1280, the same as its standard photo, so HD changed nothing for it. TODO: confirm the HD option was used for that send |
+| Signal `photo` and `file` | Gemini 2048×1143, Fold 1536×2048; ChatGPT, Meta and Canva keep their size |
+| Signal `photo-hd` | larger: Gemini 2752×1536, Fold 2304×3072 |
+| Signal `file-android` | Gemini 2048×1143, Fold 1536×2048, ChatGPT 1024×768; Meta and Canva unchanged |
+
+WhatsApp HD is the one route that keeps every pixel and still removes the
+manifest and the XMP: the image is intact, its provenance is not.
+
+Signal Desktop's `file` and `photo` rows have the same dimensions and the same
+file sizes for all five inputs, so choosing File appears to change nothing on
+that client. TODO: confirm by sha256 and, if they match, drop one of the two
+rows. TODO: whether the Fold gain map survives any route (`dev htc layout`).
+
+## WhatsApp — desktop 26.44.74, Android 2.26.43.76
 
 - Chat: "Message yourself".
 - Media auto-download was on (default) and unchanged throughout. Small files
@@ -79,7 +99,7 @@ any EXIF survive (`dev htc layout`, `ht inspect`).
   photo.
 - Files (12): `document` ×5, `photo` ×5, `photo-hd` ×2.
 
-## Telegram — desktop 13.1.0.283357 (TODO which Mac client), Android 13.2.1
+## Telegram — Telegram.app (the native macOS client) 13.1.0, Android 13.2.1
 
 - Chat: "Saved Messages".
 - The send dialog offers three options for an image: with compression
@@ -166,10 +186,9 @@ any EXIF survive (`dev htc layout`, `ht inspect`).
 
 ## Results
 
-TODO: rerun after adding the `file-android` row (41 files). Before it:
-differential run 2026-11-12 (expectations collected 2026-11-12T20:55:07Z):
-36 of 36 files compared, 0 disagreements; rights and identifier values compared
-by keyed fingerprint; signals rubric compared on 10 nodes in 8 files, integrity
-and conformance rubrics on 296 checks in 8 files (the eight files that still
-carry a manifest: WhatsApp `document` and Telegram `file`, without the Meta
-input). Whole corpus: 366 of 366 files across 8 corpora, 0 disagreements.
+Differential run 2026-11-13 (ground truth 2026-11-13T06:49:43Z): 41 of 41 files
+compared, 0 disagreements; rights and identifier values compared by keyed
+fingerprint; signals rubric compared on 10 nodes in 8 files, integrity and
+conformance rubrics on 296 checks in 8 files (the eight files that still carry
+a manifest: WhatsApp `document` and Telegram `file`, without the Meta input).
+Whole corpus: 377 of 377 files across 9 corpora, 0 disagreements.
