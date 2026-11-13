@@ -1,0 +1,3484 @@
+{
+  "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
+  "collected_at": "2026-11-13T06:49:43Z",
+  "conformance_rubrics": {
+    "conformance-0.2-spec-2.4": "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9",
+    "integrity": "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76"
+  },
+  "corpus": "corpus/differential/10-messaging",
+  "files": {
+    "signal__file-android__canva-canva-ai__p1__2.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d1a017e1eb42164e54c59e26b54845fea1a94ae3e1f358c3998bf3464411dcbb",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 1164886
+    },
+    "signal__file-android__chatgpt-base__p1__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "1cff63163c1265fae0287cebde7583c86cc0a4155e07036bb0aae390438d66e3",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 1050317
+    },
+    "signal__file-android__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "03284bde78d555fab8673142be045458cf676565ceb0f9f0ad5d38d5e55c3564",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 202343
+    },
+    "signal__file-android__meta-ai-instant__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7dc3f34dd37522e8bf2e2ed8267f2190ae3371eba9eabd33dffbd05b58530c6d",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 153185
+    },
+    "signal__file-android__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "bd78e3a064212d9600cc78909dcac3cf43dcaaaea3dd9d2497e087cf439f1136",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 324957
+    },
+    "signal__file__canva-canva-ai__p1__2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d8ae4a57150e50a83d6ca2425628be089d01fcbf95682b40c3fde3f60800222b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 162605
+    },
+    "signal__file__chatgpt-base__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "233805c45faaa45f4d9d4783a2743be3aa5e03baf3758938229eb6236a90c0d5",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 210164
+    },
+    "signal__file__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0517c3c65c0483c8967293dd486b153ab669106d89b6ad3d2aa9d2de89d1eded",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 203667
+    },
+    "signal__file__meta-ai-instant__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0196f39354a3faf21aa3c289f9b267234f348b3e57ea1242157248ccd8d3bacd",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 206655
+    },
+    "signal__file__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "6f763e66fcc5e44c5e0c6ea34837b68455d2c914c9b5bbd9676f126e01a70d8c",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 310458
+    },
+    "signal__photo-hd__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7cbd8b07422650ae29b9f3649c41172f57cc61da3c32b2d9477380fcf42c3a2d",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 358312
+    },
+    "signal__photo-hd__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "f1c5a97494370ee88794db60ad0b05f8ce5bdef742f5827c03d461611552dae4",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 582705
+    },
+    "signal__photo__canva-canva-ai__p1__2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d8ae4a57150e50a83d6ca2425628be089d01fcbf95682b40c3fde3f60800222b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 162605
+    },
+    "signal__photo__chatgpt-base__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "233805c45faaa45f4d9d4783a2743be3aa5e03baf3758938229eb6236a90c0d5",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 210164
+    },
+    "signal__photo__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0517c3c65c0483c8967293dd486b153ab669106d89b6ad3d2aa9d2de89d1eded",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 203667
+    },
+    "signal__photo__meta-ai-instant__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "0196f39354a3faf21aa3c289f9b267234f348b3e57ea1242157248ccd8d3bacd",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 206655
+    },
+    "signal__photo__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "6f763e66fcc5e44c5e0c6ea34837b68455d2c914c9b5bbd9676f126e01a70d8c",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 310458
+    },
+    "telegram__file__canva-canva-ai__p1__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Canva",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.expired"
+        ],
+        "validation_state": "Invalid"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "e9cb7ddc3a69c915fec701e8a847d07c"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "86262d5c5151669498665d0bbb79db74"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "ba8c33baeebf1009b4e2250325606bc1"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "240f7d60a619279288bee334254b8b3e"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "6fe64d96534d53313ba73d1036c725bf"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "6c368b8a3568c861655546b30a24bf0a06fab8713bdecf3ac4d50195a8278ab7",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:8b1ec267-aedd-4f3d-83d6-6a534fd00968",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2061831
+    },
+    "telegram__file__chatgpt-base__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d7886446fe56120343d7e39dcdf454b74b23346610e507c1f3f0b14230ebe3c1",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:dca8e5f7-0303-40b6-a2d2-bdb24639eda2",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2101196
+    },
+    "telegram__file__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e15b59104cdaab2a79cb68c3ca20d107d9cde58706ef9af9bfe2935c0e5664c6",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:86969e8f-ff9d-6817-2581-4f2266f7b794",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:e65b9a59-cc36-2bf1-2773-403cc930f679",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:86969e8f-ff9d-6817-2581-4f2266f7b794",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2888720
+    },
+    "telegram__file__meta-ai-instant__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "b52e7abe2bd4766db694b1ac742962f4"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "9a086197e09872456d7c48bae0257f4727db0762ca61c673b241cffd719e981b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 164373
+    },
+    "telegram__file__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "generative_depth": null,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2026-11-09T20:49:15Z",
+          "not_before": "2026-08-12T20:49:16Z",
+          "serial": "DB71F79047DAD80BB2967A7A8B0450CC4282B5"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "7840ac112940c6cdd81b20ae69215520b425a722190c278c898fbfc55a4c3e9d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:c7d19524-dfe7-3294-a22b-4813c10d362d",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2497313
+    },
+    "telegram__photo-hd__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "b2e23cd9678d30adc1a0a157dfd08db367cd586e689414db39ecabd861d9fcc8",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 304930
+    },
+    "telegram__photo-hd__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "2a453df44e678871fbfd4a82ffb4a0e1187ea8e585e068cc36b6b5194b211a54",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 224054
+    },
+    "telegram__photo__canva-canva-ai__p1__2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "871dcd38fe3414f8a43bacde45f73bec40cd4968a5d2eb0b8ec9bef0a34577c6",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 126332
+    },
+    "telegram__photo__chatgpt-base__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "83e4987761017c09a0cb2abcee29c07d5324351c24adfc9b2552a1b527215648",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 133417
+    },
+    "telegram__photo__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "7d91d222617725021a0025ecda03e033fc5ec17c76e7ff3a28033112e6b4d37a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 91744
+    },
+    "telegram__photo__meta-ai-instant__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "63e6f281cca8dec31bafbc051ca0e8f2a5adc854c4afe12e6711d4294be28237",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 95631
+    },
+    "telegram__photo__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e921b78d6487b4079a83cc8cddd529432946394db41dbbafa07babbe5f585bdd",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 150342
+    },
+    "whatsapp__document__canva-canva-ai__p1__2.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "c2pa-rs 0.89.3",
+        "claim_version": 2,
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Canva",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2026-09-17T23:52:03Z",
+          "not_before": "2026-09-09T23:52:03Z",
+          "serial": "615F57939F25D12A3820DCCDFA21862F"
+        },
+        "time_stamp": "none",
+        "time_stamp_codes": [],
+        "validation_codes": [
+          "signingCredential.untrusted",
+          "signingCredential.expired"
+        ],
+        "validation_state": "Invalid"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [
+          "signingCredential.invalid"
+        ],
+        "hard_binding": null,
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "Attrib:ExtId",
+              "hmac": "0ed611facacf7bcefac1747c8e7dfd60"
+            },
+            {
+              "field": "Attrib:FbId",
+              "hmac": "2b2dbcd6d5e895ccd0922507b67c968f"
+            },
+            {
+              "field": "Attrib:Data",
+              "hmac": "f5a233f1ea95e4090236ef37473b6791"
+            },
+            {
+              "field": "Attrib:TouchType",
+              "hmac": "65028e1d745dd959833b55d6a11b0acd"
+            },
+            {
+              "field": "Attrib:Created",
+              "hmac": "e8c46a7c1d0e94f10cfef0aaa9a3a0e2"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [
+              "Yes"
+            ],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "6c368b8a3568c861655546b30a24bf0a06fab8713bdecf3ac4d50195a8278ab7",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_partlyGenAICreation"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:8b1ec267-aedd-4f3d-83d6-6a534fd00968",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2061831
+    },
+    "whatsapp__document__chatgpt-base__p1__1.png": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "OpenAI Media Service API",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "OpenAI OpCo, LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-04-23T15:51:04Z",
+          "not_before": "2026-04-22T15:51:05Z",
+          "serial": "0BA5FCE90E708CF2058031EE441C6473"
+        },
+        "time_stamp": "untrusted",
+        "time_stamp_codes": [
+          "timeStamp.untrusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "d7886446fe56120343d7e39dcdf454b74b23346610e507c1f3f0b14230ebe3c1",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:dca8e5f7-0303-40b6-a2d2-bdb24639eda2",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_nonEditorial"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2101196
+    },
+    "whatsapp__document__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA Core Generator Library 998659692:998659692",
+        "claim_version": 2,
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "generative_depth": 0,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2027-02-20T15:15:53Z",
+          "not_before": "2026-02-25T15:15:54Z",
+          "serial": "A7336C0C37E0036FF781EC18F4DA0FC3B4DD62"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e15b59104cdaab2a79cb68c3ca20d107d9cde58706ef9af9bfe2935c0e5664c6",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:86969e8f-ff9d-6817-2581-4f2266f7b794",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:e65b9a59-cc36-2bf1-2773-403cc930f679",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_fullyGenAIMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:86969e8f-ff9d-6817-2581-4f2266f7b794",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions",
+              "transformation:signal_perceptibleGenAI"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2888720
+    },
+    "whatsapp__document__meta-ai-instant__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:SpecialInstructions",
+              "hmac": "7377d50d232e8157ff1f4f7c44398668"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "sha256": "9a086197e09872456d7c48bae0257f4727db0762ca61c673b241cffd719e981b",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 164373
+    },
+    "whatsapp__document__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2",
+          "c2pa.hash.data.part",
+          "c2pa.hash.data.part",
+          "c2pa.hash.multi-asset"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 912750169:936816820",
+        "claim_version": 2,
+        "digital_source_type": [
+          "computationalCapture"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/computationalCapture"
+        ],
+        "generative_depth": null,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2026-11-09T20:49:15Z",
+          "not_before": "2026-08-12T20:49:16Z",
+          "serial": "DB71F79047DAD80BB2967A7A8B0450CC4282B5"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 6
+      },
+      "sha256": "7840ac112940c6cdd81b20ae69215520b425a722190c278c898fbfc55a4c3e9d",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:c7d19524-dfe7-3294-a22b-4813c10d362d",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 2497313
+    },
+    "whatsapp__photo-hd__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "32b3a7b1e90eade13d274f29135c09713eba1e56043bae59bf7469e56278a7ec",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 357145
+    },
+    "whatsapp__photo-hd__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "a6568418221af201f445a43c9cdda15f1ed25bb23e14ac222d92fb8b284d0adf",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 968473
+    },
+    "whatsapp__photo__canva-canva-ai__p1__2.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "32e115f69adb441ac91987153682a551065f91cd4b086869b8a0b705c5408769",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 133798
+    },
+    "whatsapp__photo__chatgpt-base__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "13e84bfa88c3bcd99d6725394dd86993c51d8d4263de8cc8cafdc1875299101a",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 185079
+    },
+    "whatsapp__photo__gemini-app-nano-banana__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "9f6fd7a831866ac3579a430e2d3858f72eceb08788f1458e97fb913292674580",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 155318
+    },
+    "whatsapp__photo__meta-ai-instant__p1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "dfbfccaa56a704f85f31ee949927a648c966cb6e84f6917b48d1dd3f8e559ac9",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 152943
+    },
+    "whatsapp__photo__pixel9fold-default__s01__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "043c1e019e24cec54f579b8b289c63e3f9eb12e65409e3815495254758794beb",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 239407
+    }
+  },
+  "match_by": "sha256",
+  "schema": "halftone-differential-expectations/1",
+  "signals_rubric": {
+    "conformance_public": "da71a72",
+    "sha256": "0502e989e025b32a0b253645991abf56d2cd14860a1e7cda10e6921bc5ba19a8",
+    "version": "1.0"
+  },
+  "tools": {
+    "c2patool": "c2patool 0.28.4",
+    "credentio": "ee4078b",
+    "exiftool": "13.59",
+    "json-formula-py": "327a8d75669673c10db3051da816311ac2df8a32",
+    "openssl": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)"
+  },
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
+  "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
+  "trust_config_sha256": "c1f1b183e854cd6f5784f0eb687fd5da691c51f8aec67dfd7b3e42368f840afa",
+  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem",
+  "value_fingerprints": {
+    "algorithm": "HMAC-SHA256/128 over file NUL field NUL value",
+    "key_id": "479d5f32"
+  }
+}
