@@ -221,7 +221,7 @@ mod tests {
     fn nested_packs_subcommands() {
         let c = complete(&["ht", "packs", ""], 2);
         assert!(
-            c.contains(&"list".to_string()) && c.contains(&"update".to_string()),
+            c.iter().any(|x| x == "list") && c.iter().any(|x| x == "update"),
             "{c:?}"
         );
     }
@@ -229,20 +229,20 @@ mod tests {
     #[test]
     fn only_layers_complete_after_a_comma() {
         let c = complete(&["ht", "inspect", "--only", "container,m"], 3);
-        assert!(c.contains(&"container,manifest".to_string()), "{c:?}");
-        assert!(c.contains(&"container,mark".to_string()), "{c:?}");
+        assert!(c.iter().any(|x| x == "container,manifest"), "{c:?}");
+        assert!(c.iter().any(|x| x == "container,mark"), "{c:?}");
     }
 
     #[test]
     fn value_enums_complete() {
         let c = complete(&["ht", "fingerprint", "--class", ""], 3);
         assert!(
-            c.contains(&"camera".to_string()) && c.contains(&"generator".to_string()),
+            c.iter().any(|x| x == "camera") && c.iter().any(|x| x == "generator"),
             "{c:?}"
         );
         let c = complete(&["ht", "packs", "update", "--only", ""], 4);
         assert!(
-            c.contains(&"trust".to_string()) && c.contains(&"packs".to_string()),
+            c.iter().any(|x| x == "trust") && c.iter().any(|x| x == "packs"),
             "{c:?}"
         );
         let c = complete(&["ht", "completions", ""], 2);
