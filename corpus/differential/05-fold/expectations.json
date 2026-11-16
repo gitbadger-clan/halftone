@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-13T10:20:03Z",
+  "collected_at": "2026-11-16T11:31:49Z",
   "conformance_rubrics": {
     "conformance-0.2-spec-2.4": "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9",
     "integrity": "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76"
@@ -1215,6 +1215,295 @@
       },
       "size_bytes": 1133269
     },
+    "google-photos__revert__save__e1__1.jpg": {
+      "c2patool": {
+        "assertions": [
+          "c2pa.actions.v2"
+        ],
+        "claim_generator": "Google C2PA SDK for Android 1011684257:1011734868",
+        "claim_version": 2,
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "generative_depth": null,
+        "issuer": "Google LLC",
+        "lineage_digital_source_type": [
+          "computationalCapture"
+        ],
+        "present": true,
+        "signing_cert": {
+          "not_after": "2026-12-13T09:18:03Z",
+          "not_before": "2026-11-13T09:18:04Z",
+          "serial": "11CC696CD0A9C6AF527B85F3E6AA7C7F83B730"
+        },
+        "time_stamp": "trusted",
+        "time_stamp_codes": [
+          "timeStamp.trusted",
+          "timeStamp.validated"
+        ],
+        "validation_codes": [],
+        "validation_state": "Trusted"
+      },
+      "conformance": {
+        "present": true,
+        "rubrics": {
+          "conformance-0.2-spec-2.4": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "active_manifest_urn"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "all_actions_included_opened"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "alternative_content_representation_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "discouraged_legacy_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "forbidden_labels_in_external_references"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "inception_action_position"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_relationship_values"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_choice"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_mandatory_validation_results"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "ingredient_v3_no_active_manifest"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_all_actions_included"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_created_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "mandatory_dst_for_perceptible_transformations"
+              },
+              {
+                "category": "validation",
+                "outcome": "not_met",
+                "trait": "mandatory_spec_version"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_box_hash_for_tiff"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_deprecated_claim_fields"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_dst_for_opened_action"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_action_parameters"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unrecognized_custom_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_actions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_unsupported_assertions"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "no_url_in_hashes"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "opened_action_ingredient_reference"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "review_ratings_datasource"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          },
+          "integrity": {
+            "checks": [
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "trusted_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "valid_success"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_data_present"
+              },
+              {
+                "category": "validation",
+                "outcome": "met",
+                "trait": "well_formed_success"
+              }
+            ]
+          }
+        }
+      },
+      "credentio": {
+        "failures": [],
+        "hard_binding": "match",
+        "multi_asset": [],
+        "parts": {},
+        "present": true
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "64f6fef9a62ffef74e21531d0b2a552df1cf5f323fda1c4f08b79f4f42d80ce2",
+      "signals": {
+        "crjson_generator": {
+          "name": "Google C2PA Toolkit",
+          "version": "0.0.1"
+        },
+        "nodes": [
+          {
+            "inception": [],
+            "ingredients": [
+              {
+                "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+                "relationship": "parentOf"
+              }
+            ],
+            "label": "urn:c2pa:5646b6fe-6a86-baa4-7118-4419fc1900dc",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          },
+          {
+            "inception": [
+              "inception:signal_capturedMedia"
+            ],
+            "ingredients": [],
+            "label": "urn:c2pa:7f31b3d8-dc90-1e3b-cb24-4969aa2caf8f",
+            "pseudo": false,
+            "transformation": [
+              "transformation:signal_ambiguousActions"
+            ]
+          }
+        ],
+        "present": true,
+        "statement_errors": 0
+      },
+      "size_bytes": 1595806
+    },
     "google-photos__zoom-enhance__save-copy__s08__1.jpg": {
       "c2patool": {
         "assertions": [
@@ -1508,6 +1797,49 @@
         "statement_errors": 0
       },
       "size_bytes": 397031
+    },
+    "pixel-studio__annotate__app-save__e1__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [
+          "compositeWithTrainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia"
+        ],
+        "embedded": {
+          "identifiers": [],
+          "rights": [
+            {
+              "field": "photoshop:Credit",
+              "hmac": "ee6250eeae247a47cd1a5a04e3c3176b"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "85d22d23288d0cb2df7ad245907a0aaa27a3b40157bb09f7db610772b75effb4",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 3600914
     }
   },
   "match_by": "sha256",

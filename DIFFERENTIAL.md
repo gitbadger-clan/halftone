@@ -600,6 +600,20 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   be explained in the specification's own terms ("the signer did not state that
   this list is complete; other actions may have been performed"), never as a
   sign of tampering.
+- Follow-up 2026-11-16: the first file that is the *shall* case.
+  `05-fold/google-photos__revert__save__e1__1.jpg`, written by Google Photos'
+  "Revert to original" on a Pixel 9 Pro Fold and signed 2026-11-13T12:15:43Z
+  with the Google C2PA SDK for Android, has an active manifest whose actions
+  list is `c2pa.opened` alone, and no `allActionsIncluded`.
+  `validation:all_actions_included_opened` is not met (`ht inspect
+  --conformance`: Conformance 0.2 / Spec 2.4 rubric 28 of 31, integrity rubric
+  6 of 6). Credentio reads the same: the differential run of 2026-11-16
+  compares both rubrics on this file with no disagreement, so this is a finding
+  about the signer, not a difference between tools. The file is a re-encode of
+  the capture, not the capture: an open-and-re-save that changed the bytes and
+  declares nothing more. See `corpus/differential/05-fold/SOURCE.md`. The
+  question to Google gains a second part: this is the one case where the
+  specification requires the field.
 - Status: open; question to Google (whether Pixel Camera and Flow are meant to
   set the field) not yet asked.
 
