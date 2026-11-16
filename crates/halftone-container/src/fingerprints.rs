@@ -237,8 +237,12 @@ impl FingerprintDb {
                     .map(|t| t.keyword.as_str())
                     .collect::<Vec<_>>()
                     .join(", "),
-                match &info.icc_name {
+                // The entry is committed: a profile name that is not a standard one
+                // (it could be a display's or a person's) is noted, not copied.
+                match info.icc_known_name() {
                     Some(n) => format!(", ICC `{n}`"),
+                    None if info.icc_name_withheld() =>
+                        ", ICC profile under a non-standard name".to_string(),
                     None => String::new(),
                 }
             ),
@@ -272,5 +276,37 @@ mod tests {
         let back = FingerprintDb::from_json(&db.to_json()).unwrap();
         assert_eq!(back.lookup(&"ab".repeat(32)).unwrap().writer, "Test Writer");
         assert!(back.lookup("nope").is_none());
+    }
+
+    #[test]
+    fn a_harvested_png_entry_does_not_copy_an_unlisted_profile_name() {
+        let entry = |icc: &str| {
+            let info = PngInfo {
+                chunks: ["IHDR", "iCCP", "IDAT", "IEND"].map(String::from).to_vec(),
+                bit_depth: 8,
+                color_type: 6,
+                icc_name: Some(icc.into()),
+                ..PngInfo::default()
+            };
+            FingerprintDb::harvest_png(&info, "a writer", WriterClass::Screenshot, "unit test")
+        };
+        let known = entry("Display P3");
+        assert!(
+            known.notes.ends_with(", ICC `Display P3`"),
+            "{}",
+            known.notes
+        );
+        let other = entry("ACME UltraView 27Q");
+        assert!(
+            other
+                .notes
+                .ends_with(", ICC profile under a non-standard name"),
+            "{}",
+            other.notes
+        );
+        let json = serde_json::to_string(&other).unwrap();
+        assert!(!json.contains("ACME"), "{json}");
+        // Another unlisted name: the same entry.
+        assert_eq!(other.fingerprint, entry("Other Brand 4K").fingerprint);
     }
 }
