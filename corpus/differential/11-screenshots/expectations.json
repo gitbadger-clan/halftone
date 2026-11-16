@@ -1,0 +1,374 @@
+{
+  "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
+  "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
+  "collected_at": "2026-11-16T12:55:29Z",
+  "conformance_rubrics": {
+    "conformance-0.2-spec-2.4": "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9",
+    "integrity": "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76"
+  },
+  "corpus": "corpus/differential/11-screenshots",
+  "files": {
+    "macos__fullscreen-jpg__screencapture__s05__1.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "27431f5ed016561cf3a372633c45679d85fcfa9ba2346b5903665eb016bd5ff7",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 279349
+    },
+    "macos__fullscreen__screencapture__s01__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "43626adf667d6d5e09ce8d15f29ef09951d5842e8eeed08aa64673ecf5ad031f",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 3060650
+    },
+    "macos__region__screencapture__s02__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "86890435fa8d98ec05c692093821d1dfe896a6b578a4701023d4c7b3fe121959",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 1507295
+    },
+    "macos__window-marked__screencapture__s04__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "fbd0f5eb629add430c82572e338a1aab3265dce7e6246b67700990eb172bd7e7",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 10830116
+    },
+    "macos__window__screencapture__s03__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 4
+      },
+      "sha256": "0481eca3a64f8fbdcc1b8346ea39100a2e1cbdfd55be98e3fa71896741e2c60e",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 4571851
+    },
+    "pixel9fold__app__screenshot__s02__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "e95346ae860c304b6d936c09d2aa5fe6719872100ac2fddbc22067a5b3118381",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 150996
+    },
+    "pixel9fold__home__screenshot__s01__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "842680852cf73c62c5d1198cea0b391a02c5bd978e50b655415ee9e1490bd270",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 1349788
+    },
+    "pixel9fold__photo-marked__screenshot__s04__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "30337a6ee4017e2eb814dd87b5139befa5c57ccc8804623ce634e4d749910ed5",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 2824516
+    },
+    "pixel9fold__scrolling__screenshot__s05__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "6b288cca3a2fe7317f76ebefdcafb793c194a2cc67aa4c7ddaa0f60bfe7fe70e",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 639808
+    },
+    "pixel9fold__web__screenshot__s03__1.png": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "sha256": "2f73e744aca48ef0cdf49549a1c6e8ced0806c07a1503225913310959171cfdb",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 434808
+    }
+  },
+  "match_by": "sha256",
+  "schema": "halftone-differential-expectations/1",
+  "signals_rubric": {
+    "conformance_public": "da71a72",
+    "sha256": "0502e989e025b32a0b253645991abf56d2cd14860a1e7cda10e6921bc5ba19a8",
+    "version": "1.0"
+  },
+  "tools": {
+    "c2patool": "c2patool 0.28.4",
+    "credentio": "ee4078b",
+    "exiftool": "13.59",
+    "json-formula-py": "327a8d75669673c10db3051da816311ac2df8a32",
+    "openssl": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)"
+  },
+  "trust_anchors": "crates/halftone-c2pa/trust/C2PA-TRUST-LIST.pem",
+  "trust_config": "crates/halftone-c2pa/trust/C2PA-EKU-CONFIG.cfg",
+  "trust_config_sha256": "c1f1b183e854cd6f5784f0eb687fd5da691c51f8aec67dfd7b3e42368f840afa",
+  "tsa_anchors": "crates/halftone-c2pa/trust/C2PA-TSA-TRUST-LIST.pem",
+  "value_fingerprints": {
+    "algorithm": "HMAC-SHA256/128 over file NUL field NUL value",
+    "key_id": "479d5f32"
+  }
+}
