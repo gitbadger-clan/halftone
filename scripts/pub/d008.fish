@@ -38,6 +38,9 @@ for tool in ht c2patool jq
         exit 2
     end
 end
+# Not with a binary older than the source: the frame would show the old code's
+# output (scripts/lib/htbin.py). `HT_STALE_OK=1 <this script>` runs anyway.
+uv run scripts/ht-check.py -q; or exit 2
 if test $png = 1; and not type -q freeze
     echo "freeze not found on PATH (brew install charmbracelet/tap/freeze)" >&2
     exit 2

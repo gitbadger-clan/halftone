@@ -294,6 +294,11 @@ published, not tools, so they stay fish and are not converted. New frames are fi
 too. Each one prints the frame by default and renders it with `--png` (freeze), and
 every value in it comes from a command run at render time, never typed in.
 
+A frame that calls `ht` runs `scripts/ht-check.py -q` right after `cd $repo`, before
+its render mode, and stops when the binary is older than the source: a frame must not
+show the old code's output, and `--png` must not draw the error. A frame that takes
+its binary from `$HT` passes it on (`--ht $HT`).
+
 A frame that calls c2patool sources `pub/c2p.fish` after `cd $repo` and calls `c2p`.
 With the default mode its output is identical on any machine with no c2patool config;
 check a changed frame by diffing its same-day output before and after.

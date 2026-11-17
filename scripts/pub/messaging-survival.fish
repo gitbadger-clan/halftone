@@ -22,6 +22,12 @@ set -l repo (git rev-parse --show-toplevel 2>/dev/null); or begin
 end
 cd $repo
 
+set -q HT; or set -g HT ./target/release/ht
+# Not with a binary older than the source: the frame would show the old code's
+# output (scripts/lib/htbin.py). `HT_STALE_OK=1 <this script>` runs anyway. Checked
+# here, before the render mode, so --png stops too and does not draw the error.
+uv run scripts/ht-check.py -q --ht $HT; or exit 2
+
 set -l out scripts/pub/out/messaging-survival.png
 
 # --- render mode: re-run this script under freeze and stop ------------------
@@ -48,7 +54,6 @@ if contains -- --png $argv
 end
 
 # --- setup --------------------------------------------------------------------
-set -q HT; or set -g HT ./target/release/ht
 set -l c corpus/differential
 set -l m $c/10-messaging
 

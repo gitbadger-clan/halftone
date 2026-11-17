@@ -54,6 +54,9 @@ for tool in ht jq
         exit 2
     end
 end
+# Not with a binary older than the source: the frame would show the old code's
+# output (scripts/lib/htbin.py). `HT_STALE_OK=1 <this script>` runs anyway.
+uv run (status dirname)/../ht-check.py -q; or exit 2
 
 set -l files (find $dir -maxdepth 1 -type f -name '*__web-download*' \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) | sort)
 if test (count $files) -eq 0

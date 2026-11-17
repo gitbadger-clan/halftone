@@ -15,6 +15,10 @@ set -l repo (git rev-parse --show-toplevel 2>/dev/null); or begin
     exit 2
 end
 cd $repo
+# Not with a binary older than the source: the frame would show the old code's
+# output (scripts/lib/htbin.py). `HT_STALE_OK=1 <this script>` runs anyway. Checked
+# here, before the render mode, so --png stops too and does not draw the error.
+uv run scripts/ht-check.py -q; or exit 2
 
 set -l f corpus/differential/04-generators/canva__canva-ai__web-download__p1__2.png
 set -l out scripts/pub/out/four-verdicts-(date -u +%Y-%m-%d).png
