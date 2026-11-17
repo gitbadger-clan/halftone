@@ -194,7 +194,7 @@ pub const RULES: &[PngRule] = &[
         zlib: None,
         deflate_block: None,
         deflate_prefix: &[],
-        notes: "Since macOS Monterey, screencapture writes an XMP packet with exif:UserComment = Screenshot, plus pHYs and iCCP (Display P3).",
+        notes: "Four `screencapture` PNGs from macOS 27.2.1 (11-screenshots, 2026-11-13 and 2026-11-16; full screen, region and window): an XMP packet with exif:UserComment = Screenshot, reported since macOS Monterey, and an iCCP chunk named `ICC Profile` that holds the profile of the display the capture came from, not Display P3 as this note used to say. Other macOS versions were not measured.",
     },
     PngRule {
         name: "Apple ImageIO (macOS/iOS export or screenshot)",
