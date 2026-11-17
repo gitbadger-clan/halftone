@@ -177,6 +177,7 @@ inherit dependencies from a module it imports. The exception is `lib/models.py`
 | `exiftool.py` | one long-running ExifTool process (`-stay_open`) for many commands |
 | `pins.py` | the reference pins and how each tool's version is read; `drift()` lists where this machine differs |
 | `corpuskey.py` | the corpus key and the keyed fingerprint that stands in for personal values in the private strata's ground truth |
+| `htbin.py` | `require_ht()`: the `ht` a script runs, refused when older than the source (`HT_STALE_OK=1` allows it) |
 | `complete.py` | tab completion answered by the script itself: `serve(parser_or_app)`; self-test: `python scripts/lib/complete.py` |
 | `envstate.py` | whether bootstrap has prepared the scripts as they are now (read by `dev.py`) |
 | `progress.py` | `Progress` (count, percent, time left) and `step` (spinner) for long runs |
