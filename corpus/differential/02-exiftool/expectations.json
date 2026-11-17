@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-12T05:28:25Z",
+  "collected_at": "2026-11-17T06:07:13Z",
   "conformance_rubrics": null,
   "corpus": "corpus/differential/02-exiftool",
   "files": {
@@ -311,7 +311,12 @@
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "embedded": {
-          "identifiers": [],
+          "identifiers": [
+            {
+              "field": "exif:ImageUniqueID",
+              "value": "72AE2CD63D6C4AE1678418BE48230029"
+            }
+          ],
           "rights": [],
           "vendor_ai": {
             "contains_ai_generated_content": [],
@@ -1224,7 +1229,12 @@
         "digital_source_type": [],
         "digital_source_type_raw": [],
         "embedded": {
-          "identifiers": [],
+          "identifiers": [
+            {
+              "field": "exif:ImageUniqueID",
+              "value": "303230303030313986D2C53F8ABDA2A6"
+            }
+          ],
           "rights": [],
           "vendor_ai": {
             "contains_ai_generated_content": [],

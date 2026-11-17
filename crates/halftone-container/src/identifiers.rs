@@ -8,6 +8,13 @@
 //! Placeholders (`N/A`, `Unknown`, all zeros) and GPS tags without a position are
 //! not identifiers and are left out.
 //!
+//! The EXIF image ID (`ImageUniqueID`) is listed as a document identifier. It is the
+//! value a camera or a screenshot tool gives one image, and every copy that keeps
+//! the EXIF block carries it, so two files with the same ID come from the same
+//! capture. Whether it is unique is the writer's business: a phone's screenshot tool
+//! writes a random UUID, some camera firmware writes the same string into every
+//! file. It is quoted as written like everything else here.
+//!
 //! Values are masked unless the source is built with `reveal` (`ht inspect --reveal`):
 //! `details` then names each field and kind and gives the value's length, not the
 //! value. The listing exists to show what a file discloses, and a report that
@@ -94,7 +101,7 @@ pub const FIELDS: &[(Kind, &str)] = &[
     ),
     (
         Kind::Document,
-        "xmpMM DocumentID, OriginalDocumentID, InstanceID",
+        "EXIF ImageUniqueID, xmpMM DocumentID, OriginalDocumentID, InstanceID",
     ),
     (Kind::Location, "EXIF GPS latitude and longitude"),
 ];
@@ -206,7 +213,11 @@ pub fn scan(e: &Embedded) -> Vec<Identifier> {
         }
     }
 
-    // Documents.
+    // Documents. The EXIF image ID first: what the capturing device wrote, before
+    // what editing software added.
+    if let Some(v) = e.exif_text(Tag::ImageUniqueID) {
+        add(Kind::Document, "exif:ImageUniqueID", v);
+    }
     for name in ["DocumentID", "OriginalDocumentID", "InstanceID"] {
         for v in xmp(XMP_MM, "xmpMM", name, false) {
             add(Kind::Document, &format!("xmpMM:{name}"), v);
@@ -534,6 +545,86 @@ mod tests {
         );
         let ev = assess(jpeg(Some(&x), None, &[]));
         assert_eq!(fields(&ev)[0].1, "{\"doc\":\"D1\",\"user\":\"U1\"}");
+    }
+
+    /// A PNG whose EXIF block is an `eXIf` chunk, as Android's screenshot tool writes.
+    fn png_with_exif(block: &[u8]) -> Vec<u8> {
+        let tiff = block.strip_prefix(b"Exif\0\0").unwrap();
+        let mut out = png(&[]);
+        let iend = out.len() - 12;
+        let mut chunk = (tiff.len() as u32).to_be_bytes().to_vec();
+        chunk.extend_from_slice(b"eXIf");
+        chunk.extend_from_slice(tiff);
+        chunk.extend_from_slice(&[0; 4]);
+        out.splice(iend..iend, chunk);
+        out
+    }
+
+    #[test]
+    fn the_exif_image_id_is_a_document_identifier() {
+        const ID: &str = "3f2b8c1e-7a4d-4e9b-9c0a-5d6e7f809112";
+        // In a JPEG, next to an xmpMM ID: both are listed, the capture's own first.
+        let x = packet(
+            "xmlns:xmpMM='http://ns.adobe.com/xap/1.0/mm/'",
+            "<xmpMM:DocumentID>xmp.did:1234</xmpMM:DocumentID>",
+        );
+        let ev = assess(jpeg(Some(&x), Some(&exif(&[], &[(0xA420, ID)])), &[]));
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(
+            fields(&ev),
+            [
+                ("exif:ImageUniqueID".to_string(), ID.to_string()),
+                ("xmpMM:DocumentID".to_string(), "xmp.did:1234".to_string()),
+            ]
+        );
+        assert_eq!(ev.details["identifiers"][0]["kind"], "document");
+        assert!(
+            ev.rationale.contains("carries 2 document identifiers"),
+            "{}",
+            ev.rationale
+        );
+
+        // In a PNG's eXIf chunk, the only thing in the file that the list covers:
+        // a screenshot with no XMP and no text chunk still discloses it.
+        let shot = png_with_exif(&exif(
+            &[(0x0131, "Android AB1C.230405.006")],
+            &[(0xA420, ID)],
+        ));
+        let ev = assess(shot);
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(
+            fields(&ev),
+            [("exif:ImageUniqueID".to_string(), ID.to_string())]
+        );
+        assert!(ev.rationale.contains("carries 1 document identifier."));
+    }
+
+    #[test]
+    fn the_exif_image_id_is_masked_and_an_empty_one_is_not_listed() {
+        const ID: &str = "3f2b8c1e-7a4d-4e9b-9c0a-5d6e7f809112";
+        let a =
+            Asset::from_bytes(jpeg(None, Some(&exif(&[], &[(0xA420, ID)])), &[]), None).unwrap();
+        let masked = EmbeddedIdentifiers::default().assess(&a).unwrap();
+        assert!(!serde_json::to_string(&masked).unwrap().contains(ID));
+        assert_eq!(
+            masked.details["identifiers"],
+            serde_json::json!([{ "kind": "document", "field": "exif:ImageUniqueID",
+                                 "masked": true, "length": 36 }])
+        );
+
+        // Cameras that have no ID to give fill the field: zeros, or spaces.
+        for filler in [
+            "00000000000000000000000000000000",
+            "                                ",
+        ] {
+            let ev = assess(jpeg(None, Some(&exif(&[], &[(0xA420, filler)])), &[]));
+            assert_eq!(ev.status, Status::Absent, "{filler:?}");
+            assert_eq!(ev.details["identifiers"], serde_json::json!([]));
+        }
+        // The tag belongs to the Exif sub-IFD. In IFD0 it is not this field, and
+        // ExifTool does not report it as ExifIFD:ImageUniqueID either.
+        let misplaced = assess(jpeg(None, Some(&exif(&[(0xA420, ID)], &[])), &[]));
+        assert_eq!(misplaced.status, Status::Absent);
     }
 
     #[test]

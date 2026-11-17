@@ -92,10 +92,12 @@ microphone indicator was noticed in it.
   one machine do not all carry the same one. With three displays attached, the
   three names may simply be one per display; which window was on which was not
   noted. The models are not recorded here.
-- Not reported by Halftone at collection time: `png_writer` does not use
-  `Software = Android …` to name the writer, and `embedded_identifiers` lists
-  neither `ImageUniqueID` nor the ICC profile description. (`exif_consistency`
-  is right to say no generator is named: an Android build is not one.)
+- Since 2026-11-17 `embedded_identifiers` lists the `ImageUniqueID` of all
+  five Fold screenshots as a document identifier, masked unless `--reveal`.
+  Still not reported: `png_writer` does not use `Software = Android …` to name
+  the writer, and no source reads the ICC profile description.
+  (`exif_consistency` is right to say no generator is named: an Android build
+  is not one.)
 - No Halftone source prints the display's name, because none reads it.
   `png_writer` reads the chunk's name, not the profile inside it, and the JPEG
   and WebP sources record only whether a profile is present. Checked on these
@@ -134,7 +136,7 @@ photographs: the files serve the corpus, and are not for publication as images.
 
 ## Results
 
-Differential run 2026-11-16 (ground truth collected 2026-11-16T12:55:29Z): 10
+Differential run 2026-11-17 (ground truth collected 2026-11-17T06:08:34Z): 10
 of 10 files compared, 0 disagreements; rights and identifier values compared by
 keyed fingerprint. No signals or conformance rubric applies, since no file has
-a manifest. Whole corpus: 389 of 389 files across 10 corpora, 0 disagreements.
+a manifest. Whole corpus: 390 of 390 files across 10 corpora, 0 disagreements.
