@@ -20,6 +20,14 @@ as they are now. If not, and this is an interactive terminal outside CI, it expl
 why and asks once; a "no" is remembered until a script's dependencies change. In CI
 ($CI set) or without a terminal it never asks. --no-setup-check skips the check.
 
+A task that runs `ht` refuses a binary older than the source (lib/htbin.py).
+--stale-ok lets the task run with it this once, with a warning: it sets HT_STALE_OK=1
+for the task, the same as writing that in front of the command.
+
+    uv run scripts/dev.py --stale-ok htc desk take <stem>
+
+Both options go before the task name; after it, everything belongs to the task.
+
 Shortcut and tab completion (fish): scripts/README.md, "Running a task". bash, zsh:
 `alias dev='uv run scripts/dev.py'`. Standard library only: it starts fast and works
 before anything is installed.
@@ -45,6 +53,7 @@ from envstate import SCRIPTS, record, state  # noqa: E402
 from repo import C  # noqa: E402
 
 NOT_TASKS = {"dev"}
+OWN_OPTIONS = ("--no-setup-check", "--stale-ok")  # dev's own, before the task name
 WHY = """\
 These scripts each declare their own Python packages. Bootstrap installs them all
 once, pinned by the committed lock files, so every task starts in under a second
@@ -70,7 +79,7 @@ def tasks() -> dict[str, str]:
 
 def show_tasks() -> None:
     print(__doc__.splitlines()[0])
-    print(f"\nusage: uv run scripts/dev.py [--no-setup-check] TASK [ARGS…]\n\n{C.BOLD_CYAN}tasks{C.RESET}")
+    print(f"\nusage: uv run scripts/dev.py [--no-setup-check] [--stale-ok] TASK [ARGS…]\n\n{C.BOLD_CYAN}tasks{C.RESET}")
     t = tasks()
     width = max(map(len, t))
     room = max(30, shutil.get_terminal_size((100, 20)).columns - width - 4)
@@ -115,7 +124,7 @@ def complete_tasks() -> int:
 
 def complete(args: list[str]) -> int:
     """A completion request: the task list, or the named task's own answer."""
-    args = [a for a in args if a != "--no-setup-check"]
+    args = [a for a in args if a not in OWN_OPTIONS]
     if not args:
         return complete_tasks()
     script = SCRIPTS / f"{args[0]}.py"
@@ -130,8 +139,12 @@ def main() -> int:
         return complete(sys.argv[1:])
     args = sys.argv[1:]
     check = True
-    if args and args[0] == "--no-setup-check":
-        check, args = False, args[1:]
+    while args and args[0] in OWN_OPTIONS:
+        if args[0] == "--no-setup-check":
+            check = False
+        else:
+            os.environ["HT_STALE_OK"] = "1"
+        args = args[1:]
     if not args or args[0] in ("-h", "--help", "help"):
         show_tasks()
         return 0

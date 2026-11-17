@@ -26,6 +26,18 @@ uv run scripts/dev.py collect 04 06    # runs scripts/collect.py 04 06
 Any `scripts/<name>.py` is a task; there is no list to maintain. Arguments after the
 task name go to the script unchanged. Running a script directly works too.
 
+A task that runs `ht` first checks that the binary is not older than the source it
+is built from, and exits 2 if it is, naming the file that changed and the command
+that rebuilds it (`lib/htbin.py` has the rule). Tests build their own copy, so an
+edited source with an old installed `ht` is easy to end up with, and its output
+describes the old code.
+
+```sh
+uv run scripts/dev.py ht-check                     # which binary, when built, current or not
+uv run scripts/dev.py --stale-ok htc desk take …   # run with the old binary this once
+HT_STALE_OK=1 fish scripts/pub/cert-expiry.fish    # the same for anything, frames included
+```
+
 To type `dev collect 04 06` instead, let bootstrap install the `dev` command and its
 fish completion:
 
