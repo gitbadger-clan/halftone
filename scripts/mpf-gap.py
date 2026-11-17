@@ -64,6 +64,9 @@ def main() -> None:
 
     serve(ap)
     a = ap.parse_args()
+    from htbin import require_ht  # exits 2 when ht is older than the source (lib/htbin.py)
+
+    a.ht = require_ht(a.ht)
 
     shown = 0
     for path in a.files:

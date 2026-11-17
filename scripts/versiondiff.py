@@ -201,6 +201,12 @@ def tool_version(exe: str) -> str:
 
 
 def snapshot(a) -> int:
+    # A binary in this checkout's target/, or an installed one, must not be older than
+    # the source (lib/htbin.py; exits 2). One built in another checkout, which is what
+    # `compare` makes for the base version, is that checkout's and is not checked.
+    from htbin import require_ht
+
+    a.ht = require_ht(a.ht)
     ignore = DEFAULT_IGNORE | set(a.ignore)
     expected: dict[str, list[str]] = conformance_files() if a.conformance else {}
     files = corpus_files([Path(d) for d in a.dirs]) + list(expected)

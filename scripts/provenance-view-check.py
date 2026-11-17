@@ -532,9 +532,10 @@ def make_prompt(
     f = case["file"]
     if not Path(f).exists():
         sys.exit(f"not on disk: {f}")
+    ht = current_ht()
     settings, env = collector_c2patool()
     sources = {
-        "ht --provenance": (["ht", "inspect", "--only", "manifest", "--provenance", f], None),
+        "ht --provenance": ([ht, "inspect", "--only", "manifest", "--provenance", f], None),
         "c2patool --tree": (["c2patool", "--settings", str(settings), f, "--tree"], env),
         "c2patool (json)": (["c2patool", "--settings", str(settings), f], env),
     }
@@ -572,6 +573,14 @@ def build_prompt(match: str, seed: int | None, questions: list[str] | None = Non
     for q, a in (case.get("key") or {}).items():
         print(f"answer key {q}: {a}", file=sys.stderr)
     return 0
+
+
+def current_ht() -> str:
+    """The `ht` whose view is judged. Exits 2 when it is missing or older than the
+    source (lib/htbin.py): the view of an old build says nothing about this one."""
+    from htbin import require_ht  # lib/ is on sys.path once main() has started
+
+    return require_ht()
 
 
 def main() -> int:
@@ -624,6 +633,7 @@ def main() -> int:
     if a.prompt:
         return build_prompt(a.prompt, a.seed, questions)
 
+    ht = current_ht()
     settings, env = collector_c2patool()
     failures: list[str] = []
     print(f"{'file':<58} {'view':<8} {'facts':>6} {'order':>6} {'lines':>6} {'noise':>6}")
@@ -633,7 +643,7 @@ def main() -> int:
             print(f"{Path(f).name:<58} skipped, not on disk")
             continue
         views = {
-            "ht": view(["ht", "inspect", "--only", "manifest", "--provenance", f]),
+            "ht": view([ht, "inspect", "--only", "manifest", "--provenance", f]),
             "c2patool": view(["c2patool", "--settings", str(settings), f, "--tree"], env),
         }
         results = {}

@@ -314,6 +314,13 @@ def run(kind: str, provider: str, model: str, prompt_ids: list[str], formats: li
         background: str | None, suffix: str, n: int | None, stratum: str, force: bool,
         dry_run: bool, inspect: bool, extra: dict | None = None) -> None:
     extra = {k: v for k, v in (extra or {}).items() if v is not None}
+    # Before any paid call: a stale ht would describe the new files with old code. It
+    # exits 2 here (lib/htbin.py); no ht at all means no inspection, as before.
+    ht = None
+    if inspect and not dry_run:
+        from htbin import require_ht
+
+        ht = require_ht(optional=True)
     prompts = load_prompts()
     want = "p" if kind == "gen" else "e"
     bad = [p for p in prompt_ids if p not in prompts or not p.startswith(want)]
@@ -425,11 +432,11 @@ def run(kind: str, provider: str, model: str, prompt_ids: list[str], formats: li
                 progress.update(overall, advance=1, count=f"{done}/{len(runs)}")
     finally:
         summary(results, time.monotonic() - t_all)
-    if inspect and shutil.which("ht"):
+    if ht:
         for row in results:
             if row["result"] == "ok":
                 CONSOLE.rule(row["file"], style="dim")
-                subprocess.run(["ht", "inspect", "--only", "manifest", "--provenance", str(dest_dir / row["file"])])
+                subprocess.run([ht, "inspect", "--only", "manifest", "--provenance", str(dest_dir / row["file"])])
 
 
 def summary(results: list[dict], total: float) -> None:

@@ -44,6 +44,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from exiftool import ExifTool  # noqa: E402
+from htbin import require_ht  # noqa: E402
 from repo import C, die, need  # noqa: E402
 
 NAME = re.compile(
@@ -123,6 +124,8 @@ def main() -> None:
     need("exiftool")
     if not a.no_ht and shutil.which(a.ht) is None:
         die(f"{a.ht} not found (pass --no-ht to skip its columns)", 2)
+    if not a.no_ht:
+        a.ht = require_ht(a.ht)  # exits 2 when older than the source (lib/htbin.py)
 
     groups: dict[tuple, list[Copy]] = defaultdict(list)
     stray: list[str] = []

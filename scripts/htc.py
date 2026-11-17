@@ -29,7 +29,12 @@ file is read twice and the two reads compared instead). A copy that fails the ch
 never lands in the stratum; it is kept in /tmp/ht-mismatch/ for inspection.
 
 Needs adb for `android`, exiftool for `layout`, ht for the inspection after a grab or
-take. Offline. Never reads the clipboard. Exit 0 done, 1 refused or failed, 2 usage.
+take. That inspection is how a capture gets judged, so the commands that start or
+finish one (mark, grab, take, layout) refuse to run with an `ht` older than the
+source (lib/htbin.py), before they touch a device or a file; `dev --stale-ok htc …`
+runs with it anyway. Without any `ht` they work and skip the inspection.
+Offline. Never reads the clipboard. Exit 0 done, 1 refused or failed, 2 usage or a
+stale ht.
 """
 
 from __future__ import annotations
@@ -55,6 +60,7 @@ import typer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from exiftool import ExifTool  # noqa: E402
+from htbin import require_ht  # noqa: E402
 from repo import CORPUS, C, die, need  # noqa: E402
 
 EXAMPLES = """
@@ -174,11 +180,24 @@ def ok_line(p: Path) -> None:
     print(f"ok  {p}  {mime(p)}")
 
 
+_HT: list[str | None] = []  # the answer of ht_bin(), kept for the rest of the run
+
+
+def ht_bin() -> str | None:
+    """The `ht` that shows what was captured, or None when there is none. Exits 2
+    when it is older than the source: a stale inspection is how a capture gets
+    misjudged. Called first by every command that starts or finishes a capture."""
+    if not _HT:
+        _HT.append(require_ht(optional=True))
+    return _HT[0]
+
+
 def inspect(p: Path) -> None:
-    if shutil.which("ht") is None:
+    ht = ht_bin()
+    if ht is None:
         print(f"{C.DIM}(ht not on PATH; not inspected){C.RESET}")
         return
-    subprocess.run(["ht", "inspect", str(p)])
+    subprocess.run([ht, "inspect", str(p)])
 
 
 def keep_bad(tmp: Path, name: str) -> Path:
@@ -291,6 +310,7 @@ def android_use(want: Annotated[str, typer.Argument(help="Part of the model name
 @android.command("mark")
 def android_mark() -> None:
     """Start a capture: marker file on the phone."""
+    ht_bin()
     phone_mark()
 
 
@@ -326,6 +346,7 @@ def android_pull(remote: Annotated[str, typer.Argument(help="Path on the phone."
 @android.command("grab")
 def android_grab(stem: Stem, force: Force = False) -> None:
     """The one new image since the mark, as <stem>.<delivered ext>, then inspected."""
+    ht_bin()
     found = [p for p in phone_new() if IMAGE.search(p)]
     # Hidden names are not finished photos: .trashed-… (in the bin), .pending-…
     # (still being written), .thumbnails/… (the gallery's cache).
@@ -494,6 +515,7 @@ def desk_new() -> list[Path]:
 @desk.command("mark")
 def desk_mark_cmd() -> None:
     """Start a capture: marker for ~/Downloads."""
+    ht_bin()
     desk_mark()
 
 
@@ -508,6 +530,7 @@ def desk_new_cmd() -> None:
 def desk_take(stem: Stem, force: Force = False) -> None:
     """Move the one new download into the stratum as <stem>.<delivered ext>, then
     inspect it."""
+    ht_bin()
     files = desk_new()
     if not files:
         die("no new image in ~/Downloads since the mark (download still running?)", 1)
@@ -704,6 +727,8 @@ def ios_devices_cmd() -> None:
 def ios_mark(device: Device = None) -> None:
     """Remember the camera roll's file names on this Mac (nothing is written to the
     device)."""
+    ht_bin()
+
     async def go(udid, info, afc):
         files = await ios_roll(afc)
         ios_save_mark(udid, files)
@@ -730,6 +755,7 @@ def ios_grab(stem: Stem, force: Force = False, device: Device = None,
                  "--pick", help="File to take when several stills are new (IMG_0042.HEIC).")] = None) -> None:
     """The one new still since the mark, as <stem>.<delivered ext>, then inspected. A
     Live Photo's MOV and edit sidecars (AAE) are listed, not pulled."""
+    ht_bin()
     folder = stratum()
     if "__afc-pull__" not in stem:
         print(f"{C.YELLOW}stem has no __afc-pull__ transfer token; check the name{C.RESET}")
@@ -792,6 +818,7 @@ def layout(files: Annotated[list[Path], typer.Argument(help="Images to describe.
     Parts come from the container directory (Motion Photo / Ultra HDR) and, when there
     is none, the MPF index (iPhone gain maps), so a multi-part file without a
     directory is no longer called a single JPEG."""
+    ht = ht_bin()
     need("exiftool")
     imgs = [f for f in files if LAYOUT_IMAGE.search(f.name) and f.is_file()]
     with ExifTool() as et:
@@ -808,10 +835,10 @@ def layout(files: Annotated[list[Path], typer.Argument(help="Images to describe.
         else:
             parts = "single JPEG" if re.search(r"\.jpe?g$", f.name, re.I) else "no container"
         status = "?"
-        if shutil.which("ht"):
+        if ht:
             import json
 
-            out = subprocess.run(["ht", "inspect", "--json", "--only", "manifest", str(f)],
+            out = subprocess.run([ht, "inspect", "--json", "--only", "manifest", str(f)],
                                  capture_output=True, text=True).stdout
             try:
                 status = next((e["status"] for e in json.loads(out)["evidence"]

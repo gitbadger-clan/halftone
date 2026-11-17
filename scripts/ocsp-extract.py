@@ -281,6 +281,10 @@ def main() -> int:
 
     serve(ap)
     a = ap.parse_args()
+    if not a.signed_at:  # ht supplies the signing time; not one older than the source
+        from htbin import require_ht  # lib/htbin.py; exits 2 when stale or missing
+
+        a.ht = require_ht(a.ht)
     anchors, anchor_certs = trust_subjects(), trust_certs()
     if not anchors:
         print(f"note: no trust lists under {TRUST}; check 4 will show '?'", file=sys.stderr)
