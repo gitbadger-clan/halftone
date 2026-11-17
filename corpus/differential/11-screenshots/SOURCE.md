@@ -62,12 +62,17 @@ microphone indicator was noticed in it.
   A signed file becomes an unsigned one by being displayed.
 - macOS PNG: `png_writer` reads the chunk layout as a macOS screenshot (Apple
   ImageIO, XMP `UserComment=Screenshot`). The rule was written from the
-  documented layout and marked "not yet verified"; these are its first real
-  samples. The XMP holds none of the rights, identifier, vendor-flag or
-  data-mining fields (`ht inspect --metadata`).
-- Fold PNG: `png_writer` reads Skia's PNG encoder (sBIT and sRGB, 8 KiB
-  blocks), a rule measured on a Skia canvas binding. No XMP. So by layout alone
-  an Android screenshot is not told apart from any other Skia-written PNG.
+  documented layout and marked "not yet verified"; these four files were its
+  first real samples, and it is marked verified since 2026-11-17. The XMP
+  holds none of the rights, identifier, vendor-flag or data-mining fields
+  (`ht inspect --metadata`).
+- Fold PNG: the chunk layout is that of Skia's PNG encoder (sBIT and sRGB,
+  8 KiB blocks), a rule measured on a Skia canvas binding. No XMP. So by layout
+  alone an Android screenshot is not told apart from any other Skia-written
+  PNG, and at collection time `png_writer` named Skia. Since 2026-11-17 a
+  second rule asks for that layout together with the EXIF `Software` tag
+  described below, and all five files read as Android's system screenshot
+  tool. The tag is unsigned; the rule needs the layout as well.
 - macOS JPEG: no XMP, but an IPTC IIM block; non-standard quantization tables,
   4:2:0, default Huffman tables; not in the writer fingerprint DB.
 - The Fold PNG carries an EXIF block (`eXIf`). Read on the Mac with its own
@@ -93,11 +98,10 @@ microphone indicator was noticed in it.
   three names may simply be one per display; which window was on which was not
   noted. The models are not recorded here.
 - Since 2026-11-17 `embedded_identifiers` lists the `ImageUniqueID` of all
-  five Fold screenshots as a document identifier, masked unless `--reveal`.
-  Still not reported: `png_writer` does not use `Software = Android …` to name
-  the writer, and no source reads the ICC profile description.
-  (`exif_consistency` is right to say no generator is named: an Android build
-  is not one.)
+  five Fold screenshots as a document identifier, masked unless `--reveal`,
+  and `png_writer` quotes the `Software` tag. Still not reported: no source
+  reads the ICC profile description. (`exif_consistency` is right to say no
+  generator is named: an Android build is not one.)
 - No Halftone source prints the display's name, because none reads it.
   `png_writer` reads the chunk's name, not the profile inside it, and the JPEG
   and WebP sources record only whether a profile is present. Checked on these

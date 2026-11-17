@@ -52,6 +52,12 @@ pub struct PngInfo {
     pub text: Vec<TextEntry>,
     /// Whether an `eXIf` chunk is present.
     pub has_exif: bool,
+    /// The EXIF `Software` tag from the `eXIf` chunk, if it has one: the program
+    /// that says it wrote the file (`Android <build id>` on an Android screenshot).
+    /// Unsigned text. A writer rule can ask for it next to a layout
+    /// ([`png_rules::PngRule::exif_software_starts`]); it is not part of
+    /// [`PngInfo::fingerprint`], which stays a hash of structure alone.
+    pub exif_software: Option<String>,
     /// Whether a `caBX` (JUMBF / C2PA) chunk is present.
     pub has_c2pa: bool,
     /// iCCP profile name as written (e.g. `Display P3`, `sRGB IEC61966-2.1`), if
@@ -290,7 +296,10 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
                 info.idat_chunks += 1;
                 info.idat_max = info.idat_max.max(len);
             }
-            b"eXIf" => info.has_exif = true,
+            b"eXIf" => {
+                info.has_exif = true;
+                info.exif_software = exif_software(data);
+            }
             b"caBX" => info.has_c2pa = true,
             b"iCCP" => {
                 if let Some(nul) = data.iter().position(|&c| c == 0) {
@@ -319,6 +328,24 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
         info.idat_block = Some(idat_first);
     }
     Ok(info)
+}
+
+/// The EXIF `Software` tag of an `eXIf` chunk's payload (a TIFF block), bounded.
+/// `None` when the block cannot be read or has no such tag.
+fn exif_software(tiff: &[u8]) -> Option<String> {
+    let mut reader = ::exif::Reader::new();
+    reader.continue_on_error(true);
+    let block = match reader.read_raw(tiff.to_vec()) {
+        Ok(x) => x,
+        Err(::exif::Error::PartialResult(part)) => part.into_inner().0,
+        Err(_) => return None,
+    };
+    let field = block.get_field(::exif::Tag::Software, ::exif::In::PRIMARY)?;
+    let ::exif::Value::Ascii(parts) = &field.value else {
+        return None;
+    };
+    let text = clip(String::from_utf8_lossy(parts.first()?).trim(), 80);
+    (!text.is_empty()).then_some(text)
 }
 
 /// Split a `keyword\0value` payload (as in `tEXt`).
@@ -412,6 +439,16 @@ impl EvidenceSource for PngWriter {
         let fp = info.fingerprint();
         let db_hit = self.db.lookup(&fp);
         let rule = png_rules::match_rules(&info);
+        // What the EXIF block says wrote the file, if it says so: quoted, and worth
+        // what an unsigned field is worth. With it, "no self-identifying metadata"
+        // would be untrue. Whether the name is a generator's is exif_consistency's
+        // question, not this source's.
+        let exif_says = info.exif_software.as_deref().map(|s| {
+            format!(
+                "The EXIF block names a program (`Software` = `{s}`), an unsigned field \
+                 that anyone can write"
+            )
+        });
 
         let (status, rationale) = match (&hit, &param_kw) {
             (Some((tool, kw)), _) => (
@@ -453,19 +490,37 @@ impl EvidenceSource for PngWriter {
                             Status::Inconclusive
                         },
                         format!(
-                            "PNG structure matches a known writer fingerprint: {} ({}). No \
-                             self-identifying metadata; PNG is never camera-native, so this is an \
-                             export-path fact, not evidence of origin.",
+                            "PNG structure matches a known writer fingerprint: {} ({}). {}; PNG \
+                             is never camera-native, so this is an export-path fact, not \
+                             evidence of origin.",
                             w.writer,
-                            w.class.describe()
+                            w.class.describe(),
+                            exif_says
+                                .as_deref()
+                                .unwrap_or("No self-identifying metadata")
                         ),
                     ),
                     (None, None, Some(m)) => (
                         Status::Inconclusive,
                         format!(
-                            "No self-identifying metadata. Chunk layout is consistent with {} ({}{}). \
+                            "{} {} ({}{}). \
                              PNG is never camera-native, so this is an export-path hint, not \
                              evidence of origin.{}",
+                            // A rule that asked for the EXIF Software tag found the
+                            // name and the layout in agreement; any other rule read
+                            // the layout alone.
+                            match (&exif_says, m.exif_software) {
+                                (Some(e), true) => format!(
+                                    "{e}; the chunk layout agrees with it. It is consistent with"
+                                ),
+                                (Some(e), false) => format!(
+                                    "{e}, and no rule ties that name to a layout. The chunk \
+                                     layout is consistent with"
+                                ),
+                                (None, _) => "No self-identifying metadata. Chunk layout is \
+                                              consistent with"
+                                    .to_string(),
+                            },
                             m.name,
                             m.class.describe(),
                             if m.confidence == png_rules::Confidence::Documented {
@@ -484,9 +539,13 @@ impl EvidenceSource for PngWriter {
                     (None, None, None) => (
                         Status::Inconclusive,
                         format!(
-                            "No self-identifying metadata and no known writer layout. {} chunks \
+                            "{} no known writer layout. {} chunks \
                              ({} of image data, the largest {} bytes), colour type {}, \
                              {}interlaced{}.",
+                            match &exif_says {
+                                Some(e) => format!("{e};"),
+                                None => "No self-identifying metadata and".to_string(),
+                            },
                             info.chunks.len(),
                             info.idat_chunks,
                             info.idat_max,
@@ -521,6 +580,9 @@ impl EvidenceSource for PngWriter {
                 "color_type": info.color_type,
                 "interlace": info.interlace,
                 "has_exif_chunk": info.has_exif,
+                // As written, bounded: a program's name for itself, which
+                // exif_consistency reports too. Unsigned.
+                "exif_software": info.exif_software,
                 "has_c2pa_chunk": info.has_c2pa,
                 // The name when it is a colour space or a writer's fixed keyword
                 // (KNOWN_ICC_NAMES). Any other name is free text that can describe a
@@ -598,6 +660,146 @@ mod tests {
         }
         v.extend(chunk(b"IEND", &[]));
         v
+    }
+
+    /// A PNG with the given ancillary chunks and image data in 8 KiB blocks: the
+    /// shape Skia's encoder writes.
+    fn png_in_8k_blocks(ancillary: &[(&[u8; 4], Vec<u8>)]) -> Vec<u8> {
+        let mut v = vec![0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
+        v.extend(ihdr());
+        for (ty, data) in ancillary {
+            v.extend(chunk(ty, data));
+        }
+        for n in [8_192, 8_192, 3_000] {
+            let mut data = vec![0u8; n];
+            data[..2].copy_from_slice(&[0x78, 0x9c]);
+            v.extend(chunk(b"IDAT", &data));
+        }
+        v.extend(chunk(b"IEND", &[]));
+        v
+    }
+
+    /// An `eXIf` chunk whose IFD0 holds this `Software` tag.
+    fn exif_chunk(software: &str) -> (&'static [u8; 4], Vec<u8>) {
+        let block = crate::embedded::testutil::exif(&[(0x0131, software)], &[]);
+        (b"eXIf", block[6..].to_vec()) // without the JPEG segment's "Exif\0\0"
+    }
+
+    #[test]
+    fn an_android_screenshot_is_named_from_its_exif_and_its_layout() {
+        const BUILD: &str = "Android AB1C.230405.006";
+        let skia = |software: Option<&str>| {
+            let mut anc = vec![(b"sBIT", vec![8, 8, 8, 8]), (b"sRGB", vec![0])];
+            anc.extend(software.map(exif_chunk));
+            png_in_8k_blocks(&anc)
+        };
+        let assess = |bytes: Vec<u8>| {
+            PngWriter::default()
+                .assess(&Asset::from_bytes(bytes, None).unwrap())
+                .unwrap()
+        };
+
+        let info = parse_png(&skia(Some(BUILD))).unwrap();
+        assert!(info.has_exif);
+        assert_eq!(info.exif_software.as_deref(), Some(BUILD));
+
+        let ev = assess(skia(Some(BUILD)));
+        assert_eq!(
+            ev.status,
+            Status::Inconclusive,
+            "a screenshot is not a generator"
+        );
+        assert_eq!(ev.details["exif_software"], BUILD);
+        assert_eq!(ev.details["writer_hint"], "screenshot_pipeline");
+        assert_eq!(ev.details["writer_rule"]["exif_software"], true);
+        let rule = ev.details["writer_rule"]["name"].as_str().unwrap();
+        assert!(
+            rule.starts_with("Android's system screenshot tool"),
+            "{rule}"
+        );
+        // The rationale quotes the tag, says what it is worth, and no longer says
+        // the file names nothing.
+        assert!(ev.rationale.contains(&format!("`Software` = `{BUILD}`")));
+        assert!(
+            ev.rationale
+                .contains("unsigned field that anyone can write")
+        );
+        assert!(ev.rationale.contains("; the chunk layout agrees with it."));
+        assert!(!ev.rationale.contains("No self-identifying metadata"));
+        assert!(!ev.rationale.contains("not yet verified"));
+
+        // Skia's layout with another program's name, or with no EXIF, is Skia's.
+        for other in [Some("Some Canvas App 2.1"), None] {
+            let ev = assess(skia(other));
+            let rule = ev.details["writer_rule"]["name"].as_str().unwrap();
+            assert!(rule.starts_with("Skia's PNG encoder"), "{other:?}: {rule}");
+            assert_eq!(ev.details["writer_rule"]["exif_software"], false);
+            assert_eq!(ev.details["writer_hint"], "library");
+        }
+        // With a name the rule does not use, the rationale still quotes it and does
+        // not claim the file names nothing; with no EXIF it says what it always did.
+        let named = assess(skia(Some("Some Canvas App 2.1")));
+        assert!(
+            named.rationale.starts_with(
+                "The EXIF block names a program (`Software` = `Some Canvas App 2.1`), an \
+                 unsigned field that anyone can write, and no rule ties that name to a layout."
+            ),
+            "{}",
+            named.rationale
+        );
+        assert!(
+            assess(skia(None))
+                .rationale
+                .starts_with("No self-identifying metadata. Chunk layout is consistent with Skia")
+        );
+        // The same where no rule matches at all: 03-synthetic/id_png_exif.png.
+        let bare = assess(png_with(&[exif_chunk("Android EXAMPLE.000000.000")]));
+        assert_eq!(bare.details["writer_rule"], serde_json::Value::Null);
+        assert!(
+            bare.rationale.starts_with(
+                "The EXIF block names a program (`Software` = `Android EXAMPLE.000000.000`), \
+                 an unsigned field that anyone can write; no known writer layout."
+            ),
+            "{}",
+            bare.rationale
+        );
+        // The name is reported even where no rule uses it.
+        assert_eq!(
+            assess(skia(Some("Some Canvas App 2.1"))).details["exif_software"],
+            "Some Canvas App 2.1"
+        );
+        assert_eq!(
+            assess(skia(None)).details["exif_software"],
+            serde_json::Value::Null
+        );
+
+        // The build id is not structure: two builds, one fingerprint, and the same
+        // one as before this field existed (the chunk list is all that changed it).
+        let other_build = parse_png(&skia(Some("Android ZZ9Z.991231.001"))).unwrap();
+        assert_eq!(info.fingerprint(), other_build.fingerprint());
+    }
+
+    #[test]
+    fn an_exif_chunk_that_cannot_be_read_names_nobody() {
+        for junk in [
+            Vec::new(),
+            b"II".to_vec(),
+            b"not a tiff block at all".to_vec(),
+            vec![0xFF; 64],
+        ] {
+            let info = parse_png(&png_with(&[(b"eXIf", junk)])).unwrap();
+            assert!(info.has_exif);
+            assert_eq!(info.exif_software, None);
+        }
+        // A block with other tags and no Software, and an empty Software.
+        let artist = crate::embedded::testutil::exif(&[(0x013B, "A. Person")], &[]);
+        let info = parse_png(&png_with(&[(b"eXIf", artist[6..].to_vec())])).unwrap();
+        assert_eq!(info.exif_software, None);
+        let info = parse_png(&png_with(&[exif_chunk("   ")])).unwrap();
+        assert_eq!(info.exif_software, None);
+        // Long values are cut.
+        let info = parse_png(&png_with(&[exif_chunk(&"x".repeat(300))])).unwrap();
+        assert_eq!(info.exif_software.map(|s| s.len()), Some(80));
     }
 
     #[test]

@@ -34,6 +34,13 @@
 //! | libvips via sharp 0.35 keeping metadata | iCCP `icc`, eXIf, pHYs, XMP text | 8,192-byte blocks | `78 9c` | dynamic |
 //! | Pillow 13.0 with `icc_profile` | iCCP `ICC Profile` | 64 KiB blocks | `78 9c` | dynamic |
 //! | macOS Preview (16 corpus files) | gAMA, cHRM, eXIf, iTXt | 16,384-byte blocks | `78 01` | dynamic |
+//! | Android 17 system screenshot (5 corpus files, 2026-11-16) | sBIT, sRGB, eXIf | 8,192-byte blocks | not recorded | not recorded |
+//!
+//! One rule also asks what the file says about itself. Android's screenshot tool
+//! encodes through Skia, so its layout is the Skia row's plus an `eXIf` chunk; what
+//! tells it from any other Skia program is the EXIF `Software` tag in that chunk
+//! ([`PngRule::exif_software_starts`]). The tag is unsigned text and proves nothing
+//! alone, which is why the rule needs the layout as well.
 //!
 //! Below the block size every encoder writes one chunk, so a small file names a writer
 //! only if its stream does (the fdeflate header, stb's fixed block). A rule's name must
@@ -133,6 +140,10 @@ pub struct PngRule {
     pub icc_contains: Option<&'static str>,
     /// If non-empty, the XMP packet (`iTXt XML:com.adobe.xmp`) must contain at least one.
     pub xmp_contains_any: &'static [&'static str],
+    /// If set, the `eXIf` chunk's EXIF `Software` tag must start with this. The tag
+    /// is unsigned text, so a rule pairs it with a layout: the name alone could be
+    /// written by anything, the layout alone by any program using the same encoder.
+    pub exif_software_starts: Option<&'static str>,
     /// If set, the shape the IDAT chunks must have.
     pub idat: Option<IdatRule>,
     /// If set, the two-byte zlib header the image data must start with.
@@ -158,6 +169,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &["workflow", "prompt"],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: None,
         zlib: None,
         deflate_block: None,
@@ -174,6 +186,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &["parameters"],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: None,
         zlib: None,
         deflate_block: None,
@@ -183,13 +196,14 @@ pub const RULES: &[PngRule] = &[
     PngRule {
         name: "macOS screenshot (Apple ImageIO, XMP UserComment=Screenshot)",
         class: WriterClass::Screenshot,
-        confidence: Confidence::Documented,
+        confidence: Confidence::Verified,
         all_of: &["iTXt"],
         any_of: &[],
         none_of: &["gAMA", "sRGB"],
         any_text: &["XML:com.adobe.xmp"],
         icc_contains: None,
         xmp_contains_any: &[">Screenshot<"],
+        exif_software_starts: None,
         idat: None,
         zlib: None,
         deflate_block: None,
@@ -206,6 +220,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: None,
         zlib: None,
         deflate_block: None,
@@ -227,6 +242,7 @@ pub const RULES: &[PngRule] = &[
             "Adobe Photoshop",
             "Adobe Lightroom",
         ],
+        exif_software_starts: None,
         idat: None,
         zlib: None,
         deflate_block: None,
@@ -243,6 +259,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: None,
         zlib: None,
         deflate_block: None,
@@ -259,6 +276,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &["xmptk=\"XMP Core"],
+        exif_software_starts: None,
         idat: Some(IdatRule::BlocksOrSmall(16_384)),
         zlib: Some([0x78, 0x01]),
         deflate_block: None,
@@ -275,6 +293,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: None,
         zlib: None,
         deflate_block: None,
@@ -296,6 +315,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Single),
         zlib: Some([0x78, 0x01]),
         deflate_block: None,
@@ -315,6 +335,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Single),
         zlib: Some([0x78, 0x5e]),
         deflate_block: Some("fixed"),
@@ -334,6 +355,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Pillow),
         zlib: None,
         deflate_block: None,
@@ -353,6 +375,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Blocks(8_192)),
         zlib: None,
         deflate_block: None,
@@ -372,6 +395,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Blocks(32_768)),
         zlib: None,
         deflate_block: None,
@@ -391,6 +415,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::SingleLarge),
         zlib: None,
         deflate_block: None,
@@ -410,6 +435,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::SingleSmall),
         zlib: None,
         deflate_block: None,
@@ -427,6 +453,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::PillowOrSmall),
         zlib: None,
         deflate_block: None,
@@ -445,6 +472,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Blocks(4_096)),
         zlib: None,
         deflate_block: None,
@@ -463,6 +491,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Blocks(8_192)),
         zlib: None,
         deflate_block: None,
@@ -470,6 +499,25 @@ pub const RULES: &[PngRule] = &[
         notes: "sharp 0.35.5 `.png().toFile()`. Any libpng program that writes pHYs alone at the default buffer would look the same.",
     },
     // --- Other measured inventories. ---
+    // In front of the Skia rule below: the same layout, and an EXIF block that says
+    // which program used the encoder.
+    PngRule {
+        name: "Android's system screenshot tool (Skia's PNG encoder; EXIF Software names an Android build)",
+        class: WriterClass::Screenshot,
+        confidence: Confidence::Verified,
+        all_of: &["sBIT", "sRGB", "eXIf"],
+        any_of: &[],
+        none_of: &["gAMA", "cHRM", "iCCP", "iDOT", "pHYs"],
+        any_text: &[],
+        icc_contains: None,
+        xmp_contains_any: &[],
+        exif_software_starts: Some("Android "),
+        idat: Some(IdatRule::BlocksOrSmall(8_192)),
+        zlib: None,
+        deflate_block: None,
+        deflate_prefix: &[],
+        notes: "Five screenshots from a Pixel 9 Pro Fold on Android 17, taken with the hardware shortcut (11-screenshots, 2026-11-16): the Skia layout of the next rule plus an eXIf chunk whose Software is `Android <build id>`. That tag comes from SystemUI's ImageExporter, which writes `\"Android \" + Build.DISPLAY` and, since January 2021, a random UUID as ImageUniqueID (AOSP frameworks/base, change b10ab7ddf4f1). One device and one Android version were measured; `adb exec-out screencap`, a screenshot saved as JPEG and other vendors' tools were not.",
+    },
     PngRule {
         name: "Skia's PNG encoder (sBIT and sRGB, 8 KiB blocks; measured on a Skia canvas binding)",
         class: WriterClass::Library,
@@ -480,11 +528,12 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::BlocksOrSmall(8_192)),
         zlib: None,
         deflate_block: None,
         deflate_prefix: &[],
-        notes: "@napi-rs/canvas 1.1.1 `toBuffer(\"image/png\")`. Chrome and Android also encode through Skia, but neither was measured: the name claims the binding only.",
+        notes: "@napi-rs/canvas 1.1.1 `toBuffer(\"image/png\")`. Chrome and Android also encode through Skia. Android's system screenshots were measured later and have the rule above; a Skia PNG without their EXIF block, Chrome's included, stays here, and the name claims the binding only.",
     },
     PngRule {
         name: "ImageMagick (cHRM and bKGD, 32 KiB blocks)",
@@ -496,6 +545,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::BlocksOrSmall(32_768)),
         zlib: None,
         deflate_block: None,
@@ -514,6 +564,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Blocks(8_192)),
         zlib: Some([0x78, 0x9c]),
         deflate_block: None,
@@ -530,6 +581,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: Some("ICC Profile"),
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::PillowOrSmall),
         zlib: None,
         deflate_block: None,
@@ -549,6 +601,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Blocks(8_192)),
         zlib: Some([0x78, 0x01]),
         deflate_block: None,
@@ -567,6 +620,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::Blocks(8_192)),
         zlib: Some([0x78, 0x5e]),
         deflate_block: None,
@@ -583,6 +637,7 @@ pub const RULES: &[PngRule] = &[
         any_text: &[],
         icc_contains: None,
         xmp_contains_any: &[],
+        exif_software_starts: None,
         idat: Some(IdatRule::PillowOrSmall),
         zlib: None,
         deflate_block: None,
@@ -600,6 +655,9 @@ pub struct RuleMatch {
     pub class: WriterClass,
     /// Confidence.
     pub confidence: Confidence,
+    /// Whether the rule also required the EXIF `Software` tag to name the writer. The
+    /// file then says what wrote it, in an unsigned field, and the layout agrees.
+    pub exif_software: bool,
 }
 
 /// First rule that matches `info`.
@@ -608,6 +666,7 @@ pub fn match_rules(info: &PngInfo) -> Option<RuleMatch> {
         name: r.name,
         class: r.class,
         confidence: r.confidence,
+        exif_software: r.exif_software_starts.is_some(),
     })
 }
 
@@ -637,6 +696,12 @@ fn matches(r: &PngRule, info: &PngInfo) -> bool {
             .map(|t| t.value.as_str());
         match xmp {
             Some(x) if r.xmp_contains_any.iter().any(|n| x.contains(n)) => {}
+            _ => return false,
+        }
+    }
+    if let Some(prefix) = r.exif_software_starts {
+        match &info.exif_software {
+            Some(s) if s.starts_with(prefix) => {}
             _ => return false,
         }
     }
@@ -1173,6 +1238,76 @@ mod tests {
     }
 
     #[test]
+    fn an_android_system_screenshot_is_told_from_other_skia_output() {
+        let z = [0x78, 0x9c];
+        let shot = |software: Option<&str>, anc: &[&str]| PngInfo {
+            has_exif: anc.contains(&"eXIf"),
+            exif_software: software.map(str::to_string),
+            ..measured(anc, 1080, &blocks(18, 8_192), z, DYNAMIC)
+        };
+        let skia = &["sBIT", "sRGB", "eXIf"][..];
+
+        // The layout measured on the Fold: Skia's chunks, an eXIf chunk, and a
+        // Software tag that starts with "Android ".
+        let m = match_rules(&shot(Some("Android AB1C.230405.006"), skia)).unwrap();
+        assert!(
+            m.name.starts_with("Android's system screenshot tool"),
+            "{}",
+            m.name
+        );
+        assert_eq!(m.class, WriterClass::Screenshot);
+        assert_eq!(m.confidence, Confidence::Verified);
+        assert!(m.exif_software);
+        // A small capture fits one IDAT chunk and is still recognised.
+        let small = PngInfo {
+            has_exif: true,
+            exif_software: Some("Android AB1C.230405.006".into()),
+            ..measured(skia, 96, &[5_000], z, DYNAMIC)
+        };
+        assert!(name(&small).unwrap().starts_with("Android's system"));
+
+        // The same layout without that tag is any Skia program's, as before.
+        for software in [
+            None,
+            Some("Adobe Photoshop 26.0"),
+            Some("android"),
+            Some("Androidx"),
+        ] {
+            let m = match_rules(&shot(software, skia)).unwrap();
+            assert!(m.name.starts_with("Skia's PNG encoder"), "{software:?}");
+            assert!(!m.exif_software);
+        }
+        assert!(
+            name(&shot(None, &["sBIT", "sRGB"]))
+                .unwrap()
+                .starts_with("Skia's PNG encoder")
+        );
+
+        // The tag without the layout is not enough: anything can write a Software
+        // string. This is 03-synthetic/id_png_exif.png, ExifTool's EXIF on a Pillow
+        // file, and a libvips export that kept its EXIF.
+        let pillow = PngInfo {
+            has_exif: true,
+            exif_software: Some("Android EXAMPLE.000000.000".into()),
+            ..measured(&["eXIf"], 96, &[27_755], z, DYNAMIC)
+        };
+        assert!(!name(&pillow).unwrap_or("").starts_with("Android"));
+        let vips = PngInfo {
+            has_exif: true,
+            exif_software: Some("Android AB1C.230405.006".into()),
+            icc_name: Some("icc".into()),
+            ..measured(
+                &["iCCP", "eXIf", "pHYs"],
+                512,
+                &blocks(63, 8_192),
+                z,
+                DYNAMIC,
+            )
+        };
+        assert!(!name(&vips).unwrap_or("").starts_with("Android"));
+    }
+
+    #[test]
     fn every_rule_is_reachable_by_a_synthetic_layout() {
         for r in RULES {
             let mut chunks: Vec<&str> = vec!["IHDR"];
@@ -1193,6 +1328,7 @@ mod tests {
             }
             let mut i = info_v(&chunks, &text);
             i.icc_name = r.icc_contains.map(str::to_string);
+            i.exif_software = r.exif_software_starts.map(|p| format!("{p}X1"));
             i.width = 512;
             let set = |i: &mut PngInfo, lens: &[usize]| {
                 let at = i.chunks.len() - 2; // the single IDAT placed above
