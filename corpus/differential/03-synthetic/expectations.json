@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-12T06:32:54Z",
+  "collected_at": "2026-11-17T06:07:18Z",
   "conformance_rubrics": null,
   "corpus": "corpus/differential/03-synthetic",
   "files": {
@@ -822,6 +822,10 @@
               "value": "Ada Example"
             },
             {
+              "field": "exif:ImageUniqueID",
+              "value": "0123456789abcdef0123456789abcdef"
+            },
+            {
               "field": "xmpMM:DocumentID",
               "value": "xmp.did:00000000-0000-4000-8000-000000000001"
             },
@@ -847,7 +851,7 @@
         "identifiers": {
           "status": "present"
         },
-        "note": "a camera file: names, contact, serial, owner, position, document id; lens serial N/A",
+        "note": "a camera file: names, contact, serial, owner, position, image id, document id; lens serial N/A",
         "rights": {
           "status": "absent"
         },
@@ -856,8 +860,8 @@
           "status": "absent"
         }
       },
-      "sha256": "5bccfa3222b7fa901f309e9b19b6634e9ef8a3acdbc34b039617e7ff12b21322",
-      "size_bytes": 11365
+      "sha256": "e6f738169248a9899247d83e0be0815dfa20f3a32ffc555073668fb055598a9e",
+      "size_bytes": 11423
     },
     "id_marker.jpg": {
       "c2patool": {
@@ -930,7 +934,7 @@
         "identifiers": {
           "status": "absent"
         },
-        "note": "serial fields holding placeholders identify nobody",
+        "note": "serial and image-id fields holding placeholders identify nobody",
         "rights": {
           "status": "absent"
         },
@@ -939,8 +943,52 @@
           "status": "absent"
         }
       },
-      "sha256": "e4ec441d3fa268ea7d15462d9b6f4890bdc98aa7b4297174f0e8d58a0f029d23",
-      "size_bytes": 7782
+      "sha256": "2b39bf5e21797d85ec90df3e0728e1376ee5c27f13b9dd09b5d4d4f25e58d389",
+      "size_bytes": 7840
+    },
+    "id_png_exif.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "exif:ImageUniqueID",
+              "value": "00000000-0000-4000-8000-000000000002"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "present"
+        },
+        "note": "an EXIF block in a PNG (eXIf), as a phone's screenshot tool writes: a per-image id",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "0d4717fc1ffc685fe8d86bb980cf4df65a19ab5b043633880afba014102c922f",
+      "size_bytes": 28058
     },
     "id_png_text.png": {
       "c2patool": {

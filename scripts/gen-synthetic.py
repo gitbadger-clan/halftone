@@ -23,9 +23,11 @@ Bytes do not depend on the ExifTool that wrote them. By default ExifTool stamps 
 XMP packet with its own version (x:xmptk='Image::ExifTool 13.59'), which made the
 files, and the sha256s recorded for them, differ between a Mac, the reference image
 and the CI runner. Every case that writes XMP sets that field to a constant instead
-(TOOLKIT). Measured with ExifTool 12.76 and 13.59: all 63 files come out
-byte-identical. A case that writes no XMP gets no toolkit either, so `plain` and
-`iim_only` still carry no packet at all.
+(TOOLKIT). A case that writes no XMP gets no toolkit either, so `plain` and
+`iim_only` still carry no packet at all. EXIF has the same trap in another place:
+the tags ExifTool adds on its own to a new EXIF block changed between versions, so
+the cases that write EXIF name those tags themselves (FLASHPIX, RESOLUTION). Measured
+with ExifTool 12.76, 13.55, 13.59 and 13.64: all 64 files come out byte-identical.
 
 Which ExifTool wrote the files is still recorded, next to them instead of inside
 them: SOURCE.txt names the generator, the ExifTool version, the toolkit constant and
@@ -63,6 +65,14 @@ KEEP = {"expectations.json"}  # committed ground truth survives --refresh
 # In place of ExifTool's version stamp, so the bytes are the same whichever ExifTool
 # runs. Added only where a case writes XMP: on its own it would create a packet.
 TOOLKIT = "-XMP-x:XMPToolkit=Halftone gen-synthetic"
+# The same idea for EXIF. When ExifTool creates an EXIF block it adds the tags the
+# standard requires, and which tags those are depends on its version: 12.76 adds
+# FlashpixVersion to a new Exif sub-IFD and the resolution tags to a new block in a
+# PNG, 13.59 adds neither. Written explicitly, they are there either way. FLASHPIX
+# goes where a case writes an ExifIFD tag, RESOLUTION where it writes EXIF into a PNG
+# (in a JPEG every version adds the resolution tags itself).
+FLASHPIX = "-ExifIFD:FlashpixVersion=0100"
+RESOLUTION = ["-IFD0:XResolution=72", "-IFD0:YResolution=72", "-IFD0:ResolutionUnit=inches"]
 
 GENERATIVE = ["trainedAlgorithmicMedia", "compositeWithTrainedAlgorithmicMedia"]
 NON_GENERATIVE = [
@@ -245,21 +255,28 @@ def listing_cases() -> list[tuple[str, str, dict[str, str], str, list[str], str 
         case("rs_instructions", "jpg", {"rights": "present"}, "an instruction to editors",
              ["-IPTC:SpecialInstructions=Not for resale"]),
         case("id_camera", "jpg", {"identifiers": "present"},
-             "a camera file: names, contact, serial, owner, position, document id; lens serial N/A",
+             "a camera file: names, contact, serial, owner, position, image id, document id; lens serial N/A",
              ["-IFD0:Artist=Ada Example", "-IPTC:By-line=Ada Example", "-XMP-dc:Creator=Ada Example",
               "-XMP-iptcCore:CreatorWorkEmail=ada@example.org", "-ExifIFD:SerialNumber=SN-0042",
               "-ExifIFD:OwnerName=Ada Example", "-ExifIFD:LensSerialNumber=N/A",
               "-GPS:GPSLatitude=47.3769", "-GPS:GPSLatitudeRef=N",
               "-GPS:GPSLongitude=8.5417", "-GPS:GPSLongitudeRef=E",
+              "-ExifIFD:ImageUniqueID=0123456789abcdef0123456789abcdef",
               "-XMP-xmpMM:DocumentID=xmp.did:00000000-0000-4000-8000-000000000001"]),
         case("id_marker", "jpg", {"identifiers": "present"},
              "a platform's tracking marker in the instructions field: an identifier, not an instruction",
              ["-IPTC:SpecialInstructions=FBMD0a000a880100003e0200000000"]),
-        case("id_placeholder", "jpg", {}, "serial fields holding placeholders identify nobody",
-             ["-ExifIFD:LensSerialNumber=N/A", "-ExifIFD:SerialNumber=0000000"]),
+        case("id_placeholder", "jpg", {}, "serial and image-id fields holding placeholders identify nobody",
+             ["-ExifIFD:LensSerialNumber=N/A", "-ExifIFD:SerialNumber=0000000",
+              "-ExifIFD:ImageUniqueID=00000000000000000000000000000000"]),
         case("id_png_text", "png", {"identifiers": "present", "rights": "present"},
              "PNG text chunks: Author and Copyright",
              ["-PNG:Author=Ada Example", f"-PNG:Copyright={notice}"]),
+        # After the earlier cases, so their lines in cases.json stay where they were.
+        case("id_png_exif", "png", {"identifiers": "present"},
+             "an EXIF block in a PNG (eXIf), as a phone's screenshot tool writes: a per-image id",
+             ["-IFD0:Software=Android EXAMPLE.000000.000",
+              "-ExifIFD:ImageUniqueID=00000000-0000-4000-8000-000000000002"]),
     ]
 
 
@@ -341,6 +358,10 @@ def main(
                 out = DEST / f"{name}.{ext}"
                 if any(a.startswith("-XMP") for a in args):
                     args = [*args, TOOLKIT]
+                if any(a.startswith("-ExifIFD:") for a in args):
+                    args = [*args, FLASHPIX]
+                if ext == "png" and any(a.startswith(("-IFD0:", "-ExifIFD:", "-GPS:")) for a in args):
+                    args = [*args, *RESOLUTION]
                 _, err = et.run("-q", "-q", "-o", str(out), *args, str(BASE / f"base.{ext}"))
                 if not out.is_file() or "Error" in err:
                     die(f"exiftool failed for {name}: {err.strip() or 'no output file'}", 1)

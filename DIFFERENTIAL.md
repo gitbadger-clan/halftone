@@ -708,6 +708,16 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   instead, with the sha256 of each base image.
 - Status: closed. The stratum is still matched by name: base images built on
   different platforms have not been compared.
+- Follow-up 2026-11-17: the measurement above was made on 38 files, before the
+  two cases that write an Exif sub-IFD existed (`id_camera.jpg`,
+  `id_placeholder.jpg`). Generated again with ExifTool 12.76 and 13.59, those
+  two differed and the other 61 of 63 did not: 12.76 adds `FlashpixVersion` to
+  a new Exif sub-IFD and 13.59 does not. In a PNG, 12.76 also adds the three
+  resolution tags to a new EXIF block. `gen-synthetic.py` now writes those
+  tags itself where a case writes EXIF. Generated with ExifTool 12.76, 13.55,
+  13.59 and 13.64, all 64 files are byte-identical (the count includes
+  `id_png_exif.png`, added the same day), and the 61 files without an Exif
+  sub-IFD are unchanged by the fix.
 
 ### D-021 · 2026-11-12 · IPTC IIM outside a JPEG is not read
 
