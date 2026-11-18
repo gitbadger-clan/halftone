@@ -10,12 +10,12 @@
 //! The iCCP profile name is part of that inventory, and it is free text chosen by the
 //! writer. Every writer measured so far puts a colour-space name or a fixed keyword of
 //! its own there: Pillow and Apple ImageIO both write `ICC Profile`, libvips `icc`. On
-//! macOS screenshots the display's name is the description inside the profile, which
-//! this module does not read, not the chunk's name. Nothing stops another writer from
-//! copying that description into the name, and for a display or a calibrated profile
-//! it names a monitor or whatever the user typed. As a precaution, only names on
-//! [`KNOWN_ICC_NAMES`] are printed or hashed as written; any other name is reported as
-//! present and no more.
+//! macOS screenshots the display's name is the description inside the profile, not
+//! the chunk's name ([`crate::icc`] reads it; `embedded_identifiers` lists it,
+//! masked). Nothing stops another writer from copying that description into the
+//! name, and for a display or a calibrated profile it names a monitor or whatever
+//! the user typed. As a precaution, only known names ([`icc_name_is_known`]) are
+//! printed or hashed as written; any other name is reported as present and no more.
 
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
 use serde::Serialize;
@@ -64,7 +64,7 @@ pub struct PngInfo {
     /// present. Free text chosen by the writer: one that copied the profile's
     /// description would put a monitor's name or a person's own here. Print
     /// [`PngInfo::icc_known_name`] instead; serialized, the field holds a name only
-    /// when it is on [`KNOWN_ICC_NAMES`].
+    /// when it is a known one ([`icc_name_is_known`]).
     #[serde(serialize_with = "serialize_known_icc_name")]
     pub icc_name: Option<String>,
     /// pHYs pixels-per-unit (x, y, unit), if present.
@@ -88,61 +88,43 @@ pub struct PngInfo {
     pub deflate_head: Vec<u8>,
 }
 
-/// iCCP profile names that are safe to print: they name a colour space, or they are the
-/// fixed keyword a writer puts on every profile it embeds. Compared without regard to
-/// case or surrounding spaces.
+/// iCCP profile names that are a writer's fixed keyword: the writer puts the same
+/// name on every profile it embeds, so the name says which writer and nothing more.
+/// With the names of standard colour spaces (`icc_standard_names.txt`, shared with
+/// `embedded_identifiers` and the differential collector) these are the names this
+/// crate prints: see [`icc_name_is_known`]. Compared without regard to case or
+/// surrounding spaces.
 ///
-/// A name that is not here is not printed and not hashed, because it is free text.
-/// Names of display profiles are left out on purpose, the generic ones (`Color LCD`,
-/// `Display`) included: what a display is called describes the machine the file was
-/// made on. No file measured so far carries one as its iCCP name.
+/// A name on neither list is not printed and not hashed, because it is free text.
+/// Names of display profiles are left out of both on purpose, the generic ones
+/// (`Color LCD`, `Display`) included: what a display is called describes the machine
+/// the file was made on. No file measured so far carries one as its iCCP name.
 ///
-/// Adding a name is safe when every file from that writer, or every file in that
-/// colour space, carries it.
-pub const KNOWN_ICC_NAMES: &[&str] = &[
-    // Colour spaces.
-    "sRGB",
-    "sRGB IEC61966-2.1",
-    "sRGB IEC61966-2-1 black scaled",
-    "sRGB2014",
-    "sRGB v4 ICC preference perceptual intent beta",
-    "sRGB built-in",
-    "GIMP built-in sRGB",
-    "Display P3",
-    "DCI-P3",
-    "Adobe RGB (1998)",
-    "ProPhoto RGB",
-    "Apple RGB",
-    "ColorMatch RGB",
-    "Generic RGB Profile",
-    "Generic Gray Profile",
-    "Generic Gray Gamma 2.2 Profile",
-    "Gray Gamma 2.2",
-    "Dot Gain 20%",
-    "ITU-R BT.709",
-    "ITU-R BT.2020",
-    "Rec. ITU-R BT.709-5",
-    "Rec. ITU-R BT.2020-1",
-    // Compact-ICC sRGB (`c2`), as some web tools embed.
-    "c2",
-    // Fixed keywords: the writer names every profile this way.
+/// Adding a keyword is safe when every file from that writer carries it.
+pub const ICC_CHUNK_KEYWORDS: &[&str] = &[
     "icc",         // libvips, ImageMagick
-    "icm",         // ImageMagick, for an .icm source
+    "icm",         // ImageMagick, for an .icm source; ExifTool
     "ICC Profile", // Pillow; Apple ImageIO (macOS 27 screenshots)
     "ICC profile", // GIMP
     "Photoshop ICC profile",
     "Skia",
 ];
 
-/// What stands in for a profile name that is not on [`KNOWN_ICC_NAMES`] when the
-/// structure is hashed. iCCP names are printable Latin-1, so no real name starts with
+/// What stands in for a profile name that is not a known one when the structure is
+/// hashed. iCCP names are printable Latin-1, so no real name starts with
 /// this byte.
 const OTHER_ICC_NAME: &[u8] = b"\x01other profile name";
 
-/// Whether an iCCP profile name is on [`KNOWN_ICC_NAMES`].
+/// Whether an iCCP profile name is one this crate prints: the name of a standard
+/// colour space ([`crate::icc::is_standard_name`], the list `embedded_identifiers`
+/// and the differential collector use too) or a writer's fixed keyword
+/// ([`ICC_CHUNK_KEYWORDS`]).
 pub fn icc_name_is_known(name: &str) -> bool {
     let name = name.trim();
-    KNOWN_ICC_NAMES.iter().any(|k| k.eq_ignore_ascii_case(name))
+    ICC_CHUNK_KEYWORDS
+        .iter()
+        .any(|k| k.eq_ignore_ascii_case(name))
+        || crate::icc::is_standard_name(name)
 }
 
 /// Serialize the profile name only when it is a known one; `null` otherwise.
@@ -158,7 +140,7 @@ fn serialize_known_icc_name<S: serde::Serializer>(
 
 impl PngInfo {
     /// The iCCP profile name, when it is one this crate prints (see
-    /// [`KNOWN_ICC_NAMES`]).
+    /// [`icc_name_is_known`]).
     pub fn icc_known_name(&self) -> Option<&str> {
         self.icc_name.as_deref().filter(|n| icc_name_is_known(n))
     }
@@ -205,7 +187,7 @@ impl PngInfo {
     /// run collapsed, IHDR depth/colour/interlace, text keywords, ICC profile name and
     /// pHYs. Image size and pixel data are excluded.
     ///
-    /// A profile name on [`KNOWN_ICC_NAMES`] is hashed as written. Any other name is
+    /// A known profile name ([`icc_name_is_known`]) is hashed as written. Any other name is
     /// hashed as one fixed token: it is not known to be the writer's own (a writer
     /// that copied profile descriptions would give one structure a different hash
     /// per display), and a hash of a short name can be reversed by trying the names.
@@ -585,7 +567,7 @@ impl EvidenceSource for PngWriter {
                 "exif_software": info.exif_software,
                 "has_c2pa_chunk": info.has_c2pa,
                 // The name when it is a colour space or a writer's fixed keyword
-                // (KNOWN_ICC_NAMES). Any other name is free text that can describe a
+                // (icc_name_is_known). Any other name is free text that can describe a
                 // display or a person: said to be there, not repeated.
                 "icc_name": info.icc_known_name(),
                 "icc_name_withheld": info.icc_name_withheld(),

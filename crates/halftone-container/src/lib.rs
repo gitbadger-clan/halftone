@@ -40,6 +40,7 @@ pub mod embedded;
 pub mod exif;
 pub mod fingerprints;
 pub mod gcontainer;
+pub mod icc;
 pub mod identifiers;
 pub mod jpeg;
 pub mod marking;

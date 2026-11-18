@@ -1359,6 +1359,7 @@ dependencies = [
  "halftone-formats",
  "hex",
  "kamadak-exif",
+ "miniz_oxide 0.8.9",
  "serde",
  "serde_json",
  "sha2 0.11.0",

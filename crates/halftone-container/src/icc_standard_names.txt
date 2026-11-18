@@ -1,0 +1,49 @@
+# Names of standard colour spaces, as ICC profiles and PNG iCCP chunks carry them.
+#
+# A profile under one of these names says which colour space the pixels are in and
+# nothing about the machine the file came from, so the name is printed as written
+# and is not an identifier. Any other name can be one: macOS embeds the profile of
+# the display a screenshot was taken on, and that profile is named after the monitor.
+#
+# One list for both sides of the differential test:
+#   crates/halftone-container/src/icc.rs    (compiled in)
+#   scripts/differential.py                 (read at collection time)
+# Change it here and both follow. Ground truth collected before a change was
+# collected with the old list: collect again.
+#
+# One name per line. Compared after trimming and collapsing whitespace, without
+# regard to ASCII case. Lines starting with # and empty lines are skipped.
+
+# sRGB and the names its common profiles go by
+sRGB
+sRGB IEC61966-2.1
+sRGB IEC61966-2-1 black scaled
+# the sRGB profile TeX Live's colorprofiles package ships (measured 2026-11-17)
+sRGB IEC61966-2.1 (Equivalent to www.srgb.com 1998 HP profile)
+sRGB2014
+sRGB v4 ICC preference perceptual intent beta
+sRGB built-in
+GIMP built-in sRGB
+# Compact-ICC sRGB, as some web tools embed
+c2
+
+# Wide-gamut and working spaces
+Display P3
+DCI-P3
+Adobe RGB (1998)
+ProPhoto RGB
+Apple RGB
+ColorMatch RGB
+
+# Generic and grey profiles
+Generic RGB Profile
+Generic Gray Profile
+Generic Gray Gamma 2.2 Profile
+Gray Gamma 2.2
+Dot Gain 20%
+
+# Video and broadcast
+ITU-R BT.709
+ITU-R BT.2020
+Rec. ITU-R BT.709-5
+Rec. ITU-R BT.2020-1
