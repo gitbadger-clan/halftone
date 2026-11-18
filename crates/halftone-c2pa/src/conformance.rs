@@ -187,8 +187,21 @@ pub fn summary_lines(details: &Value) -> Vec<String> {
         .unwrap_or_default()
 }
 
+/// The rubrics' placeholder for the values a check matched. The C2PA's evaluator
+/// fills it in only when those values are text. Where a check matches objects (the
+/// `c2pa.opened` action of Spec 2.4 §18.15.3, for one) its report text keeps the
+/// placeholder, and so does `details.conformance`, which holds that text as the
+/// evaluator produces it.
+const UNFILLED: &str = "{{matches}}";
+
+/// What [`render`] prints in the placeholder's place. Braces in a line meant for
+/// reading look like a fault in this tool; this says whose text it is.
+const UNFILLED_SHOWN: &str = "[not printed: the rubric's evaluator prints text matches only]";
+
 /// The block `ht inspect --conformance` prints under a file: one summary line per
-/// rubric, then only what is not met, warned about, or could not be evaluated.
+/// rubric, then only what is not met, warned about, or could not be evaluated. A
+/// placeholder the evaluator left in a report text is replaced by a note saying so;
+/// the JSON keeps the text unchanged.
 pub fn render(details: &Value) -> String {
     let mut out = String::from(
         "  conformance (C2PA rubrics; they describe the manifest, not the file, and are not a verdict)\n",
@@ -207,7 +220,11 @@ pub fn render(details: &Value) -> String {
             let text = row["text"]
                 .as_str()
                 .map_or_else(|| row["text"].to_string(), str::to_string);
-            let first = text.lines().next().unwrap_or("");
+            let first = text
+                .lines()
+                .next()
+                .unwrap_or("")
+                .replace(UNFILLED, UNFILLED_SHOWN);
             out.push_str(&format!(
                 "      {word}  {}: {first}\n",
                 row["trait"].as_str().unwrap_or("?")
@@ -221,6 +238,38 @@ pub fn render(details: &Value) -> String {
 mod tests {
     use super::*;
     use std::path::Path;
+
+    #[test]
+    fn a_placeholder_the_evaluator_left_unfilled_is_explained_in_the_printed_block() {
+        // The row Spec 2.4 §18.15.3 gives a manifest that only records c2pa.opened:
+        // the check matches an action object, so the evaluator fills nothing in.
+        let text = "Missing mandatory allActionsIncluded: true in actions assertion for \
+                    open-and-re-save manifest. Matches: {{matches}} (Spec 2.4 §18.15.3)";
+        let details = json!({ "rubrics": [{
+            "id": "conformance-0.2-spec-2.4", "name": "Example Rubric", "version": "0.2",
+            "summary": { "met": 1, "not_met": 2, "warning": 0, "error": 0 },
+            "results": [
+                { "trait": "all_actions_included_opened", "outcome": "not_met", "text": text },
+                { "trait": "no_deprecated_assertions", "outcome": "not_met",
+                  "text": "Found deprecated standard assertions: stds.exif (Spec 2.2 §6.3)" },
+                { "trait": "something_met", "outcome": "met", "text": "fine {{matches}}" },
+            ],
+        }]});
+        let out = render(&details);
+        assert!(!out.contains("{{"), "{out}");
+        assert!(
+            out.contains(
+                "not met  all_actions_included_opened: Missing mandatory allActionsIncluded: \
+                 true in actions assertion for open-and-re-save manifest. Matches: [not \
+                 printed: the rubric's evaluator prints text matches only] (Spec 2.4 §18.15.3)"
+            ),
+            "{out}"
+        );
+        // A text the evaluator did fill in is printed as it is.
+        assert!(out.contains("Found deprecated standard assertions: stds.exif (Spec 2.2 §6.3)"));
+        // Rendering changes nothing in the details: the JSON keeps the rubric's text.
+        assert_eq!(details["rubrics"][0]["results"][0]["text"], text);
+    }
 
     fn sample(name: &str) -> Value {
         let p = Path::new(env!("CARGO_MANIFEST_DIR"))
