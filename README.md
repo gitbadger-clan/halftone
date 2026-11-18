@@ -78,6 +78,20 @@ follows the same rule as the scripts' stale-binary check: a changed or new file
 under `crates/` (tests, benches, examples and Markdown aside) or a changed workspace
 manifest.
 
+The HTML report (`--report`) shows the record at three levels. At the top, the file
+by name, type, size and SHA-256. Under it and before the evidence, a note for each
+thing that differs from a default run and changes how the evidence reads: values
+shown in full, remote manifests fetched, a build from modified source, a layer that
+did not run, a trust list the operator changed, anything not established. A default
+run has no notes. Below the evidence, the whole record as a collapsed section with a
+one-line summary.
+
+The report is one self-contained file: its stylesheet, the mark and the verdict glyphs
+are inlined, it carries no script, and its Content-Security-Policy forbids loading
+anything. Printed, or saved as PDF from a browser, it is an A4 document with the
+collapsed sections opened and the file's name and the start of its hash at the foot
+of every page.
+
 ## Batch output
 
 `--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.5.0`):

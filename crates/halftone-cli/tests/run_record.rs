@@ -225,3 +225,39 @@ fn a_trust_list_that_cannot_be_loaded_is_a_named_gap_without_a_path() {
         .unwrap();
     assert_eq!(c2pa["status"], "inconclusive");
 }
+
+#[test]
+fn the_report_shows_the_file_and_the_conditions_without_a_path() {
+    let s = Scene::new("report");
+    s.inspect(&["--report", "--reveal", "--only", "container", &s.image]);
+    let html = std::fs::read_to_string(s.dir.join("grey.halftone.html")).unwrap();
+    // The file by name, type and size, at the top.
+    assert!(
+        html.contains("<tr><th>Name</th><td>grey.png</td></tr>"),
+        "{html}"
+    );
+    assert!(html.contains("<tr><th>Type</th><td>image/png</td></tr>"));
+    // What changes how the evidence reads comes before the evidence.
+    let pos = |needle: &str| {
+        html.find(needle)
+            .unwrap_or_else(|| panic!("{needle} not in {html}"))
+    };
+    assert!(pos("<li>Values are shown in full.") < pos("<h2>Evidence</h2>"));
+    assert!(pos("<li>Not run: Manifest, Mark, Blind.") < pos("<h2>Evidence</h2>"));
+    // The whole record below it, collapsed.
+    assert!(
+        pos("<h2>Evidence</h2>") < pos("<details><summary>Conditions of this check: halftone ")
+    );
+    assert!(html.contains(
+        "<tr><th>Disclosed values</th><td>shown in full (<code>--reveal</code>)</td></tr>"
+    ));
+    let why = if cfg!(feature = "c2pa") {
+        "the manifest layer did not run"
+    } else {
+        "the tool was built without manifest validation"
+    };
+    assert!(html.contains(&format!("No trust list was loaded: {why}.")));
+    // A report is passed on: no directory of this machine in it.
+    assert!(!html.contains(s.dir.to_str().unwrap()), "{html}");
+    assert!(!html.contains(std::env::temp_dir().to_str().unwrap()));
+}

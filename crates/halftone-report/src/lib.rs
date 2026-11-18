@@ -1,46 +1,192 @@
 //! Per-file report. Renders an `Inspection` to HTML (and later PDF) with the
 //! tool/pack versions, hashes, and the fixed notice that no layer's output is
 //! sufficient evidence on its own. The report is what legal/newsroom buyers file.
+//!
+//! Top to bottom: the file, notes on anything that changes how the evidence reads,
+//! the evidence, the C2PA conformance measurements (collapsed), the conditions of the
+//! check (collapsed), the notice. See [`conditions`] for the first, second and fifth.
+//!
+//! The report is one self-contained file. Its stylesheet (`report.css`), the mark and
+//! the verdict glyphs are inlined, it carries no script, and its
+//! Content-Security-Policy forbids loading anything, so it reads the same offline and
+//! from an archive. Printed, or saved as PDF from a browser, it is an A4 document
+//! with every collapsed section opened and the file's name and hash on each page.
 
-use halftone_core::Inspection;
+pub mod conditions;
+
+use halftone_core::{Evidence, Inspection, Status};
 
 /// Fixed notice included in every report.
 pub const NOTICE: &str = "Each layer is reported separately with its own calibration. \
 No single verdict here is evidence of authorship on its own, and this report must not \
 be the sole basis for any disciplinary, employment, or admissions decision.";
 
-/// Render to a minimal HTML string.
-pub fn to_html(insp: &Inspection) -> String {
+/// The stylesheet inlined into every report.
+pub const CSS: &str = include_str!("report.css");
+
+const MARK: &str = include_str!("../assets/halftone-mark.svg");
+const GLYPH_PRESENT: &str = include_str!("../assets/verdict/present.svg");
+const GLYPH_ABSENT: &str = include_str!("../assets/verdict/absent.svg");
+const GLYPH_INCONCLUSIVE: &str = include_str!("../assets/verdict/inconclusive.svg");
+const GLYPH_NOT_APPLICABLE: &str = include_str!("../assets/verdict/not_applicable.svg");
+
+/// What a status is called in a report, its row class, and its glyph.
+fn status_parts(s: Status) -> (&'static str, &'static str, &'static str) {
+    match s {
+        Status::Present => ("Present", "present", GLYPH_PRESENT),
+        Status::Absent => ("Absent", "absent", GLYPH_ABSENT),
+        Status::Inconclusive => ("Inconclusive", "inconclusive", GLYPH_INCONCLUSIVE),
+        Status::NotApplicable => ("Not applicable", "not_applicable", GLYPH_NOT_APPLICABLE),
+    }
+}
+
+/// A glyph for the eye only: the status word stands next to it, so a screen reader
+/// is not told the verdict twice.
+fn glyph(svg: &str) -> String {
+    format!(
+        "<span class=\"glyph\" aria-hidden=\"true\">{}</span>",
+        svg.trim()
+    )
+}
+
+/// The evidence as one table: a group of rows per layer in execution order, and in
+/// each row the status (glyph and word), the source and its rationale.
+fn evidence_html(evidence: &[Evidence]) -> String {
     use std::fmt::Write as _;
-    let mut rows = String::new();
-    for e in &insp.evidence {
-        // Writing to a String cannot fail.
+    let mut out = String::from(
+        "<table class=\"evidence\"><thead><tr><th>Status</th><th>Source</th>\
+<th>Rationale</th></tr></thead>",
+    );
+    let mut layer = None;
+    for e in evidence {
+        if layer != Some(e.layer) {
+            if layer.is_some() {
+                out.push_str("</tbody>");
+            }
+            // Writing to a String cannot fail.
+            let _ = write!(
+                out,
+                "<tbody><tr class=\"layer\"><th colspan=\"3\" scope=\"rowgroup\">{:?}</th></tr>",
+                e.layer
+            );
+            layer = Some(e.layer);
+        }
+        let (word, class, svg) = status_parts(e.status);
         let _ = write!(
-            rows,
-            "<tr><td>{:?}</td><td>{} {}</td><td>{:?}</td><td>{}</td></tr>",
-            e.layer,
-            e.source.name,
-            e.source.version,
-            e.status,
+            out,
+            "<tr class=\"{class}\"><td class=\"status\">{}{word}</td>\
+<td class=\"source\"><code>{}</code><small>{}</small></td><td>{}</td></tr>",
+            glyph(svg),
+            html_escape(&e.source.name),
+            html_escape(&e.source.version),
             html_escape(&e.rationale)
         );
     }
+    if layer.is_some() {
+        out.push_str("</tbody>");
+    }
+    out.push_str("</table>");
+    out
+}
+
+/// What the four statuses mean, under the evidence. A status answers the one question
+/// its source asks; the last sentence keeps a reader from adding them up.
+fn legend_html() -> String {
+    let item = |s: Status, text: &str| {
+        let (word, _, svg) = status_parts(s);
+        format!("{}<b>{word}</b>: {text} ", glyph(svg))
+    };
     format!(
-        "<!doctype html><meta charset=utf-8><title>Halftone report</title>\
-<h1>Halftone report</h1><p>{} {} · schema {} · {}</p><p>sha256 {}</p>\
-<table><tr><th>Layer</th><th>Source</th><th>Status</th><th>Rationale</th></tr>{rows}</table>\
-{}<p><small>{}</small></p>",
-        insp.tool.name,
-        insp.tool.version,
-        insp.schema_version,
-        insp.created_at,
-        insp.asset.sha256,
+        "<p class=\"legend\">{}{}{}{}A status answers that source's own question. It is \
+never a statement about where the file as a whole comes from.</p>",
+        item(Status::Present, "the source found what it looks for."),
+        item(
+            Status::Absent,
+            "it did not; the rationale names what that leaves open."
+        ),
+        item(Status::Inconclusive, "it could not decide."),
+        item(
+            Status::NotApplicable,
+            "the source does not handle this kind of file, or could not run."
+        ),
+    )
+}
+
+/// `s` as the inside of a CSS string. Everything but plain letters, digits and a few
+/// marks becomes a hex escape, so a file name can neither end the string nor the
+/// `<style>` element it sits in.
+fn css_string(s: &str) -> String {
+    use std::fmt::Write as _;
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        if c.is_ascii_alphanumeric() || matches!(c, ' ' | '.' | '_' | '-' | ':') {
+            out.push(c);
+        } else {
+            let _ = write!(out, "\\{:x} ", u32::from(c));
+        }
+    }
+    out
+}
+
+/// At most `max` characters of `s`, the rest shown as an ellipsis.
+fn clipped(s: &str, max: usize) -> String {
+    if s.chars().count() <= max {
+        return s.to_string();
+    }
+    let mut out: String = s.chars().take(max.saturating_sub(1)).collect();
+    out.push('\u{2026}');
+    out
+}
+
+/// The line printed at the foot of every page: which file the page belongs to. Loose
+/// pages of two reports can then be told apart.
+fn page_footer_css(name: &str, sha256: &str) -> String {
+    format!(
+        "@page{{@bottom-left{{content:\"Halftone report: {}, SHA-256 {}\";\
+font:8pt Charter,\"Bitstream Charter\",Cambria,Georgia,serif;color:#1B3A5C}}}}",
+        css_string(&clipped(name, 48)),
+        css_string(&clipped(sha256, 17)),
+    )
+}
+
+/// Render to one self-contained HTML document.
+pub fn to_html(insp: &Inspection) -> String {
+    let name = insp.asset.path.as_deref().map_or_else(
+        || "content given directly".to_string(),
+        halftone_core::run::file_name_only,
+    );
+    let notes = conditions::notes_html(insp);
+    let notes = if notes.is_empty() {
+        notes
+    } else {
+        format!(
+            "<aside class=\"notes\"><p>This check differs from a default one:</p>{notes}</aside>"
+        )
+    };
+    format!(
+        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">\
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
+<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'\">\
+<title>Halftone report: {}</title><style>{CSS}</style><style>{}</style></head><body>\
+<header><span class=\"mark\" aria-hidden=\"true\">{}</span><div><h1>Halftone report</h1>\
+<p>Checked {} with {} {}.</p></div></header><main>{}{notes}\
+<h2>Evidence</h2>{}{}{}{}</main><footer><p>{}</p></footer></body></html>",
+        html_escape(&name),
+        page_footer_css(&name, &insp.asset.sha256),
+        MARK.trim(),
+        html_escape(&insp.created_at),
+        html_escape(&insp.tool.name),
+        html_escape(&insp.tool.version),
+        conditions::file_html(insp),
+        evidence_html(&insp.evidence),
+        legend_html(),
         insp.evidence
             .iter()
             .find(|e| e.source.name == "c2pa")
             .and_then(|e| e.details.get("conformance"))
             .map(conformance_html)
             .unwrap_or_default(),
+        conditions::conditions_html(insp),
         NOTICE
     )
 }
@@ -130,7 +276,7 @@ not a verdict.</summary><p>{}</p><table><tr><th>Check</th><th>Result</th>\
     )
 }
 
-fn html_escape(s: &str) -> String {
+pub(crate) fn html_escape(s: &str) -> String {
     s.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
@@ -139,6 +285,7 @@ fn html_escape(s: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use halftone_core::{AssetInfo, Layer, Modality, SourceId, ToolInfo};
     use serde_json::json;
 
     fn details() -> serde_json::Value {
@@ -157,6 +304,174 @@ mod tests {
                   ] }
             ]
         })
+    }
+
+    fn evidence(layer: Layer, name: &str, status: Status, rationale: &str) -> Evidence {
+        Evidence {
+            layer,
+            source: SourceId {
+                name: name.into(),
+                version: "0.1.0".into(),
+            },
+            status,
+            statistic: None,
+            calibration: None,
+            rationale: rationale.into(),
+            details: serde_json::Value::Null,
+            duration_ms: 0,
+        }
+    }
+
+    fn inspection(file: &str) -> Inspection {
+        Inspection {
+            schema_version: "1.5.0".into(),
+            tool: ToolInfo {
+                name: "halftone".into(),
+                version: "0.1.0".into(),
+                build: None,
+            },
+            asset: AssetInfo {
+                path: Some(file.into()),
+                modality: Modality::Image,
+                mime: "image/png".into(),
+                sha256: "5c4081bb367965ab".repeat(4),
+                size_bytes: 10,
+            },
+            evidence: vec![
+                evidence(Layer::Manifest, "c2pa", Status::Absent, "No C2PA manifest."),
+                evidence(Layer::Container, "png_writer", Status::Present, "a <b> & c"),
+                evidence(
+                    Layer::Container,
+                    "jpeg_double",
+                    Status::Inconclusive,
+                    "too small",
+                ),
+                evidence(
+                    Layer::Container,
+                    "webp_writer",
+                    Status::NotApplicable,
+                    "not WebP",
+                ),
+                evidence(
+                    Layer::Blind,
+                    "feature_probe",
+                    Status::NotApplicable,
+                    "no pack",
+                ),
+            ],
+            run: None,
+            created_at: "2026-11-18T10:45:48Z".into(),
+        }
+    }
+
+    #[test]
+    fn the_report_is_one_file_that_loads_nothing_and_runs_nothing() {
+        let h = to_html(&inspection("/cases/photo.png"));
+        assert!(
+            h.starts_with("<!doctype html><html lang=\"en\">"),
+            "{}",
+            &h[..80]
+        );
+        assert!(h.contains(
+            "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'\">"
+        ));
+        // No script, and nothing that names another resource. The one `http` left is
+        // the SVG namespace of the inlined mark and glyphs, which is a name, not a link.
+        for banned in [
+            "<script", "<link", "<img", "<iframe", " src=", " href=", "@import", "url(h",
+            "url(\"h", "url('h",
+        ] {
+            assert!(!h.contains(banned), "{banned}");
+        }
+        assert_eq!(
+            h.matches("http").count(),
+            h.matches("http://www.w3.org/2000/svg").count() + 1
+        );
+        // The stylesheet is in the file, with the print rules that make a PDF whole.
+        assert!(h.contains("<style>") && h.contains("--ink: #1B3A5C"));
+        assert!(CSS.contains("@media print") && CSS.contains("details::details-content"));
+        assert!(CSS.contains("size: A4") && CSS.contains("counter(pages)"));
+        assert!(h.contains("<title>Halftone report: photo.png</title>"));
+        assert!(h.contains(&format!("<footer><p>{NOTICE}</p></footer>")));
+    }
+
+    #[test]
+    fn evidence_is_grouped_by_layer_with_the_status_in_shape_and_word() {
+        let h = evidence_html(&inspection("a.png").evidence);
+        let pos = |s: &str| h.find(s).unwrap_or_else(|| panic!("{s} not in {h}"));
+        // One group per layer, in execution order; a layer with no source has none.
+        assert_eq!(h.matches("<tr class=\"layer\">").count(), 3);
+        assert!(pos(">Manifest</th>") < pos(">Container</th>"));
+        assert!(pos(">Container</th>") < pos(">Blind</th>"));
+        assert!(!h.contains(">Mark</th>"));
+        assert_eq!(h.matches("<tbody>").count(), h.matches("</tbody>").count());
+        // The status as a word, with a glyph the eye reads and a screen reader skips.
+        assert!(h.contains("<tr class=\"present\"><td class=\"status\"><span class=\"glyph\" aria-hidden=\"true\"><svg"), "{h}");
+        assert!(h.contains("</svg></span>Present</td>"));
+        assert!(h.contains("</svg></span>Inconclusive</td>"));
+        assert!(h.contains("</svg></span>Absent</td>"));
+        assert_eq!(h.matches("</svg></span>Not applicable</td>").count(), 2);
+        assert!(!h.contains("NotApplicable"));
+        assert!(h.contains("<td class=\"source\"><code>png_writer</code><small>0.1.0</small></td><td>a &lt;b&gt; &amp; c</td>"), "{h}");
+    }
+
+    #[test]
+    fn the_legend_says_what_a_status_is_and_is_not() {
+        let l = legend_html();
+        for word in [
+            "<b>Present</b>",
+            "<b>Absent</b>",
+            "<b>Inconclusive</b>",
+            "<b>Not applicable</b>",
+        ] {
+            assert!(l.contains(word), "{word}");
+        }
+        assert!(l.contains("never a statement about where the file as a whole comes from"));
+        assert!(to_html(&inspection("a.png")).contains(&l));
+    }
+
+    #[test]
+    fn a_file_name_cannot_break_out_of_the_title_or_the_page_footer() {
+        let name = "x</style><script>alert(1)</script>\"}.png";
+        let h = to_html(&inspection(name));
+        assert!(!h.contains("<script"), "{h}");
+        assert_eq!(
+            h.matches("</style>").count(),
+            2,
+            "the two style elements end once each"
+        );
+        assert_eq!(css_string("a b-c_d.e:1"), "a b-c_d.e:1");
+        assert_eq!(css_string("\"}<\\\n"), "\\22 \\7d \\3c \\5c \\a ");
+        // The footer names the file and the start of its hash, clipped to fit a line.
+        let css = page_footer_css("photo.png", &"5c4081bb367965ab".repeat(4));
+        assert!(
+            css.contains("content:\"Halftone report: photo.png, SHA-256 5c4081bb367965ab\\2026 \""),
+            "{css}"
+        );
+        assert_eq!(clipped("abcdef", 4), "abc\u{2026}");
+        assert_eq!(clipped("abcd", 4), "abcd");
+    }
+
+    #[test]
+    fn notes_get_their_heading_only_when_there_are_any() {
+        // No build record and no run record: two notes.
+        let h = to_html(&inspection("a.png"));
+        assert!(h.contains("<aside class=\"notes\"><p>This check differs from a default one:</p><ul class=\"notes\"><li>"), "{h}");
+        let mut plain = inspection("a.png");
+        plain.tool.build = Some(halftone_core::BuildInfo {
+            commit: Some("a".repeat(40)),
+            modified: Some(false),
+            features: vec!["c2pa".into()],
+        });
+        plain.run = Some(halftone_core::RunInfo {
+            options: halftone_core::RunOptions {
+                layers: vec![Layer::Manifest, Layer::Container, Layer::Mark, Layer::Blind],
+                trust_list: "auto".into(),
+                ..Default::default()
+            },
+            ..Default::default()
+        });
+        assert!(!to_html(&plain).contains("<aside"));
     }
 
     #[test]
