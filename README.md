@@ -92,6 +92,10 @@ anything. Printed, or saved as PDF from a browser, it is an A4 document with the
 collapsed sections opened and the file's name and the start of its hash at the foot
 of every page.
 
+On the terminal, `ht inspect` says in one line on stderr when the build is from
+modified source and when `--reveal` is on. With `--json` it adds no line, because the
+document carries both facts.
+
 ## Batch output
 
 `--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.5.0`):

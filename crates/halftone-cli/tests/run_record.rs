@@ -52,6 +52,20 @@ impl Scene {
             .collect()
     }
 
+    /// `ht inspect <args>` as a person runs it: stdout and stderr as text.
+    fn terminal(&self, args: &[&str]) -> (String, String) {
+        let out = Command::new(env!("CARGO_BIN_EXE_ht"))
+            .env("HALFTONE_HOME", &self.home)
+            .arg("inspect")
+            .args(args)
+            .output()
+            .expect("run ht");
+        (
+            String::from_utf8_lossy(&out.stdout).into_owned(),
+            String::from_utf8_lossy(&out.stderr).into_owned(),
+        )
+    }
+
     /// The record must not carry a directory of this machine.
     fn assert_no_path(&self, v: &Value) {
         let text = v.to_string();
@@ -260,4 +274,54 @@ fn the_report_shows_the_file_and_the_conditions_without_a_path() {
     // A report is passed on: no directory of this machine in it.
     assert!(!html.contains(s.dir.to_str().unwrap()), "{html}");
     assert!(!html.contains(std::env::temp_dir().to_str().unwrap()));
+}
+
+#[test]
+fn the_terminal_says_once_when_values_are_revealed_or_the_build_is_modified() {
+    let s = Scene::new("notes");
+    let notes = |stderr: &str, needle: &str| {
+        stderr
+            .lines()
+            .filter(|l| l.starts_with("note: ") && l.contains(needle))
+            .count()
+    };
+    // Whether this test binary's `ht` was built from modified source is a fact of
+    // the checkout the test runs in; the record says which, and the note follows it.
+    let modified = s.inspect(&[&s.image])[0]["tool"]["build"]["modified"] == true;
+
+    let (stdout, stderr) = s.terminal(&[&s.image]);
+    assert_eq!(notes(&stderr, "--reveal"), 0, "{stderr}");
+    assert_eq!(
+        notes(&stderr, "built from modified source"),
+        usize::from(modified),
+        "{stderr}"
+    );
+    assert!(
+        !stdout.contains("note: "),
+        "notes go to stderr, not into the table"
+    );
+
+    // Two files, one run: still one line.
+    let second = s.dir.join("second.png");
+    std::fs::copy(&s.image, &second).unwrap();
+    let (stdout, stderr) = s.terminal(&["--reveal", &s.image, second.to_str().unwrap()]);
+    assert_eq!(
+        notes(&stderr, "--reveal: values are shown in full"),
+        1,
+        "{stderr}"
+    );
+    assert_eq!(
+        notes(&stderr, "built from modified source"),
+        usize::from(modified),
+        "{stderr}"
+    );
+    assert!(!stdout.contains("note: "));
+
+    // A JSON document carries both facts itself, so no line is added.
+    let out = Command::new(env!("CARGO_BIN_EXE_ht"))
+        .env("HALFTONE_HOME", &s.home)
+        .args(["inspect", "--json", "--reveal", &s.image])
+        .output()
+        .unwrap();
+    assert!(!String::from_utf8_lossy(&out.stderr).contains("note: "));
 }

@@ -501,6 +501,27 @@ fn tool() -> ToolInfo {
     }
 }
 
+/// What a person at the terminal should know before reading or passing on the
+/// output: the two conditions a table does not show by itself. One line each.
+fn terminal_notes(build: &BuildInfo, reveal: bool) -> Vec<String> {
+    let mut notes = Vec::new();
+    if let (Some(commit), Some(true)) = (&build.commit, build.modified) {
+        notes.push(format!(
+            "this ht was built from modified source (commit {} plus local changes); \
+             reports and JSON say so",
+            commit.get(..12).unwrap_or(commit)
+        ));
+    }
+    if reveal {
+        notes.push(
+            "--reveal: values are shown in full; the output repeats what the files \
+             disclose, so handle it like the files"
+                .to_string(),
+        );
+    }
+    notes
+}
+
 /// Which build this is, as `build.rs` recorded it at compile time. No commit when it
 /// could not tell; the features are known either way.
 fn build_info() -> BuildInfo {
@@ -652,6 +673,13 @@ fn inspect(a: InspectArgs) -> Result<()> {
         fetch_remote_manifests: a.fetch_remote_manifests,
         reveal: a.reveal,
     })?;
+    // Said once, on stderr, where a person reads the result. A JSON document carries
+    // the same facts in `tool.build` and `run`, so it gets no extra line.
+    if !a.json {
+        for note in terminal_notes(&build_info(), a.reveal) {
+            eprintln!("note: {note}");
+        }
+    }
     let glyphs = Glyphs::detect();
     let mut any_present = false;
     let mut collected: Vec<halftone_core::Inspection> = Vec::new();
