@@ -357,7 +357,8 @@ fn parse_itxt(data: &[u8]) -> Option<TextEntry> {
             value: clip(&String::from_utf8_lossy(text), 4096),
         })
     } else {
-        // Compressed (zlib) — record the keyword only; we don't pull in an inflate dep.
+        // Compressed (zlib): the keyword is recorded and the text is not inflated, so a
+        // generator signature inside it is not seen (DIFFERENTIAL.md D-021).
         Some(TextEntry {
             keyword,
             value: "<compressed>".into(),

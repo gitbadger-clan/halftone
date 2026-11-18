@@ -729,6 +729,10 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   non-JPEG files and does not count them.
 - Location: a compressed `zTXt` text chunk (both files list IHDR/zTXt/iTXt/caBX).
   Reading it needs inflate, which halftone-container does not depend on.
+- Follow-up 2026-11-18: the last sentence stopped being true on 2026-11-17, when
+  halftone-container gained an inflate dependency (`miniz_oxide`) to read a PNG's
+  `iCCP` profile. Compressed text chunks are still not read, so the blind spot and
+  the status stand; what is missing now is the reader, not the dependency.
 
 ### D-022 · 2026-11-12 · UTF-16 XMP packets were read as empty
 
