@@ -124,6 +124,73 @@ fn table_is_a_header_and_one_line_per_file() {
 }
 
 #[test]
+fn a_path_that_is_no_image_is_left_out_of_a_listing_and_an_error_alone() {
+    // What `dir/*` brings along in a corpus stratum: a JSON file and a directory.
+    let dir = std::env::temp_dir().join(format!("ht-left-out-{}", std::process::id()));
+    std::fs::create_dir_all(dir.join("sub")).unwrap();
+    let notes = dir.join("expectations.json");
+    std::fs::write(&notes, "{}").unwrap();
+    let notes = notes.to_str().unwrap().to_string();
+    let sub = dir.join("sub").to_str().unwrap().to_string();
+    let run = |args: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ht"))
+            .arg("inspect")
+            .args(["--only", "container"])
+            .args(args)
+            .output()
+            .expect("run ht");
+        (
+            out.status.code(),
+            String::from_utf8(out.stdout).unwrap(),
+            String::from_utf8_lossy(&out.stderr).to_string(),
+        )
+    };
+
+    // Among several paths: the images get their table, the others a line on stderr.
+    let (code, stdout, stderr) = run(&[
+        "--table",
+        &notes,
+        &fixture("comfy.png"),
+        &sub,
+        &fixture("dst_gen_exiftool.jpg"),
+    ]);
+    assert!(matches!(code, Some(0 | 2)), "{code:?}\n{stderr}");
+    assert_eq!(
+        stdout.lines().count(),
+        3,
+        "a header and two files\n{stdout}"
+    );
+    assert!(stderr.contains("expectations.json: left out: "), "{stderr}");
+    assert!(stderr.contains("sub: left out: a directory"), "{stderr}");
+    assert!(!stdout.contains("expectations.json"));
+
+    // The same in the batch document and in JSON lines: stdout stays parseable.
+    let (code, stdout, _) = run(&["--batch", "--json", &notes, &fixture("comfy.png")]);
+    assert!(matches!(code, Some(0 | 2)));
+    let v: serde_json::Value = serde_json::from_str(stdout.trim()).unwrap();
+    assert_eq!(v["inspections"].as_array().unwrap().len(), 1);
+    let (_, stdout, _) = run(&["--json", &notes, &fixture("comfy.png")]);
+    assert_eq!(stdout.lines().count(), 1);
+
+    // Asked for by name, alone, it is the error it always was.
+    let (code, stdout, stderr) = run(&["--table", &notes]);
+    assert_eq!(code, Some(1), "{stderr}");
+    assert!(stdout.is_empty());
+    assert!(stderr.contains("expectations.json"), "{stderr}");
+    // Nothing left to inspect is an error too, not an empty table.
+    let (code, stdout, stderr) = run(&["--table", &notes, &sub]);
+    assert_eq!(code, Some(1), "{stderr}");
+    assert!(stdout.is_empty());
+    assert!(stderr.contains("none of the 2 paths"), "{stderr}");
+    // A path that does not exist is an error among several as well.
+    let missing = dir.join("gone.jpg").to_str().unwrap().to_string();
+    let (code, _, stderr) = run(&["--table", &fixture("comfy.png"), &missing]);
+    assert_eq!(code, Some(1), "{stderr}");
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
 fn table_and_json_are_refused_together() {
     let out = Command::new(env!("CARGO_BIN_EXE_ht"))
         .args(["inspect", "--table", "--json", &fixture("comfy.png")])

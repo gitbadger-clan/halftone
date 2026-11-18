@@ -153,7 +153,9 @@ enum OnlyArg {
 
 #[derive(Args)]
 struct InspectArgs {
-    /// Files to inspect.
+    /// Files to inspect. Given several paths, one that is a directory or not a
+    /// supported file type (the JSON and Markdown next to the images in `dir/*`) is
+    /// left out and named on stderr; given one path, that is an error.
     #[arg(required = true, add = complete::asset_files())]
     inputs: Vec<PathBuf>,
     /// Emit JSON (one object per line).
@@ -557,9 +559,28 @@ fn inspect(a: InspectArgs) -> Result<()> {
     let glyphs = Glyphs::detect();
     let mut any_present = false;
     let mut collected: Vec<halftone_core::Inspection> = Vec::new();
+    // A listing such as `dir/*` brings along whatever sits next to the images. With
+    // several paths, one that is no supported file is left out and said so on stderr,
+    // so the rest still get their table. A single path was asked for by name: there
+    // it stays the error it was. A file that cannot be read is an error either way.
+    let several = a.inputs.len() > 1;
+    let mut inspected = 0usize;
     for input in &a.inputs {
-        let asset =
-            Asset::from_path(input).with_context(|| format!("loading {}", input.display()))?;
+        if several && input.is_dir() {
+            eprintln!("{}: left out: a directory", input.display());
+            continue;
+        }
+        let asset = match Asset::from_path(input) {
+            Ok(asset) => asset,
+            Err(halftone_core::Error::Unsupported(why)) if several => {
+                eprintln!("{}: left out: {why}", input.display());
+                continue;
+            }
+            Err(e) => {
+                return Err(e).with_context(|| format!("loading {}", input.display()));
+            }
+        };
+        inspected += 1;
         let insp = reg.inspect(&asset, tool());
         any_present |= insp.evidence.iter().any(|e| e.status == Status::Present);
         if a.report {
@@ -644,6 +665,12 @@ fn inspect(a: InspectArgs) -> Result<()> {
                 println!("  ({skipped} sources not applicable to this format)");
             }
         }
+    }
+    if inspected == 0 {
+        anyhow::bail!(
+            "none of the {} paths is a supported file: nothing inspected",
+            a.inputs.len()
+        );
     }
     if a.table || a.tsv {
         let batch = halftone_core::Batch::new(tool(), collected);

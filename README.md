@@ -87,6 +87,10 @@ ht inspect --table --only manifest,container corpus/differential/04-generators/*
 ht inspect --tsv a.jpg b.png | cut -f1,2,7
 ```
 
+Given several paths, one that is a directory or not a supported file type (the
+`SOURCE.md` and `expectations.json` in that listing) is left out and named on stderr.
+A single such path is an error, and so is a listing with nothing to inspect.
+
 Columns: file · manifest (`Trusted` / `Valid` / `Invalid` / `remote` / `-`) · signer ·
 declared source type (with its distance when it sits behind the active manifest) ·
 ingredients · actions · xmp (the terms, `present`, `none`, or `n/a` when the marking
