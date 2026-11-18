@@ -718,6 +718,12 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   13.59 and 13.64, all 64 files are byte-identical (the count includes
   `id_png_exif.png`, added the same day), and the 61 files without an Exif
   sub-IFD are unchanged by the fix.
+- Follow-up 2026-11-18: the stratum has 70 files since 2026-11-17 (five colour
+  profile cases, `id_icc_*`, and `va_google_edit_credit.jpg`). Generated with the
+  same four ExifTool versions, all 70 are byte-identical. `id_icc_png.png` is not
+  written by ExifTool: it would compress the profile with its Perl's zlib, whose
+  output differs between builds, so `gen-synthetic.py` writes that `iCCP` chunk
+  itself as one stored block.
 
 ### D-021 · 2026-11-12 · IPTC IIM outside a JPEG is not read
 
