@@ -18,6 +18,48 @@ pub struct JpegMetadata {
     /// The body of each APP13 Photoshop image-resource block, after its
     /// `Photoshop 3.0` signature, in file order.
     pub photoshop_irb: Vec<Vec<u8>>,
+    /// Each APP2 `ICC_PROFILE` chunk in file order. A profile longer than one
+    /// segment is split; [`JpegMetadata::icc_profile`] puts it back together.
+    pub icc_chunks: Vec<IccChunk>,
+}
+
+/// One APP2 `ICC_PROFILE` segment: its place in the sequence and its bytes.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct IccChunk {
+    /// Sequence number as written, starting at 1.
+    pub seq: u8,
+    /// Number of chunks the profile was split into, as written.
+    pub count: u8,
+    /// The chunk's part of the profile.
+    pub data: Vec<u8>,
+}
+
+impl JpegMetadata {
+    /// The embedded ICC profile, reassembled. `None` when there is none;
+    /// `Some(Err)` when chunks are there but do not make one complete sequence
+    /// (a chunk missing, a number used twice, counts that disagree).
+    pub fn icc_profile(&self) -> Option<Result<Vec<u8>, String>> {
+        let first = self.icc_chunks.first()?;
+        let count = usize::from(first.count);
+        let mut parts: Vec<Option<&[u8]>> = vec![None; count];
+        for c in &self.icc_chunks {
+            let slot = usize::from(c.seq)
+                .checked_sub(1)
+                .and_then(|k| parts.get_mut(k));
+            match slot {
+                Some(slot) if c.count == first.count && slot.is_none() => *slot = Some(&c.data),
+                _ => return Some(Err("ICC profile chunks do not form one sequence".into())),
+            }
+        }
+        let mut out = Vec::new();
+        for part in parts {
+            match part {
+                Some(data) => out.extend_from_slice(data),
+                None => return Some(Err("an ICC profile chunk is missing".into())),
+            }
+        }
+        Some(Ok(out))
+    }
 }
 
 /// ExtendedXMP under reassembly: one GUID, declared full length, (offset, data) chunks.
@@ -35,6 +77,7 @@ pub fn metadata(b: &[u8]) -> Result<JpegMetadata, String> {
     const XMP: &[u8] = b"http://ns.adobe.com/xap/1.0/\0";
     const EXT: &[u8] = b"http://ns.adobe.com/xmp/extension/\0";
     const IRB: &[u8] = b"Photoshop 3.0\0";
+    const ICC: &[u8] = b"ICC_PROFILE\0";
     if !b.starts_with(&[0xFF, 0xD8]) {
         return Err("not a JPEG".into());
     }
@@ -95,6 +138,16 @@ pub fn metadata(b: &[u8]) -> Result<JpegMetadata, String> {
                     } else {
                         s.xmp_extended_incomplete = true;
                     }
+                }
+            }
+            0xE2 => {
+                // Sequence number, chunk count, then this chunk's bytes.
+                if let Some([seq, count, data @ ..]) = seg.strip_prefix(ICC) {
+                    s.icc_chunks.push(IccChunk {
+                        seq: *seq,
+                        count: *count,
+                        data: data.to_vec(),
+                    });
                 }
             }
             0xEB => s.c2pa_jumbf |= seg.starts_with(b"JP"),
@@ -225,6 +278,60 @@ mod tests {
         assert!(m.xmp_extended && !m.xmp_extended_incomplete);
         assert!(m.c2pa_jumbf);
         assert_eq!(m.photoshop_irb, vec![b"first".to_vec(), b"second".to_vec()]);
+    }
+
+    fn icc_chunk(seq: u8, count: u8, data: &[u8]) -> Vec<u8> {
+        let mut p = b"ICC_PROFILE\0".to_vec();
+        p.extend_from_slice(&[seq, count]);
+        p.extend_from_slice(data);
+        segment(0xE2, &p)
+    }
+
+    fn with_segments(segments: &[Vec<u8>]) -> Vec<u8> {
+        let mut f = vec![0xFF, 0xD8];
+        for s in segments {
+            f.extend_from_slice(s);
+        }
+        f.extend_from_slice(&[0xFF, 0xD9]);
+        f
+    }
+
+    #[test]
+    fn an_icc_profile_is_put_back_together_in_sequence_order() {
+        // No APP2 profile segment: none, also when APP2 holds something else (MPF).
+        let none = metadata(&with_segments(&[segment(0xE2, b"MPF\0II*\0")])).unwrap();
+        assert!(none.icc_chunks.is_empty());
+        assert_eq!(none.icc_profile(), None);
+
+        let one = metadata(&with_segments(&[icc_chunk(1, 1, b"whole")])).unwrap();
+        assert_eq!(one.icc_profile(), Some(Ok(b"whole".to_vec())));
+
+        // Written out of order, with another segment in between.
+        let split = metadata(&with_segments(&[
+            icc_chunk(2, 3, b"cd"),
+            segment(0xED, b"Photoshop 3.0\0x"),
+            icc_chunk(3, 3, b"ef"),
+            icc_chunk(1, 3, b"ab"),
+        ]))
+        .unwrap();
+        assert_eq!(split.icc_chunks.len(), 3);
+        assert_eq!(split.icc_profile(), Some(Ok(b"abcdef".to_vec())));
+
+        // Not one complete sequence: said, never guessed at.
+        for broken in [
+            vec![icc_chunk(1, 2, b"ab")], // second chunk missing
+            vec![icc_chunk(1, 2, b"ab"), icc_chunk(1, 2, b"cd")], // a number twice
+            vec![icc_chunk(1, 2, b"ab"), icc_chunk(2, 3, b"cd")], // counts disagree
+            vec![icc_chunk(3, 2, b"ab"), icc_chunk(1, 2, b"cd")], // number past the count
+            vec![icc_chunk(0, 1, b"ab")], // numbering starts at 1
+            vec![icc_chunk(1, 0, b"ab")], // a count of none
+        ] {
+            let m = metadata(&with_segments(&broken)).unwrap();
+            assert!(matches!(m.icc_profile(), Some(Err(_))), "{broken:?}");
+        }
+        // A segment too short to hold the two numbers is not a profile chunk.
+        let short = metadata(&with_segments(&[segment(0xE2, b"ICC_PROFILE\0\x01")])).unwrap();
+        assert_eq!(short.icc_profile(), None);
     }
 
     #[test]
