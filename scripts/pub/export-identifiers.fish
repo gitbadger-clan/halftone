@@ -3,12 +3,20 @@
 # picture (its vendor AI flag and the account or tracking records next to it), and
 # how many files per generator in 04-generators carry each kind of identifier.
 #
-#   fish scripts/pub/export-identifiers.fish          # print the frame
-#   fish scripts/pub/export-identifiers.fish --png    # render scripts/pub/out/export-identifiers.png
+#   fish scripts/pub/export-identifiers.fish                   # print the frame
+#   fish scripts/pub/export-identifiers.fish --png             # render scripts/pub/out/export-identifiers.png
+#   fish scripts/pub/export-identifiers.fish --reveal          # the same frame with the values shown
+#   fish scripts/pub/export-identifiers.fish --reveal --png    # render scripts/pub/out/export-identifiers-revealed.png
+#   fish scripts/pub/export-identifiers.fish --list person     # which files carry a kind (person, account, document, ...)
+#   fish scripts/pub/export-identifiers.fish --file NAME       # use another file from 04-generators as the example
 #
-# Values are never shown: the frame runs `ht inspect` without --reveal, so every
-# identifier appears as its field name, kind and length only, and it stops if any
-# identifier value is present in ht's output. Counts are computed at run time.
+# By default values are never shown: the frame runs `ht inspect` without --reveal, so
+# every identifier appears as its field name, kind and length only, and it stops if
+# any identifier value is present in ht's output. Counts are computed at run time.
+#
+# --reveal is passed on to `ht inspect`, to see what the masking hides. That copy is
+# for your own eyes: it says so in its first line, and its image goes to a separate
+# file so it cannot overwrite, or be mistaken for, the one meant for publishing.
 #
 # Override the binary with an exported HT (set -x, so freeze's re-run sees it).
 # Requires: ht, jq; freeze for --png
@@ -21,22 +29,32 @@ set -l repo (git rev-parse --show-toplevel 2>/dev/null); or begin
 end
 cd $repo
 
-set -q HT; or set -g HT ./target/release/ht
-# Not with a binary older than the source: the frame would show the old code's
-# output (scripts/lib/htbin.py). `HT_STALE_OK=1 <this script>` runs anyway. Checked
-# here, before the render mode, so --png stops too and does not draw the error.
-uv run scripts/ht-check.py -q --ht $HT; or exit 2
-
+argparse png reveal 'file=' 'list=' -- $argv
+or begin
+    echo "usage: export-identifiers.fish [--png] [--reveal] [--file NAME] [--list KIND]" >&2
+    exit 2
+end
+test (count $argv) -eq 0; or begin
+    echo "unexpected argument $argv[1] (use --png, --reveal, --file NAME, --list KIND)" >&2
+    exit 2
+end
+set -l one canva__canva-ai__web-download__p1__2.png
+set -q _flag_file; and set one (path basename $_flag_file)
+set -l reveal
 set -l out scripts/pub/out/export-identifiers.png
+if set -q _flag_reveal
+    set reveal --reveal
+    set out scripts/pub/out/export-identifiers-revealed.png
+end
 
 # --- render mode: re-run this script under freeze and stop ------------------
-if contains -- --png $argv
+if set -q _flag_png
     type -q freeze; or begin
         echo "freeze not found: brew install charmbracelet/tap/freeze" >&2
         exit 2
     end
     mkdir -p (dirname $out)
-    freeze --execute "fish $self" \
+    freeze --execute "fish $self $reveal --file $one" \
         --execute.timeout 2m \
         --output $out \
         --background '#1c1e26' \
@@ -49,12 +67,13 @@ if contains -- --png $argv
         --window
     or exit $status
     echo "wrote $out"
+    test -n "$reveal"; and echo "note: this image shows identifier values. Keep it out of posts and out of git." >&2
     exit 0
 end
 
 # --- setup --------------------------------------------------------------------
+set -q HT; or set -g HT ./target/release/ht
 set -l g corpus/differential/04-generators
-set -l one canva__canva-ai__web-download__p1__2.png
 
 function die
     echo "error: $argv" >&2
@@ -78,17 +97,32 @@ end
 # The container layer only: these fields are read without the manifest.
 # `ht inspect` exits 2 when any source reports Present (its CI convention), so 2 is
 # a normal result here; anything else is a failure.
-$HT inspect --batch --json --only container $files >$tmp/batch.json 2>$tmp/err.txt
+$HT inspect --batch --json --only container $reveal $files >$tmp/batch.json 2>$tmp/err.txt
 set -l rc $status
 set -l err (head -n 3 $tmp/err.txt | string join ' | ')
 contains -- $rc 0 2; or die "ht inspect exited $rc: $err"
 jq -e '.inspections | type == "array"' $tmp/batch.json >/dev/null 2>&1; or die "ht inspect did not print a batch document"
 test (jq '.inspections | length' $tmp/batch.json) -eq (count $files); or die "ht did not report on every file"
 
-# Never publish a value: stop if any identifier in the output is not masked.
+# Never publish a value: without --reveal, stop if any identifier in the output is
+# not masked.
 set -l open (jq '[.inspections[].evidence[] | select(.source.name == "embedded_identifiers")
                   | .details.identifiers[]? | select(has("value"))] | length' $tmp/batch.json)
-test "$open" = 0; or die "$open identifier values are not masked in ht's output: refusing to print"
+if test -z "$reveal"
+    test "$open" = 0; or die "$open identifier values are not masked in ht's output: refusing to print"
+end
+
+# --- list mode: which files carry identifiers of one kind, and in which fields -------
+if set -q _flag_list
+    jq -r --arg kind $_flag_list '
+        .inspections[]
+        | [.evidence[] | select(.source.name == "embedded_identifiers")
+           | .details.identifiers[]? | select(.kind == $kind) | .field] as $fields
+        | select(($fields | length) > 0)
+        | "\(.asset.path | split("/") | last)\t\($fields | unique | join(", "))"
+    ' $tmp/batch.json | sort
+    exit 0
+end
 
 # --- frame ------------------------------------------------------------------------
 set -l H (set_color --bold brcyan)
@@ -96,10 +130,15 @@ set -l D (set_color brblack)
 set -l R (set_color normal)
 
 echo "$D# What an AI image export carries besides the picture, checked "(date -u '+%Y-%m-%d %H:%M')" UTC$R"
-echo "$D# "($HT --version 2>&1 | string join ' ')"  ·  values masked (ht's default): field, kind and length only$R"
+if test -n "$reveal"
+    echo (set_color --bold brred)"# VALUES SHOWN (--reveal): this copy is not for publishing$R"
+    echo "$D# "($HT --version 2>&1 | string join ' ')"$R"
+else
+    echo "$D# "($HT --version 2>&1 | string join ' ')"  ·  values masked (ht's default): field, kind and length only$R"
+end
 
 echo
-echo "$H== one Canva AI export, as downloaded$R  $D$one$R"
+echo "$H== one export from "(string split -m 1 __ -- $one)[1]", as downloaded$R  $D$one$R"
 jq -r --arg one $one '
     def pad(n): tostring as $s | $s + (if n > ($s | length) then " " * (n - ($s | length)) else "" end);
     .inspections[] | select((.asset.path | split("/") | last) == $one)
@@ -108,9 +147,13 @@ jq -r --arg one $one '
     | ($d.embedded_identifiers.identifiers // []) as $ids
     | ([$ids[] | "\(.field) (\(.kind))" | length] | max // 0) as $w
     | (if ($flags | length) > 0 then "vendor AI flag" else "vendor AI flag: none" end),
-      ($flags[] | "  \(.prefix):\(.field) = \(.value)" + (if .namespace then "   (namespace \(.namespace))" else "" end)),
+      # When a writer uses the field name itself as the XML prefix, print the name once.
+      ($flags[] | "  " + (if .prefix == .field or (.prefix // "") == "" then .field else "\(.prefix):\(.field)" end)
+                  + " = \(.value)" + (if .namespace then "   (namespace \(.namespace))" else "" end)),
       (if ($ids | length) > 0 then "identifiers" else "identifiers: none" end),
-      ($ids[] | "  " + ("\(.field) (\(.kind))" | pad($w)) + "  [masked, \(.length) character" + (if .length == 1 then "" else "s" end) + "]")
+      ($ids[] | "  " + ("\(.field) (\(.kind))" | pad($w)) + "  "
+                + (if has("value") then .value
+                   else "[masked, \(.length) character" + (if .length == 1 then "" else "s" end) + "]" end))
 ' $tmp/batch.json
 
 echo
@@ -119,8 +162,7 @@ echo "$H== 04-generators ("(count $files)" files): files per generator that carr
 jq -r '
     def pad(n): tostring as $s | $s + (if n > ($s | length) then " " * (n - ($s | length)) else "" end);
     [ ["account", "account or tracking"], ["person", "person name"], ["contact", "contact detail"],
-      ["device", "device identifier"], ["display", "display name"],
-      ["document", "document identifier"], ["location", "location"] ] as $kinds
+      ["device", "device identifier"], ["display", "display name"], ["document", "document identifier"], ["location", "location"] ] as $kinds
     | [ .inspections[]
         | (.evidence | map({key: .source.name, value: .}) | from_entries) as $e
         | { gen: (.asset.path | split("/") | last | split("__")[0]),
