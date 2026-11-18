@@ -146,8 +146,11 @@ gone. What it carries is unsigned XMP.
 - `marking_metadata`: IPTC DigitalSourceType =
   compositeWithTrainedAlgorithmicMedia.
 - `rights_statements`: `photoshop:Credit` = "Edited with Google AI".
-- `vendor_ai_flag` is `Absent`: it knows the credit "Made with Google AI", not
-  this one.
+- `vendor_ai_flag`: `Absent` at collection time, when it knew the credit "Made
+  with Google AI" and not this one. Since 2026-11-17 it knows both and is
+  `Present` here: the writing application states that the content was edited
+  with AI. That is a different statement from "made with", and the rationale
+  keeps the two apart. Unsigned, like the rest of this file's XMP.
 - XMP `photoshop:DateCreated` is 2026-11-13T13:00:28Z, 45 minutes after the
   revert.
 - The file is a libjpeg re-encode at quality 100, 3,600,914 bytes against the
@@ -199,8 +202,6 @@ for other tools in 04-generators.
 ## Open
 
 - Dynamic (the third suggestion) was not collected.
-- "Edited with Google AI" as a second phrase for `CREDIT_PHRASES` in
-  `vendor_ai.rs`: measured here, a separate code change.
 - Whether AI Enhance reframes every portrait to 4:3 landscape: needs a second
   photo.
 - What exactly was added in Pixel Studio, and whether the same marking appears
@@ -216,9 +217,9 @@ for other tools in 04-generators.
 
 ## Results
 
-Differential run 2026-11-16 (ground truth collected 2026-11-16T11:31:49Z): 7 of
+Differential run 2026-11-17 (ground truth collected 2026-11-17T20:22:55Z): 7 of
 7 files compared, 0 disagreements; rights and identifier values compared by
 keyed fingerprint; signals rubric compared on 14 nodes in 6 files, integrity
 and conformance rubrics on 222 checks in 6 files (the six files that carry a
-manifest: all but the Pixel Studio annotation). Whole corpus: 389 of 389 files
+manifest: all but the Pixel Studio annotation). Whole corpus: 396 of 396 files
 across 10 corpora, 0 disagreements.

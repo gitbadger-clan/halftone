@@ -1,19 +1,25 @@
 //! Vendor AI flags: fields outside the IPTC vocabulary in which an application states
-//! that its output contains AI-generated content.
+//! that its output contains AI-generated content, or was edited with AI.
 //!
-//! One source, one question: does the file's XMP carry a known vendor-specific
-//! statement that the content is AI-generated? `marking_metadata` reports the IPTC
+//! One source, one question: does the file's metadata carry a known vendor-specific
+//! statement that AI made or edited the content? `marking_metadata` reports the IPTC
 //! `DigitalSourceType` and nothing else; a vendor's own yes/no field is a different
 //! statement, in a different vocabulary, and is reported here so it is not lost.
 //!
 //! Two kinds of statement are recognised, both measured on corpus files and nothing
 //! else: a yes/no field ([`FIELDS`]; `ContainsAiGeneratedContent` in the namespace
 //! `https://canva.com/export`), and a fixed phrase in the credit line
-//! ([`CREDIT_PHRASES`]; `Made with Google AI`). The lists hold what real files
-//! carry, not what might exist: an entry is added when a file is measured with it.
+//! ([`CREDIT_PHRASES`]; `Made with Google AI`, `Edited with Google AI`). The lists
+//! hold what real files carry, not what might exist: an entry is added when a file is
+//! measured with it.
+//!
+//! The two phrases do not say the same thing, and the rationale keeps them apart:
+//! one says the content was generated, the other that it was edited with AI, which a
+//! photograph with one retouched corner also is. Each flag records which
+//! ([`Flag::states`]).
 //!
 //! Status semantics:
-//! - `Present`: a known field says yes.
+//! - `Present`: a known field says yes, or a known phrase is there.
 //! - `Absent`: none of the known fields is there, or one says no (value in `details`).
 //! - `Inconclusive`: a value that is neither yes nor no, yes and no together, or XMP
 //!   that could not be read completely. Reported verbatim, never interpreted.
@@ -41,10 +47,53 @@ pub const FIELDS: &[Field] = &[Field {
             content",
 }];
 
+/// What a vendor's statement says AI did.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum States {
+    /// The content is AI-generated.
+    Generated,
+    /// The content was edited with AI. How much of it, the statement does not say.
+    Edited,
+}
+
+impl States {
+    /// The clause of the rationale that says what the application states.
+    fn clause(self) -> &'static str {
+        match self {
+            States::Generated => "the content is AI-generated",
+            States::Edited => "the content was edited with AI",
+        }
+    }
+}
+
+/// A credit-line text that is a vendor's AI statement.
+#[derive(Debug, Clone, Copy, Serialize)]
+pub struct CreditPhrase {
+    /// The credit line, matched whole, letter case aside.
+    pub text: &'static str,
+    /// What it says AI did.
+    pub states: States,
+}
+
 /// Credit-line texts that are a vendor's AI statement, matched whole (letter case
 /// aside) in `photoshop:Credit` and the IIM credit. Any other credit line is a credit
-/// line and is reported by `rights_statements` only.
-pub const CREDIT_PHRASES: &[&str] = &["Made with Google AI"];
+/// line and is reported by `rights_statements` only. `scripts/differential.py` holds
+/// the same texts (`VENDOR_CREDIT_PHRASES`).
+///
+/// `Edited with Google AI` was measured on a Pixel Studio export from a Pixel 9 Pro
+/// Fold (05-fold, 2026-11-16), next to a `DigitalSourceType` of
+/// compositeWithTrainedAlgorithmicMedia.
+pub const CREDIT_PHRASES: &[CreditPhrase] = &[
+    CreditPhrase {
+        text: "Made with Google AI",
+        states: States::Generated,
+    },
+    CreditPhrase {
+        text: "Edited with Google AI",
+        states: States::Edited,
+    },
+];
 
 const PHOTOSHOP: &str = "http://ns.adobe.com/photoshop/1.0/";
 
@@ -61,6 +110,9 @@ pub struct Flag {
     pub value: String,
     /// `Some(true)` for yes, `Some(false)` for no, `None` for anything else.
     pub says: Option<bool>,
+    /// What a yes in this field states: that the content is generated, or that it was
+    /// edited with AI.
+    pub states: States,
 }
 
 /// Yes/no reading of a flag value: `yes`/`true`/`1` and `no`/`false`/`0`, in any
@@ -102,22 +154,24 @@ impl EvidenceSource for VendorAiFlag {
                 flags.push(Flag {
                     field: f.name,
                     says: says(&v.value),
+                    states: States::Generated,
                     prefix: v.prefix,
                     namespace: v.namespace,
                     value: v.value,
                 });
             }
         }
-        let is_phrase = |v: &str| {
+        let phrase = |v: &str| {
             CREDIT_PHRASES
                 .iter()
-                .any(|p| p.eq_ignore_ascii_case(v.trim()))
+                .find(|p| p.text.eq_ignore_ascii_case(v.trim()))
         };
         for v in e.xmp_values(PHOTOSHOP, "photoshop", "Credit", false) {
-            if is_phrase(&v.value) {
+            if let Some(p) = phrase(&v.value) {
                 flags.push(Flag {
                     field: "Credit",
                     says: Some(true),
+                    states: p.states,
                     prefix: v.prefix,
                     namespace: v.namespace,
                     value: v.value,
@@ -125,16 +179,20 @@ impl EvidenceSource for VendorAiFlag {
             }
         }
         for v in e.iim_values(110) {
-            if is_phrase(&v) {
+            if let Some(p) = phrase(&v) {
                 flags.push(Flag {
                     field: "Credit",
                     says: Some(true),
+                    states: p.states,
                     prefix: "iim".into(),
                     namespace: None,
                     value: v,
                 });
             }
         }
+        // A statement of generation first: when a file carries both kinds, that is
+        // the one the rationale quotes.
+        flags.sort_by_key(|f| f.states != States::Generated);
         let yes = flags.iter().any(|f| f.says == Some(true));
         let no = flags.iter().any(|f| f.says == Some(false));
         let unknown: Vec<&Flag> = flags.iter().filter(|f| f.says.is_none()).collect();
@@ -142,7 +200,7 @@ impl EvidenceSource for VendorAiFlag {
         known.extend(
             CREDIT_PHRASES
                 .iter()
-                .map(|p| format!("the credit line \"{p}\"")),
+                .map(|p| format!("the credit line \"{}\"", p.text)),
         );
 
         const CAVEAT: &str = "This is an unsigned statement by whatever software last saved the \
@@ -205,10 +263,11 @@ impl EvidenceSource for VendorAiFlag {
                 Status::Present,
                 format!(
                     "The file's metadata carries a vendor AI statement, {}: the writing \
-                     application states that the content is AI-generated. This is not the IPTC \
+                     application states that {}. This is not the IPTC \
                      DigitalSourceType vocabulary, so marking_metadata does not report it. \
                      {CAVEAT}",
-                    shown(f)
+                    shown(f),
+                    f.states.clause()
                 ),
             )
         } else {
@@ -359,6 +418,76 @@ mod tests {
         let ev = VendorAiFlag.assess(&a).unwrap();
         assert_eq!(ev.status, Status::Present);
         assert_eq!(ev.details["flags"][0]["prefix"], "iim");
+        assert_eq!(ev.details["flags"][0]["states"], "generated");
+        assert!(
+            ev.rationale
+                .contains("states that the content is AI-generated.")
+        );
+    }
+
+    #[test]
+    fn edited_with_ai_is_a_statement_of_editing_not_of_generation() {
+        let credit = |text: &str| {
+            packet(
+                "xmlns:photoshop='http://ns.adobe.com/photoshop/1.0/'",
+                &format!("<photoshop:Credit>{text}</photoshop:Credit>"),
+            )
+        };
+        // Pixel Studio's credit line, as measured.
+        let ev = assess(Some(&credit("Edited with Google AI")));
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(ev.details["flags"][0]["field"], "Credit");
+        assert_eq!(ev.details["flags"][0]["states"], "edited");
+        assert!(
+            ev.rationale
+                .contains("photoshop:Credit = Edited with Google AI"),
+            "{}",
+            ev.rationale
+        );
+        assert!(
+            ev.rationale
+                .contains("states that the content was edited with AI."),
+            "{}",
+            ev.rationale
+        );
+        assert!(!ev.rationale.contains("AI-generated"));
+        assert!(ev.rationale.contains("unsigned statement"));
+        // Whole, letter case aside; a longer line is a credit line.
+        assert_eq!(
+            assess(Some(&credit("EDITED WITH GOOGLE AI"))).status,
+            Status::Present
+        );
+        assert_eq!(
+            assess(Some(&credit("Edited with Google AI by A. Person"))).status,
+            Status::Absent
+        );
+        // In the IIM credit too.
+        let a =
+            Asset::from_bytes(jpeg(None, None, &[(110, b"Edited with Google AI")]), None).unwrap();
+        let ev = VendorAiFlag.assess(&a).unwrap();
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(ev.details["flags"][0]["states"], "edited");
+
+        // Both statements in one file: the rationale quotes the one about generation.
+        let both = packet(
+            "xmlns:photoshop='http://ns.adobe.com/photoshop/1.0/' xmlns:a='urn:a'",
+            "<photoshop:Credit>Edited with Google AI</photoshop:Credit>\
+             <a:ContainsAiGeneratedContent>Yes</a:ContainsAiGeneratedContent>",
+        );
+        let ev = assess(Some(&both));
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(ev.details["flags"].as_array().unwrap().len(), 2);
+        assert!(ev.rationale.contains("a:ContainsAiGeneratedContent = Yes"));
+        assert!(
+            ev.rationale
+                .contains("states that the content is AI-generated.")
+        );
+        // The absent rationale names both phrases among what was looked for.
+        let none = assess(None);
+        assert!(
+            none.rationale
+                .contains("the credit line \"Edited with Google AI\"")
+        );
     }
 
     #[test]

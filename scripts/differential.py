@@ -229,7 +229,7 @@ def tool_version(cmd: list[str]) -> str | None:
 
 
 PLUS_VOCAB = "http://ns.useplus.org/ldf/vocab/"
-VENDOR_CREDIT_PHRASES = ("made with google ai",)
+VENDOR_CREDIT_PHRASES = ("made with google ai", "edited with google ai")  # vendor_ai.rs CREDIT_PHRASES
 PLACEHOLDERS = {"", "n/a", "na", "none", "unknown", "null", "-", "--"}
 
 

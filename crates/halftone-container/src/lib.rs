@@ -18,8 +18,9 @@
 //! - [`data_mining::DataMiningReservation`] (`data_mining_reservation`): the IPTC / PLUS
 //!   `Data Mining` property in XMP: whether the file's metadata reserves rights
 //!   against data mining and AI training. Unsigned, like the marking field.
-//! - [`vendor_ai::VendorAiFlag`] (`vendor_ai_flag`): a vendor's own yes/no field saying
-//!   the file contains AI-generated content, outside the IPTC vocabulary.
+//! - [`vendor_ai::VendorAiFlag`] (`vendor_ai_flag`): a vendor's own statement, outside
+//!   the IPTC vocabulary, that the file contains AI-generated content or was edited
+//!   with AI: a yes/no field, or a fixed credit line.
 //! - [`rights::RightsStatements`] (`rights_statements`): copyright notice, usage terms,
 //!   licence, credit and release fields, quoted as written; copies that disagree.
 //! - [`identifiers::EmbeddedIdentifiers`] (`embedded_identifiers`): the privacy listing:
