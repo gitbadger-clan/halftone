@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-17T06:07:18Z",
+  "collected_at": "2026-11-17T20:22:11Z",
   "conformance_rubrics": null,
   "corpus": "corpus/differential/03-synthetic",
   "files": {
@@ -862,6 +862,216 @@
       },
       "sha256": "e6f738169248a9899247d83e0be0815dfa20f3a32ffc555073668fb055598a9e",
       "size_bytes": 11423
+    },
+    "id_icc_display.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "icc:ProfileDescription",
+              "value": "Example Display EX2700"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "present"
+        },
+        "note": "a screenshot's colour profile: display class, named after a monitor",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "5c4081bb367965ab6d5ba8d69ae3b0622479a22fd7c8e5fd076136eb97cf1642",
+      "size_bytes": 7918
+    },
+    "id_icc_display_v4.webp": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "icc:ProfileDescription",
+              "value": "Example Display EX2700"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/webp",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "present"
+        },
+        "note": "the same in a version 4 profile whose description has a German and a US English record",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "daeb859946ab26f76e17760521eef5209c25c37c936ef82601e16899a17cc75f",
+      "size_bytes": 7072
+    },
+    "id_icc_png.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "icc:ProfileDescription",
+              "value": "Example Display EX2700"
+            }
+          ],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "present"
+        },
+        "note": "the same in a PNG's iCCP chunk, which is a zlib stream",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "619e16b0d263f9e1f7f533ac7bec719d1ce20d66589c635eb076a074b203b9d1",
+      "size_bytes": 28140
+    },
+    "id_icc_printer.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "absent"
+        },
+        "note": "an output-class profile is named after a printing condition, not a display",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "269314ec7e08fe5c5dfc98522286b99142a9f6a37612bd3a00ff41e3c739cfca",
+      "size_bytes": 7918
+    },
+    "id_icc_standard.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "absent"
+        },
+        "note": "a display-class profile of a standard colour space names no display",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "83815b5b940027c9987c50e9b590403466257323852150a63aef77caf44facd8",
+      "size_bytes": 7910
     },
     "id_marker.jpg": {
       "c2patool": {
@@ -2393,6 +2603,50 @@
       },
       "sha256": "176e8c2c56e054c2b7bdb95ff597428cf3137949659136e9396a948d86aa2c9f",
       "size_bytes": 28246
+    },
+    "va_google_edit_credit.jpg": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [
+            {
+              "field": "photoshop:Credit",
+              "value": "Edited with Google AI"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": true
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/jpeg",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "absent"
+        },
+        "note": "the credit line that says a file was edited with AI, as a phone's editing app writes it",
+        "rights": {
+          "status": "present"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "present"
+        }
+      },
+      "sha256": "a8992b5594e20203acdad38312642f1bde664113a8a7eb469ba3a5008997432d",
+      "size_bytes": 10467
     },
     "xmp_no_field.jpg": {
       "c2patool": {

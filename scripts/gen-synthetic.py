@@ -17,7 +17,7 @@ ExifTool/c2patool comparison. The stratum is matched by file name, not hash.
 `data_mining` object, on the `dm_*` cases, is what data_mining_reservation must say;
 `vendor_ai`, `rights` and `identifiers`, on the `va_*`, `rs_*` and `id_*` cases, are
 what vendor_ai_flag, rights_statements and embedded_identifiers must say. Every name,
-address and number in those cases is invented.
+address, number and monitor in those cases is invented.
 
 Bytes do not depend on the ExifTool that wrote them. By default ExifTool stamps every
 XMP packet with its own version (x:xmptk='Image::ExifTool 13.59'), which made the
@@ -26,8 +26,11 @@ and the CI runner. Every case that writes XMP sets that field to a constant inst
 (TOOLKIT). A case that writes no XMP gets no toolkit either, so `plain` and
 `iim_only` still carry no packet at all. EXIF has the same trap in another place:
 the tags ExifTool adds on its own to a new EXIF block changed between versions, so
-the cases that write EXIF name those tags themselves (FLASHPIX, RESOLUTION). Measured
-with ExifTool 12.76, 13.55, 13.59 and 13.64: all 64 files come out byte-identical.
+the cases that write EXIF name those tags themselves (FLASHPIX, RESOLUTION). The
+colour-profile cases embed profiles built here, and the PNG one is written here
+whole: ExifTool would compress the profile with its Perl's zlib, whose output is not
+the same in every build. Measured with ExifTool 12.76, 13.55, 13.59 and 13.64: all 70
+files come out byte-identical.
 
 Which ExifTool wrote the files is still recorded, next to them instead of inside
 them: SOURCE.txt names the generator, the ExifTool version, the toolkit constant and
@@ -47,7 +50,9 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import struct
 import sys
+import zlib
 from pathlib import Path
 from typing import Annotated
 
@@ -277,6 +282,86 @@ def listing_cases() -> list[tuple[str, str, dict[str, str], str, list[str], str 
              "an EXIF block in a PNG (eXIf), as a phone's screenshot tool writes: a per-image id",
              ["-IFD0:Software=Android EXAMPLE.000000.000",
               "-ExifIFD:ImageUniqueID=00000000-0000-4000-8000-000000000002"]),
+        case("va_google_edit_credit", "jpg", {"vendor_ai": "present", "rights": "present"},
+             "the credit line that says a file was edited with AI, as a phone's editing app writes it",
+             ["-XMP-photoshop:Credit=Edited with Google AI"]),
+    ]
+
+
+def icc_desc(name: str) -> bytes:
+    """A version 2 description element (textDescriptionType): the ASCII name, then
+    empty Unicode and ScriptCode parts."""
+    ascii_ = name.encode("ascii") + b"\0"
+    return b"desc" + bytes(4) + struct.pack(">I", len(ascii_)) + ascii_ + bytes(8 + 3 + 67)
+
+
+def icc_mluc(records: list[tuple[str, str]]) -> bytes:
+    """A version 4 description element (multiLocalizedUnicodeType): one record per
+    (language and country code, text), the text in UTF-16BE."""
+    table, body = b"", b""
+    base = 16 + 12 * len(records)
+    for code, text in records:
+        utf16 = text.encode("utf-16-be")
+        table += code.encode("ascii") + struct.pack(">II", len(utf16), base + len(body))
+        body += utf16
+    return b"mluc" + bytes(4) + struct.pack(">II", len(records), 12) + table + body
+
+
+def icc_profile(cls: bytes, major: int, desc: bytes) -> bytes:
+    """A small ICC profile built here, so no file on the machine is read and the bytes
+    are the same everywhere: a header of the given class and version, a description
+    and a white point. Not a profile to convert colours with."""
+    white = b"XYZ " + bytes(4) + struct.pack(">3i", 0xF6D6, 0x10000, 0xD32D)
+    tags = [(b"desc", desc), (b"wtpt", white)]
+    table, data = b"", b""
+    base = 128 + 4 + 12 * len(tags)
+    for sig, payload in tags:
+        table += sig + struct.pack(">II", base + len(data), len(payload))
+        data += payload + bytes(-len(payload) % 4)
+    head = bytearray(128)
+    head[0:4] = struct.pack(">I", base + len(data))
+    head[8:10] = bytes([major, 0x30])
+    head[12:24] = cls + b"RGB " + b"XYZ "
+    head[24:36] = struct.pack(">6H", 2026, 1, 1, 0, 0, 0)
+    head[36:40] = b"acsp"
+    head[68:80] = struct.pack(">3i", 0xF6D6, 0x10000, 0xD32D)  # illuminant: D50
+    return bytes(head) + struct.pack(">I", len(tags)) + table + data
+
+
+def png_with_profile(png: bytes, profile: bytes) -> bytes:
+    """`png` with the profile in an iCCP chunk after IHDR, named as Apple ImageIO and
+    Pillow name theirs. The zlib stream is written here as one stored block: a
+    compressor's output differs between zlib builds, and ExifTool, asked to embed a
+    profile in a PNG, compresses with whichever one its Perl has."""
+    assert len(profile) < 65536 and png[12:16] == b"IHDR"
+    stored = b"\x01" + struct.pack("<HH", len(profile), len(profile) ^ 0xFFFF) + profile
+    stream = b"\x78\x01" + stored + struct.pack(">I", zlib.adler32(profile))
+    data = b"ICC Profile\0\0" + stream
+    chunk = struct.pack(">I", len(data)) + b"iCCP" + data + struct.pack(">I", zlib.crc32(b"iCCP" + data))
+    return png[:33] + chunk + png[33:]
+
+
+def profile_cases() -> list[tuple[str, str, dict[str, str], str, bytes]]:
+    """(stem, ext, intended status per listing source, note, ICC profile). Cases for the
+    display name embedded_identifiers reads from a colour profile. The profiles are
+    built here; the monitor is invented."""
+    monitor = "Example Display EX2700"
+    return [
+        ("id_icc_display", "jpg", {"identifiers": "present"},
+         "a screenshot's colour profile: display class, named after a monitor",
+         icc_profile(b"mntr", 2, icc_desc(monitor))),
+        ("id_icc_display_v4", "webp", {"identifiers": "present"},
+         "the same in a version 4 profile whose description has a German and a US English record",
+         icc_profile(b"mntr", 4, icc_mluc([("deDE", "Beispielanzeige EX2700"), ("enUS", monitor)]))),
+        ("id_icc_png", "png", {"identifiers": "present"},
+         "the same in a PNG's iCCP chunk, which is a zlib stream",
+         icc_profile(b"mntr", 2, icc_desc(monitor))),
+        ("id_icc_standard", "jpg", {},
+         "a display-class profile of a standard colour space names no display",
+         icc_profile(b"mntr", 2, icc_desc("sRGB IEC61966-2.1"))),
+        ("id_icc_printer", "jpg", {},
+         "an output-class profile is named after a printing condition, not a display",
+         icc_profile(b"prtr", 2, icc_desc("Example Press Coated v3"))),
     ]
 
 
@@ -397,9 +482,23 @@ def main(
                     **{k: {"status": intent.get(k, "absent")} for k in ("vendor_ai", "rights", "identifiers")},
                     "note": note,
                 }))
+            icc = DEST / ".profile.icc"
+            for name, ext, intent, note, profile in profile_cases():
+                if ext == "png":  # written here: see png_with_profile
+                    out = DEST / f"{name}.{ext}"
+                    out.write_bytes(png_with_profile((BASE / "base.png").read_bytes(), profile))
+                else:
+                    icc.write_bytes(profile)
+                    out = write(name, ext, [f"-icc_profile<={icc}"])
+                rows.append((out.name, {
+                    "status": "absent", "digital_source_type": [],
+                    **{k: {"status": intent.get(k, "absent")} for k in ("vendor_ai", "rights", "identifiers")},
+                    "note": note,
+                }))
     finally:
         pad.unlink(missing_ok=True)
         (DEST / ".packet.xmp").unlink(missing_ok=True)
+        (DEST / ".profile.icc").unlink(missing_ok=True)
     (DEST / "cases.json").write_text(cases_json(rows))
     (DEST / "SOURCE.txt").write_text(source_txt(len(rows), exiftool_version))
     print(f"{len(rows)} files -> {DEST} (cases.json holds the intended verdicts)")
