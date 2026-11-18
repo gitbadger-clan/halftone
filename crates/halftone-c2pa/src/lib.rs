@@ -40,7 +40,7 @@
 //! not change; the date belongs to the verifier, not the file. `details.signed_at`
 //! is the time the time-stamp token states, trusted or not.
 //!
-//! Implementation (c2pa 0.90): settings live in an explicit [`c2pa::Context`] — no
+//! Implementation (c2pa 0.91): settings live in an explicit `c2pa::Context` — no
 //! thread-local state — built once per assessment, then
 //! `Reader::from_context(ctx).with_stream(mime, bytes)`. Everything after that is read
 //! from `Reader::json()` so minor API churn in the crate does not break this layer.
