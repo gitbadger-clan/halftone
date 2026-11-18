@@ -59,7 +59,7 @@ Delivered pixel sizes (inputs: Gemini 2752×1536, ChatGPT 1448×1086, Meta
 | WhatsApp `photo` | longest side capped at 1600 (Gemini 1600×893, Fold 1200×1600); ChatGPT and Canva, already smaller, keep their size |
 | WhatsApp `photo-hd` | full size kept (Gemini 2752×1536, Fold 3000×4000) |
 | Telegram `photo` | longest side capped at 1280 (Gemini 1280×714, Fold 960×1280) |
-| Telegram `photo-hd` | Gemini 2560×1429; the Fold file is 960×1280, the same as its standard photo, so HD changed nothing for it. TODO: confirm the HD option was used for that send |
+| Telegram `photo-hd` | Gemini 2560×1429; the Fold file is 960×1280, the pixel size of its standard photo, in different bytes (sha256, 2026-11-17). Whether the HD option took effect for that send was not recorded |
 | Signal `photo` and `file` | Gemini 2048×1143, Fold 1536×2048; ChatGPT, Meta and Canva keep their size |
 | Signal `photo-hd` | larger: Gemini 2752×1536, Fold 2304×3072 |
 | Signal `file-android` | Gemini 2048×1143, Fold 1536×2048, ChatGPT 1024×768; Meta and Canva unchanged |
@@ -67,10 +67,24 @@ Delivered pixel sizes (inputs: Gemini 2752×1536, ChatGPT 1448×1086, Meta
 WhatsApp HD is the one route that keeps every pixel and still removes the
 manifest and the XMP: the image is intact, its provenance is not.
 
-Signal Desktop's `file` and `photo` rows have the same dimensions and the same
-file sizes for all five inputs, so choosing File appears to change nothing on
-that client. TODO: confirm by sha256 and, if they match, drop one of the two
-rows. TODO: whether the Fold gain map survives any route (`dev htc layout`).
+Signal Desktop's `file` and `photo` rows are byte-identical for all five inputs
+(sha256, 2026-11-17): choosing File changed nothing about what that client
+delivered. Both sets of rows are kept, as the record of two sends.
+
+EXIF and the gain map (`ht inspect`, 2026-11-17). Two inputs carry an EXIF
+block, the Canva PNG and the Fold capture; the Fold capture alone carries a
+gain map, read here as its container directory and MPF index.
+
+| Route | EXIF | Gain map |
+|---|---|---|
+| WhatsApp `document`, Telegram `file` (byte-identical) | kept on both | kept |
+| every `photo` and `photo-hd` route, all three apps | gone from both | gone |
+| Signal `file` from Desktop | gone from both | gone |
+| Signal `file-android` | an EXIF block on the Fold capture, none on the Canva PNG | present, rebuilt (see Signal) |
+
+So the gain map goes wherever the manifest goes, WhatsApp HD included. Whether
+the EXIF block on the Signal `file-android` Fold file is the capture's own or
+a new one was not compared.
 
 ## WhatsApp — desktop 26.44.74, Android 2.26.43.76
 
@@ -82,9 +96,9 @@ rows. TODO: whether the Fold gain map survives any route (`dev htc layout`).
   `Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents/Sent/`, where
   the app files a self-chat message from a linked device; the original file
   name is kept.
-- `photo`: sent as a photo, standard quality. Pulled from TODO folder
-  (expected `…/WhatsApp Images/Sent/`). TODO: menu path used on the phone
-  ("download after opening the image in the chat").
+- `photo`: sent as a photo, standard quality, and saved on the phone after
+  opening the image in the chat. The folder it was pulled from and the menu
+  path were not recorded.
 - `photo-hd`: the HD button in the send preview. WhatsApp Desktop offers it.
 - Finding (`document`): all five read as their inputs do. The three trusted
   manifests validate with the content hash intact; the Canva manifest's hash
@@ -94,9 +108,10 @@ rows. TODO: whether the Fold gain map survives any route (`dev htc layout`).
   inputs (sha256).
 - Finding (`photo`): all five delivered as JPEG, the two PNG inputs included.
   No C2PA manifest and no XMP on any of them.
-- Finding (`photo-hd`): no C2PA manifest and no XMP on either file; HD keeps
-  nothing the standard photo loses. TODO: pixel size against the standard
-  photo.
+- Finding (`photo-hd`): no C2PA manifest and no XMP on either file. HD keeps
+  the full pixel size (Gemini 2752×1536, Fold 3000×4000, against 1600×893 and
+  1200×1600 for the standard photo) and nothing else the standard photo
+  loses: no EXIF, no gain map.
 - Files (12): `document` ×5, `photo` ×5, `photo-hd` ×2.
 
 ## Telegram — Telegram.app (the native macOS client) 13.1.0, Android 13.2.1
@@ -112,36 +127,38 @@ rows. TODO: whether the Fold gain map survives any route (`dev htc layout`).
   `Android/data/org.telegram.messenger/files/Telegram/Telegram Files/`. Each
   file send also leaves a preview image in `…/cache/`, which is not collected.
 - `photo`: with compression. Pulled from
-  `Android/data/org.telegram.messenger/cache/`. TODO: where more than one
-  size was cached, the largest was taken.
+  `Android/data/org.telegram.messenger/cache/`. Whether more than one size was
+  cached for a send, and which was taken, was not recorded.
 - `photo-hd`: the HD option.
-- "Without compression": TODO. Either "same bytes as `file` (checked on TODO
-  input), no row of its own" or its own mode with files listed below.
+- "Without compression" has no row of its own: not collected as a separate
+  mode.
 - Finding (`file`): all five byte-identical to their inputs (sha256), so they
   read exactly as the WhatsApp `document` rows do.
 - Finding (`photo`): all five delivered as JPEG, the two PNG inputs included.
   No C2PA manifest and no XMP on any of them.
-- Finding (`photo-hd`): no C2PA manifest and no XMP on either file. TODO:
-  pixel size against the standard photo.
+- Finding (`photo-hd`): no C2PA manifest and no XMP on either file. Gemini is
+  2560×1429 against 1280×714 for the standard photo; the Fold file is 960×1280
+  on both, in different bytes.
 - Files (12): `file` ×5, `photo` ×5, `photo-hd` ×2.
 
 ## Signal — desktop 8.35.0, Android 8.34.2
 
 - Chat: "Note to Self".
 - Signal keeps attachments inside the app; each one was saved on the Fold
-  before the pull. TODO: save menu path and the folder the file landed in.
-- `file`: attached as a file in Signal Desktop. TODO: the exact control used,
-  and how it differs from the `photo` send.
+  before the pull. The menu path and the folder the file landed in were not
+  recorded.
+- `file`: attached as a file in Signal Desktop. The control used was not
+  recorded.
 - `photo`: sent as an image from Signal Desktop.
-- `photo-hd`: TODO where the quality choice is in Signal Desktop and what it
-  is called.
+- `photo-hd`: the higher-quality choice in Signal Desktop. Where it sits and
+  what it is called were not recorded.
 - Finding (`file`): choosing to send an image as a file from Signal Desktop
   does not deliver the file. None of the five is byte-identical to its input
   (sha256); all five arrived as JPEG, the two PNG inputs included, with no
   C2PA manifest and no XMP. The names keep `file` because that is what was
   chosen; the result is a re-encoded image, as on the photo route. Where the
   re-encoding happens (Desktop before sending, or later) was not determined.
-  TODO: whether these five are the same bytes as the `photo` rows.
+  These five are the same bytes as the five `photo` rows (sha256, 2026-11-17).
 - `file-android` (2026-11-13): the reverse direction. The five inputs were
   pushed to the Fold with `adb push` into `Download/ht-inputs/` and their
   sha256 checked against the inputs on the phone. Sent from Signal for Android
@@ -165,7 +182,7 @@ rows. TODO: whether the Fold gain map survives any route (`dev htc layout`).
 - Finding (`file`, `file-android` together): 10 of 10 file sends through
   Signal were re-encoded, from either client, also when a file send was
   chosen. In these versions no route tried delivers an image file with its
-  provenance data. TODO: how the message showed in the chat on each route.
+  provenance data. How each message showed in the chat was not recorded.
 - Finding (`photo`, `photo-hd`): all delivered as JPEG; no C2PA manifest and no
   XMP on any of them.
 - Files (17): `file` ×5, `file-android` ×5, `photo` ×5, `photo-hd` ×2.
@@ -179,16 +196,19 @@ rows. TODO: whether the Fold gain map survives any route (`dev htc layout`).
 - iMessage and AirDrop: wait for the iPhone and iPad.
 - Signal: a control with a non-image file (one input inside a zip), to show
   whether the change is specific to files Signal recognises as images.
-- Pixel sizes of the `photo` and `photo-hd` rows, and the fate of the Fold
-  gain map and of EXIF on those routes.
+- Telegram's "without compression" option as a row of its own.
+- Whether the EXIF block on the Signal `file-android` Fold file is the
+  capture's own.
+- The details marked "not recorded" above: folders, menu paths and the names
+  of the controls. A second pass should note them at the time.
 - A WebP input and a third signer (Adobe Firefly) were considered for a second
   pass and not sent.
 
 ## Results
 
-Differential run 2026-11-13 (ground truth 2026-11-13T06:49:43Z): 41 of 41 files
-compared, 0 disagreements; rights and identifier values compared by keyed
-fingerprint; signals rubric compared on 10 nodes in 8 files, integrity and
-conformance rubrics on 296 checks in 8 files (the eight files that still carry
-a manifest: WhatsApp `document` and Telegram `file`, without the Meta input).
-Whole corpus: 377 of 377 files across 9 corpora, 0 disagreements.
+Differential run 2026-11-17 (ground truth collected 2026-11-13T06:49:43Z): 41
+of 41 files compared, 0 disagreements; rights and identifier values compared by
+keyed fingerprint; signals rubric compared on 10 nodes in 8 files, integrity
+and conformance rubrics on 296 checks in 8 files (the eight files that still
+carry a manifest: WhatsApp `document` and Telegram `file`, without the Meta
+input). Whole corpus: 396 of 396 files across 10 corpora, 0 disagreements.
