@@ -67,12 +67,12 @@ microphone indicator was noticed in it.
   holds none of the rights, identifier, vendor-flag or data-mining fields
   (`ht inspect --metadata`).
 - Fold PNG: the chunk layout is that of Skia's PNG encoder (sBIT and sRGB,
-  8 KiB blocks), a rule measured on a Skia canvas binding. No XMP. So by layout
-  alone an Android screenshot is not told apart from any other Skia-written
-  PNG, and at collection time `png_writer` named Skia. Since 2026-11-17 a
-  second rule asks for that layout together with the EXIF `Software` tag
-  described below, and all five files read as Android's system screenshot
-  tool. The tag is unsigned; the rule needs the layout as well.
+  8 KiB blocks), a rule measured on a Skia canvas binding. No XMP and no ICC
+  profile. So by layout alone an Android screenshot is not told apart from
+  any other Skia-written PNG, and at collection time `png_writer` named Skia.
+  Since 2026-11-17 a second rule asks for that layout together with the EXIF
+  `Software` tag described below, and all five files read as Android's system
+  screenshot tool. The tag is unsigned; the rule needs the layout as well.
 - macOS JPEG: no XMP, but an IPTC IIM block; non-standard quantization tables,
   4:2:0, default Huffman tables; not in the writer fingerprint DB.
 - The Fold PNG carries an EXIF block (`eXIf`). Read on the Mac with its own
@@ -97,16 +97,36 @@ microphone indicator was noticed in it.
   one machine do not all carry the same one. With three displays attached, the
   three names may simply be one per display; which window was on which was not
   noted. The models are not recorded here.
+- The profile in the full-screen PNG (`s01`) is a reduced one. Its tags, by
+  ExifTool's names (2026-11-17): description, copyright, white point, the
+  three colourant columns, the three tone curves and the chromatic-adaptation
+  matrix. It has none of the tags a display's profile can carry to describe
+  the one screen (`vcgt`, Apple's `mmod` and `ndin`). So no tag sets it apart
+  from the profile of a colour space; its description does. One file checked.
+- The profile's header, all five files (2026-11-17): the device model and the
+  profile ID are empty, and the manufacturer is Apple's throughout. The
+  header's date is set, differs between the three displays, and is the same on
+  the three captures from the 1× display. So it is not the capture time. It is
+  not an old date either: by day count it falls on or just before the capture
+  day for four files and about a day earlier for `s04`. It reads as the time
+  that display's profile was generated, and captures from one display share it
+  exactly. Whether it survives a login, a restart or a reconnect was not
+  measured. No Halftone source reads it.
 - Since 2026-11-17 `embedded_identifiers` lists the `ImageUniqueID` of all
   five Fold screenshots as a document identifier, masked unless `--reveal`,
-  and `png_writer` quotes the `Software` tag. Still not reported: no source
-  reads the ICC profile description. (`exif_consistency` is right to say no
-  generator is named: an Android build is not one.)
-- No Halftone source prints the display's name, because none reads it.
-  `png_writer` reads the chunk's name, not the profile inside it, and the JPEG
-  and WebP sources record only whether a profile is present. Checked on these
-  files 2026-11-16: neither monitor name occurs anywhere in the output of
-  `ht inspect --batch --json --reveal`.
+  and `png_writer` quotes the `Software` tag. (`exif_consistency` is right to
+  say no generator is named: an Android build is not one.)
+- At collection time no Halftone source read the display's name: checked on
+  these files 2026-11-16, neither monitor name occurred anywhere in the output
+  of `ht inspect --batch --json --reveal`. Since 2026-11-17
+  `embedded_identifiers` reads the profile description and lists it for all
+  five macOS files as a display name (kind `display`): the profile is of the
+  display class and its name is no standard colour space's. The value is
+  printed only with `--reveal`; without it the listing gives the field, the
+  kind and the length. The five lengths fall into the same three groups as the
+  descriptions above, the generic `Display` among them. `png_writer` still
+  reads the chunk's name and not the profile, and the JPEG and WebP sources
+  still record only whether a profile is present.
 - All files inspected read as dark-mode images to `pixel_lattice` (macOS PNG
   0.0207, Fold Calculator 0.0026); no verdict, the statistic is uncalibrated.
 
@@ -140,7 +160,7 @@ photographs: the files serve the corpus, and are not for publication as images.
 
 ## Results
 
-Differential run 2026-11-17 (ground truth collected 2026-11-17T06:08:34Z): 10
+Differential run 2026-11-17 (ground truth collected 2026-11-17T13:29:55Z): 10
 of 10 files compared, 0 disagreements; rights and identifier values compared by
 keyed fingerprint. No signals or conformance rubric applies, since no file has
-a manifest. Whole corpus: 390 of 390 files across 10 corpora, 0 disagreements.
+a manifest. Whole corpus: 396 of 396 files across 10 corpora, 0 disagreements.

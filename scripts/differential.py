@@ -251,13 +251,42 @@ def each(v) -> list:
     return [] if v is None else v if isinstance(v, list) else [v]
 
 
+# Names of standard colour spaces: the list Halftone compiles in (icc.rs). A display-
+# class profile under one of these names no screen; under any other name it is listed.
+ICC_STANDARD_NAMES = Path(__file__).resolve().parent.parent / "crates/halftone-container/src/icc_standard_names.txt"
+
+
+def icc_standard_names() -> set[str]:
+    """The shared list, in the form names are compared in: whitespace collapsed, lower
+    case. Lines starting with # and empty lines are not names."""
+    lines = (line.strip() for line in ICC_STANDARD_NAMES.read_text().splitlines())
+    return {" ".join(line.split()).lower() for line in lines if line and not line.startswith("#")}
+
+
+def icc_description(d: dict) -> str | None:
+    """ExifTool's reading of the profile description. The unsuffixed tag is a version 2
+    profile's ASCII string or a version 4 profile's en-US record; when a version 4
+    profile has no en-US record ExifTool reports only language-suffixed tags, and the
+    first one in file order is taken. `ProfileDescriptionML` is another tag (Apple's
+    localized copy) and is not this field."""
+    plain = d.get("ICC_Profile:ProfileDescription")
+    if plain is None:
+        plain = next((v for k, v in d.items() if k.startswith("ICC_Profile:ProfileDescription-")), None)
+    for v in each(plain)[-1:]:
+        if isinstance(v, str) and not v.startswith("(Binary data"):  # a string it could not decode
+            return v
+    return None
+
+
 def embedded_facts(d: dict) -> dict:
     """What ExifTool reads from the fields Halftone's vendor_ai_flag, rights_statements
     and embedded_identifiers sources list, under Halftone's field names. An independent
     reading: ExifTool's parsers, its structure handling, its character decoding. Shared
     with Halftone by design: which fields are listed, the tidy() form of a value, the
     FBMD marker being an identifier and not an instruction, placeholders not being
-    identifiers, and GPS as decimal degrees with five places."""
+    identifiers, GPS as decimal degrees with five places, and the rule for a display's
+    name: the description of a display-class ICC profile, unless it is the name of a
+    standard colour space on the list both sides read."""
     rights: list[tuple[str, str]] = []
     ids: list[tuple[str, str]] = []
 
@@ -323,6 +352,12 @@ def embedded_facts(d: dict) -> dict:
             put(rights, field, v)
 
     # --- identifiers ---------------------------------------------------------------
+    def display_name() -> list:
+        desc = icc_description(d)
+        if desc is None or d.get("ICC-header:ProfileClass") != "mntr":
+            return []
+        return [] if tidy(desc).lower() in icc_standard_names() else [desc]
+
     for field, values in (
         ("exif:Artist", text("IFD0:Artist")),
         ("iim:By-line", text("IPTC:By-line")),
@@ -342,6 +377,7 @@ def embedded_facts(d: dict) -> dict:
         ("exifEX:BodySerialNumber", text("XMP-exifEX:SerialNumber")),
         ("exifEX:LensSerialNumber", text("XMP-exifEX:LensSerialNumber")),
         ("exifEX:CameraOwnerName", text("XMP-exifEX:OwnerName")),
+        ("icc:ProfileDescription", display_name()),
         ("exif:ImageUniqueID", text("ExifIFD:ImageUniqueID")),
         ("xmpMM:DocumentID", text("XMP-xmpMM:DocumentID")),
         ("xmpMM:OriginalDocumentID", text("XMP-xmpMM:OriginalDocumentID")),
@@ -394,6 +430,7 @@ def exiftool_facts(p: Path) -> dict:
         "-XMP:all", "-IPTC:all", "-IFD0:Artist", "-IFD0:Copyright",
         "-ExifIFD:SerialNumber", "-ExifIFD:LensSerialNumber", "-ExifIFD:OwnerName",
         "-ExifIFD:ImageUniqueID",
+        "-ICC_Profile:ProfileDescription*", "-ICC-header:ProfileClass",
         "-GPS:GPSLatitude", "-GPS:GPSLatitudeRef", "-GPS:GPSLongitude", "-GPS:GPSLongitudeRef",
         "-PNG:Copyright", "-PNG:Author", "-PNG:Source", "-PNG:Disclaimer",
         "-File:MIMEType", str(p),

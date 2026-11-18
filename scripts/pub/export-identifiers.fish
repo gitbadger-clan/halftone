@@ -119,7 +119,8 @@ echo "$H== 04-generators ("(count $files)" files): files per generator that carr
 jq -r '
     def pad(n): tostring as $s | $s + (if n > ($s | length) then " " * (n - ($s | length)) else "" end);
     [ ["account", "account or tracking"], ["person", "person name"], ["contact", "contact detail"],
-      ["device", "device identifier"], ["document", "document identifier"], ["location", "location"] ] as $kinds
+      ["device", "device identifier"], ["display", "display name"],
+      ["document", "document identifier"], ["location", "location"] ] as $kinds
     | [ .inspections[]
         | (.evidence | map({key: .source.name, value: .}) | from_entries) as $e
         | { gen: (.asset.path | split("/") | last | split("__")[0]),

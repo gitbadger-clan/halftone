@@ -4,7 +4,9 @@
 //! - XMP, from the same packets `marking_metadata` reads ([`crate::marking::packets`]);
 //! - EXIF, through `kamadak-exif` (JPEG, PNG `eXIf`, WebP, HEIF);
 //! - IPTC IIM record 2, from the Photoshop image-resource block of a JPEG;
-//! - PNG text chunks (`tEXt`, uncompressed `iTXt`).
+//! - PNG text chunks (`tEXt`, uncompressed `iTXt`);
+//! - the embedded ICC colour profile's header and description ([`crate::icc`]; JPEG,
+//!   PNG, WebP).
 //!
 //! Reading only: nothing here judges a value. Every value is returned as written,
 //! trimmed and bounded. Not read, and the sources say so: EXIF MakerNotes, values
@@ -52,6 +54,8 @@ pub struct Embedded {
     pub iim: Vec<(u8, String)>,
     /// PNG text chunks: (keyword, text), in file order.
     pub png_text: Vec<(String, String)>,
+    /// The embedded ICC colour profile: read, absent, or there and unreadable.
+    pub icc: crate::icc::Found,
 }
 
 impl std::fmt::Debug for Embedded {
@@ -61,6 +65,7 @@ impl std::fmt::Debug for Embedded {
             .field("has_exif", &self.has_exif)
             .field("iim", &self.iim)
             .field("png_text", &self.png_text)
+            .field("icc", &self.icc.state())
             .finish_non_exhaustive()
     }
 }
@@ -180,6 +185,7 @@ impl Embedded {
             "image/png" => e.png_text = png_text(&a.bytes),
             _ => {}
         }
+        e.icc = crate::icc::read(a);
         Ok(e)
     }
 

@@ -1,9 +1,9 @@
 //! Embedded identifiers: the privacy listing. What a file tells anyone who receives
-//! it about a person, an account, a device, a document or a place.
+//! it about a person, an account, a device, a display, a document or a place.
 //!
 //! One source, one question: does the file's metadata carry identifiers? It lists
 //! them from a fixed set of fields ([`FIELDS`] documents every one) in XMP, EXIF, IPTC
-//! IIM and PNG text chunks, quoted as written. Nothing is judged: a name may be a
+//! IIM, PNG text chunks and the ICC colour profile, quoted as written. Nothing is judged: a name may be a
 //! pseudonym, an identifier may be stale. The point is what the file discloses.
 //! Placeholders (`N/A`, `Unknown`, all zeros) and GPS tags without a position are
 //! not identifiers and are left out.
@@ -14,6 +14,16 @@
 //! capture. Whether it is unique is the writer's business: a phone's screenshot tool
 //! writes a random UUID, some camera firmware writes the same string into every
 //! file. It is quoted as written like everything else here.
+//!
+//! A display is listed by the name of its colour profile. macOS embeds in a
+//! screenshot the profile of the screen the capture came from (measured on macOS 27),
+//! and that profile's description is usually the monitor's model name: the file says
+//! what hardware sat on the desk. The description is listed when the profile is of the display class (`mntr`)
+//! and the name is not a standard colour space's (`icc_standard_names.txt`; sRGB,
+//! Display P3 and the like are display-class profiles too, and name no screen). That
+//! rule can list a name that is no screen's: a vendor's own variant of a standard
+//! space that is not on the list reads the same. It is masked like any other value,
+//! and the list is where to add it.
 //!
 //! Values are masked unless the source is built with `reveal` (`ht inspect --reveal`):
 //! `details` then names each field and kind and gives the value's length, not the
@@ -29,14 +39,17 @@
 //!
 //! Not read, and named in the `Absent` rationale: EXIF MakerNotes (camera makers'
 //! own blocks, which often hold serial numbers and owner data), the signer and
-//! assertions of a C2PA manifest, embedded thumbnails and previews, identifiers
-//! hidden in the pixels, and any field outside the list.
+//! assertions of a C2PA manifest, embedded thumbnails and previews, the colour
+//! profile of a HEIF file and what any profile holds besides its description
+//! (Apple's `mmod` tag, for one, has fields for a display's make, model and serial
+//! number), identifiers hidden in the pixels, and any field outside the list.
 
 use exif::Tag;
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
 use serde::Serialize;
 
 use crate::embedded::{Embedded, is_placeholder};
+use crate::icc;
 
 const DC: &str = "http://purl.org/dc/elements/1.1/";
 const PDF: &str = "http://ns.adobe.com/pdf/1.3/";
@@ -61,6 +74,8 @@ pub enum Kind {
     Account,
     /// A device: a serial number, a named owner.
     Device,
+    /// A display: the name of the colour profile made for one screen.
+    Display,
     /// A document identifier that links files from the same source or edit history.
     Document,
     /// A place: geographic coordinates.
@@ -74,6 +89,7 @@ impl Kind {
             Kind::Contact => ("contact detail", "contact details"),
             Kind::Account => ("account or tracking record", "account or tracking records"),
             Kind::Device => ("device identifier", "device identifiers"),
+            Kind::Display => ("display name", "display names"),
             Kind::Document => ("document identifier", "document identifiers"),
             Kind::Location => ("location", "locations"),
         };
@@ -98,6 +114,10 @@ pub const FIELDS: &[(Kind, &str)] = &[
     (
         Kind::Device,
         "EXIF body and lens serial numbers, camera owner name, and their XMP copies",
+    ),
+    (
+        Kind::Display,
+        "ICC profile description, for a display-class profile not named after a standard colour space",
     ),
     (
         Kind::Document,
@@ -213,6 +233,14 @@ pub fn scan(e: &Embedded) -> Vec<Identifier> {
         }
     }
 
+    // Displays: the profile a screenshot tool embeds is the screen's own. A standard
+    // colour space is a display-class profile too and names no screen.
+    if let Some(p) = e.icc.profile().filter(|p| p.is_display_class()) {
+        if let Some(name) = p.description.as_ref().filter(|d| !icc::is_standard_name(d)) {
+            add(Kind::Display, "icc:ProfileDescription", name.clone());
+        }
+    }
+
     // Documents. The EXIF image ID first: what the capturing device wrote, before
     // what editing software added.
     if let Some(v) = e.exif_text(Tag::ImageUniqueID) {
@@ -275,10 +303,17 @@ impl EvidenceSource for EmbeddedIdentifiers {
         let found = scan(&e);
 
         const BLIND: &str = "Not read: camera makers' own EXIF blocks (MakerNotes), the signer \
-            and contents of a C2PA manifest, embedded thumbnails and previews, anything hidden \
-            in the pixels, and fields outside this source's list.";
+            and contents of a C2PA manifest, embedded thumbnails and previews, the colour \
+            profile of a HEIF file and any profile's contents beyond its description, anything \
+            hidden in the pixels, and fields outside this source's list.";
         let (status, rationale) = if found.is_empty() {
-            let unread = e.xmp_incomplete();
+            let unread_what = match (e.xmp_incomplete(), e.icc.unreadable()) {
+                (true, true) => Some("some XMP and the colour profile"),
+                (true, false) => Some("some XMP"),
+                (false, true) => Some("the colour profile"),
+                (false, false) => None,
+            };
+            let unread = unread_what.is_some();
             (
                 if unread {
                     Status::Inconclusive
@@ -288,10 +323,9 @@ impl EvidenceSource for EmbeddedIdentifiers {
                 format!(
                     "None of the listed identifier fields is present{}. This is not a statement \
                      that the file identifies nobody. {BLIND}",
-                    if unread {
-                        " in what could be read; some XMP could not be read"
-                    } else {
-                        ""
+                    match unread_what {
+                        Some(what) => format!(" in what could be read; {what} could not be read"),
+                        None => String::new(),
                     }
                 ),
             )
@@ -332,6 +366,7 @@ impl EvidenceSource for EmbeddedIdentifiers {
                 "xmp_packets": e.xmp.len(),
                 "xmp_incomplete": e.xmp_incomplete(),
                 "has_exif": e.has_exif,
+                "icc_profile": e.icc.state(),
             }),
             duration_ms: 0,
         })
@@ -628,9 +663,111 @@ mod tests {
     }
 
     #[test]
+    fn a_display_profile_names_the_screen_in_every_container() {
+        use crate::icc::testutil::{display, jpeg_with, png_with, webp_with};
+        const NAME: &str = "Example Display EX2700";
+        let profile = display(NAME);
+        for (what, bytes) in [
+            ("jpeg", jpeg_with(&profile, 1)),
+            ("jpeg, profile in two chunks", jpeg_with(&profile, 2)),
+            ("png", png_with("ICC Profile", &profile)),
+            ("webp", webp_with(&profile)),
+        ] {
+            let ev = assess(bytes.clone());
+            assert_eq!(ev.status, Status::Present, "{what}");
+            assert_eq!(
+                fields(&ev),
+                [("icc:ProfileDescription".to_string(), NAME.to_string())],
+                "{what}"
+            );
+            assert_eq!(ev.details["identifiers"][0]["kind"], "display");
+            assert_eq!(ev.details["icc_profile"], "read");
+            assert!(
+                ev.rationale.contains("carries 1 display name."),
+                "{}",
+                ev.rationale
+            );
+
+            // Masked by default: field, kind and length, never the name.
+            let a = Asset::from_bytes(bytes, None).unwrap();
+            let masked = EmbeddedIdentifiers::default().assess(&a).unwrap();
+            assert!(!serde_json::to_string(&masked).unwrap().contains(NAME));
+            assert_eq!(
+                masked.details["identifiers"],
+                serde_json::json!([{ "kind": "display", "field": "icc:ProfileDescription",
+                                     "masked": true, "length": 22 }])
+            );
+        }
+        // macOS's name for a screen it has no model for is listed too: it is not a
+        // colour space, and the profile is still that screen's.
+        let generic = assess(jpeg_with(&display("Display"), 1));
+        assert_eq!(
+            fields(&generic),
+            [("icc:ProfileDescription".into(), "Display".into())]
+        );
+    }
+
+    #[test]
+    fn a_standard_colour_space_or_another_class_of_profile_names_no_screen() {
+        use crate::icc::testutil::{desc_v2, display, jpeg_with, mluc, png_with, profile};
+        // Display-class profiles of standard colour spaces, however they are spelled.
+        for name in ["sRGB IEC61966-2.1", "Display P3", "display  p3", "c2"] {
+            let ev = assess(jpeg_with(&display(name), 1));
+            assert_eq!(ev.status, Status::Absent, "{name}");
+            assert_eq!(ev.details["identifiers"], serde_json::json!([]));
+            assert_eq!(ev.details["icc_profile"], "read");
+        }
+        // The same in a version 4 profile.
+        let v4 = profile(b"mntr", 4, &[(b"desc", mluc(&[("enUS", "sRGB built-in")]))]);
+        assert_eq!(assess(png_with("ICC Profile", &v4)).status, Status::Absent);
+        // A printer or scanner profile is named after an output condition or a
+        // device that is no screen: not this field's business.
+        for class in [b"prtr", b"scnr", b"spac"] {
+            let p = profile(class, 2, &[(b"desc", desc_v2("Example Press Coated v3"))]);
+            assert_eq!(assess(jpeg_with(&p, 1)).status, Status::Absent, "{class:?}");
+        }
+        // A display profile without a description, and a file without a profile.
+        let bare = profile(b"mntr", 2, &[(b"wtpt", vec![0; 20])]);
+        assert_eq!(assess(jpeg_with(&bare, 1)).status, Status::Absent);
+        let none = assess(jpeg(None, None, &[]));
+        assert_eq!(none.details["icc_profile"], "absent");
+        assert!(
+            none.rationale
+                .contains("the colour profile of a HEIF file and any profile's contents")
+        );
+    }
+
+    #[test]
+    fn a_profile_that_cannot_be_read_makes_nothing_found_inconclusive() {
+        use crate::icc::testutil::{display, jpeg_with, png_with_stream};
+        // A PNG whose iCCP stream is cut short: a profile is there, its name unknown.
+        let stream = b"\x78\x9c\x01\xff";
+        let ev = assess(png_with_stream("ICC Profile", 0, stream));
+        assert_eq!(ev.status, Status::Inconclusive);
+        assert_eq!(ev.details["icc_profile"], "unreadable");
+        assert!(
+            ev.rationale
+                .contains("in what could be read; the colour profile could not be read"),
+            "{}",
+            ev.rationale
+        );
+        // With something else found the file is Present, as with unread XMP.
+        let mut both = jpeg_with(&display("x")[..40], 1);
+        let exif_block = exif(&[(0x013B, "A. Person")], &[]);
+        let mut app1 = vec![0xFF, 0xE1];
+        app1.extend_from_slice(&(exif_block.len() as u16 + 2).to_be_bytes());
+        app1.extend(exif_block);
+        both.splice(2..2, app1);
+        let ev = assess(both);
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(ev.details["icc_profile"], "unreadable");
+        assert_eq!(fields(&ev), [("exif:Artist".into(), "A. Person".into())]);
+    }
+
+    #[test]
     fn every_kind_has_a_documented_field_list() {
         let kinds: Vec<Kind> = FIELDS.iter().map(|f| f.0).collect();
-        assert_eq!(kinds.len(), 6);
+        assert_eq!(kinds.len(), 7);
         assert!(
             kinds.windows(2).all(|w| w[0] < w[1]),
             "one line per kind, in order"

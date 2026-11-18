@@ -213,7 +213,8 @@ struct InspectArgs {
     conformance: bool,
     /// Under each file, list the metadata fields the listing sources found, each with
     /// its field name and value as written: rights statements, identifiers (names,
-    /// account and tracking records, device and document identifiers, location),
+    /// account and tracking records, device and document identifiers, a display's
+    /// name, location),
     /// vendor AI flags and the data-mining value. Unsigned fields, quoted, not
     /// judged. Human output only; with --json they are in those sources' details.
     /// Identifier values and free-text rights values are masked unless --reveal is
@@ -221,7 +222,8 @@ struct InspectArgs {
     #[arg(long)]
     metadata: bool,
     /// Include the values of embedded identifiers (names, contact details, account and
-    /// tracking records, serial numbers, document identifiers, coordinates) and the
+    /// tracking records, serial numbers, display names, document identifiers,
+    /// coordinates) and the
     /// free text of rights statements (notices, credits, owners, terms, links) in the
     /// output. Without it every output, JSON included, carries their field names,
     /// kinds and lengths only, so a report can be shared without repeating what the

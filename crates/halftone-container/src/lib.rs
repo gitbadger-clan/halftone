@@ -25,7 +25,10 @@
 //!   licence, credit and release fields, quoted as written; copies that disagree.
 //! - [`identifiers::EmbeddedIdentifiers`] (`embedded_identifiers`): the privacy listing:
 //!   person names, contact details, account and tracking records, device and document
-//!   identifiers, location. All three read their fields through [`embedded`].
+//!   identifiers, a display's name, location. All three read their fields through
+//!   [`embedded`].
+//! - [`icc`]: the embedded ICC colour profile, read: header, tag list, description.
+//!   No source of its own; `embedded_identifiers` lists a display's name from it.
 //! - [`gcontainer::ContainerDirectory`] (`container_directory`): the Motion Photo / Ultra HDR
 //!   container directory checked against the bytes the file holds.
 //! - [`mpf::MpfIndex`] (`mpf_index`): the MPF index (CIPA DC-007) checked against the
