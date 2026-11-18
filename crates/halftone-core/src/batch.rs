@@ -18,7 +18,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{Inspection, Layer, SCHEMA_VERSION, Status, ToolInfo};
+use crate::{Inspection, Layer, RunInfo, SCHEMA_VERSION, Status, ToolInfo};
 
 /// Source name of the manifest layer, as registered by the CLI.
 pub const SOURCE_C2PA: &str = "c2pa";
@@ -140,6 +140,15 @@ pub struct FileRow {
     pub marking: MarkingColumns,
 }
 
+/// The run record all of `inspections` carry, when they carry the same one.
+pub fn shared_run(inspections: &[Inspection]) -> Option<RunInfo> {
+    let first = inspections.first()?.run.as_ref()?;
+    inspections
+        .iter()
+        .all(|i| i.run.as_ref() == Some(first))
+        .then(|| first.clone())
+}
+
 /// A set of inspections plus their summary rows.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Batch {
@@ -147,6 +156,11 @@ pub struct Batch {
     pub schema_version: String,
     /// Tool that produced it.
     pub tool: ToolInfo,
+    /// The conditions every inspection in the batch was made under (the same record
+    /// each inspection carries). Absent when the inspections carry none, or do not
+    /// agree: a batch put together from several runs has no single answer.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub run: Option<RunInfo>,
     /// One row per inspection, same order.
     pub summary: Vec<FileRow>,
     /// The full inspections.
@@ -162,6 +176,7 @@ impl Batch {
         Self {
             schema_version: SCHEMA_VERSION.into(),
             tool,
+            run: shared_run(&inspections),
             summary,
             inspections,
             created_at: crate::registry::now_rfc3339(),
@@ -570,6 +585,7 @@ mod tests {
         ToolInfo {
             name: "halftone".into(),
             version: "0.1.0".into(),
+            build: None,
         }
     }
 
@@ -601,6 +617,7 @@ mod tests {
                 size_bytes: 1234,
             },
             evidence,
+            run: None,
             created_at: "2026-09-08T00:00:00Z".into(),
         }
     }
@@ -996,6 +1013,38 @@ mod tests {
         let b = Batch::new(tool(), vec![i]);
         let text = render_matrix(&b, |_| "x");
         assert!(text.contains("xmp none · c2pa container present"));
+    }
+
+    #[test]
+    fn a_batch_states_the_run_only_when_every_inspection_agrees() {
+        let run = |reveal| RunInfo {
+            options: crate::RunOptions {
+                layers: vec![Layer::Container],
+                trust_list: "auto".into(),
+                reveal,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let with = |r: Option<RunInfo>| {
+            let mut i = insp("/tmp/a.png", vec![]);
+            i.run = r;
+            i
+        };
+        let same = Batch::new(tool(), vec![with(Some(run(false))), with(Some(run(false)))]);
+        assert_eq!(same.run, Some(run(false)));
+        assert_eq!(
+            serde_json::to_value(&same).unwrap()["run"]["options"]["reveal"],
+            false
+        );
+        // Two runs under different conditions, or one inspection without a record:
+        // the batch has no single answer and gives none.
+        let mixed = Batch::new(tool(), vec![with(Some(run(false))), with(Some(run(true)))]);
+        assert_eq!(mixed.run, None);
+        let partial = Batch::new(tool(), vec![with(Some(run(false))), with(None)]);
+        assert_eq!(partial.run, None);
+        assert_eq!(Batch::new(tool(), vec![]).run, None);
+        assert!(serde_json::to_value(&mixed).unwrap().get("run").is_none());
     }
 
     #[test]

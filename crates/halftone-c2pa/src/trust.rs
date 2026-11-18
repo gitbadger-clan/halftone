@@ -147,6 +147,57 @@ impl ResolvedTrust {
         })
     }
 
+    /// The same inputs for an inspection's `run.trust` (schema 1.5.0): every bundle,
+    /// internal first, then the key-usage policy. Unlike [`ResolvedTrust::details`]
+    /// this names files without their directory, because the record is meant for
+    /// reports that leave the operator's machine.
+    pub fn run_inputs(&self) -> Vec<halftone_core::TrustInput> {
+        let bundle = |b: &BundleInfo| {
+            // A vendored source is "<file>@<snapshot id>"; every other origin's is
+            // the path the bundle was read from.
+            let (name, version) = match (b.origin.as_str(), b.source.split_once('@')) {
+                ("vendored", Some((file, snapshot))) => {
+                    (file.to_string(), Some(snapshot.to_string()))
+                }
+                _ => (
+                    halftone_core::run::file_name_only(Path::new(&b.source)),
+                    b.version.clone(),
+                ),
+            };
+            halftone_core::TrustInput {
+                kind: match b.kind {
+                    AnchorKind::Manifest => "manifest",
+                    AnchorKind::Tsa => "tsa",
+                }
+                .to_string(),
+                origin: b.origin.clone(),
+                name,
+                version,
+                fetched_at: b.fetched_at.clone(),
+                sha256: b.sha256.clone(),
+                certificates: Some(b.certificates),
+            }
+        };
+        let (eku_name, eku_version) = match self.eku.source.split_once('@') {
+            Some((file, snapshot)) => (file.to_string(), Some(snapshot.to_string())),
+            None => (self.eku.source.clone(), None),
+        };
+        self.internal
+            .iter()
+            .chain(&self.custom)
+            .map(bundle)
+            .chain(std::iter::once(halftone_core::TrustInput {
+                kind: "eku_policy".to_string(),
+                origin: self.eku.origin.clone(),
+                name: eku_name,
+                version: eku_version,
+                fetched_at: None,
+                sha256: self.eku.sha256.clone(),
+                certificates: None,
+            }))
+            .collect()
+    }
+
     /// True when no signing certificate can be trusted: there is no `Manifest`
     /// anchor (a TSA list alone trusts time-stamps, not signers).
     pub fn is_empty(&self) -> bool {
@@ -547,5 +598,97 @@ mod tests {
         assert_eq!(d["internal"][0]["kind"], "manifest");
         assert_eq!(d["internal"][1]["kind"], "tsa");
         assert!(d["anchors_total"].as_u64().unwrap() > 0);
+    }
+
+    fn bundle(kind: AnchorKind, origin: &str, source: &str) -> BundleInfo {
+        BundleInfo {
+            kind,
+            origin: origin.into(),
+            source: source.into(),
+            sha256: "ab".repeat(32),
+            certificates: 3,
+            fetched_at: None,
+            version: None,
+        }
+    }
+
+    #[test]
+    fn run_inputs_list_every_bundle_and_the_policy_without_a_directory() {
+        let snapshot = "c2pa-org/conformance-public@d6dec63476e2 2026-10-26T17:11:49Z";
+        let mut installed = bundle(
+            AnchorKind::Tsa,
+            "installed",
+            "/Users/someone/Library/halftone/trust/c2pa/C2PA-TSA-TRUST-LIST.pem",
+        );
+        installed.version = Some("2026-09-01 (mirror)".into());
+        installed.fetched_at = Some("2026-09-02T08:00:00Z".into());
+        let r = ResolvedTrust {
+            anchors: Vec::new(),
+            eku_config: String::new(),
+            eku: EkuInfo {
+                origin: "vendored".into(),
+                source: format!("C2PA-EKU-CONFIG.cfg@{snapshot}"),
+                sha256: "cd".repeat(32),
+                oids: Vec::new(),
+            },
+            internal: vec![
+                bundle(
+                    AnchorKind::Manifest,
+                    "vendored",
+                    &format!("C2PA-TRUST-LIST.pem@{snapshot}"),
+                ),
+                installed,
+            ],
+            custom: vec![bundle(
+                AnchorKind::Manifest,
+                "custom",
+                "/Users/someone/keys/ca.pem",
+            )],
+        };
+        let got = r.run_inputs();
+        let row = |i: usize| {
+            (
+                got[i].kind.as_str(),
+                got[i].origin.as_str(),
+                got[i].name.as_str(),
+            )
+        };
+        assert_eq!(got.len(), 4);
+        assert_eq!(row(0), ("manifest", "vendored", "C2PA-TRUST-LIST.pem"));
+        // The snapshot id holds an `@` of its own and is kept whole.
+        assert_eq!(got[0].version.as_deref(), Some(snapshot));
+        assert_eq!(got[0].certificates, Some(3));
+        assert_eq!(row(1), ("tsa", "installed", "C2PA-TSA-TRUST-LIST.pem"));
+        assert_eq!(got[1].version.as_deref(), Some("2026-09-01 (mirror)"));
+        assert_eq!(got[1].fetched_at.as_deref(), Some("2026-09-02T08:00:00Z"));
+        assert_eq!(row(2), ("manifest", "custom", "ca.pem"));
+        assert_eq!(got[2].version, None);
+        assert_eq!(row(3), ("eku_policy", "vendored", "C2PA-EKU-CONFIG.cfg"));
+        assert_eq!(got[3].version.as_deref(), Some(snapshot));
+        assert_eq!(got[3].certificates, None);
+        // No directory from the operator's machine anywhere in the record.
+        let text = serde_json::to_string(&got).unwrap();
+        for part in ["someone", "/Users", "Library", "keys"] {
+            assert!(!text.contains(part), "{part} in {text}");
+        }
+    }
+
+    #[test]
+    fn run_inputs_of_the_vendored_lists_are_two_lists_and_the_policy() {
+        let r = TrustConfig {
+            internal: InternalList::Vendored,
+            ..Default::default()
+        }
+        .resolve()
+        .unwrap();
+        let got = r.run_inputs();
+        let kinds: Vec<&str> = got.iter().map(|t| t.kind.as_str()).collect();
+        assert_eq!(kinds, ["manifest", "tsa", "eku_policy"]);
+        assert!(got.iter().all(|t| t.origin == "vendored"));
+        assert!(got.iter().all(|t| t.sha256.len() == 64));
+        // What the record says is what `details.trust` says, bundle for bundle.
+        let d = r.details();
+        assert_eq!(d["internal"][0]["sha256"], got[0].sha256.as_str());
+        assert_eq!(d["eku_config"]["sha256"], got[2].sha256.as_str());
     }
 }

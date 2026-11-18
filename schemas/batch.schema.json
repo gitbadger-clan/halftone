@@ -1,13 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://halftone.gitbadger.com/schemas/batch/1.4.0",
+  "$id": "https://halftone.gitbadger.com/schemas/batch/1.5.0",
   "title": "Halftone Batch",
   "description": "One document for a set of inspected files: full inspections plus a per-file summary row projected from the evidence. No aggregate score.",
   "type": "object",
   "required": ["schema_version", "tool", "summary", "inspections", "created_at"],
   "properties": {
-    "schema_version": { "const": "1.4.0" },
-    "tool": { "type": "object", "required": ["name", "version"] },
+    "schema_version": { "const": "1.5.0" },
+    "tool": { "$ref": "https://halftone.gitbadger.com/schemas/verdict/1.5.0#/properties/tool" },
+    "run": { "$ref": "https://halftone.gitbadger.com/schemas/verdict/1.5.0#/properties/run", "description": "the record every inspection in the batch carries; absent when they carry none or do not agree" },
     "summary": {
       "type": "array",
       "items": {
@@ -65,7 +66,7 @@
     },
     "inspections": {
       "type": "array",
-      "items": { "$ref": "https://halftone.gitbadger.com/schemas/verdict/1.4.0" }
+      "items": { "$ref": "https://halftone.gitbadger.com/schemas/verdict/1.5.0" }
     },
     "created_at": { "type": "string", "format": "date-time" }
   }

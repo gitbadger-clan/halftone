@@ -322,6 +322,8 @@ pub fn run_reporting(
         batch.summary.push(row);
         batch.inspections.push(insp);
     }
+    // The batch was created empty, so its run record is taken now.
+    batch.run = halftone_core::shared_run(&batch.inspections);
     Ok((batch, skipped.into_iter().map(|(_, _, s)| s).collect()))
 }
 
@@ -714,6 +716,7 @@ mod tests {
         ToolInfo {
             name: "halftone".into(),
             version: "test".into(),
+            build: None,
         }
     }
 
@@ -947,6 +950,7 @@ mod tests {
                     size_bytes: 1,
                 },
                 evidence: vec![],
+                run: None,
                 created_at: String::new(),
             });
             r.manifest.validation_state = state.map(str::to_string);

@@ -185,10 +185,15 @@ def run_ht(exe: str, ignore: set[str], path: str, whole: bool = False) -> dict:
     out = {"sources": {k: strip(v, ignore) for k, v in recs.items()}}
     if whole:
         # The whole document, as the refactor gate compares it: run-time fields
-        # removed everywhere, the inspection's own timestamp at the top level.
+        # removed everywhere, the inspection's own timestamp at the top level, and
+        # which build wrote it (`tool.build`, schema 1.5.0). The build is what two
+        # snapshots differ in by design, and each snapshot's label names it; `run`
+        # stays, because a change in trust lists or options is a real difference.
         doc = strip(j, ignore)
         if isinstance(doc, dict):
             doc.pop("created_at", None)
+            if isinstance(doc.get("tool"), dict):
+                doc["tool"].pop("build", None)
         out["whole"] = doc
     return out
 

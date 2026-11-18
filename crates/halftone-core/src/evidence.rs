@@ -4,8 +4,8 @@
 //! `schemas/batch.schema.json` define: the inspection envelope, the fields of an
 //! evidence entry, and the batch summary rows. Bump it when one of those changes, and
 //! keep both files in sync. An addition (a new field or summary-row column) is a minor
-//! version, as 1.2.0 was for the certificate columns; a removed or changed field is a
-//! major one.
+//! version, as 1.2.0 was for the certificate columns and 1.5.0 for the conditions of a
+//! run (`tool.build` and `run`); a removed or changed field is a major one.
 //!
 //! An evidence entry's `details` is outside that contract. The schema declares it as
 //! any value: it is each source's own format, and a source may add, rename or reshape
@@ -16,10 +16,10 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::AssetInfo;
+use crate::{AssetInfo, RunInfo};
 
 /// Version of the JSON verdict schema emitted by [`Inspection`].
-pub const SCHEMA_VERSION: &str = "1.4.0";
+pub const SCHEMA_VERSION: &str = "1.5.0";
 
 /// The four independent evidence layers. Order is cheapest-first and is the
 /// default execution order in [`crate::Registry`].
@@ -130,12 +130,39 @@ impl Evidence {
 }
 
 /// Tool metadata stamped on every inspection.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ToolInfo {
     /// Binary name.
     pub name: String,
     /// Binary version.
     pub version: String,
+    /// Which build of that version this is. Absent from documents written before
+    /// schema 1.5.0 and from a caller that does not know.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build: Option<BuildInfo>,
+}
+
+/// Which build produced an inspection. A version number covers every build made
+/// while that number stood; the commit separates them.
+///
+/// This is the binary's own statement, recorded when it was compiled. Nothing in an
+/// inspection verifies it.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BuildInfo {
+    /// The git commit the source was at: 40 hex digits, or 64 in a SHA-256
+    /// repository. Absent when the build could not tell: no git checkout and no
+    /// packaging record.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub commit: Option<String>,
+    /// Whether the source differed from that commit when the binary was built. When
+    /// true the commit names where the source started from, not what was compiled.
+    /// Absent when there is no commit.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modified: Option<bool>,
+    /// Compile-time features that change what is reported (`c2pa`: manifest
+    /// validation is built in). Empty when none is enabled.
+    #[serde(default)]
+    pub features: Vec<String>,
 }
 
 /// The complete output for one asset. A list of evidence; no aggregate score.
@@ -149,6 +176,11 @@ pub struct Inspection {
     pub asset: AssetInfo,
     /// One entry per source that was run, in execution order.
     pub evidence: Vec<Evidence>,
+    /// The conditions the evidence holds under: options, trust lists, installed
+    /// packs. Absent from documents written before schema 1.5.0 and from a
+    /// [`crate::Registry`] that was not given one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub run: Option<RunInfo>,
     /// RFC 3339 timestamp.
     pub created_at: String,
 }
@@ -171,6 +203,41 @@ mod tests {
         let back: Evidence = serde_json::from_str(&s).unwrap();
         assert_eq!(back.status, Status::NotApplicable);
         assert!(!s.contains("statistic"), "None fields must be omitted");
+    }
+
+    #[test]
+    fn a_document_from_before_1_5_still_reads_and_says_nothing_about_the_run() {
+        let old = r#"{"schema_version":"1.4.0","tool":{"name":"halftone","version":"0.1.0"},
+            "asset":{"path":null,"modality":"image","mime":"image/png","sha256":"00","size_bytes":1},
+            "evidence":[],"created_at":"2026-11-01T00:00:00Z"}"#;
+        let i: Inspection = serde_json::from_str(old).unwrap();
+        assert_eq!(i.tool.build, None);
+        assert_eq!(i.run, None);
+        // Written back, the absent fields stay absent: nothing is made up for them.
+        let js = serde_json::to_value(&i).unwrap();
+        assert!(js.get("run").is_none());
+        assert!(js["tool"].get("build").is_none());
+    }
+
+    #[test]
+    fn a_build_without_a_commit_says_so_by_leaving_it_out() {
+        let b = BuildInfo {
+            commit: None,
+            modified: None,
+            features: vec!["c2pa".into()],
+        };
+        assert_eq!(
+            serde_json::to_value(&b).unwrap(),
+            serde_json::json!({ "features": ["c2pa"] })
+        );
+        let known = BuildInfo {
+            commit: Some("a".repeat(40)),
+            modified: Some(true),
+            features: vec![],
+        };
+        let js = serde_json::to_value(&known).unwrap();
+        assert_eq!(js["modified"], true);
+        assert_eq!(js["features"], serde_json::json!([]));
     }
 
     #[test]

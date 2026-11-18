@@ -11,14 +11,16 @@ pub mod batch;
 pub mod dst;
 pub mod evidence;
 pub mod registry;
+pub mod run;
 
 pub use asset::{Asset, AssetInfo, Modality, sha256_hex};
-pub use batch::{Batch, FileRow, TableFormat, render_matrix, render_table, summarize};
+pub use batch::{Batch, FileRow, TableFormat, render_matrix, render_table, shared_run, summarize};
 pub use evidence::{
-    CalibrationRef, Evidence, Inspection, Layer, SCHEMA_VERSION, SourceId, Statistic, Status,
-    ToolInfo,
+    BuildInfo, CalibrationRef, Evidence, Inspection, Layer, SCHEMA_VERSION, SourceId, Statistic,
+    Status, ToolInfo,
 };
 pub use registry::{EvidenceSource, Registry, now_rfc3339, rfc3339_from_unix};
+pub use run::{FileRef, PackRef, RunInfo, RunOptions, TrustInput};
 
 /// Errors from evidence sources.
 #[derive(Debug, thiserror::Error)]

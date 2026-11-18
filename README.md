@@ -56,10 +56,33 @@ None of these carries a calibration yet; the `details` object exposes every raw
 discriminant so `ht bench` can measure per-signal false-positive rates against a
 labelled corpus. The `jpeg_double` threshold is provisional and says so.
 
+## What a run records
+
+A verdict depends on more than the file: on the build, on the certificate lists that
+were loaded, and on how `ht` was called. Every inspection states those conditions
+(schema `1.5.0`), so a report can be read, and the check repeated, without knowing
+the command line:
+
+| Field | What it states |
+|---|---|
+| `tool.build` | The git commit the binary was built from, whether the source differed from it (`modified`), and the compile-time features (`c2pa`). No commit when the build could not tell. |
+| `run.options` | The layers asked for, where the internal trust list was to come from, whether remote manifests could be fetched, whether masked values were revealed, and an extra fingerprint database by name and SHA-256. |
+| `run.trust` | Each certificate list and the key-usage policy the manifest layer judges signers against: what it is for, where this copy came from, its version, SHA-256 and certificate count. Empty when none was loaded. |
+| `run.packs` | The model packs installed when the run started. Installed is not used: which source ran with which pack is in that source's own entry. |
+| `run.gaps` | Whatever of the above could not be established, in plain words. Absent when the record is complete. |
+
+This is the tool's own statement about itself and its inputs; nothing signs or
+verifies it. Files are named without their directory, so the record carries no path
+from the machine it ran on. It is taken once, before the first file. `modified`
+follows the same rule as the scripts' stale-binary check: a changed or new file
+under `crates/` (tests, benches, examples and Markdown aside) or a changed workspace
+manifest.
+
 ## Batch output
 
-`--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.4.0`):
-the full inspections plus a `summary` row per file with every source's status and the
+`--batch` wraps a run in one document (`schemas/batch.schema.json`, schema `1.5.0`):
+the run record once at the top, the full inspections, and a `summary` row per file
+with every source's status and the
 named columns a marking scan is about — manifest `validation_state`, issuer, claim
 generator, declared `digitalSourceType`, ingredient count and the actions that carry
 a source type; XMP `DigitalSourceType`, packet count and whether a C2PA container is

@@ -1,12 +1,29 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://halftone.gitbadger.com/schemas/verdict/1.4.0",
+  "$id": "https://halftone.gitbadger.com/schemas/verdict/1.5.0",
   "title": "Halftone Inspection",
   "type": "object",
   "required": ["schema_version", "tool", "asset", "evidence", "created_at"],
   "properties": {
-    "schema_version": { "const": "1.4.0" },
-    "tool": { "type": "object", "required": ["name", "version"] },
+    "schema_version": { "const": "1.5.0" },
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "build": {
+          "type": "object",
+          "description": "Which build of that version produced the document. The binary's own statement, recorded when it was compiled; nothing verifies it.",
+          "required": ["features"],
+          "properties": {
+            "commit": { "type": "string", "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$", "description": "git commit the source was at; absent when the build could not tell" },
+            "modified": { "type": "boolean", "description": "the source differed from that commit when the binary was built; absent when there is no commit" },
+            "features": { "type": "array", "items": { "type": "string" }, "description": "compile-time features that change what is reported, e.g. c2pa" }
+          }
+        }
+      }
+    },
     "asset": {
       "type": "object",
       "required": ["modality", "mime", "sha256", "size_bytes"],
@@ -33,6 +50,61 @@
           "rationale": { "type": "string" },
           "details": {}
         }
+      }
+    },
+    "run": {
+      "type": "object",
+      "description": "The conditions the evidence holds under, taken once when the run started. The tool's own statement; files are named without their directory.",
+      "required": ["options", "trust", "packs"],
+      "properties": {
+        "options": {
+          "type": "object",
+          "required": ["layers", "trust_list", "fetch_remote_manifests", "reveal"],
+          "properties": {
+            "layers": { "type": "array", "items": { "enum": ["manifest", "container", "mark", "blind"] }, "description": "layers that were asked for, in execution order" },
+            "trust_list": { "enum": ["auto", "vendored", "none", "file"], "description": "where the internal C2PA trust list was to come from; which list that was is in run.trust" },
+            "fetch_remote_manifests": { "type": "boolean", "description": "a manifest a file only refers to could be fetched; a result may then depend on a server and the time of checking" },
+            "reveal": { "type": "boolean", "description": "identifier values and the free text of rights statements are included, not masked" },
+            "fingerprints": {
+              "type": "object",
+              "description": "an extra writer-fingerprint database merged over the built-in one",
+              "required": ["name", "sha256"],
+              "properties": { "name": { "type": "string" }, "sha256": { "type": "string" } }
+            }
+          }
+        },
+        "trust": {
+          "type": "array",
+          "description": "certificate lists and the key-usage policy the manifest layer judges signers against, internal lists first; empty when none was loaded",
+          "items": {
+            "type": "object",
+            "required": ["kind", "origin", "name", "sha256"],
+            "properties": {
+              "kind": { "enum": ["manifest", "tsa", "eku_policy"] },
+              "origin": { "enum": ["vendored", "installed", "file", "custom"] },
+              "name": { "type": "string", "description": "file name, without its directory" },
+              "version": { "type": "string", "description": "upstream commit and date of a vendored snapshot, or the bundle version of an installed list" },
+              "fetched_at": { "type": "string", "description": "when an installed list was fetched" },
+              "sha256": { "type": "string", "description": "of the bytes as loaded" },
+              "certificates": { "type": "integer", "minimum": 0, "description": "absent for the key-usage policy" }
+            }
+          }
+        },
+        "packs": {
+          "type": "array",
+          "description": "model packs installed when the run started; installed is not used. Empty when none is installed",
+          "items": {
+            "type": "object",
+            "required": ["name", "version", "tier", "archive_sha256"],
+            "properties": {
+              "name": { "type": "string" },
+              "version": { "type": "string" },
+              "tier": { "type": "string" },
+              "archive_sha256": { "type": "string" }
+            }
+          }
+        },
+        "gaps": { "type": "array", "items": { "type": "string" }, "description": "what could not be established for this record, in plain words; absent when the record is complete" }
       }
     },
     "created_at": { "type": "string", "format": "date-time" }

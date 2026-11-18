@@ -2,7 +2,7 @@
 
 use std::time::Instant;
 
-use crate::{Asset, Evidence, Inspection, Layer, SCHEMA_VERSION, SourceId, ToolInfo};
+use crate::{Asset, Evidence, Inspection, Layer, RunInfo, SCHEMA_VERSION, SourceId, ToolInfo};
 
 /// One evidence source. Implementations live in the layer crates.
 ///
@@ -25,6 +25,7 @@ pub trait EvidenceSource: Send + Sync {
 #[derive(Default)]
 pub struct Registry {
     sources: Vec<Box<dyn EvidenceSource>>,
+    run: Option<RunInfo>,
 }
 
 impl Registry {
@@ -42,6 +43,17 @@ impl Registry {
     /// Add a boxed source.
     pub fn push(&mut self, source: Box<dyn EvidenceSource>) {
         self.sources.push(source);
+    }
+
+    /// State the conditions this registry was built under. Whoever configures the
+    /// sources knows them; every inspection made from here on carries the record.
+    pub fn set_run(&mut self, run: RunInfo) {
+        self.run = Some(run);
+    }
+
+    /// The conditions given with [`Registry::set_run`], if any.
+    pub fn run(&self) -> Option<&RunInfo> {
+        self.run.as_ref()
     }
 
     /// Run every applicable source and collect an [`Inspection`].
@@ -89,6 +101,7 @@ impl Registry {
             tool,
             asset: asset.info(),
             evidence,
+            run: self.run.clone(),
             created_at: now_rfc3339(),
         }
     }
@@ -188,6 +201,7 @@ mod tests {
         ToolInfo {
             name: "halftone".into(),
             version: "test".into(),
+            build: None,
         }
     }
 
@@ -215,6 +229,25 @@ mod tests {
         let asset = Asset::text("hello", None);
         let out = reg.inspect(&asset, tool());
         assert_eq!(out.evidence[0].status, Status::NotApplicable);
+    }
+
+    #[test]
+    fn an_inspection_carries_the_run_the_registry_was_given_and_none_otherwise() {
+        let asset = Asset::text("hello", None);
+        let mut reg = Registry::new().with(Stub(Layer::Container, "jpeg", Status::Present));
+        assert!(reg.inspect(&asset, tool()).run.is_none());
+        let run = RunInfo {
+            options: crate::RunOptions {
+                layers: vec![Layer::Container],
+                trust_list: "auto".into(),
+                reveal: true,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        reg.set_run(run.clone());
+        assert_eq!(reg.run(), Some(&run));
+        assert_eq!(reg.inspect(&asset, tool()).run, Some(run));
     }
 
     #[test]

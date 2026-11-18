@@ -10,7 +10,9 @@ use clap::{Args, CommandFactory as _, Parser, Subcommand, ValueEnum, ValueHint};
 use clap_complete::CompleteEnv;
 use halftone_c2pa::{InternalList, TrustConfig};
 use halftone_container::fingerprints::{FingerprintDb, WriterClass};
-use halftone_core::{Asset, Layer, Registry, Status, ToolInfo};
+use halftone_core::{
+    Asset, BuildInfo, FileRef, Layer, PackRef, Registry, RunInfo, RunOptions, Status, ToolInfo,
+};
 
 const BANNER: &str = concat!(
     "  ▄██  ● • ·\n",
@@ -368,6 +370,7 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
         None => true,
     };
     let mut reg = Registry::new();
+    let mut run = run_info(o, &want);
     if want(Layer::Manifest) {
         reg.push(Box::new(halftone_c2pa::C2paSource {
             trust: o.trust.clone(),
@@ -380,6 +383,15 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
                 .map_err(|e| anyhow::anyhow!("loading fingerprints {}: {e}", p.display()))?,
             None => FingerprintDb::builtin(),
         };
+        if let Some(p) = &o.fingerprints {
+            // Loaded just above, so it can be read; the record names it by content.
+            let bytes = std::fs::read(p)
+                .with_context(|| format!("reading fingerprints {}", p.display()))?;
+            run.options.fingerprints = Some(FileRef {
+                name: halftone_core::run::file_name_only(p),
+                sha256: halftone_core::sha256_hex(&bytes),
+            });
+        }
         reg.push(Box::new(halftone_container::jpeg::QuantTables {
             db: db.clone(),
         }));
@@ -416,13 +428,95 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
             pack: "blind-image-dinov2-probe".into(),
         }));
     }
+    reg.set_run(run);
     Ok(reg)
+}
+
+/// The conditions of this run, for `run` in every inspection: the options that
+/// change what is reported, the trust lists as they resolve now, and the installed
+/// packs. Taken once, before the first file. What cannot be established is named in
+/// `gaps` with no path in it; the record is meant for reports that get passed on.
+fn run_info(o: &RegistryOpts, want: &dyn Fn(Layer) -> bool) -> RunInfo {
+    let mut gaps = Vec::new();
+    // Without the `c2pa` feature the manifest layer loads no list, so none is named.
+    let trust = if want(Layer::Manifest) && cfg!(feature = "c2pa") {
+        match o.trust.resolve() {
+            Ok(resolved) => resolved.run_inputs(),
+            Err(_) => {
+                gaps.push(
+                    "trust: the trust configuration could not be loaded; the c2pa \
+                     source's rationale says why"
+                        .to_string(),
+                );
+                Vec::new()
+            }
+        }
+    } else {
+        Vec::new()
+    };
+    let packs = match halftone_packs::store::Store::resolve().and_then(|s| s.load_installed()) {
+        Ok(installed) => installed
+            .packs
+            .into_iter()
+            .map(|(name, p)| PackRef {
+                name,
+                version: p.version,
+                tier: p.tier,
+                archive_sha256: p.archive_sha256,
+            })
+            .collect(),
+        Err(_) => {
+            gaps.push("packs: the record of installed packs could not be read".to_string());
+            Vec::new()
+        }
+    };
+    RunInfo {
+        options: RunOptions {
+            layers: [Layer::Manifest, Layer::Container, Layer::Mark, Layer::Blind]
+                .into_iter()
+                .filter(|&l| want(l))
+                .collect(),
+            trust_list: match &o.trust.internal {
+                InternalList::Auto => "auto",
+                InternalList::Vendored => "vendored",
+                InternalList::Disabled => "none",
+                InternalList::File(_) => "file",
+            }
+            .to_string(),
+            fetch_remote_manifests: o.fetch_remote_manifests,
+            reveal: o.reveal,
+            fingerprints: None, // set by `registry` once the file has loaded
+        },
+        trust,
+        packs,
+        gaps,
+    }
 }
 
 fn tool() -> ToolInfo {
     ToolInfo {
         name: "halftone".into(),
         version: env!("CARGO_PKG_VERSION").into(),
+        build: Some(build_info()),
+    }
+}
+
+/// Which build this is, as `build.rs` recorded it at compile time. No commit when it
+/// could not tell; the features are known either way.
+fn build_info() -> BuildInfo {
+    let commit = option_env!("HALFTONE_BUILD_COMMIT").map(str::to_string);
+    let modified = commit
+        .as_ref()
+        .and(option_env!("HALFTONE_BUILD_MODIFIED"))
+        .map(|m| m == "true");
+    BuildInfo {
+        commit,
+        modified,
+        features: [("c2pa", cfg!(feature = "c2pa"))]
+            .into_iter()
+            .filter(|&(_, on)| on)
+            .map(|(name, _)| name.to_string())
+            .collect(),
     }
 }
 
