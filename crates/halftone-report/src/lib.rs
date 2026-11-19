@@ -1,27 +1,49 @@
-//! Per-file report. Renders an `Inspection` to HTML (and later PDF) with the
-//! tool/pack versions, hashes, and the fixed notice that no layer's output is
-//! sufficient evidence on its own. The report is what legal/newsroom buyers file.
+//! Per-file report. Renders an `Inspection` to HTML and, with the `pdf` feature, to
+//! PDF, with the tool/pack versions, hashes, and the fixed notice that no layer's
+//! output is sufficient evidence on its own. The report is what legal/newsroom buyers
+//! file.
 //!
 //! Top to bottom: the file, notes on anything that changes how the evidence reads,
-//! the evidence, the C2PA conformance measurements (collapsed), the conditions of the
-//! check (collapsed), the notice. See [`conditions`] for the first, second and fifth.
+//! the evidence, the C2PA conformance measurements, the conditions of the check, the
+//! notice.
 //!
-//! The report is one self-contained file. Its stylesheet (`report.css`), the mark and
+//! What a report says is built once, as [`model::Report`]; [`to_html`] and
+//! `pdf::to_pdf` (with the `pdf` feature) are two drawings of that value, so the page
+//! and the PDF cannot say different things.
+//!
+//! The page is one self-contained file. Its stylesheet (`report.css`), the mark and
 //! the verdict glyphs are inlined, it carries no script, and its
 //! Content-Security-Policy forbids loading anything, so it reads the same offline and
-//! from an archive. Printed, or saved as PDF from a browser, it is an A4 document
-//! with every collapsed section opened and the file's name and hash on each page.
+//! from an archive. The two measurement sections are collapsed on the page.
+//!
+//! The PDF is typeset in-process (no browser, no network), with its fonts built in.
+//! The same inspection gives the same bytes, and the file is written as PDF/A-2b.
 
 pub mod conditions;
+pub mod model;
 
 use halftone_core::{Evidence, Inspection, Status};
+use model::{Check, Conformance, EvidenceRow, LayerGroup, LegendItem, Report, Rich, Rubric, Span};
 
 /// Fixed notice included in every report.
 pub const NOTICE: &str = "Each layer is reported separately with its own calibration. \
 No single verdict here is evidence of authorship on its own, and this report must not \
 be the sole basis for any disciplinary, employment, or admissions decision.";
 
-/// The stylesheet inlined into every report.
+/// Introduces the notes on what differs from a default check.
+pub const NOTES_LEAD: &str = "This check differs from a default one:";
+
+/// Closes the legend: what a status is, and what it never is.
+pub const LEGEND_CLOSE: &str = "A status answers that source's own question. It is \
+never a statement about where the file as a whole comes from.";
+
+/// What the conformance section is called.
+pub const CONFORMANCE_HEADING: &str = "C2PA conformance rubrics";
+
+/// What kind of statement the conformance section is.
+pub const CONFORMANCE_CAVEAT: &str = "A measurement of the manifest, not a verdict.";
+
+/// The stylesheet inlined into every page.
 pub const CSS: &str = include_str!("report.css");
 
 const MARK: &str = include_str!("../assets/halftone-mark.svg");
@@ -30,13 +52,23 @@ const GLYPH_ABSENT: &str = include_str!("../assets/verdict/absent.svg");
 const GLYPH_INCONCLUSIVE: &str = include_str!("../assets/verdict/inconclusive.svg");
 const GLYPH_NOT_APPLICABLE: &str = include_str!("../assets/verdict/not_applicable.svg");
 
-/// What a status is called in a report, its row class, and its glyph.
-fn status_parts(s: Status) -> (&'static str, &'static str, &'static str) {
+/// What a status is called in a report.
+pub fn status_word(s: Status) -> &'static str {
     match s {
-        Status::Present => ("Present", "present", GLYPH_PRESENT),
-        Status::Absent => ("Absent", "absent", GLYPH_ABSENT),
-        Status::Inconclusive => ("Inconclusive", "inconclusive", GLYPH_INCONCLUSIVE),
-        Status::NotApplicable => ("Not applicable", "not_applicable", GLYPH_NOT_APPLICABLE),
+        Status::Present => "Present",
+        Status::Absent => "Absent",
+        Status::Inconclusive => "Inconclusive",
+        Status::NotApplicable => "Not applicable",
+    }
+}
+
+/// A status's row class and glyph on the page.
+fn status_parts(s: Status) -> (&'static str, &'static str) {
+    match s {
+        Status::Present => ("present", GLYPH_PRESENT),
+        Status::Absent => ("absent", GLYPH_ABSENT),
+        Status::Inconclusive => ("inconclusive", GLYPH_INCONCLUSIVE),
+        Status::NotApplicable => ("not_applicable", GLYPH_NOT_APPLICABLE),
     }
 }
 
@@ -49,67 +81,108 @@ fn glyph(svg: &str) -> String {
     )
 }
 
-/// The evidence as one table: a group of rows per layer in execution order, and in
-/// each row the status (glyph and word), the source and its rationale.
+/// The evidence as a group of rows per layer, in execution order.
+pub fn evidence_groups(evidence: &[Evidence]) -> Vec<LayerGroup> {
+    let mut groups: Vec<LayerGroup> = Vec::new();
+    let mut layer = None;
+    for e in evidence {
+        if layer != Some(e.layer) {
+            groups.push(LayerGroup {
+                layer: format!("{:?}", e.layer),
+                rows: Vec::new(),
+            });
+            layer = Some(e.layer);
+        }
+        if let Some(group) = groups.last_mut() {
+            group.rows.push(EvidenceRow {
+                status: e.status,
+                word: status_word(e.status).to_string(),
+                source: e.source.name.clone(),
+                version: e.source.version.clone(),
+                rationale: e.rationale.clone(),
+            });
+        }
+    }
+    groups
+}
+
+/// The evidence as one table: in each row the status (glyph and word), the source and
+/// its rationale.
+#[cfg(test)]
 fn evidence_html(evidence: &[Evidence]) -> String {
+    groups_html(&evidence_groups(evidence))
+}
+
+fn groups_html(groups: &[LayerGroup]) -> String {
     use std::fmt::Write as _;
     let mut out = String::from(
         "<table class=\"evidence\"><thead><tr><th>Status</th><th>Source</th>\
 <th>Rationale</th></tr></thead>",
     );
-    let mut layer = None;
-    for e in evidence {
-        if layer != Some(e.layer) {
-            if layer.is_some() {
-                out.push_str("</tbody>");
-            }
-            // Writing to a String cannot fail.
-            let _ = write!(
-                out,
-                "<tbody><tr class=\"layer\"><th colspan=\"3\" scope=\"rowgroup\">{:?}</th></tr>",
-                e.layer
-            );
-            layer = Some(e.layer);
-        }
-        let (word, class, svg) = status_parts(e.status);
+    for g in groups {
+        // Writing to a String cannot fail.
         let _ = write!(
             out,
-            "<tr class=\"{class}\"><td class=\"status\">{}{word}</td>\
-<td class=\"source\"><code>{}</code><small>{}</small></td><td>{}</td></tr>",
-            glyph(svg),
-            html_escape(&e.source.name),
-            html_escape(&e.source.version),
-            html_escape(&e.rationale)
+            "<tbody><tr class=\"layer\"><th colspan=\"3\" scope=\"rowgroup\">{}</th></tr>",
+            html_escape(&g.layer)
         );
-    }
-    if layer.is_some() {
+        for r in &g.rows {
+            let (class, svg) = status_parts(r.status);
+            let _ = write!(
+                out,
+                "<tr class=\"{class}\"><td class=\"status\">{}{}</td>\
+<td class=\"source\"><code>{}</code><small>{}</small></td><td>{}</td></tr>",
+                glyph(svg),
+                html_escape(&r.word),
+                html_escape(&r.source),
+                html_escape(&r.version),
+                html_escape(&r.rationale)
+            );
+        }
         out.push_str("</tbody>");
     }
     out.push_str("</table>");
     out
 }
 
-/// What the four statuses mean, under the evidence. A status answers the one question
-/// its source asks; the last sentence keeps a reader from adding them up.
-fn legend_html() -> String {
-    let item = |s: Status, text: &str| {
-        let (word, _, svg) = status_parts(s);
-        format!("{}<b>{word}</b>: {text} ", glyph(svg))
-    };
-    format!(
-        "<p class=\"legend\">{}{}{}{}A status answers that source's own question. It is \
-never a statement about where the file as a whole comes from.</p>",
-        item(Status::Present, "the source found what it looks for."),
-        item(
+/// What the four statuses mean. A status answers the one question its source asks;
+/// [`LEGEND_CLOSE`] keeps a reader from adding them up.
+pub fn legend() -> Vec<LegendItem> {
+    [
+        (Status::Present, "the source found what it looks for."),
+        (
             Status::Absent,
-            "it did not; the rationale names what that leaves open."
+            "it did not; the rationale names what that leaves open.",
         ),
-        item(Status::Inconclusive, "it could not decide."),
-        item(
+        (Status::Inconclusive, "it could not decide."),
+        (
             Status::NotApplicable,
-            "the source does not handle this kind of file, or could not run."
+            "the source does not handle this kind of file, or could not run.",
         ),
-    )
+    ]
+    .into_iter()
+    .map(|(status, text)| LegendItem {
+        status,
+        word: status_word(status).to_string(),
+        text: text.to_string(),
+    })
+    .collect()
+}
+
+/// [`legend`] as the paragraph under the evidence.
+fn legend_html() -> String {
+    let items: String = legend()
+        .iter()
+        .map(|i| {
+            format!(
+                "{}<b>{}</b>: {} ",
+                glyph(status_parts(i.status).1),
+                html_escape(&i.word),
+                html_escape(&i.text)
+            )
+        })
+        .collect();
+    format!("<p class=\"legend\">{items}{LEGEND_CLOSE}</p>")
 }
 
 /// `s` as the inside of a CSS string. Everything but plain letters, digits and a few
@@ -119,7 +192,7 @@ fn css_string(s: &str) -> String {
     use std::fmt::Write as _;
     let mut out = String::with_capacity(s.len());
     for c in s.chars() {
-        if c.is_ascii_alphanumeric() || matches!(c, ' ' | '.' | '_' | '-' | ':') {
+        if c.is_ascii_alphanumeric() || matches!(c, ' ' | '.' | '_' | '-' | ':' | ',') {
             out.push(c);
         } else {
             let _ = write!(out, "\\{:x} ", u32::from(c));
@@ -128,87 +201,82 @@ fn css_string(s: &str) -> String {
     out
 }
 
-/// At most `max` characters of `s`, the rest shown as an ellipsis.
-fn clipped(s: &str, max: usize) -> String {
-    if s.chars().count() <= max {
-        return s.to_string();
-    }
-    let mut out: String = s.chars().take(max.saturating_sub(1)).collect();
-    out.push('\u{2026}');
-    out
-}
-
 /// The line printed at the foot of every page: which file the page belongs to. Loose
 /// pages of two reports can then be told apart.
-fn page_footer_css(name: &str, sha256: &str) -> String {
+fn page_footer_css(footer: &str) -> String {
     format!(
-        "@page{{@bottom-left{{content:\"Halftone report: {}, SHA-256 {}\";\
+        "@page{{@bottom-left{{content:\"{}\";\
 font:8pt Charter,\"Bitstream Charter\",Cambria,Georgia,serif;color:#1B3A5C}}}}",
-        css_string(&clipped(name, 48)),
-        css_string(&clipped(sha256, 17)),
+        css_string(footer),
     )
 }
 
 /// Render to one self-contained HTML document.
 pub fn to_html(insp: &Inspection) -> String {
-    let name = insp.asset.path.as_deref().map_or_else(
-        || "content given directly".to_string(),
-        halftone_core::run::file_name_only,
-    );
-    let notes = conditions::notes_html(insp);
+    report_html(&Report::new(insp))
+}
+
+/// A report as one self-contained HTML document.
+pub fn report_html(r: &Report) -> String {
+    let notes = conditions::notes_list_html(&r.notes);
     let notes = if notes.is_empty() {
         notes
     } else {
         format!(
-            "<aside class=\"notes\"><p>This check differs from a default one:</p>{notes}</aside>"
+            "<aside class=\"notes\"><p>{}</p>{notes}</aside>",
+            html_escape(&r.notes_lead)
         )
     };
+    let mut file = String::new();
+    for f in &r.file {
+        use std::fmt::Write as _;
+        let _ = write!(
+            file,
+            "<tr><th>{}</th><td>{}</td></tr>",
+            html_escape(&f.label),
+            rich_html(&f.value)
+        );
+    }
     format!(
         "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">\
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
 <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'\">\
-<title>Halftone report: {}</title><style>{CSS}</style><style>{}</style></head><body>\
+<title>{}</title><style>{CSS}</style><style>{}</style></head><body>\
 <header><span class=\"mark\" aria-hidden=\"true\">{}</span><div><h1>Halftone report</h1>\
-<p>Checked {} with {} {}.</p></div></header><main>{}{notes}\
+<p>{}</p></div></header><main><h2>File</h2><table class=\"file\">{file}</table>{notes}\
 <h2>Evidence</h2>{}{}{}{}</main><footer><p>{}</p></footer></body></html>",
-        html_escape(&name),
-        page_footer_css(&name, &insp.asset.sha256),
+        html_escape(&r.title),
+        page_footer_css(&r.page_footer),
         MARK.trim(),
-        html_escape(&insp.created_at),
-        html_escape(&insp.tool.name),
-        html_escape(&insp.tool.version),
-        conditions::file_html(insp),
-        evidence_html(&insp.evidence),
+        html_escape(&r.checked),
+        groups_html(&r.evidence),
         legend_html(),
-        insp.evidence
-            .iter()
-            .find(|e| e.source.name == "c2pa")
-            .and_then(|e| e.details.get("conformance"))
-            .map(conformance_html)
+        r.conformance
+            .as_ref()
+            .map(conformance_model_html)
             .unwrap_or_default(),
-        conditions::conditions_html(insp),
-        NOTICE
+        conditions::conditions_model_html(&r.conditions),
+        html_escape(&r.notice)
     )
 }
 
-/// The C2PA conformance measurements (`details.conformance` of the c2pa source) as
-/// a collapsed section: one summary line with the counts, the checks inside, those
-/// not met first. Empty when there is nothing to show. A measurement of the
-/// manifest, so it sits below the evidence table and says it is not a verdict.
-pub fn conformance_html(details: &serde_json::Value) -> String {
+/// The C2PA conformance measurements (`details.conformance` of the c2pa source): one
+/// line with every rubric's counts, and per rubric its checks, those not met first.
+/// `None` when there is nothing to show.
+pub fn conformance(details: &serde_json::Value) -> Option<Conformance> {
     use std::fmt::Write as _;
     let Some(rubrics) = details.get("rubrics").and_then(|r| r.as_array()) else {
-        return match details.get("error").and_then(|e| e.as_str()) {
-            Some(e) => format!(
-                "<p>C2PA conformance rubrics: not measured ({})</p>",
-                html_escape(e)
-            ),
-            None => String::new(),
-        };
+        return details
+            .get("error")
+            .and_then(|e| e.as_str())
+            .map(|e| Conformance::NotMeasured {
+                heading: CONFORMANCE_HEADING.to_string(),
+                reason: e.to_string(),
+            });
     };
     let text = |v: &serde_json::Value| v.as_str().map_or_else(|| v.to_string(), str::to_string);
     let mut summary = Vec::new();
-    let mut rows = String::new();
+    let mut out = Vec::new();
     for r in rubrics {
         let name = format!("{} {}", text(&r["name"]), text(&r["version"]));
         let name = if r["name"].is_null() {
@@ -218,12 +286,11 @@ pub fn conformance_html(details: &serde_json::Value) -> String {
         };
         if let Some(e) = r["error"].as_str() {
             let line = format!("{name}: {e}");
-            let _ = write!(
-                rows,
-                "<tr><th colspan=\"3\">{}</th></tr>",
-                html_escape(&line)
-            );
-            summary.push(line);
+            summary.push(line.clone());
+            out.push(Rubric {
+                heading: line,
+                checks: Vec::new(),
+            });
             continue;
         }
         let n = |k: &str| r["summary"][k].as_u64().unwrap_or(0);
@@ -238,42 +305,106 @@ pub fn conformance_html(details: &serde_json::Value) -> String {
                 let _ = write!(line, ", {} {word}", n(k));
             }
         }
-        // One heading row per rubric, with its own counts; the checks below it.
-        let _ = write!(
-            rows,
-            "<tr><th colspan=\"3\">{}</th></tr>",
-            html_escape(&line)
-        );
-        summary.push(line);
+        summary.push(line.clone());
         let results = r["results"].as_array().cloned().unwrap_or_default();
+        let mut checks = Vec::new();
         for want in [["not_met", "error"], ["warning", "warning"], ["met", "met"]] {
             for row in results
                 .iter()
                 .filter(|x| want.contains(&x["outcome"].as_str().unwrap_or("")))
             {
-                let outcome = match row["outcome"].as_str() {
+                let result = match row["outcome"].as_str() {
                     Some("not_met") => "not met",
                     Some("error") => "not evaluated",
                     Some(o) => o,
                     None => "?",
                 };
-                let _ = write!(
-                    rows,
-                    "<tr><td>{}</td><td>{}</td><td>{}</td></tr>",
-                    html_escape(&text(&row["trait"])),
-                    outcome,
-                    html_escape(&text(&row["text"]))
-                );
+                checks.push(Check {
+                    name: text(&row["trait"]),
+                    result: result.to_string(),
+                    text: text(&row["text"]),
+                });
             }
+        }
+        out.push(Rubric {
+            heading: line,
+            checks,
+        });
+    }
+    Some(Conformance::Measured {
+        heading: CONFORMANCE_HEADING.to_string(),
+        summary: summary.join("; "),
+        caveat: CONFORMANCE_CAVEAT.to_string(),
+        about: details["about"].as_str().unwrap_or("").to_string(),
+        rubrics: out,
+    })
+}
+
+/// [`conformance`] as a collapsed section: one summary line with the counts, the
+/// checks inside. Empty when there is nothing to show. A measurement of the manifest,
+/// so it sits below the evidence table and says it is not a verdict.
+pub fn conformance_html(details: &serde_json::Value) -> String {
+    conformance(details)
+        .as_ref()
+        .map(conformance_model_html)
+        .unwrap_or_default()
+}
+
+fn conformance_model_html(c: &Conformance) -> String {
+    use std::fmt::Write as _;
+    let (heading, summary, caveat, about, rubrics) = match c {
+        Conformance::NotMeasured { heading, reason } => {
+            return format!(
+                "<p>{}: not measured ({})</p>",
+                html_escape(heading),
+                html_escape(reason)
+            );
+        }
+        Conformance::Measured {
+            heading,
+            summary,
+            caveat,
+            about,
+            rubrics,
+        } => (heading, summary, caveat, about, rubrics),
+    };
+    let mut rows = String::new();
+    for r in rubrics {
+        // One heading row per rubric, with its own counts; the checks below it.
+        let _ = write!(
+            rows,
+            "<tr><th colspan=\"3\">{}</th></tr>",
+            html_escape(&r.heading)
+        );
+        for check in &r.checks {
+            let _ = write!(
+                rows,
+                "<tr><td>{}</td><td>{}</td><td>{}</td></tr>",
+                html_escape(&check.name),
+                html_escape(&check.result),
+                html_escape(&check.text)
+            );
         }
     }
     format!(
-        "<details><summary>C2PA conformance rubrics: {}. A measurement of the manifest, \
-not a verdict.</summary><p>{}</p><table><tr><th>Check</th><th>Result</th>\
-<th>Report text</th></tr>{rows}</table></details>",
-        html_escape(&summary.join("; ")),
-        html_escape(details["about"].as_str().unwrap_or(""))
+        "<details><summary>{}: {}. {}</summary><p>{}</p><table><tr><th>Check</th>\
+<th>Result</th><th>Report text</th></tr>{rows}</table></details>",
+        html_escape(heading),
+        html_escape(summary),
+        html_escape(caveat),
+        html_escape(about)
     )
+}
+
+/// A cell's content for the page: words escaped, literal values in `<code>`.
+pub(crate) fn rich_html(rich: &Rich) -> String {
+    rich.iter()
+        .map(|span| match span {
+            Span::Text(t) => html_escape(t),
+            Span::Code(c) => format!("<code>{}</code>", html_escape(c)),
+            Span::Break => "<br>".to_string(),
+        })
+        .collect()
 }
 
 pub(crate) fn html_escape(s: &str) -> String {
@@ -443,13 +574,18 @@ mod tests {
         assert_eq!(css_string("a b-c_d.e:1"), "a b-c_d.e:1");
         assert_eq!(css_string("\"}<\\\n"), "\\22 \\7d \\3c \\5c \\a ");
         // The footer names the file and the start of its hash, clipped to fit a line.
-        let css = page_footer_css("photo.png", &"5c4081bb367965ab".repeat(4));
+        let footer = Report::new(&inspection("photo.png")).page_footer;
+        assert_eq!(
+            footer,
+            "Halftone report: photo.png, SHA-256 5c4081bb367965ab\u{2026}"
+        );
+        let css = page_footer_css(&footer);
         assert!(
             css.contains("content:\"Halftone report: photo.png, SHA-256 5c4081bb367965ab\\2026 \""),
             "{css}"
         );
-        assert_eq!(clipped("abcdef", 4), "abc\u{2026}");
-        assert_eq!(clipped("abcd", 4), "abcd");
+        assert_eq!(model::clipped("abcdef", 4), "abc\u{2026}");
+        assert_eq!(model::clipped("abcd", 4), "abcd");
     }
 
     #[test]

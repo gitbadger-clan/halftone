@@ -3,15 +3,20 @@
 //!
 //! A reader gets them at three levels:
 //!
-//! - [`file_html`], at the top: the file's name, type, size and hash, so the report
-//!   can be matched to the bytes it is about.
-//! - [`notes_html`], right under it and before the evidence: only what differs from
-//!   a default run and changes how the evidence reads (values shown in full, remote
+//! - the file block, at the top: the file's name, type, size and hash, so the report
+//!   can be matched to the bytes it is about;
+//! - the notes, right under it and before the evidence: only what differs from a
+//!   default run and changes how the evidence reads (values shown in full, remote
 //!   manifests fetched, a build from modified source, a layer that did not run, a
 //!   trust list the operator changed, something that could not be established). A
-//!   default run has no notes and the block is absent.
-//! - [`conditions_html`], below the evidence: the whole record, collapsed, with a
-//!   one-line summary. Hashes and versions are for the person who repeats the check.
+//!   default run has no notes and the block is absent;
+//! - the conditions, below the evidence: the whole record, collapsed on the page and
+//!   an appendix in the PDF, with a one-line summary. Hashes and versions are for the
+//!   person who repeats the check.
+//!
+//! Each level is built here once as plain data ([`file_fields`], [`notes`],
+//! [`conditions`]) for [`crate::model::Report`]; the `*_html` functions draw that data
+//! for the page, and the PDF template draws the same data.
 //!
 //! Every statement here is the tool's own, about itself and its inputs. The section
 //! says so, in keeping with what the evidence rows say about unsigned fields.
@@ -21,7 +26,8 @@ use std::fmt::Write as _;
 
 use halftone_core::{BuildInfo, Inspection, Layer, RunInfo, TrustInput};
 
-use crate::html_escape;
+use crate::model::{Conditions, Field, Rich, Span, Trust, TrustRow, text};
+use crate::{html_escape, rich_html};
 
 const ALL_LAYERS: [Layer; 4] = [Layer::Manifest, Layer::Container, Layer::Mark, Layer::Blind];
 /// The feature whose absence leaves the manifest layer unable to read a manifest.
@@ -29,23 +35,56 @@ const MANIFEST_FEATURE: &str = "c2pa";
 /// How much of a commit the one-line forms show; the table has all of it.
 const SHORT_COMMIT: usize = 12;
 
-/// The file a report is about: name (without its directory), type, size, SHA-256.
-pub fn file_html(insp: &Inspection) -> String {
-    let a = &insp.asset;
-    let name = a.path.as_deref().map_or_else(
+/// Closes the conditions: whose statement they are.
+pub const STATEMENT: &str = "This section is the tool's own statement about itself and \
+its inputs; nothing in the report signs or verifies it. A hash identifies a list, it does not \
+vouch for it. Files are named without their directory.";
+
+/// What the conditions section is called.
+pub const HEADING: &str = "Conditions of this check";
+
+/// Said in place of the options when an inspection carries no run record.
+pub const NOT_RECORDED: &str =
+    "The options, trust lists and packs of this check were not recorded.";
+
+/// The file's name without its directory, or what stands in for one.
+pub fn file_name(insp: &Inspection) -> String {
+    insp.asset.path.as_deref().map_or_else(
         || "(not a file: content given directly)".to_string(),
         halftone_core::run::file_name_only,
-    );
+    )
+}
+
+/// The file a report is about: name (without its directory), type, size, SHA-256.
+pub fn file_fields(insp: &Inspection) -> Vec<Field> {
+    let a = &insp.asset;
+    vec![
+        Field::new("Name", text(file_name(insp))),
+        Field::new("Type", text(a.mime.clone())),
+        Field::new("Size", text(format!("{} bytes", grouped(a.size_bytes)))),
+        Field::new("SHA-256", vec![Span::Code(a.sha256.clone())]),
+    ]
+}
+
+fn fields_html(fields: &[Field]) -> String {
+    let mut out = String::new();
+    for f in fields {
+        // Writing to a String cannot fail.
+        let _ = write!(
+            out,
+            "<tr><th>{}</th><td>{}</td></tr>",
+            html_escape(&f.label),
+            rich_html(&f.value)
+        );
+    }
+    out
+}
+
+/// [`file_fields`] as the block at the top of the page.
+pub fn file_html(insp: &Inspection) -> String {
     format!(
-        "<h2>File</h2><table class=\"file\">\
-<tr><th>Name</th><td>{}</td></tr>\
-<tr><th>Type</th><td>{}</td></tr>\
-<tr><th>Size</th><td>{} bytes</td></tr>\
-<tr><th>SHA-256</th><td><code>{}</code></td></tr></table>",
-        html_escape(&name),
-        html_escape(&a.mime),
-        grouped(a.size_bytes),
-        html_escape(&a.sha256),
+        "<h2>File</h2><table class=\"file\">{}</table>",
+        fields_html(&file_fields(insp))
     )
 }
 
@@ -181,7 +220,10 @@ pub fn notes(insp: &Inspection) -> Vec<String> {
 
 /// [`notes`] as a list placed before the evidence. Empty when there is none.
 pub fn notes_html(insp: &Inspection) -> String {
-    let notes = notes(insp);
+    notes_list_html(&notes(insp))
+}
+
+pub(crate) fn notes_list_html(notes: &[String]) -> String {
     if notes.is_empty() {
         return String::new();
     }
@@ -273,59 +315,65 @@ fn no_trust_reason(insp: &Inspection, run: &RunInfo) -> &'static str {
     }
 }
 
-fn row(out: &mut String, label: &str, value_html: &str) {
-    // Writing to a String cannot fail.
-    let _ = write!(out, "<tr><th>{label}</th><td>{value_html}</td></tr>");
+/// Words, a literal value, more words.
+fn with_code(before: &str, code: &str, after: &str) -> Rich {
+    let mut out = vec![Span::Text(before.to_string()), Span::Code(code.to_string())];
+    if !after.is_empty() {
+        out.push(Span::Text(after.to_string()));
+    }
+    out
 }
 
-/// The whole record as a collapsed section: a summary line, a table of the build
-/// and the options, and the trust inputs with their hashes.
-pub fn conditions_html(insp: &Inspection) -> String {
-    let mut rows = String::new();
-    row(&mut rows, "Checked", &html_escape(&insp.created_at));
-    row(
-        &mut rows,
-        "Tool",
-        &html_escape(&format!(
-            "{} {} (schema {})",
-            insp.tool.name, insp.tool.version, insp.schema_version
-        )),
-    );
+/// Several entries of one cell, each on its own line.
+fn lines(entries: impl IntoIterator<Item = Rich>) -> Rich {
+    let mut out = Rich::new();
+    for (i, entry) in entries.into_iter().enumerate() {
+        if i > 0 {
+            out.push(Span::Break);
+        }
+        out.extend(entry);
+    }
+    out
+}
+
+/// The build, the options and the packs, one labelled row each.
+fn condition_rows(insp: &Inspection) -> Vec<Field> {
+    let mut rows = vec![
+        Field::new("Checked", text(insp.created_at.clone())),
+        Field::new(
+            "Tool",
+            text(format!(
+                "{} {} (schema {})",
+                insp.tool.name, insp.tool.version, insp.schema_version
+            )),
+        ),
+    ];
     match &insp.tool.build {
-        None => row(&mut rows, "Build", "not recorded"),
+        None => rows.push(Field::new("Build", text("not recorded"))),
         Some(b) => {
             let build = match (&b.commit, b.modified) {
-                (None, _) => "not identified: no commit was recorded".to_string(),
-                (Some(c), Some(true)) => format!(
-                    "commit <code>{}</code>; the source differed from it when the tool was built",
-                    html_escape(c)
+                (None, _) => text("not identified: no commit was recorded"),
+                (Some(c), Some(true)) => with_code(
+                    "commit ",
+                    c,
+                    "; the source differed from it when the tool was built",
                 ),
-                (Some(c), Some(false)) => format!(
-                    "commit <code>{}</code>; the source matched it",
-                    html_escape(c)
-                ),
-                (Some(c), None) => format!(
-                    "commit <code>{}</code>; not recorded whether the source matched it",
-                    html_escape(c)
-                ),
+                (Some(c), Some(false)) => with_code("commit ", c, "; the source matched it"),
+                (Some(c), None) => {
+                    with_code("commit ", c, "; not recorded whether the source matched it")
+                }
             };
-            row(&mut rows, "Build", &build);
+            rows.push(Field::new("Build", build));
             let features = if b.features.is_empty() {
                 "none".to_string()
             } else {
-                html_escape(&b.features.join(", "))
+                b.features.join(", ")
             };
-            row(&mut rows, "Features", &features);
+            rows.push(Field::new("Features", text(features)));
         }
     }
-
     let Some(run) = &insp.run else {
-        return format!(
-            "<details><summary>Conditions of this check: {}.</summary>\
-<table class=\"conditions\">{rows}</table>\
-<p>The options, trust lists and packs of this check were not recorded.</p>{STATEMENT}</details>",
-            html_escape(&summary(insp)),
-        );
+        return rows;
     };
     let o = &run.options;
     let skipped: Vec<Layer> = ALL_LAYERS
@@ -336,107 +384,147 @@ pub fn conditions_html(insp: &Inspection) -> String {
     if !skipped.is_empty() {
         let _ = write!(layers, "; not run: {}", names(&skipped));
     }
-    row(&mut rows, "Layers run", &layers);
-    row(
-        &mut rows,
+    rows.push(Field::new("Layers run", text(layers)));
+    rows.push(Field::new(
         "Remote manifests",
         if o.fetch_remote_manifests {
-            "could be fetched (<code>--fetch-remote-manifests</code>)"
+            with_code("could be fetched (", "--fetch-remote-manifests", ")")
         } else {
-            "not fetched"
+            text("not fetched")
         },
-    );
-    row(
-        &mut rows,
+    ));
+    rows.push(Field::new(
         "Disclosed values",
         if o.reveal {
-            "shown in full (<code>--reveal</code>)"
+            with_code("shown in full (", "--reveal", ")")
         } else {
-            "masked"
+            text("masked")
         },
-    );
+    ));
     let mode = match o.trust_list.as_str() {
-        "auto" => "the installed copy if there is one, otherwise the one built in (auto)".into(),
-        "vendored" => "the one built in (vendored)".into(),
-        "none" => "disabled (none)".into(),
-        "file" => "replaced by a file the operator supplied (file)".into(),
-        other => html_escape(other),
+        "auto" => "the installed copy if there is one, otherwise the one built in (auto)",
+        "vendored" => "the one built in (vendored)",
+        "none" => "disabled (none)",
+        "file" => "replaced by a file the operator supplied (file)",
+        other => other,
     };
-    row(&mut rows, "Internal trust list", &mode);
+    rows.push(Field::new("Internal trust list", text(mode)));
     if let Some(f) = &o.fingerprints {
-        row(
-            &mut rows,
+        rows.push(Field::new(
             "Extra fingerprint database",
-            &format!(
-                "{}, SHA-256 <code>{}</code>",
-                html_escape(&f.name),
-                html_escape(&f.sha256)
-            ),
-        );
+            with_code(&format!("{}, SHA-256 ", f.name), &f.sha256, ""),
+        ));
     }
     let packs = if run.packs.is_empty() {
-        "none installed".to_string()
+        text("none installed")
     } else {
-        run.packs
-            .iter()
-            .map(|p| {
-                format!(
-                    "{} {} ({}), archive SHA-256 <code>{}</code>",
-                    html_escape(&p.name),
-                    html_escape(&p.version),
-                    html_escape(&p.tier),
-                    html_escape(&p.archive_sha256)
-                )
-            })
-            .collect::<Vec<_>>()
-            .join("<br>")
+        lines(run.packs.iter().map(|p| {
+            with_code(
+                &format!("{} {} ({}), archive SHA-256 ", p.name, p.version, p.tier),
+                &p.archive_sha256,
+                "",
+            )
+        }))
     };
-    row(&mut rows, "Model packs", &packs);
+    rows.push(Field::new("Model packs", packs));
     if !run.gaps.is_empty() {
-        let gaps: Vec<String> = run.gaps.iter().map(|g| html_escape(g)).collect();
-        row(&mut rows, "Not established", &gaps.join("<br>"));
+        rows.push(Field::new(
+            "Not established",
+            lines(run.gaps.iter().map(|g| text(g.clone()))),
+        ));
     }
+    rows
+}
 
-    let trust = if run.trust.is_empty() {
-        format!(
-            "<p>No trust list was loaded: {}.</p>",
-            no_trust_reason(insp, run)
-        )
-    } else {
-        let mut t = String::from(
-            "<table class=\"trust\"><tr><th>Used for</th><th>This copy</th><th>File</th>\
-<th>Version</th><th>Certificates</th><th>SHA-256</th></tr>",
-        );
-        for i in &run.trust {
+/// The trust lists of the check, or why there is none to name.
+fn trust(insp: &Inspection) -> Trust {
+    let Some(run) = &insp.run else {
+        return Trust::NotRecorded {
+            sentence: NOT_RECORDED.to_string(),
+        };
+    };
+    if run.trust.is_empty() {
+        return Trust::NoneLoaded {
+            sentence: format!("No trust list was loaded: {}.", no_trust_reason(insp, run)),
+        };
+    }
+    let rows = run
+        .trust
+        .iter()
+        .map(|i| {
             let mut copy = origin_words(&i.origin).to_string();
             if let Some(at) = &i.fetched_at {
                 let _ = write!(copy, ", fetched {at}");
             }
-            let _ = write!(
-                t,
-                "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td><code>{}</code></td></tr>",
-                html_escape(kind_words(&i.kind)),
-                html_escape(&copy),
-                html_escape(&i.name),
-                html_escape(i.version.as_deref().unwrap_or("not stated")),
-                i.certificates.map_or_else(String::new, |n| n.to_string()),
-                html_escape(&i.sha256),
-            );
-        }
-        t.push_str("</table>");
-        t
-    };
-    format!(
-        "<details><summary>Conditions of this check: {}.</summary>\
-<table class=\"conditions\">{rows}</table><h3>Trust lists</h3>{trust}{STATEMENT}</details>",
-        html_escape(&summary(insp)),
-    )
+            TrustRow {
+                used_for: kind_words(&i.kind).to_string(),
+                copy,
+                file: i.name.clone(),
+                version: i
+                    .version
+                    .clone()
+                    .unwrap_or_else(|| "not stated".to_string()),
+                certificates: i.certificates.map_or_else(String::new, |n| n.to_string()),
+                sha256: i.sha256.clone(),
+            }
+        })
+        .collect();
+    Trust::Lists { rows }
 }
 
-/// Closes the section: whose statement this is.
-const STATEMENT: &str = "<p><small>This section is the tool's own statement about itself and \
-its inputs; nothing in the report signs or verifies it. A hash identifies a list, it does not \
-vouch for it. Files are named without their directory.</small></p>";
+/// The whole record: the summary line, the build and the options, the trust inputs
+/// with their hashes, and whose statement it is.
+pub fn conditions(insp: &Inspection) -> Conditions {
+    Conditions {
+        heading: HEADING.to_string(),
+        summary: summary(insp),
+        rows: condition_rows(insp),
+        trust: trust(insp),
+        statement: STATEMENT.to_string(),
+    }
+}
+
+/// [`conditions`] as a collapsed section of the page.
+pub fn conditions_html(insp: &Inspection) -> String {
+    conditions_model_html(&conditions(insp))
+}
+
+pub(crate) fn conditions_model_html(c: &Conditions) -> String {
+    let trust = match &c.trust {
+        Trust::NotRecorded { sentence } => format!("<p>{}</p>", html_escape(sentence)),
+        Trust::NoneLoaded { sentence } => {
+            format!("<h3>Trust lists</h3><p>{}</p>", html_escape(sentence))
+        }
+        Trust::Lists { rows } => {
+            let mut t = String::from(
+                "<h3>Trust lists</h3><table class=\"trust\"><tr><th>Used for</th>\
+<th>This copy</th><th>File</th><th>Version</th><th>Certificates</th><th>SHA-256</th></tr>",
+            );
+            for r in rows {
+                let _ = write!(
+                    t,
+                    "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td><code>{}</code></td></tr>",
+                    html_escape(&r.used_for),
+                    html_escape(&r.copy),
+                    html_escape(&r.file),
+                    html_escape(&r.version),
+                    html_escape(&r.certificates),
+                    html_escape(&r.sha256),
+                );
+            }
+            t.push_str("</table>");
+            t
+        }
+    };
+    format!(
+        "<details><summary>{}: {}.</summary>\
+<table class=\"conditions\">{}</table>{trust}<p><small>{}</small></p></details>",
+        html_escape(&c.heading),
+        html_escape(&c.summary),
+        fields_html(&c.rows),
+        html_escape(&c.statement),
+    )
+}
 
 #[cfg(test)]
 mod tests {
