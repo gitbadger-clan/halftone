@@ -8,12 +8,20 @@ license.workspace = true
 repository.workspace = true
 homepage.workspace = true
 
+[features]
+default = []
+# Typeset the report as a PDF in-process (Typst as a library, fonts from fonts/). A large
+# dependency, and it needs Rust 1.92 or newer, so it is opt-in like `c2pa`.
+pdf = ["dep:typst", "dep:typst-layout", "dep:typst-pdf"]
+
 [dependencies]
 halftone-core.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
-
+typst = { workspace = true, optional = true }
+typst-layout = { workspace = true, optional = true }
+typst-pdf = { workspace = true, optional = true }
 
 [lints]
 workspace = true

@@ -21,6 +21,8 @@
 
 pub mod conditions;
 pub mod model;
+#[cfg(feature = "pdf")]
+pub mod pdf;
 
 use halftone_core::{Evidence, Inspection, Status};
 use model::{Check, Conformance, EvidenceRow, LayerGroup, LegendItem, Report, Rich, Rubric, Span};
