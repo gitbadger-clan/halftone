@@ -26,6 +26,7 @@ Certificate of Origin (https://developercertificate.org).
 `cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test`
 must pass on Linux, macOS and Windows (CI runs all three).
 Shipped binaries: `cargo install --path crates/halftone-cli --features c2pa --locked`
-(the lockfile is part of the tested surface; see DIFFERENTIAL.md D-007).
+(the lockfile is part of the tested surface; see DIFFERENTIAL.md D-007). Add `pdf` to
+the features for `ht inspect --pdf`; that build needs Rust 1.92 or newer.
 Differential test: `cargo test -p halftone-cli --features c2pa --test differential -- --ignored`
 with the corpus on disk; CI runs strata 01–03 on every push.

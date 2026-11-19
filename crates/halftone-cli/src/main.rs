@@ -3,7 +3,7 @@ mod complete;
 mod glyph;
 
 use glyph::{Glyphs, StatusGlyph};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use clap::{Args, CommandFactory as _, Parser, Subcommand, ValueEnum, ValueHint};
@@ -183,6 +183,14 @@ struct InspectArgs {
     /// Write an HTML report next to each input.
     #[arg(long)]
     report: bool,
+    /// Write a PDF report next to each input (needs a build with the `pdf` feature).
+    /// Typeset by ht itself: no browser, no network; the same inspection gives the
+    /// same bytes.
+    #[arg(long)]
+    pdf: bool,
+    /// The PDF's colours: light for filing and print, dark for reading on a screen.
+    #[arg(long, value_enum, default_value_t = PdfTheme::Light, requires = "pdf")]
+    pdf_theme: PdfTheme,
     /// Extra JPEG writer-fingerprint DB (JSON) merged over the built-in one.
     #[arg(long, add = complete::json_files())]
     fingerprints: Option<PathBuf>,
@@ -501,6 +509,38 @@ fn tool() -> ToolInfo {
     }
 }
 
+/// The colours of a PDF report.
+#[derive(Clone, Copy, ValueEnum)]
+enum PdfTheme {
+    /// The brand ink on a white page.
+    Light,
+    /// The brand's light ink on its dark ground.
+    Dark,
+}
+
+/// Write the PDF report of one inspection next to its input.
+#[cfg(feature = "pdf")]
+fn write_pdf(insp: &halftone_core::Inspection, input: &Path, theme: PdfTheme) -> Result<()> {
+    let theme = match theme {
+        PdfTheme::Light => halftone_report::pdf::Theme::Light,
+        PdfTheme::Dark => halftone_report::pdf::Theme::Dark,
+    };
+    let pdf = halftone_report::pdf::to_pdf(insp, theme)?;
+    let out = input.with_extension("halftone.pdf");
+    std::fs::write(&out, pdf.bytes).with_context(|| format!("writing {}", out.display()))
+}
+
+/// Without the `pdf` feature there is nothing to typeset with.
+#[cfg(not(feature = "pdf"))]
+fn write_pdf(_: &halftone_core::Inspection, _: &Path, _: PdfTheme) -> Result<()> {
+    anyhow::bail!("{NO_PDF}")
+}
+
+/// Said when `--pdf` is asked of a build that cannot write one.
+const NO_PDF: &str = "this ht was built without PDF reports; build it with the `pdf` feature \
+(cargo install --path crates/halftone-cli --features c2pa,pdf --locked), or use --report and \
+print the page";
+
 /// What a person at the terminal should know before reading or passing on the
 /// output: the two conditions a table does not show by itself. One line each.
 fn terminal_notes(build: &BuildInfo, reveal: bool) -> Vec<String> {
@@ -673,6 +713,10 @@ fn inspect(a: InspectArgs) -> Result<()> {
         fetch_remote_manifests: a.fetch_remote_manifests,
         reveal: a.reveal,
     })?;
+    // Asked for a PDF this build cannot write: say so before any file is inspected.
+    if a.pdf && !cfg!(feature = "pdf") {
+        anyhow::bail!("{NO_PDF}");
+    }
     // Said once, on stderr, where a person reads the result. A JSON document carries
     // the same facts in `tool.build` and `run`, so it gets no extra line.
     if !a.json {
@@ -710,6 +754,9 @@ fn inspect(a: InspectArgs) -> Result<()> {
         if a.report {
             let out = input.with_extension("halftone.html");
             std::fs::write(&out, halftone_report::to_html(&insp))?;
+        }
+        if a.pdf {
+            write_pdf(&insp, input, a.pdf_theme)?;
         }
         if a.batch || a.table || a.tsv {
             collected.push(insp);

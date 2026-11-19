@@ -29,6 +29,8 @@ ht inspect --json --only manifest,container *.jpg
 ht inspect --batch shots/*.jpg                  # file × source matrix
 ht inspect --batch --json shots/*.jpg > run.json # one document, per-file summary rows
 ht inspect --report clip.mp4
+ht inspect --pdf photo.jpg                      # PDF report (a build with the `pdf` feature)
+ht inspect --pdf --pdf-theme dark photo.jpg    # the same report for reading on a screen
 ht inspect --fingerprints my-writers.json --trust-anchors anchors.pem photo.jpg
 ht fingerprint --writer "Canon EOS R5 fw 1.8.1" --class camera --into my-writers.json shots/*.jpg
 ht fingerprint --writer "macOS 15 screenshot" --class screenshot --into my-writers.json ~/Desktop/Screenshot*.png
@@ -86,11 +88,27 @@ did not run, a trust list the operator changed, anything not established. A defa
 run has no notes. Below the evidence, the whole record as a collapsed section with a
 one-line summary.
 
-The report is one self-contained file: its stylesheet, the mark and the verdict glyphs
+The page is one self-contained file: its stylesheet, the mark and the verdict glyphs
 are inlined, it carries no script, and its Content-Security-Policy forbids loading
-anything. Printed, or saved as PDF from a browser, it is an A4 document with the
-collapsed sections opened and the file's name and the start of its hash at the foot
-of every page.
+anything. Printed from a browser it is an A4 document with the collapsed sections
+opened and the file's name and the start of its hash at the foot of every page.
+
+`--pdf` writes the same report as a PDF, typeset by `ht` itself: no browser, no
+network, no system font. What the page and the PDF say is built once and drawn twice,
+so they cannot differ in content. The same inspection and theme give the same bytes
+on any machine; the PDF's date is the time of the check. It is written as PDF/A-2b
+(the compiler checks that as it writes; that is not an independent validation), with
+every section open and the file's name and the start of its hash at the foot of each
+page. `--pdf-theme dark` gives the same report in the brand's dark colours for reading
+on a screen; printed, it is a dark page, so file and print the light one.
+
+PDF support is a build feature, like `c2pa`: `cargo install --path crates/halftone-cli
+--features c2pa,pdf --locked`. It brings in the Typst compiler (about 180 more
+packages, Rust 1.92 or newer). The PDFs are set in Libertinus Serif and DejaVu Sans
+Mono; the three font files and their licences are in `crates/halftone-report/fonts/`,
+and text in a script they do not cover (Chinese, Japanese, Korean, Arabic, among
+others) is typeset as missing glyphs. A build without the feature says so when `--pdf`
+is asked.
 
 On the terminal, `ht inspect` says in one line on stderr when the build is from
 modified source and when `--reveal` is on. With `--json` it adds no line, because the

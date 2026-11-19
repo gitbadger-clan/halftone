@@ -41,7 +41,9 @@ serde_json.workspace = true
 [features]
 # Enable real C2PA validation (heavy dependency).
 c2pa = ["halftone-c2pa/c2pa"]
+# Enable `ht inspect --pdf`: reports typeset in-process (heavy dependency; needs Rust
+# 1.92 or newer).
+pdf = ["halftone-report/pdf"]
 
 [lints]
 workspace = true
-
