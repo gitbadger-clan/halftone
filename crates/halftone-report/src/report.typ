@@ -173,6 +173,29 @@
   r.legend_close
 }))
 
+// ---- what the file says about itself: unsigned fields, one table per source
+
+#if r.declared != none {
+  let dc = r.declared
+  heading(level: 1, dc.heading)
+  [#upper(dc.summary.first())#dc.summary.slice(1).]
+  parbreak()
+  text(fill: soft, dc.caveat)
+  for t in dc.tables {
+    heading(level: 2, t.title)
+    let n = t.columns.len()
+    table(
+      columns: if n == 2 { (62mm, 1fr) } else { (58mm, 38mm, 1fr) },
+      stroke: (x, y) => if y > 0 { (top: 0.5pt + rule) } else { none },
+      table.header(..t.columns.map(c => head(c))),
+      ..t.rows.map(row => row.map(cell => rich(cell))).flatten(),
+    )
+    for note in t.notes {
+      par(note)
+    }
+  }
+}
+
 // ---- conformance measurements of the manifest, when there are any
 
 #if r.conformance != none {

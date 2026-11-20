@@ -4,8 +4,8 @@
 //! file.
 //!
 //! Top to bottom: the file, notes on anything that changes how the evidence reads,
-//! the evidence, the C2PA conformance measurements, the conditions of the check, the
-//! notice.
+//! the evidence, what the file says about itself, the C2PA conformance measurements,
+//! the conditions of the check, the notice.
 //!
 //! What a report says is built once, as [`model::Report`]; [`to_html`] and
 //! `pdf::to_pdf` (with the `pdf` feature) are two drawings of that value, so the page
@@ -20,6 +20,7 @@
 //! The same inspection gives the same bytes, and the file is written as PDF/A-2b.
 
 pub mod conditions;
+pub mod declared;
 pub mod model;
 #[cfg(feature = "pdf")]
 pub mod pdf;
@@ -246,13 +247,17 @@ pub fn report_html(r: &Report) -> String {
 <title>{}</title><style>{CSS}</style><style>{}</style></head><body>\
 <header><span class=\"mark\" aria-hidden=\"true\">{}</span><div><h1>Halftone report</h1>\
 <p>{}</p></div></header><main><h2>File</h2><table class=\"file\">{file}</table>{notes}\
-<h2>Evidence</h2>{}{}{}{}</main><footer><p>{}</p></footer></body></html>",
+<h2>Evidence</h2>{}{}{}{}{}</main><footer><p>{}</p></footer></body></html>",
         html_escape(&r.title),
         page_footer_css(&r.page_footer),
         MARK.trim(),
         html_escape(&r.checked),
         groups_html(&r.evidence),
         legend_html(),
+        r.declared
+            .as_ref()
+            .map(declared::declared_html)
+            .unwrap_or_default(),
         r.conformance
             .as_ref()
             .map(conformance_model_html)

@@ -451,6 +451,20 @@ mod tests {
             e.source.name = hostile.into();
             e.source.version = hostile.into();
         }
+        // What the file says about itself is the least trusted text in a report.
+        let mut said = evidence(
+            Layer::Container,
+            "embedded_identifiers",
+            Status::Present,
+            "",
+        );
+        said.details = json!({ "identifiers": [
+            { "field": hostile, "kind": hostile, "value": hostile } ] });
+        insp.evidence.push(said);
+        let mut rights = evidence(Layer::Container, "rights_statements", Status::Present, "");
+        rights.details = json!({ "statements": [],
+            "disagreements": [{ "statement": hostile, "copies": [{ "field": hostile }] }] });
+        insp.evidence.push(rights);
         let run = insp.run.as_mut().unwrap();
         run.gaps = vec![hostile.into()];
         run.trust[0].name = hostile.into();
@@ -484,6 +498,31 @@ mod tests {
                       { "trait": "trusted_success", "outcome": "not_met", "text": "Not trusted" } ] },
                 { "id": "other", "name": "R", "version": "1.0", "error": "could not be evaluated" }
             ] } });
+        // What the file says about itself: a two-column table, a three-column one,
+        // a note, masked and revealed values.
+        for (name, details) in [
+            (
+                "marking_metadata",
+                json!({ "values": [{ "code": "trainedAlgorithmicMedia",
+                    "raw": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia" }] }),
+            ),
+            (
+                "data_mining_reservation",
+                json!({ "other_constraints": { "field": "plus:OtherConstraints",
+                    "length": 9, "masked": true }, "values": [] }),
+            ),
+            (
+                "embedded_identifiers",
+                json!({ "identifiers": [
+                    { "field": "exif:Artist", "kind": "person", "length": 11, "masked": true },
+                    { "field": "exif:GPS", "kind": "location", "value": "47.37690 N, 8.54170 E" } ] }),
+            ),
+        ] {
+            let mut e = evidence(Layer::Container, name, Status::Present, "as declared");
+            e.details = details;
+            insp.evidence.push(e);
+        }
+        assert_eq!(Report::new(&insp).declared.unwrap().tables.len(), 3);
         // Every optional row of the conditions, and every origin of a trust input.
         let run = insp.run.as_mut().unwrap();
         run.options.reveal = true;

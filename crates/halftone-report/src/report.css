@@ -130,7 +130,11 @@ summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 details > table, details > p, details > h3 { margin-left: 1.1rem; width: calc(100% - 1.1rem); }
 details > p { margin-top: 0.4rem; margin-bottom: 0.6rem; }
 table.trust { font-size: 0.86rem; }
-table.trust tr:first-child th { border-top: 0; color: var(--ink-soft); }
+table.trust tr:first-child th,
+table.declared tr:first-child th { border-top: 0; color: var(--ink-soft); font-size: 0.86rem; }
+/* What the file says about itself: field names keep to one line, values take the rest. */
+table.declared td:first-child { white-space: nowrap; }
+table.declared td:last-child { width: 55%; overflow-wrap: anywhere; }
 
 /* ---- the fixed notice */
 
@@ -155,6 +159,7 @@ small { font-size: 0.86rem; }
   table.evidence .source small { display: inline; margin-left: 0.4em; }
   table.file th, table.conditions th { width: auto; padding-right: 1rem; }
   table.trust { display: block; overflow-x: auto; }
+  table.declared td:first-child { white-space: normal; overflow-wrap: anywhere; }
 }
 
 /* ---- print and PDF: A4, light, everything open, rows kept whole */

@@ -93,6 +93,12 @@ are inlined, it carries no script, and its Content-Security-Policy forbids loadi
 anything. Printed from a browser it is an A4 document with the collapsed sections
 opened and the file's name and the start of its hash at the foot of every page.
 
+Between the evidence and the conformance measurements, the report lists what the file
+says about itself: the digital source type, the data-mining reservation, a vendor's AI
+field, the rights statements and the identifiers, each as a table of the fields the
+source found. Free-text values are masked unless `--reveal` was given. The section
+opens by saying what these fields are: unsigned, and not findings about the file.
+
 `--pdf` writes the same report as a PDF, typeset by `ht` itself: no browser, no
 network, no system font. What the page and the PDF say is built once and drawn twice,
 so they cannot differ in content. The same inspection and theme give the same bytes

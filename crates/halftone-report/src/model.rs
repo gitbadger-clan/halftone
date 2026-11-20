@@ -214,6 +214,8 @@ pub struct Report {
     pub legend: Vec<LegendItem>,
     /// The legend's closing sentences.
     pub legend_close: String,
+    /// What the file says about itself, when a metadata source ran.
+    pub declared: Option<crate::declared::Declared>,
     /// The conformance measurements, when the manifest source made any.
     pub conformance: Option<Conformance>,
     /// The conditions of the check.
@@ -242,6 +244,7 @@ impl Report {
             evidence: crate::evidence_groups(&insp.evidence),
             legend: crate::legend(),
             legend_close: crate::LEGEND_CLOSE.to_string(),
+            declared: crate::declared::declared(&insp.evidence),
             conformance: insp
                 .evidence
                 .iter()
