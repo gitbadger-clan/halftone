@@ -80,6 +80,10 @@ struct Aged {
     expected: String,
 }
 
+/// The containers Halftone reads IPTC IIM from, as the reference tool names them. In
+/// any other, IIM fields the reference tool finds are D-021: named, not counted.
+const IIM_READ_IN: [&str; 2] = ["image/jpeg", "image/png"];
+
 /// A disagreement with a reference tool that DIFFERENTIAL.md already records and
 /// explains. Printed on every run, never counted as a failure.
 #[derive(Debug)]
@@ -485,10 +489,14 @@ fn compare_embedded(
                 .map(|e| listed(&e["details"][key], file, values, true))
                 .unwrap_or_default();
             let mut want = listed(&ex[list], file, values, false);
-            // D-021: Halftone reads IPTC IIM from a JPEG's image-resource block only.
-            // ExifTool also finds it in other containers (a PNG text profile); those
-            // fields are a known blind spot, named and not counted.
-            if exp["exiftool"]["mime"] != "image/jpeg" {
+            // D-021: Halftone reads IPTC IIM from a JPEG's image-resource block and
+            // from a PNG's raw-profile text chunk. ExifTool also finds it in other
+            // containers (a TIFF tag, a PSD resource); there those fields are a known
+            // blind spot, named and not counted.
+            let iim_is_read = IIM_READ_IN
+                .iter()
+                .any(|mime| exp["exiftool"]["mime"] == *mime);
+            if !iim_is_read {
                 let missed: Vec<String> = want
                     .iter()
                     .filter(|w| w.starts_with("iim:") && !got.contains(w))
@@ -500,7 +508,7 @@ fn compare_embedded(
                         file: name.to_string(),
                         entry: "D-021",
                         detail: format!(
-                            "IPTC IIM outside a JPEG is not read: {}",
+                            "IPTC IIM is read from a JPEG and a PNG only: {}",
                             missed.join(", ")
                         ),
                     });
@@ -2330,7 +2338,7 @@ mod embedded_values {
     }
 
     #[test]
-    fn iim_outside_a_jpeg_is_a_known_blind_spot_not_a_disagreement() {
+    fn iim_in_a_container_it_is_not_read_from_is_a_known_blind_spot() {
         let insp = inspection(
             json!([{ "field": "photoshop:Credit", "value": "Agency" }]),
             json!([]),
@@ -2360,16 +2368,17 @@ mod embedded_values {
             (out.len(), known)
         };
         assert_eq!(
-            run("image/png"),
+            run("image/tiff"),
             (
                 0,
                 vec![(
                     "D-021",
-                    "IPTC IIM outside a JPEG is not read: iim:Credit".to_string()
+                    "IPTC IIM is read from a JPEG and a PNG only: iim:Credit".to_string()
                 )]
             )
         );
-        // In a JPEG the same miss is a real disagreement.
+        // In a JPEG or a PNG the same miss is a real disagreement.
         assert_eq!(run("image/jpeg"), (1, vec![]));
+        assert_eq!(run("image/png"), (1, vec![]));
     }
 }

@@ -737,14 +737,40 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   `04-generators/aggregator-zimage__base__web-download__p1__1.png`.
 - Observed: ExifTool reads an IPTC credit from these PNGs; Halftone reads IIM only
   from a JPEG's image-resource block. The XMP copy of the credit is read by both.
-- Status: open, known blind spot. The differential test names such fields on
-  non-JPEG files and does not count them.
+- Status: closed for PNG (follow-up of 2026-11-19). The differential test no
+  longer exempts PNG: the two files are compared field by field, like a JPEG. In
+  any other container the test still names IIM fields and does not count them.
 - Location: a compressed `zTXt` text chunk (both files list IHDR/zTXt/iTXt/caBX).
   Reading it needs inflate, which halftone-container does not depend on.
 - Follow-up 2026-11-18: the last sentence stopped being true on 2026-11-17, when
   halftone-container gained an inflate dependency (`miniz_oxide`) to read a PNG's
   `iCCP` profile. Compressed text chunks are still not read, so the blind spot and
   the status stand; what is missing now is the reader, not the dependency.
+- Follow-up 2026-11-19: compressed text chunks are read (`pngtext` in
+  halftone-container: `zTXt` and compressed `iTXt`, at most 4 MiB inflated per
+  chunk). A raw IPTC profile in a text chunk gives the IIM datasets to the sources
+  that read a JPEG's (`rights_statements`, `embedded_identifiers`,
+  `vendor_ai_flag`, and the `iim` details of `marking_metadata`); an XMP packet is
+  read from a compressed chunk too; `png_writer` sees generation text stored
+  compressed. A chunk that cannot be inflated is never read as "nothing there": the
+  source says what it could not read and, where it found nothing, answers
+  `inconclusive`.
+  The reader does what ExifTool 13.64 does, measured on hand-made files:
+  - ExifTool writes IPTC into a PNG as a `zTXt` chunk `Raw profile type iptc` (a
+    name line, a length line, the bytes in hex) holding a Photoshop image-resource
+    block (`8BIM`, resource 0x0404), and says so ("Creating non-standard IPTC in
+    PNG"). It reads the same profile from an uncompressed `tEXt`, as a bare IIM
+    record without the block, and under the keyword `Raw profile type 8bim`.
+  - A block that starts with the `Photoshop 3.0` header of a JPEG segment is not
+    read ("Bad Photoshop IRB resource").
+  - A length line that does not match the data is a warning ("IPTC_Profile is
+    wrong size"), and the data is read all the same.
+  - Of two profiles the first is the file's `IPTC`; the second is reported as
+    `IPTC2`, which the collector does not record.
+  - XMP is read from a compressed `iTXt` and from a `zTXt`; ExifTool itself never
+    writes it compressed. `parameters` is read from both as well.
+  Halftone gives the same reading in each case, and the unit tests of `pngtext`
+  and the sources hold them. Stratum 03 gained five such files (D-020).
 
 ### D-022 · 2026-11-12 · UTF-16 XMP packets were read as empty
 
