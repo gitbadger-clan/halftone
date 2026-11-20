@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-17T20:22:11Z",
+  "collected_at": "2026-11-20T09:30:23Z",
   "conformance_rubrics": null,
   "corpus": "corpus/differential/03-synthetic",
   "files": {
@@ -1440,6 +1440,237 @@
       },
       "sha256": "e9276c8264704e012f3a66940de76dbdffd04309e6aa64e09a3e092e5e0bab56",
       "size_bytes": 6742
+    },
+    "png_iptc_ai_credit.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [
+            {
+              "field": "iim:Credit",
+              "value": "Made with Google AI"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": true
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "absent"
+        },
+        "note": "the credit line that is a vendor's AI statement, in the IPTC profile only",
+        "rights": {
+          "status": "present"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "present"
+        }
+      },
+      "sha256": "401ef4baacd5cfce217e143349ab10802bc3f9b8a8b9991d1d3d751d80244de8",
+      "size_bytes": 27971
+    },
+    "png_iptc_profile.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [
+            {
+              "field": "iim:By-line",
+              "value": "Ada Example"
+            }
+          ],
+          "rights": [
+            {
+              "field": "iim:CopyrightNotice",
+              "value": "(c) 2026 Ada Example"
+            },
+            {
+              "field": "iim:Credit",
+              "value": "Example Agency"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": "SynthCam",
+        "iim_program_version": "2.1",
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "present"
+        },
+        "note": "IPTC as ExifTool writes it into a PNG: a compressed text chunk holding a Photoshop block",
+        "rights": {
+          "status": "present"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "36e26d95a971901f91648cc5e1ca0a98c91cdc926a2a65676c5bba8b55231832",
+      "size_bytes": 28084
+    },
+    "png_iptc_text.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [
+            {
+              "field": "iim:Credit",
+              "value": "Example Wire"
+            }
+          ],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": false,
+        "xmp_tag_count": 0
+      },
+      "halftone": {
+        "digital_source_type": [],
+        "identifiers": {
+          "status": "absent"
+        },
+        "note": "the same profile uncompressed and without the Photoshop block: the bare IIM record",
+        "rights": {
+          "status": "present"
+        },
+        "status": "absent",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "d6fdb4efaf43ab54a6b00cf5489779cf6469228525fe92593c4b088208784775",
+      "size_bytes": 27910
+    },
+    "png_xmp_compressed.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "identifiers": {
+          "status": "absent"
+        },
+        "note": "the XMP packet in a compressed iTXt, which the XMP specification does not allow and readers accept",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "present",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "ca13b24211fed726fb2c38f1159faddeac63cb39579e5fcdbc5a758e0ad35e55",
+      "size_bytes": 28344
+    },
+    "png_xmp_ztxt.png": {
+      "c2patool": {
+        "present": false
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "digital_source_type_raw": [
+          "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+        ],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 2
+      },
+      "halftone": {
+        "digital_source_type": [
+          "trainedAlgorithmicMedia"
+        ],
+        "identifiers": {
+          "status": "absent"
+        },
+        "note": "the XMP packet in a zTXt chunk",
+        "rights": {
+          "status": "absent"
+        },
+        "status": "present",
+        "vendor_ai": {
+          "status": "absent"
+        }
+      },
+      "sha256": "11b57391cc417c3e2ca20571e8b12a8afe0cd132d5d731cac2d321599bd51056",
+      "size_bytes": 28341
     },
     "rs_disagree.jpg": {
       "c2patool": {

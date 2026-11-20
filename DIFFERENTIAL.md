@@ -724,6 +724,12 @@ the ingredients), and every manifest also carries `ambiguousActions` (D-016).
   written by ExifTool: it would compress the profile with its Perl's zlib, whose
   output differs between builds, so `gen-synthetic.py` writes that `iCCP` chunk
   itself as one stored block.
+- Follow-up 2026-11-19: the stratum has 75 files. The five new ones
+  (`png_iptc_*.png`, `png_xmp_*.png`, for D-021) are PNGs with compressed text
+  chunks and raw IPTC profiles, written whole by `gen-synthetic.py` with stored
+  zlib blocks for the same reason as `id_icc_png.png`. Generated with ExifTool
+  12.76, 13.55, 13.59 and 13.64, all 75 are byte-identical and the earlier 70 are
+  unchanged.
 
 ### D-021 · 2026-11-12 · IPTC IIM outside a JPEG is not read
 

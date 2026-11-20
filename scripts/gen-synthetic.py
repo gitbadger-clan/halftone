@@ -15,9 +15,9 @@ expectations.json as `halftone`, and the differential test asserts it alongside 
 ExifTool/c2patool comparison. The stratum is matched by file name, not hash.
 `status` and `digital_source_type` are what marking_metadata must say; the
 `data_mining` object, on the `dm_*` cases, is what data_mining_reservation must say;
-`vendor_ai`, `rights` and `identifiers`, on the `va_*`, `rs_*` and `id_*` cases, are
-what vendor_ai_flag, rights_statements and embedded_identifiers must say. Every name,
-address, number and monitor in those cases is invented.
+`vendor_ai`, `rights` and `identifiers`, on the `va_*`, `rs_*`, `id_*` and `png_*`
+cases, are what vendor_ai_flag, rights_statements and embedded_identifiers must say.
+Every name, address, number and monitor in those cases is invented.
 
 Bytes do not depend on the ExifTool that wrote them. By default ExifTool stamps every
 XMP packet with its own version (x:xmptk='Image::ExifTool 13.59'), which made the
@@ -29,8 +29,10 @@ the tags ExifTool adds on its own to a new EXIF block changed between versions, 
 the cases that write EXIF name those tags themselves (FLASHPIX, RESOLUTION). The
 colour-profile cases embed profiles built here, and the PNG one is written here
 whole: ExifTool would compress the profile with its Perl's zlib, whose output is not
-the same in every build. Measured with ExifTool 12.76, 13.55, 13.59 and 13.64: all 70
-files come out byte-identical.
+the same in every build. The `png_iptc_*` and `png_xmp_*` cases (compressed text
+chunks, raw IPTC profiles) are written here whole for the same reason, and because
+ExifTool reads more of these layouts than it writes. Measured with ExifTool 12.76,
+13.55, 13.59 and 13.64: all 75 files come out byte-identical.
 
 Which ExifTool wrote the files is still recorded, next to them instead of inside
 them: SOURCE.txt names the generator, the ExifTool version, the toolkit constant and
@@ -328,17 +330,27 @@ def icc_profile(cls: bytes, major: int, desc: bytes) -> bytes:
     return bytes(head) + struct.pack(">I", len(tags)) + table + data
 
 
+def stored_zlib(data: bytes) -> bytes:
+    """A zlib stream holding `data` as one stored block: valid for any reader, and the
+    same bytes everywhere. A compressor's output differs between zlib builds, and
+    ExifTool, asked to compress, uses whichever one its Perl has."""
+    assert len(data) < 65536
+    stored = b"\x01" + struct.pack("<HH", len(data), len(data) ^ 0xFFFF) + data
+    return b"\x78\x01" + stored + struct.pack(">I", zlib.adler32(data))
+
+
+def png_with_chunks(png: bytes, chunks: list[tuple[bytes, bytes]]) -> bytes:
+    """`png` with the given (type, data) chunks after IHDR, checksums computed."""
+    assert png[12:16] == b"IHDR"
+    added = b"".join(struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+                     for kind, data in chunks)
+    return png[:33] + added + png[33:]
+
+
 def png_with_profile(png: bytes, profile: bytes) -> bytes:
     """`png` with the profile in an iCCP chunk after IHDR, named as Apple ImageIO and
-    Pillow name theirs. The zlib stream is written here as one stored block: a
-    compressor's output differs between zlib builds, and ExifTool, asked to embed a
-    profile in a PNG, compresses with whichever one its Perl has."""
-    assert len(profile) < 65536 and png[12:16] == b"IHDR"
-    stored = b"\x01" + struct.pack("<HH", len(profile), len(profile) ^ 0xFFFF) + profile
-    stream = b"\x78\x01" + stored + struct.pack(">I", zlib.adler32(profile))
-    data = b"ICC Profile\0\0" + stream
-    chunk = struct.pack(">I", len(data)) + b"iCCP" + data + struct.pack(">I", zlib.crc32(b"iCCP" + data))
-    return png[:33] + chunk + png[33:]
+    Pillow name theirs. The zlib stream is written here (stored_zlib)."""
+    return png_with_chunks(png, [(b"iCCP", b"ICC Profile\0\0" + stored_zlib(profile))])
 
 
 def profile_cases() -> list[tuple[str, str, dict[str, str], str, bytes]]:
@@ -362,6 +374,63 @@ def profile_cases() -> list[tuple[str, str, dict[str, str], str, bytes]]:
         ("id_icc_printer", "jpg", {},
          "an output-class profile is named after a printing condition, not a display",
          icc_profile(b"prtr", 2, icc_desc("Example Press Coated v3"))),
+    ]
+
+
+def iim(sets: list[tuple[int, str]]) -> bytes:
+    """IPTC IIM record 2: the record version ExifTool also writes, then the datasets."""
+    out = b"\x1c\x02\x00\x00\x02\x00\x04"
+    for dataset, text in sets:
+        value = text.encode("ascii")
+        out += b"\x1c\x02" + bytes([dataset]) + struct.pack(">H", len(value)) + value
+    return out
+
+
+def photoshop_block(iptc: bytes) -> bytes:
+    """A Photoshop image-resource block holding the IIM record (resource 0x0404)."""
+    return b"8BIM\x04\x04\0\0" + struct.pack(">I", len(iptc)) + iptc + bytes(len(iptc) % 2)
+
+
+def raw_profile(name: str, data: bytes) -> bytes:
+    """The text of a `Raw profile type ...` chunk, as ImageMagick and ExifTool lay it
+    out: the profile's name, its length, then the bytes in hex, 36 to a line."""
+    lines = [data[i:i + 36].hex() for i in range(0, len(data), 36)]
+    return f"\n{name}\n{len(data):8}\n".encode("ascii") + "\n".join(lines).encode("ascii") + b"\n"
+
+
+def text_chunk_cases() -> list[tuple[str, tuple[str, str | None], dict[str, str], str, list[tuple[bytes, bytes]]]]:
+    """(stem, intended marking status and term, intended status per listing source,
+    note, PNG chunks). Metadata in the places a PNG keeps it besides a plain `tEXt`
+    and an uncompressed `iTXt`: a compressed text chunk, and IPTC as a raw profile.
+    Written here whole, like the PNG colour-profile case: ExifTool reads all of these
+    and writes only the first profile layout, compressed with its Perl's zlib. Every
+    name is invented."""
+    marked = packet("xmlns:Iptc4xmpExt='http://iptc.org/std/Iptc4xmpExt/2008-02-29/'",
+                    f"  <Iptc4xmpExt:DigitalSourceType>{SCHEME}/trainedAlgorithmicMedia"
+                    "</Iptc4xmpExt:DigitalSourceType>").encode()
+    record = iim([(65, "SynthCam"), (70, "2.1"), (80, "Ada Example"), (110, "Example Agency"),
+                  (116, "(c) 2026 Ada Example")])
+    profile = b"Raw profile type iptc\0"
+    xmp = b"XML:com.adobe.xmp\0"
+    none = ("absent", None)
+    generative = ("present", "trainedAlgorithmicMedia")
+    return [
+        ("png_iptc_profile", none, {"rights": "present", "identifiers": "present"},
+         "IPTC as ExifTool writes it into a PNG: a compressed text chunk holding a Photoshop block",
+         [(b"zTXt", profile + b"\0" + stored_zlib(raw_profile("IPTC profile", photoshop_block(record))))]),
+        ("png_iptc_text", none, {"rights": "present"},
+         "the same profile uncompressed and without the Photoshop block: the bare IIM record",
+         [(b"tEXt", profile + raw_profile("iptc", iim([(110, "Example Wire")])))]),
+        ("png_iptc_ai_credit", none, {"vendor_ai": "present", "rights": "present"},
+         "the credit line that is a vendor's AI statement, in the IPTC profile only",
+         [(b"zTXt", profile + b"\0" + stored_zlib(raw_profile("IPTC profile", photoshop_block(
+             iim([(110, "Made with Google AI")])))))]),
+        ("png_xmp_compressed", generative, {},
+         "the XMP packet in a compressed iTXt, which the XMP specification does not allow and readers accept",
+         [(b"iTXt", xmp + b"\x01\0\0\0" + stored_zlib(marked))]),
+        ("png_xmp_ztxt", generative, {},
+         "the XMP packet in a zTXt chunk",
+         [(b"zTXt", xmp + b"\0" + stored_zlib(marked))]),
     ]
 
 
@@ -492,6 +561,15 @@ def main(
                     out = write(name, ext, [f"-icc_profile<={icc}"])
                 rows.append((out.name, {
                     "status": "absent", "digital_source_type": [],
+                    **{k: {"status": intent.get(k, "absent")} for k in ("vendor_ai", "rights", "identifiers")},
+                    "note": note,
+                }))
+            base_png = (BASE / "base.png").read_bytes()
+            for name, (status, code), intent, note, chunks in text_chunk_cases():
+                out = DEST / f"{name}.png"
+                out.write_bytes(png_with_chunks(base_png, chunks))
+                rows.append((out.name, {
+                    "status": status, "digital_source_type": [code] if code else [],
                     **{k: {"status": intent.get(k, "absent")} for k in ("vendor_ai", "rights", "identifiers")},
                     "note": note,
                 }))
