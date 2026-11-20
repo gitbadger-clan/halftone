@@ -1,9 +1,10 @@
 //! PNG structure forensics: chunk inventory and embedded generation metadata.
 //!
 //! Why it works: PNG is almost never a camera-native format — a PNG is a screenshot,
-//! an export, or a render. The discriminative signals are (1) uncompressed text chunks
-//! (`tEXt`/`iTXt`) that generation tools write verbatim — SD WebUI's `parameters`,
-//! ComfyUI's `prompt`/`workflow`, a `Software` naming a generator — and (2) the chunk
+//! an export, or a render. The discriminative signals are (1) text chunks (`tEXt`,
+//! `zTXt`, `iTXt`, compressed or not: `pngtext`) that generation tools write verbatim —
+//! SD WebUI's `parameters`, ComfyUI's `prompt`/`workflow`, a `Software` naming a
+//! generator — and (2) the chunk
 //! inventory, which fingerprints the writer family (a bare IHDR/IDAT/IEND stream from a
 //! minimal library export versus a full sRGB/gAMA/pHYs-decorated writer).
 //!
@@ -24,13 +25,22 @@ use sha2::{Digest, Sha256};
 use crate::fingerprints::{FingerprintDb, WriterClass};
 use crate::{png_rules, signatures};
 
-/// A decoded PNG text entry (uncompressed `tEXt` or uncompressed `iTXt`).
+/// A PNG text entry: a `tEXt`, `zTXt` or `iTXt` chunk, compressed or not
+/// ([`crate::pngtext`]).
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct TextEntry {
     /// The keyword (e.g. `parameters`, `prompt`, `Software`, `Comment`).
     pub keyword: String,
-    /// The value, bounded in length.
+    /// The value, bounded in length. Empty when the chunk could not be read.
     pub value: String,
+    /// Why a compressed chunk's text is not known, when it is not. The keyword is
+    /// still listed: something is there.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unread: Option<&'static str>,
+    /// Whether the entry is a `zTXt` chunk. Such a keyword is listed and read, and
+    /// left out of [`PngInfo::fingerprint`].
+    #[serde(skip)]
+    pub ztxt: bool,
 }
 
 /// Structural summary of a PNG.
@@ -48,7 +58,8 @@ pub struct PngInfo {
     pub color_type: u8,
     /// Interlace method.
     pub interlace: u8,
-    /// Decoded uncompressed text entries.
+    /// Text entries, compressed ones inflated. One that could not be read keeps its
+    /// keyword, an empty value and the reason in `unread`.
     pub text: Vec<TextEntry>,
     /// Whether an `eXIf` chunk is present.
     pub has_exif: bool,
@@ -187,6 +198,11 @@ impl PngInfo {
     /// run collapsed, IHDR depth/colour/interlace, text keywords, ICC profile name and
     /// pHYs. Image size and pixel data are excluded.
     ///
+    /// The keywords are those of `tEXt` and `iTXt` chunks. A `zTXt` chunk counts
+    /// through the chunk order and its keyword does not: that is what the hash was
+    /// before this crate read `zTXt`, and the database entries collected so far were
+    /// made with it. Adding the keyword would give every such file a new hash.
+    ///
     /// A known profile name ([`icc_name_is_known`]) is hashed as written. Any other name is
     /// hashed as one fixed token: it is not known to be the writer's own (a writer
     /// that copied profile descriptions would give one structure a different hash
@@ -204,7 +220,12 @@ impl PngInfo {
             h.update([0]);
         }
         h.update([self.bit_depth, self.color_type, self.interlace]);
-        let mut keys: Vec<&str> = self.text.iter().map(|t| t.keyword.as_str()).collect();
+        let mut keys: Vec<&str> = self
+            .text
+            .iter()
+            .filter(|t| !t.ztxt)
+            .map(|t| t.keyword.as_str())
+            .collect();
         keys.sort_unstable();
         for k in keys {
             h.update(k.as_bytes());
@@ -224,7 +245,7 @@ impl PngInfo {
     }
 }
 
-/// Parse PNG chunk structure and uncompressed text. Bounds-checked; never panics.
+/// Parse PNG chunk structure and text chunks. Bounds-checked; never panics.
 pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
     const SIG: [u8; 8] = [0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
     if !b.starts_with(&SIG) {
@@ -253,17 +274,17 @@ pub fn parse_png(b: &[u8]) -> Result<PngInfo, String> {
                 info.color_type = data[9];
                 info.interlace = data[12];
             }
-            b"tEXt" => {
-                if let Some((k, v)) = split_keyword(data) {
+            b"tEXt" | b"zTXt" | b"iTXt" => {
+                if let Some(chunk) = crate::pngtext::decode(ty, data) {
                     info.text.push(TextEntry {
-                        keyword: k,
-                        value: clip(&String::from_utf8_lossy(v), 4096),
+                        value: chunk
+                            .text_lossy()
+                            .map(|t| clip(&t, 4096))
+                            .unwrap_or_default(),
+                        unread: chunk.text.as_ref().err().map(|u| u.why()),
+                        ztxt: ty == b"zTXt",
+                        keyword: chunk.keyword,
                     });
-                }
-            }
-            b"iTXt" => {
-                if let Some(entry) = parse_itxt(data) {
-                    info.text.push(entry);
                 }
             }
             b"IDAT" => {
@@ -330,42 +351,6 @@ fn exif_software(tiff: &[u8]) -> Option<String> {
     (!text.is_empty()).then_some(text)
 }
 
-/// Split a `keyword\0value` payload (as in `tEXt`).
-fn split_keyword(data: &[u8]) -> Option<(String, &[u8])> {
-    let nul = data.iter().position(|&c| c == 0)?;
-    let keyword = String::from_utf8_lossy(&data[..nul]).into_owned();
-    Some((keyword, &data[nul + 1..]))
-}
-
-/// Parse an `iTXt` chunk. Only the uncompressed case (compression flag 0) yields a value.
-fn parse_itxt(data: &[u8]) -> Option<TextEntry> {
-    let nul = data.iter().position(|&c| c == 0)?;
-    let keyword = String::from_utf8_lossy(&data[..nul]).into_owned();
-    let rest = data.get(nul + 1..)?;
-    // rest = [compression_flag, compression_method, lang\0, translated_keyword\0, text...]
-    let comp_flag = *rest.first()?;
-    let mut p = 2; // skip compression flag + method
-    // Skip the language tag and translated keyword (both NUL-terminated).
-    for _ in 0..2 {
-        let off = rest.get(p..)?.iter().position(|&c| c == 0)?;
-        p += off + 1;
-    }
-    let text = rest.get(p..)?;
-    if comp_flag == 0 {
-        Some(TextEntry {
-            keyword,
-            value: clip(&String::from_utf8_lossy(text), 4096),
-        })
-    } else {
-        // Compressed (zlib): the keyword is recorded and the text is not inflated, so a
-        // generator signature inside it is not seen (DIFFERENTIAL.md D-021).
-        Some(TextEntry {
-            keyword,
-            value: "<compressed>".into(),
-        })
-    }
-}
-
 fn clip(s: &str, n: usize) -> String {
     s.chars().take(n).collect()
 }
@@ -418,6 +403,15 @@ impl EvidenceSource for PngWriter {
                 GEN_KEYWORDS.contains(&t.keyword.to_lowercase().as_str()) && t.value.len() > 8
             })
             .map(|t| t.keyword.clone());
+
+        // A chunk of the kind generation pipelines write whose text could not be had:
+        // not a finding, but "no generation metadata" would say more than is known.
+        let unread_gen = info.text.iter().find_map(|t| {
+            let why = t.unread?;
+            GEN_KEYWORDS
+                .contains(&t.keyword.to_lowercase().as_str())
+                .then(|| (t.keyword.clone(), why))
+        });
 
         let fp = info.fingerprint();
         let db_hit = self.db.lookup(&fp);
@@ -547,15 +541,15 @@ impl EvidenceSource for PngWriter {
                 }
             }
         };
+        let rationale = match (&hit, &param_kw, &unread_gen) {
+            (None, None, Some((kw, why))) => format!(
+                "{rationale} A text chunk `{kw}`, a keyword generation pipelines use, is \
+                 compressed and was not read ({why}), so what it holds is not known."
+            ),
+            _ => rationale,
+        };
 
-        Ok(Evidence {
-            layer: self.layer(),
-            source: self.id(),
-            status,
-            statistic: None,
-            calibration: None,
-            rationale,
-            details: serde_json::json!({
+        let mut details = serde_json::json!({
                 "chunks": info.chunks,
                 "width": info.width,
                 "height": info.height,
@@ -588,7 +582,29 @@ impl EvidenceSource for PngWriter {
                 "writer_rule": rule,
                 "writer_hint": info.writer_hint(),
                 "text_keywords": info.text.iter().map(|t| &t.keyword).collect::<Vec<_>>(),
-            }),
+        });
+        // Only when there is something to list, so the details of a file whose text
+        // was all read stay as they were.
+        let unread: Vec<_> = info
+            .text
+            .iter()
+            .filter_map(|t| {
+                t.unread
+                    .map(|why| serde_json::json!({ "keyword": t.keyword, "why": why }))
+            })
+            .collect();
+        if !unread.is_empty() {
+            details["text_unread"] = serde_json::json!(unread);
+        }
+
+        Ok(Evidence {
+            layer: self.layer(),
+            source: self.id(),
+            status,
+            statistic: None,
+            calibration: None,
+            rationale,
+            details,
             duration_ms: 0,
         })
     }
@@ -1021,5 +1037,90 @@ mod tests {
         let a = halftone_core::Asset::from_bytes(png_with(&[]), None).unwrap();
         let ev = PngWriter::default().assess(&a).unwrap();
         assert_eq!(ev.status, Status::Inconclusive);
+    }
+
+    #[test]
+    fn compressed_text_chunks_are_read() {
+        use crate::pngtext::testutil::{itxt, ztxt};
+        let params = b"masterpiece, Steps: 20, Sampler: Euler a, Model: sd_xl_base";
+        let cases: [(&[u8; 4], Vec<u8>); 2] = [
+            (b"zTXt", ztxt("parameters", params)),
+            (b"iTXt", itxt("parameters", params, true)),
+        ];
+        for (ty, data) in cases {
+            let a = Asset::from_bytes(png_with(&[(ty, data)]), None).unwrap();
+            let ev = PngWriter::default().assess(&a).unwrap();
+            assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+            assert!(ev.rationale.contains("`parameters`"), "{}", ev.rationale);
+            assert!(ev.details.get("text_unread").is_none());
+        }
+        // A generator named in a compressed `Software` is found as well.
+        let a =
+            Asset::from_bytes(png_with(&[(b"zTXt", ztxt("Software", b"ComfyUI"))]), None).unwrap();
+        let ev = PngWriter::default().assess(&a).unwrap();
+        assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+        assert!(ev.rationale.contains("ComfyUI"));
+    }
+
+    #[test]
+    fn a_generation_chunk_that_cannot_be_read_is_said_not_passed_over() {
+        use crate::pngtext::testutil::ztxt_damaged;
+        let params = b"masterpiece, Steps: 20, Sampler: Euler a, Model: sd_xl_base";
+        let damaged = png_with(&[(b"zTXt", ztxt_damaged("parameters", params))]);
+        let ev = PngWriter::default()
+            .assess(&Asset::from_bytes(damaged, None).unwrap())
+            .unwrap();
+        // Not a finding: the text is not known. Not silence either.
+        assert_ne!(ev.status, Status::Present);
+        assert!(
+            ev.rationale.contains(
+                "A text chunk `parameters`, a keyword generation pipelines use, is compressed \
+                 and was not read (its compressed data is damaged), so what it holds is not known."
+            ),
+            "{}",
+            ev.rationale
+        );
+        assert_eq!(
+            ev.details["text_unread"],
+            serde_json::json!([{ "keyword": "parameters", "why": "its compressed data is damaged" }])
+        );
+        assert_eq!(
+            ev.details["text_keywords"],
+            serde_json::json!(["parameters"])
+        );
+
+        // Another keyword is listed in the details and changes no sentence.
+        let other = png_with(&[(b"zTXt", ztxt_damaged("Title", params))]);
+        let ev = PngWriter::default()
+            .assess(&Asset::from_bytes(other, None).unwrap())
+            .unwrap();
+        assert!(!ev.rationale.contains("was not read"), "{}", ev.rationale);
+        assert_eq!(ev.details["text_unread"][0]["keyword"], "Title");
+    }
+
+    #[test]
+    fn reading_ztxt_did_not_change_the_fingerprint() {
+        use crate::pngtext::testutil::{itxt, text, ztxt};
+        let fp =
+            |chunks: &[(&[u8; 4], Vec<u8>)]| parse_png(&png_with(chunks)).unwrap().fingerprint();
+        // A `zTXt` keyword is not part of the hash; the chunk's presence is.
+        let a = fp(&[(b"zTXt", ztxt("Raw profile type iptc", b"x"))]);
+        let b = fp(&[(b"zTXt", ztxt("Comment", b"y"))]);
+        assert_eq!(a, b);
+        assert_ne!(a, fp(&[]));
+        // `tEXt` and `iTXt` keywords are, compressed or not, as they always were.
+        assert_ne!(
+            fp(&[(b"tEXt", text("Comment", b"y"))]),
+            fp(&[(b"tEXt", text("Title", b"y"))])
+        );
+        assert_ne!(
+            fp(&[(b"iTXt", itxt("Comment", b"y", true))]),
+            fp(&[(b"iTXt", itxt("Title", b"y", true))])
+        );
+        // The entry itself is listed and read.
+        let info = parse_png(&png_with(&[(b"zTXt", ztxt("Comment", b"hello"))])).unwrap();
+        assert_eq!(info.text[0].keyword, "Comment");
+        assert_eq!(info.text[0].value, "hello");
+        assert!(info.text[0].ztxt);
     }
 }

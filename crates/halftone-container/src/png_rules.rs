@@ -625,7 +625,7 @@ pub const RULES: &[PngRule] = &[
         zlib: Some([0x78, 0x5e]),
         deflate_block: None,
         deflate_prefix: &[],
-        notes: "2 corpus files, the output of a Google model downloaded from Adobe Firefly and from an aggregator: IHDR, zTXt, iTXt, caBX. The zTXt chunk is where ExifTool finds their IPTC record (DIFFERENTIAL.md D-021); it is compressed, and this crate does not read compressed text chunks.",
+        notes: "2 corpus files, the output of a Google model downloaded from Adobe Firefly and from an aggregator: IHDR, zTXt, iTXt, caBX. The zTXt chunk is where ExifTool finds their IPTC record (DIFFERENTIAL.md D-021); compressed text chunks are read by `pngtext`.",
     },
     PngRule {
         name: "Pillow with text metadata",
@@ -741,6 +741,8 @@ mod tests {
                 .map(|(k, v)| TextEntry {
                     keyword: k.to_string(),
                     value: v.to_string(),
+                    unread: None,
+                    ztxt: false,
                 })
                 .collect(),
             ..Default::default()

@@ -50,6 +50,7 @@ pub mod marking;
 pub mod mpf;
 pub mod png;
 pub mod png_rules;
+pub mod pngtext;
 pub mod rights;
 pub mod signatures;
 pub mod vendor_ai;
