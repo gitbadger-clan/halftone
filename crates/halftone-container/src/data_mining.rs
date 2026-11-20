@@ -296,6 +296,8 @@ impl EvidenceSource for DataMiningReservation {
             let unread = s.xmp_extended_incomplete || !s.xmp_items_unreadable.is_empty();
             let where_ = if s.xmp_extended_incomplete {
                 "XMP present, ExtendedXMP could not be fully reassembled"
+            } else if !s.xmp_items_unreadable.is_empty() && a.mime == "image/png" {
+                "an XMP text chunk is present but its compressed text could not be read"
             } else if !s.xmp_items_unreadable.is_empty() {
                 "an XMP item is listed but its bytes could not be read"
             } else if s.xmp_packets > 0 {
@@ -395,7 +397,7 @@ impl EvidenceSource for DataMiningReservation {
             "xmp_extended_incomplete": s.xmp_extended_incomplete,
             "manifest_container_present": s.manifest_container_present,
         });
-        if a.mime == "image/heif" {
+        if a.mime == "image/heif" || !s.xmp_items_unreadable.is_empty() {
             details["xmp_items_unreadable"] = serde_json::json!(s.xmp_items_unreadable);
         }
         Ok(Evidence {
@@ -764,5 +766,39 @@ mod tests {
         }
         assert!(scan("image/png", b"\x89PNG\r\n\x1a\n\0\0\0").is_ok_and(|s| s.values.is_empty()));
         assert!(scan("image/gif", b"GIF89a").is_err());
+    }
+
+    #[test]
+    fn png_xmp_in_a_compressed_chunk_is_read_and_a_damaged_one_is_inconclusive() {
+        use crate::pngtext::XMP_KEYWORD;
+        use crate::pngtext::testutil::{itxt, png, ztxt, ztxt_damaged};
+        let packet = element("DMI-PROHIBITED");
+        let cases: [(&[u8; 4], Vec<u8>); 2] = [
+            (b"iTXt", itxt(XMP_KEYWORD, packet.as_bytes(), true)),
+            (b"zTXt", ztxt(XMP_KEYWORD, packet.as_bytes())),
+        ];
+        let plain = assess(png_with(&packet));
+        for (ty, data) in cases {
+            let ev = assess(png(&[(ty, data)]));
+            assert_eq!(ev.status, plain.status, "{}", ev.rationale);
+            assert_eq!(ev.rationale, plain.rationale);
+        }
+        let ev = assess(png(&[(
+            b"zTXt",
+            ztxt_damaged(XMP_KEYWORD, packet.as_bytes()),
+        )]));
+        assert_eq!(ev.status, Status::Inconclusive, "{}", ev.rationale);
+        assert!(
+            ev.rationale
+                .contains("an XMP text chunk is present but its compressed text could not be read"),
+            "{}",
+            ev.rationale
+        );
+        assert_eq!(
+            ev.details["xmp_items_unreadable"],
+            serde_json::json!([
+                "a compressed XMP text chunk was not read: its compressed data is damaged"
+            ])
+        );
     }
 }

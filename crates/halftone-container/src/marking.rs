@@ -13,7 +13,7 @@
 //! - JPEG: APP1 `http://ns.adobe.com/xap/1.0/` packet plus ExtendedXMP
 //!   (`http://ns.adobe.com/xmp/extension/`) reassembled by offset; APP13 Photoshop IRB
 //!   resource `0x0404` for the IIM block.
-//! - PNG: `iTXt` with keyword `XML:com.adobe.xmp`.
+//! - PNG: a text chunk with keyword `XML:com.adobe.xmp`, compressed or not.
 //! - WebP: the `XMP ` chunk.
 //! - HEIF / AVIF: each `mime` item with content type `application/rdf+xml`,
 //!   located through `iloc` (read by `halftone-formats`).
@@ -110,14 +110,15 @@ pub struct MarkingScan {
     pub iptc_ext_namespace_declared: bool,
     /// Every `DigitalSourceType` occurrence, in file order, duplicates kept.
     pub values: Vec<DstValue>,
-    /// IIM block, if an APP13 IPTC resource was present.
+    /// IIM block, if a JPEG APP13 IPTC resource or a PNG raw IPTC profile was present.
     pub iim: Option<IimInfo>,
     /// A C2PA manifest container is present (JPEG APP11 JUMBF, PNG `caBX`, WebP
     /// `C2PA`). Any `digitalSourceType` inside it is signed and belongs to the
     /// manifest layer; recorded here so the rationale can point the reader there.
     pub manifest_container_present: bool,
-    /// HEIF only: XMP items listed in the item inventory whose bytes could not be
-    /// read, with why. Any entry makes an empty result `Inconclusive`.
+    /// XMP that is there and could not be read, with why: in a HEIF file, items
+    /// listed in the item inventory; in a PNG, a compressed text chunk that could not
+    /// be inflated. Any entry makes an empty result `Inconclusive`.
     pub xmp_items_unreadable: Vec<String>,
 }
 
@@ -293,9 +294,14 @@ fn parse_iim(b: &[u8]) -> IimInfo {
     info
 }
 
-/// Collect XMP packets from PNG `iTXt` chunks keyed `XML:com.adobe.xmp`
-/// (uncompressed only, per the XMP specification). Bounds-checked; never panics.
+/// Collect XMP packets from a PNG's text chunks keyed `XML:com.adobe.xmp`, and the
+/// IIM block from a raw IPTC profile chunk ([`crate::pngtext`]). The XMP
+/// specification asks for an uncompressed `iTXt`; a packet stored compressed, in an
+/// `iTXt` or a `zTXt`, is read all the same, as ExifTool reads it. One that cannot be
+/// inflated is recorded as unreadable, so an empty result is not "no marking".
+/// Bounds-checked; never panics.
 fn png_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
+    use crate::pngtext;
     const SIG: [u8; 8] = [0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
     if !b.starts_with(&SIG) {
         return Err("not a PNG".into());
@@ -310,30 +316,24 @@ fn png_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
         if end + 4 > b.len() {
             return Err("truncated chunk".into());
         }
-        if ty == b"iTXt" {
-            let data = &b[start..end];
-            if let Some(nul) = data.iter().position(|&c| c == 0) {
-                if &data[..nul] == b"XML:com.adobe.xmp" {
-                    // [compression flag, method, lang\0, translated keyword\0, text]
-                    let rest = &data[nul + 1..];
-                    if rest.first() == Some(&0) {
-                        let mut p = 2;
-                        let mut ok = true;
-                        for _ in 0..2 {
-                            match rest.get(p..).and_then(|r| r.iter().position(|&c| c == 0)) {
-                                Some(off) => p += off + 1,
-                                None => {
-                                    ok = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if ok {
-                            if let Some(text) = rest.get(p..) {
-                                packets.push(text[..text.len().min(MAX_XMP_BYTES)].to_vec());
-                            }
-                        }
-                    }
+        if let Some(chunk) = pngtext::decode(ty, &b[start..end]) {
+            if chunk.keyword == pngtext::XMP_KEYWORD {
+                match &chunk.text {
+                    Ok(text) => packets.push(text[..text.len().min(MAX_XMP_BYTES)].to_vec()),
+                    Err(unread) => s.xmp_items_unreadable.push(format!(
+                        "a compressed XMP text chunk was not read: {}",
+                        unread.why()
+                    )),
+                }
+            } else if pngtext::IPTC_PROFILE_KEYWORDS.contains(&chunk.keyword.as_str()) {
+                // The first profile that holds IIM is the one read (pngtext.rs).
+                if s.iim.is_none() {
+                    s.iim = chunk
+                        .text
+                        .as_deref()
+                        .ok()
+                        .and_then(pngtext::raw_profile)
+                        .and_then(|bytes| profile_iim(&bytes));
                 }
             }
         }
@@ -346,6 +346,18 @@ fn png_packets(b: &[u8], s: &mut MarkingScan) -> Result<Vec<Vec<u8>>, String> {
         i = end + 4;
     }
     Ok(packets)
+}
+
+/// The IIM block of a PNG raw profile: a Photoshop image-resource block, or bare
+/// datasets.
+fn profile_iim(bytes: &[u8]) -> Option<IimInfo> {
+    if bytes.starts_with(b"8BIM") {
+        parse_irb_iptc(bytes)
+    } else if bytes.first() == Some(&0x1C) {
+        Some(parse_iim(bytes))
+    } else {
+        None
+    }
 }
 
 /// Collect the WebP `XMP ` chunk. Bounds-checked; never panics.
@@ -596,6 +608,8 @@ impl EvidenceSource for MarkingMetadata {
         let (status, rationale) = if codes.is_empty() {
             let where_ = if s.xmp_extended_incomplete {
                 "XMP present, ExtendedXMP could not be fully reassembled"
+            } else if !s.xmp_items_unreadable.is_empty() && a.mime == "image/png" {
+                "an XMP text chunk is present but its compressed text could not be read"
             } else if !s.xmp_items_unreadable.is_empty() {
                 "an XMP item is listed but its bytes could not be read"
             } else if s.xmp_packets > 0 {
@@ -690,8 +704,9 @@ impl EvidenceSource for MarkingMetadata {
             "iim": s.iim,
             "manifest_container_present": s.manifest_container_present,
         });
-        // HEIF only, so the details of every other format stay as they were.
-        if a.mime == "image/heif" {
+        // Always for HEIF; for another format only when there is something to list, so
+        // its details stay as they were otherwise.
+        if a.mime == "image/heif" || !s.xmp_items_unreadable.is_empty() {
             details["xmp_items_unreadable"] = serde_json::json!(s.xmp_items_unreadable);
         }
         Ok(Evidence {
@@ -1142,5 +1157,93 @@ mod tests {
         v.extend_from_slice(data);
         v.extend_from_slice(&[0, 0, 0, 0]);
         v
+    }
+
+    #[test]
+    fn png_xmp_in_a_compressed_chunk_is_found() {
+        use crate::pngtext::testutil::{itxt, png, ztxt};
+        let packet = xmp_attr(GEN);
+        // The specification asks for an uncompressed `iTXt`. ExifTool 13.64 reads the
+        // packet from a compressed `iTXt` and from a `zTXt` too; so does this source.
+        let cases: [(&[u8; 4], Vec<u8>); 3] = [
+            (
+                b"iTXt",
+                itxt(crate::pngtext::XMP_KEYWORD, packet.as_bytes(), false),
+            ),
+            (
+                b"iTXt",
+                itxt(crate::pngtext::XMP_KEYWORD, packet.as_bytes(), true),
+            ),
+            (
+                b"zTXt",
+                ztxt(crate::pngtext::XMP_KEYWORD, packet.as_bytes()),
+            ),
+        ];
+        for (ty, data) in cases {
+            let ev = assess(png(&[(ty, data)]));
+            assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+            assert!(ev.rationale.contains("trainedAlgorithmicMedia"));
+        }
+    }
+
+    #[test]
+    fn png_xmp_that_cannot_be_inflated_is_inconclusive_not_absent() {
+        use crate::pngtext::testutil::{png, ztxt_damaged};
+        let packet = xmp_attr(GEN);
+        let ev = assess(png(&[(
+            b"zTXt",
+            ztxt_damaged(crate::pngtext::XMP_KEYWORD, packet.as_bytes()),
+        )]));
+        assert_eq!(ev.status, Status::Inconclusive, "{}", ev.rationale);
+        assert!(
+            ev.rationale.contains(
+                "(an XMP text chunk is present but its compressed text could not be read)"
+            ),
+            "{}",
+            ev.rationale
+        );
+        assert_eq!(
+            ev.details["xmp_items_unreadable"],
+            serde_json::json!([
+                "a compressed XMP text chunk was not read: its compressed data is damaged"
+            ])
+        );
+        // A PNG whose XMP was read lists nothing, as before.
+        let whole = assess(png(&[(
+            b"zTXt",
+            crate::pngtext::testutil::ztxt(crate::pngtext::XMP_KEYWORD, packet.as_bytes()),
+        )]));
+        assert!(whole.details.get("xmp_items_unreadable").is_none());
+    }
+
+    #[test]
+    fn png_iptc_profile_is_reported_like_a_jpeg_iim_block() {
+        use crate::pngtext::testutil::{iim, irb, png, raw_profile_text, text, ztxt};
+        let sets = iim(&[(65, b"Midjourney"), (70, b"6.1"), (110, b"Agency")]);
+        // As ExifTool writes it: a `zTXt` holding a Photoshop image-resource block.
+        let block = raw_profile_text("IPTC profile", &irb(&sets));
+        let ev = assess(png(&[(b"zTXt", ztxt("Raw profile type iptc", &block))]));
+        assert_eq!(ev.details["iim"]["dataset_count"], 3);
+        assert_eq!(ev.details["iim"]["originating_program"], "Midjourney");
+        assert_eq!(ev.details["iim"]["program_version"], "6.1");
+        // IIM carries no digital source type: it is reported and decides nothing.
+        assert_eq!(ev.status, Status::Absent, "{}", ev.rationale);
+
+        // Bare IIM in an uncompressed `tEXt`, and the first profile is the one read.
+        let first = raw_profile_text("iptc", &iim(&[(65, b"First")]));
+        let second = raw_profile_text("iptc", &iim(&[(65, b"Second"), (70, b"2")]));
+        let ev = assess(png(&[
+            (b"tEXt", text("Raw profile type iptc", &first)),
+            (b"tEXt", text("Raw profile type iptc", &second)),
+        ]));
+        assert_eq!(ev.details["iim"]["originating_program"], "First");
+        assert_eq!(ev.details["iim"]["dataset_count"], 1);
+
+        // Text that is not a raw profile yields no IIM and no error.
+        let ev = assess(png(&[(
+            b"tEXt",
+            text("Raw profile type iptc", b"not a profile"),
+        )]));
+        assert!(ev.details["iim"].is_null());
     }
 }
