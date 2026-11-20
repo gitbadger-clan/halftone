@@ -64,7 +64,7 @@
             "layers": { "type": "array", "items": { "enum": ["manifest", "container", "mark", "blind"] }, "description": "layers that were asked for, in execution order" },
             "trust_list": { "enum": ["auto", "vendored", "none", "file"], "description": "where the internal C2PA trust list was to come from; which list that was is in run.trust" },
             "fetch_remote_manifests": { "type": "boolean", "description": "a manifest a file only refers to could be fetched; a result may then depend on a server and the time of checking" },
-            "reveal": { "type": "boolean", "description": "identifier values and the free text of rights statements are included, not masked" },
+            "reveal": { "type": "boolean", "description": "identifier values and free text (rights statements, the Other Constraints text of a data-mining reservation) are included, not masked" },
             "fingerprints": {
               "type": "object",
               "description": "an extra writer-fingerprint database merged over the built-in one",

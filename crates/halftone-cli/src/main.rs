@@ -234,10 +234,10 @@ struct InspectArgs {
     /// Include the values of embedded identifiers (names, contact details, account and
     /// tracking records, serial numbers, display names, document identifiers,
     /// coordinates) and the
-    /// free text of rights statements (notices, credits, owners, terms, links) in the
-    /// output. Without it every output, JSON included, carries their field names,
-    /// kinds and lengths only, so a report can be shared without repeating what the
-    /// file discloses.
+    /// free text of rights statements (notices, credits, owners, terms, links) and of
+    /// a data-mining reservation (its Other Constraints text) in the output. Without
+    /// it every output, JSON included, carries their field names, kinds and lengths
+    /// only, so a report can be shared without repeating what the file discloses.
     #[arg(long)]
     reveal: bool,
 }
@@ -411,7 +411,7 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
         reg.push(Box::new(halftone_container::exif::ExifConsistency));
         reg.push(Box::new(halftone_container::marking::MarkingMetadata));
         reg.push(Box::new(
-            halftone_container::data_mining::DataMiningReservation,
+            halftone_container::data_mining::DataMiningReservation { reveal: o.reveal },
         ));
         reg.push(Box::new(halftone_container::vendor_ai::VendorAiFlag));
         reg.push(Box::new(halftone_container::rights::RightsStatements {

@@ -730,7 +730,7 @@ mod tests {
                 .assess(&a)
                 .unwrap(),
             crate::vendor_ai::VendorAiFlag.assess(&a).unwrap(),
-            crate::data_mining::DataMiningReservation
+            crate::data_mining::DataMiningReservation { reveal: true }
                 .assess(&a)
                 .unwrap(),
         ];

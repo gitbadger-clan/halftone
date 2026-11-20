@@ -34,6 +34,12 @@
 //! `plus:OtherConstraints` is part of the answer for the term
 //! `DMI-PROHIBITED-SEECONSTRAINT`, which defers to it; its text is reported in
 //! `details` and quoted in the rationale for that term, and never affects the status.
+//!
+//! That text is free text, and free text can name a person or give a contact. It is
+//! masked unless the source is built with `reveal` (`ht inspect --reveal`): `details`
+//! then keeps the field name and the text's length, and the rationale says that the
+//! text is there. The Data Mining term itself is a fixed vocabulary value and is
+//! never masked.
 
 use halftone_core::{Asset, Evidence, EvidenceSource, Layer, Modality, SourceId, Status};
 use serde::Serialize;
@@ -210,7 +216,28 @@ pub fn scan(mime: &str, b: &[u8]) -> Result<DataMiningScan, String> {
 /// known vocabulary, conflicting values, or XMP that could not be read completely.
 /// An unsigned statement: it records what the writer stated and verifies nothing.
 #[derive(Debug, Default)]
-pub struct DataMiningReservation;
+pub struct DataMiningReservation {
+    /// Include the `plus:OtherConstraints` text in the output. Off by default: the
+    /// evidence then carries the field name and the text's length only.
+    pub reveal: bool,
+}
+
+/// The field the Other Constraints text is read from, as `details` names it.
+const OTHER_CONSTRAINTS_FIELD: &str = "plus:OtherConstraints";
+
+/// The Other Constraints text as it appears in `details`: with the text, or masked.
+/// The same shape the rights and identifier sources use for a free-text value.
+fn shown(text: &str, reveal: bool) -> serde_json::Value {
+    if reveal {
+        serde_json::json!({ "field": OTHER_CONSTRAINTS_FIELD, "value": text })
+    } else {
+        serde_json::json!({
+            "field": OTHER_CONSTRAINTS_FIELD,
+            "masked": true,
+            "length": text.chars().count(),
+        })
+    }
+}
 
 impl EvidenceSource for DataMiningReservation {
     fn id(&self) -> SourceId {
@@ -316,7 +343,12 @@ impl EvidenceSource for DataMiningReservation {
             let mut refers = String::new();
             if has("DMI-PROHIBITED-SEECONSTRAINT") {
                 refers.push_str(&match &s.other_constraints {
-                    Some(text) => format!(" Its Other Constraints text reads: \"{text}\"."),
+                    Some(text) if self.reveal => {
+                        format!(" Its Other Constraints text reads: \"{text}\".")
+                    }
+                    Some(_) => " It defers to its Other Constraints text, which the file \
+                                carries and which is masked here (--reveal includes it)."
+                        .to_string(),
                     None => " It defers to an Other Constraints text, which the file does not \
                              carry."
                         .to_string(),
@@ -357,7 +389,7 @@ impl EvidenceSource for DataMiningReservation {
             "vocabulary_version": VOCABULARY_VERSION,
             "data_mining": codes,
             "values": s.values,
-            "other_constraints": s.other_constraints,
+            "other_constraints": s.other_constraints.as_deref().map(|t| shown(t, self.reveal)),
             "prefix_not_bound_to_plus": unbound,
             "xmp_packets": s.xmp_packets,
             "xmp_extended_incomplete": s.xmp_extended_incomplete,
@@ -441,7 +473,7 @@ mod tests {
 
     fn assess(bytes: Vec<u8>) -> Evidence {
         let a = Asset::from_bytes(bytes, None).unwrap();
-        DataMiningReservation.assess(&a).unwrap()
+        DataMiningReservation { reveal: true }.assess(&a).unwrap()
     }
 
     #[test]
@@ -586,7 +618,10 @@ mod tests {
         assert_eq!(ev.status, Status::Present);
         assert_eq!(
             ev.details["other_constraints"],
-            "Research use only, ask first"
+            serde_json::json!({
+                "field": "plus:OtherConstraints",
+                "value": "Research use only, ask first",
+            })
         );
         assert!(
             ev.rationale
@@ -609,10 +644,65 @@ mod tests {
         );
         let ev = assess(jpeg_with(&only_text));
         assert_eq!(ev.status, Status::Absent);
-        assert_eq!(ev.details["other_constraints"], "No AI");
+        assert_eq!(ev.details["other_constraints"]["value"], "No AI");
 
         let expr = assess(jpeg_with(&element("DMI-PROHIBITED-SEELINKEDRIGHTSEXPR")));
         assert!(expr.rationale.contains("which this source does not read"));
+    }
+
+    #[test]
+    fn the_other_constraints_text_is_masked_unless_revealed() {
+        const TEXT: &str = "Ask Ada Example, ada@example.org";
+        let packet = exiftool_packet(&format!(
+            "  <plus:DataMining>{VOCAB}DMI-PROHIBITED-SEECONSTRAINT</plus:DataMining>\n  \
+             <plus:OtherConstraints><rdf:Alt><rdf:li xml:lang='x-default'>{TEXT}</rdf:li>\
+             </rdf:Alt></plus:OtherConstraints>"
+        ));
+        let a = Asset::from_bytes(jpeg_with(&packet), None).unwrap();
+
+        // The default: the text is nowhere in the evidence, its field and length are.
+        let masked = DataMiningReservation::default().assess(&a).unwrap();
+        let json = serde_json::to_string(&masked).unwrap();
+        assert!(
+            !json.contains("Ada") && !json.contains("example.org"),
+            "{json}"
+        );
+        assert_eq!(
+            masked.details["other_constraints"],
+            serde_json::json!({
+                "field": "plus:OtherConstraints",
+                "masked": true,
+                "length": TEXT.chars().count(),
+            })
+        );
+        assert!(
+            masked.rationale.contains(
+                "It defers to its Other Constraints text, which the file carries and which is \
+                 masked here (--reveal includes it)."
+            ),
+            "{}",
+            masked.rationale
+        );
+
+        // Masking changes what is shown, never what is found: the term stays.
+        let open = DataMiningReservation { reveal: true }.assess(&a).unwrap();
+        assert_eq!(open.status, masked.status);
+        assert_eq!(open.details["data_mining"], masked.details["data_mining"]);
+        assert_eq!(open.details["values"], masked.details["values"]);
+        assert_eq!(open.details["other_constraints"]["value"], TEXT);
+        assert!(open.rationale.contains(TEXT));
+
+        // A term that does not defer to the text: the rationale never quoted it, and
+        // the details mask it all the same.
+        let plain = exiftool_packet(&format!(
+            "  <plus:DataMining>{VOCAB}DMI-PROHIBITED</plus:DataMining>\n  \
+             <plus:OtherConstraints><rdf:Alt><rdf:li xml:lang='x-default'>{TEXT}</rdf:li>\
+             </rdf:Alt></plus:OtherConstraints>"
+        ));
+        let a = Asset::from_bytes(jpeg_with(&plain), None).unwrap();
+        let ev = DataMiningReservation::default().assess(&a).unwrap();
+        assert!(!serde_json::to_string(&ev).unwrap().contains("Ada"));
+        assert_eq!(ev.details["other_constraints"]["masked"], true);
     }
 
     #[test]
@@ -661,9 +751,9 @@ mod tests {
     #[test]
     fn only_the_four_image_containers_are_supported() {
         let mp4 = Asset::from_bytes(b"\0\0\0\x18ftypmp42\0\0\0\0mp42isom".to_vec(), None).unwrap();
-        assert!(!DataMiningReservation.supports(&mp4));
+        assert!(!DataMiningReservation::default().supports(&mp4));
         let jpeg = Asset::from_bytes(jpeg(None), None).unwrap();
-        assert!(DataMiningReservation.supports(&jpeg));
+        assert!(DataMiningReservation::default().supports(&jpeg));
     }
 
     #[test]

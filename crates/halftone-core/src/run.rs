@@ -59,9 +59,10 @@ pub struct RunOptions {
     /// result may depend on a server and on the time of checking; the evidence that
     /// used a fetched manifest says so itself (`details.fetched_from`).
     pub fetch_remote_manifests: bool,
-    /// Whether identifier values and the free text of rights statements are
-    /// included. When false they are masked everywhere in the output; when true the
-    /// output repeats what the file discloses.
+    /// Whether identifier values and free text (of rights statements, and the Other
+    /// Constraints text of a data-mining reservation) are included. When false they
+    /// are masked everywhere in the output; when true the output repeats what the
+    /// file discloses.
     pub reveal: bool,
     /// An extra writer-fingerprint database merged over the built-in one.
     #[serde(default, skip_serializing_if = "Option::is_none")]
