@@ -418,9 +418,9 @@ impl EvidenceSource for RightsStatements {
                 ),
             )
         } else if found.is_empty() {
-            let unread = e.xmp_incomplete();
+            let unread = e.unread(None);
             (
-                if unread {
+                if unread.is_some() {
                     Status::Inconclusive
                 } else {
                     Status::Absent
@@ -429,10 +429,9 @@ impl EvidenceSource for RightsStatements {
                     "None of the listed rights or credit fields is present{}. Absence is not a \
                      waiver: rights do not depend on a notice in the file, and re-saving or \
                      sending a file commonly strips these fields.",
-                    if unread {
-                        " in what could be read; some XMP could not be read"
-                    } else {
-                        ""
+                    match &unread {
+                        Some(what) => format!(" in what could be read; {what} could not be read"),
+                        None => String::new(),
                     }
                 ),
             )
@@ -737,5 +736,50 @@ mod tests {
         let kinds: Vec<Kind> = FIELDS.iter().map(|f| f.0).collect();
         assert_eq!(kinds.len(), 8);
         assert!(kinds.windows(2).all(|w| w[0] < w[1]));
+    }
+
+    #[test]
+    fn png_iptc_profile_and_compressed_text_are_read() {
+        use crate::pngtext::testutil::{iim, irb, png as png_of, raw_profile_text, ztxt};
+        let sets = iim(&[(116, b"(c) A. Person"), (110, b"Agency")]);
+        let block = raw_profile_text("IPTC profile", &irb(&sets));
+        let ev = assess(png_of(&[
+            (b"zTXt", ztxt("Raw profile type iptc", &block)),
+            (b"zTXt", ztxt("Copyright", b"(c) A. Person")),
+        ]));
+        assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+        assert!(has(&ev, "iim:CopyrightNotice", "(c) A. Person"));
+        assert!(has(&ev, "iim:Credit", "Agency"));
+        assert!(has(&ev, "png:Copyright", "(c) A. Person"));
+    }
+
+    #[test]
+    fn a_png_text_chunk_that_cannot_be_read_makes_nothing_found_inconclusive() {
+        use crate::pngtext::testutil::{png as png_of, ztxt, ztxt_damaged};
+        let ev = assess(png_of(&[(
+            b"zTXt",
+            ztxt_damaged(
+                "Raw profile type iptc",
+                b"\nIPTC profile\n      20\n1c0274000a",
+            ),
+        )]));
+        assert_eq!(ev.status, Status::Inconclusive, "{}", ev.rationale);
+        assert!(
+            ev.rationale.contains(
+                "None of the listed rights or credit fields is present in what could be read; \
+                 a compressed text chunk could not be read."
+            ),
+            "{}",
+            ev.rationale
+        );
+        // Something found is reported as found, whatever else could not be read.
+        let ev = assess(png_of(&[
+            (b"zTXt", ztxt("Copyright", b"(c) Someone")),
+            (
+                b"zTXt",
+                ztxt_damaged("Author", b"Someone Else, at some length"),
+            ),
+        ]));
+        assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
     }
 }

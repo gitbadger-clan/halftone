@@ -215,9 +215,10 @@ impl EvidenceSource for VendorAiFlag {
             format!("{}:{} = {}{ns}", f.prefix, f.field, f.value)
         };
         let (status, rationale) = if flags.is_empty() {
-            let unread = e.xmp_incomplete();
+            // A vendor's credit phrase can sit in IIM, which a PNG keeps in a text chunk.
+            let unread = e.unread(None);
             (
-                if unread {
+                if unread.is_some() {
                     Status::Inconclusive
                 } else {
                     Status::Absent
@@ -227,12 +228,10 @@ impl EvidenceSource for VendorAiFlag {
                      build knows are recognised, so another vendor's field, or the same \
                      statement in the IPTC vocabulary (marking_metadata) or in a signed \
                      manifest, is not reported here. Absence says nothing about origin.",
-                    if unread {
-                        "some XMP could not be read"
-                    } else if e.xmp.is_empty() {
-                        "no XMP"
-                    } else {
-                        "XMP present but without such a field"
+                    match &unread {
+                        Some(what) => format!("{what} could not be read"),
+                        None if e.xmp.is_empty() => "no XMP".to_string(),
+                        None => "XMP present but without such a field".to_string(),
                     },
                     known.join(", ")
                 ),
@@ -498,5 +497,33 @@ mod tests {
              <b:ContainsAiGeneratedContent>No</b:ContainsAiGeneratedContent>",
         );
         assert_eq!(assess(Some(&x)).status, Status::Inconclusive);
+    }
+
+    #[test]
+    fn the_iim_credit_of_a_png_counts_and_an_unread_chunk_is_said() {
+        use crate::pngtext::testutil::{iim, irb, png, raw_profile_text, ztxt, ztxt_damaged};
+        let block = raw_profile_text("IPTC profile", &irb(&iim(&[(110, b"Made with Google AI")])));
+        let a = Asset::from_bytes(
+            png(&[(b"zTXt", ztxt("Raw profile type iptc", &block))]),
+            None,
+        )
+        .unwrap();
+        let ev = VendorAiFlag.assess(&a).unwrap();
+        assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+        assert_eq!(ev.details["flags"][0]["prefix"], "iim");
+
+        let a = Asset::from_bytes(
+            png(&[(b"zTXt", ztxt_damaged("Raw profile type iptc", &block))]),
+            None,
+        )
+        .unwrap();
+        let ev = VendorAiFlag.assess(&a).unwrap();
+        assert_eq!(ev.status, Status::Inconclusive, "{}", ev.rationale);
+        assert!(
+            ev.rationale
+                .contains("a compressed text chunk could not be read"),
+            "{}",
+            ev.rationale
+        );
     }
 }

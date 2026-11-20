@@ -307,12 +307,7 @@ impl EvidenceSource for EmbeddedIdentifiers {
             profile of a HEIF file and any profile's contents beyond its description, anything \
             hidden in the pixels, and fields outside this source's list.";
         let (status, rationale) = if found.is_empty() {
-            let unread_what = match (e.xmp_incomplete(), e.icc.unreadable()) {
-                (true, true) => Some("some XMP and the colour profile"),
-                (true, false) => Some("some XMP"),
-                (false, true) => Some("the colour profile"),
-                (false, false) => None,
-            };
+            let unread_what = e.unread(e.icc.unreadable().then_some("the colour profile"));
             let unread = unread_what.is_some();
             (
                 if unread {
@@ -776,5 +771,31 @@ mod tests {
             join_and(&["a".into(), "b".into(), "c".into()]),
             "a, b and c"
         );
+    }
+
+    #[test]
+    fn png_iptc_profile_is_read_and_an_unread_chunk_is_said() {
+        use crate::pngtext::testutil::ztxt_damaged;
+        use crate::pngtext::testutil::{iim, irb, png as png_of, raw_profile_text, ztxt};
+        let block = raw_profile_text("IPTC profile", &irb(&iim(&[(80, b"A. Person")])));
+        let ev = assess(png_of(&[(b"zTXt", ztxt("Raw profile type iptc", &block))]));
+        assert_eq!(ev.status, Status::Present, "{}", ev.rationale);
+        assert_eq!(
+            fields(&ev),
+            [("iim:By-line".to_string(), "A. Person".to_string())]
+        );
+
+        let ev = assess(png_of(&[(
+            b"zTXt",
+            ztxt_damaged("Author", b"Someone Else, at some length"),
+        )]));
+        assert_eq!(ev.status, Status::Inconclusive, "{}", ev.rationale);
+        assert!(
+            ev.rationale
+                .contains("a compressed text chunk could not be read"),
+            "{}",
+            ev.rationale
+        );
+        assert_eq!(ev.details["identifiers"], serde_json::json!([]));
     }
 }

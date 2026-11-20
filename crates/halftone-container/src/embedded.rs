@@ -3,15 +3,18 @@
 //!
 //! - XMP, from the same packets `marking_metadata` reads ([`crate::marking::packets`]);
 //! - EXIF, through `kamadak-exif` (JPEG, PNG `eXIf`, WebP, HEIF);
-//! - IPTC IIM record 2, from the Photoshop image-resource block of a JPEG;
-//! - PNG text chunks (`tEXt`, uncompressed `iTXt`);
+//! - IPTC IIM record 2, from the Photoshop image-resource block of a JPEG or from a
+//!   raw IPTC profile in a PNG text chunk ([`crate::pngtext`]);
+//! - PNG text chunks (`tEXt`, `zTXt`, `iTXt`), compressed or not;
 //! - the embedded ICC colour profile's header and description ([`crate::icc`]; JPEG,
 //!   PNG, WebP).
 //!
 //! Reading only: nothing here judges a value. Every value is returned as written,
 //! trimmed and bounded. Not read, and the sources say so: EXIF MakerNotes, values
-//! inside a C2PA manifest, compressed PNG text (`zTXt`), and XMP or IIM in
-//! containers that keep them somewhere this module does not look.
+//! inside a C2PA manifest, and XMP or IIM in containers that keep them somewhere this
+//! module does not look. A compressed PNG text chunk that cannot be inflated is
+//! named in [`Embedded::png_text_unread`], so "not found" is not taken for "not
+//! there".
 
 use std::io::Cursor;
 
@@ -52,8 +55,11 @@ pub struct Embedded {
     exif: Option<exif::Exif>,
     /// IIM record-2 datasets: (dataset number, text), in file order.
     pub iim: Vec<(u8, String)>,
-    /// PNG text chunks: (keyword, text), in file order.
+    /// PNG text chunks: (keyword, text), in file order. Without the XMP packet and
+    /// the raw IPTC profile, which are read as what they hold.
     pub png_text: Vec<(String, String)>,
+    /// Keywords of compressed PNG text chunks that could not be inflated.
+    pub png_text_unread: Vec<String>,
     /// The embedded ICC colour profile: read, absent, or there and unreadable.
     pub icc: crate::icc::Found,
 }
@@ -182,7 +188,14 @@ impl Embedded {
                     }
                 }
             }
-            "image/png" => e.png_text = png_text(&a.bytes),
+            "image/png" => {
+                let text = png_text(&a.bytes);
+                e.png_text = text.text;
+                e.png_text_unread = text.unread;
+                if let Some(sets) = text.iim {
+                    e.iim = sets;
+                }
+            }
             _ => {}
         }
         e.icc = crate::icc::read(a);
@@ -193,6 +206,25 @@ impl Embedded {
     /// "not there".
     pub fn xmp_incomplete(&self) -> bool {
         self.xmp_extended_incomplete || !self.xmp_items_unreadable.is_empty()
+    }
+
+    /// What was there and could not be read, as a phrase for a rationale ("some XMP
+    /// and a compressed text chunk"), with `also` for what only the calling source
+    /// reads. `None` when everything was read: only then is "not found" a finding.
+    pub fn unread(&self, also: Option<&str>) -> Option<String> {
+        let mut parts = Vec::new();
+        if self.xmp_incomplete() {
+            parts.push("some XMP");
+        }
+        if !self.png_text_unread.is_empty() {
+            parts.push("a compressed text chunk");
+        }
+        parts.extend(also);
+        match parts.as_slice() {
+            [] => None,
+            [one] => Some((*one).to_string()),
+            [first @ .., last] => Some(format!("{} and {last}", first.join(", "))),
+        }
     }
 
     /// Every occurrence of the XMP property `name` whose prefix is bound to `ns`, or
@@ -451,41 +483,49 @@ fn iim_datasets(b: &[u8]) -> Vec<(u8, String)> {
     out
 }
 
-/// `tEXt` and uncompressed `iTXt` chunks as (keyword, text). Other chunks, compressed
-/// text and anything malformed are skipped.
-fn png_text(b: &[u8]) -> Vec<(String, String)> {
-    let mut out = Vec::new();
-    let mut i = 8;
-    while i + 12 <= b.len() {
-        let len = u32::from_be_bytes([b[i], b[i + 1], b[i + 2], b[i + 3]]) as usize;
-        let ty = &b[i + 4..i + 8];
-        let start = i + 8;
-        let Some(end) = start.checked_add(len).filter(|&e| e + 4 <= b.len()) else {
-            break;
+/// What a PNG's text chunks hold for this module.
+#[derive(Default)]
+struct PngText {
+    /// (keyword, text) of ordinary text chunks, in file order.
+    text: Vec<(String, String)>,
+    /// IIM datasets from the first raw IPTC profile that holds any.
+    iim: Option<Vec<(u8, String)>>,
+    /// Keywords of chunks that could not be inflated.
+    unread: Vec<String>,
+}
+
+/// Read every text chunk ([`crate::pngtext`]). The XMP packet is left to
+/// [`crate::marking::packets`]; a raw IPTC profile becomes IIM datasets; anything
+/// malformed is skipped.
+fn png_text(b: &[u8]) -> PngText {
+    use crate::pngtext;
+    let mut out = PngText::default();
+    for chunk in pngtext::chunks(b) {
+        if chunk.keyword == pngtext::XMP_KEYWORD {
+            continue;
+        }
+        let Ok(bytes) = &chunk.text else {
+            out.unread.push(chunk.keyword);
+            continue;
         };
-        let data = &b[start..end];
-        if let Some(nul) = data.iter().position(|&c| c == 0) {
-            let keyword = String::from_utf8_lossy(&data[..nul]).into_owned();
-            let rest = &data[nul + 1..];
-            if ty == b"tEXt" {
-                out.push((keyword, iim_text(rest)));
-            } else if ty == b"iTXt" && rest.first() == Some(&0) && rest.len() >= 2 {
-                // compression flag 0, method, language tag NUL, translated keyword NUL.
-                let after = &rest[2..];
-                let mut parts = after.splitn(3, |&c| c == 0);
-                if let (Some(_lang), Some(_tk), Some(text)) =
-                    (parts.next(), parts.next(), parts.next())
-                {
-                    if keyword != "XML:com.adobe.xmp" {
-                        out.push((keyword, tidy(&String::from_utf8_lossy(text))));
-                    }
+        if pngtext::IPTC_PROFILE_KEYWORDS.contains(&chunk.keyword.as_str()) {
+            let sets = pngtext::raw_profile(bytes).and_then(|profile| {
+                if profile.starts_with(b"8BIM") {
+                    irb_iim(&profile)
+                } else if profile.first() == Some(&0x1C) {
+                    Some(iim_datasets(&profile))
+                } else {
+                    None
                 }
+            });
+            // The first profile that holds IIM is the one read (ExifTool's `IPTC`
+            // group; it reports a second as `IPTC2`).
+            if out.iim.is_none() {
+                out.iim = sets;
             }
+            continue;
         }
-        if ty == b"IEND" {
-            break;
-        }
-        i = end + 4;
+        out.text.push((chunk.keyword, iim_text(bytes)));
     }
     out
 }
@@ -838,5 +878,115 @@ mod tests {
             let _ = png_text(&p[..n]);
         }
         assert!(irb_iim(b"8BIM\x04\x04\xFF").is_none());
+    }
+}
+
+#[cfg(test)]
+mod png_profile_tests {
+    use super::*;
+    use crate::pngtext::testutil::{iim, irb, png, raw_profile_text, text, ztxt, ztxt_damaged};
+
+    fn read(bytes: Vec<u8>) -> Embedded {
+        Embedded::read(&Asset::from_bytes(bytes, None).unwrap()).unwrap()
+    }
+
+    fn profile(bytes: &[u8]) -> Vec<u8> {
+        raw_profile_text("IPTC profile", bytes)
+    }
+
+    #[test]
+    fn iim_is_read_from_a_png_raw_profile() {
+        let sets = iim(&[
+            (116, b"(c) A. Person"),
+            (110, b"Agency"),
+            (80, b"A. Person"),
+        ]);
+        // ExifTool's own layout: `zTXt`, a Photoshop image-resource block inside.
+        let e = read(png(&[(
+            b"zTXt",
+            ztxt("Raw profile type iptc", &profile(&irb(&sets))),
+        )]));
+        assert_eq!(e.iim_values(116), ["(c) A. Person"]);
+        assert_eq!(e.iim_values(110), ["Agency"]);
+        assert_eq!(e.iim_values(80), ["A. Person"]);
+        assert!(e.png_text_unread.is_empty());
+        // The profile is not also listed as a text value under its keyword.
+        assert!(e.png_values("Raw profile type iptc").is_empty());
+
+        // Uncompressed, bare IIM, and under the other keyword ExifTool reads.
+        for (keyword, body) in [
+            ("Raw profile type iptc", sets.clone()),
+            ("Raw profile type 8bim", irb(&sets)),
+        ] {
+            let e = read(png(&[(b"tEXt", text(keyword, &profile(&body)))]));
+            assert_eq!(e.iim_values(110), ["Agency"], "{keyword}");
+        }
+    }
+
+    #[test]
+    fn png_profiles_are_read_as_exiftool_reads_them() {
+        // Measured against ExifTool 13.64 (DIFFERENTIAL.md D-021).
+        let one = iim(&[(110, b"First Agency")]);
+        let two = iim(&[(110, b"Second Agency")]);
+        // Two profiles: the first is the file's IPTC.
+        let e = read(png(&[
+            (b"zTXt", ztxt("Raw profile type iptc", &profile(&irb(&one)))),
+            (b"zTXt", ztxt("Raw profile type iptc", &profile(&irb(&two)))),
+        ]));
+        assert_eq!(e.iim_values(110), ["First Agency"]);
+
+        // A block that starts with the JPEG segment's `Photoshop 3.0` header is not read.
+        let mut ps3 = b"Photoshop 3.0\0".to_vec();
+        ps3.extend(irb(&one));
+        let e = read(png(&[(
+            b"zTXt",
+            ztxt("Raw profile type iptc", &profile(&ps3)),
+        )]));
+        assert!(e.iim_values(110).is_empty());
+
+        // A length line that does not match the data is not a reason to read nothing.
+        let mut wrong = String::from_utf8(profile(&irb(&one))).unwrap();
+        wrong = wrong.replacen(&format!("{:8}", irb(&one).len()), "       7", 1);
+        let e = read(png(&[(
+            b"tEXt",
+            text("Raw profile type iptc", wrong.as_bytes()),
+        )]));
+        assert_eq!(e.iim_values(110), ["First Agency"]);
+
+        // A character that is not a hex digit: nothing is read.
+        let junk = String::from_utf8(profile(&irb(&one)))
+            .unwrap()
+            .replacen("38", "3g", 1);
+        let e = read(png(&[(
+            b"tEXt",
+            text("Raw profile type iptc", junk.as_bytes()),
+        )]));
+        assert!(e.iim_values(110).is_empty());
+    }
+
+    #[test]
+    fn compressed_text_values_are_read_and_unread_chunks_are_kept_apart() {
+        let e = read(png(&[
+            (b"zTXt", ztxt("Copyright", b"(c) Someone")),
+            (
+                b"zTXt",
+                ztxt_damaged("Author", b"Someone Else, at some length"),
+            ),
+        ]));
+        assert_eq!(e.png_values("Copyright"), ["(c) Someone"]);
+        assert!(e.png_values("Author").is_empty());
+        assert_eq!(e.png_text_unread, ["Author"]);
+        assert_eq!(e.unread(None).as_deref(), Some("a compressed text chunk"));
+        assert_eq!(
+            e.unread(Some("the colour profile")).as_deref(),
+            Some("a compressed text chunk and the colour profile")
+        );
+
+        let whole = read(png(&[(b"zTXt", ztxt("Copyright", b"(c) Someone"))]));
+        assert_eq!(whole.unread(None), None);
+        assert_eq!(
+            whole.unread(Some("the colour profile")).as_deref(),
+            Some("the colour profile")
+        );
     }
 }
