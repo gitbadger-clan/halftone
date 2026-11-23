@@ -6,6 +6,11 @@
 #
 #   fish scripts/pub/messaging-survival.fish          # print the frame
 #   fish scripts/pub/messaging-survival.fish --png    # render scripts/pub/out/messaging-survival.png
+#   fish scripts/pub/messaging-survival.fish --identifiers [--png]
+#       the same table with one more column: the inputs' embedded identifiers
+#       (account, tracking, person, device, document, location fields), kept or not.
+#       Renders scripts/pub/out/label-vs-identifiers.png. Presence only: no field
+#       name and no value is printed.
 #
 # Every count is computed at run time from one `ht inspect --batch --json` over the
 # delivered files and their inputs; nothing is typed in. A delivered file whose
@@ -28,7 +33,18 @@ set -q HT; or set -g HT ./target/release/ht
 # here, before the render mode, so --png stops too and does not draw the error.
 uv run scripts/ht-check.py -q --ht $HT; or exit 2
 
+for a in $argv
+    contains -- $a --png --identifiers; or begin
+        echo "unknown option $a (use --png, --identifiers)" >&2
+        exit 2
+    end
+end
 set -l out scripts/pub/out/messaging-survival.png
+set -l ids
+if contains -- --identifiers $argv
+    set ids --identifiers
+    set out scripts/pub/out/label-vs-identifiers.png
+end
 
 # --- render mode: re-run this script under freeze and stop ------------------
 if contains -- --png $argv
@@ -37,13 +53,13 @@ if contains -- --png $argv
         exit 2
     end
     mkdir -p (dirname $out)
-    freeze --execute "fish $self" \
+    freeze --execute "fish $self $ids" \
         --execute.timeout 2m \
         --output $out \
         --background '#1c1e26' \
         --font.size 15 \
         --line-height 1.35 \
-        --wrap 112 \
+        --wrap 132 \
         --padding 24,32 \
         --margin 0 \
         --border.radius 8 \
@@ -109,20 +125,22 @@ for f in $delivered
     contains -- "$p[3]__$p[4]" $input_keys; or die "no input listed for "(path basename $f)
 end
 
-# One pass over inputs and delivered files:  name <tab> sha256 <tab> manifest <tab> label
-#   manifest = the c2pa source found one (any state other than absent)
-#   label    = IPTC DigitalSourceType says AI (marking_metadata) or a vendor AI flag says yes
+# One pass over inputs and delivered files:  name <tab> sha256 <tab> manifest <tab> label <tab> identifiers
+#   manifest    = the c2pa source found one (any state other than absent)
+#   label       = IPTC DigitalSourceType says AI (marking_metadata) or a vendor AI flag says yes
+#   identifiers = embedded_identifiers lists at least one (values stay masked: ht's default)
 set -g facts ($HT inspect --batch --json --trust-list vendored $in_files $delivered 2>/dev/null | jq -r '
     .inspections[]
     | (.evidence | map({key: .source.name, value: .status}) | from_entries) as $s
     | [ (.asset.path | split("/") | last),
         .asset.sha256,
         (if ($s.c2pa // "absent") != "absent" and $s.c2pa != "not_applicable" then 1 else 0 end),
-        (if $s.marking_metadata == "present" or $s.vendor_ai_flag == "present" then 1 else 0 end) ]
+        (if $s.marking_metadata == "present" or $s.vendor_ai_flag == "present" then 1 else 0 end),
+        (if $s.embedded_identifiers == "present" then 1 else 0 end) ]
     | @tsv')
 test (count $facts) -eq (math (count $in_files) + (count $delivered)); or die "ht did not report on every file ("(count $facts)" of "(math (count $in_files) + (count $delivered))")"
 
-# fact <file name> <column>: 2 = sha256, 3 = manifest, 4 = label
+# fact <file name> <column>: 2 = sha256, 3 = manifest, 4 = label, 5 = identifiers
 function fact --argument-names name col
     for l in $facts
         set -l p (string split \t -- $l)
@@ -142,7 +160,9 @@ end
 test $signed -gt 0; or die "no input reads as carrying a manifest: is ht built with --features c2pa?"
 
 # "k of n", padded first and coloured after so columns stay aligned.
-function kept --argument-names k n width
+# With a fourth argument the count is printed uncoloured: for a column where
+# "kept" is neither good nor bad news.
+function kept --argument-names k n width plain
     if test $n -eq 0
         echo -n (set_color brblack)(string pad -r -w $width -- —)(set_color normal)
         return
@@ -150,6 +170,7 @@ function kept --argument-names k n width
     set -l colour yellow
     test $k -eq $n; and set colour brgreen
     test $k -eq 0; and set colour brred
+    test -n "$plain"; and set colour normal
     echo -n (set_color $colour)(string pad -r -w $width -- "$k of $n")(set_color normal)
 end
 
@@ -169,13 +190,18 @@ for i in $inputs
     set -l has
     test (fact $name 3) -eq 1; and set -a has "C2PA manifest"
     test (fact $name 4) -eq 1; and set -a has "AI label in XMP"
+    test -n "$ids"; and test (fact $name 5) -eq 1; and set -a has identifiers
     set -q has[1]; or set has nothing
     printf '%-26s %s\n' $p[3] (string join ' + ' -- $has)
 end
 
 echo
 echo "$H== what arrived$R"
-printf "$D%-10s %-25s %-7s %-12s %-15s %s$R\n" app "sent as" files "same bytes" "manifest kept" "AI label kept"
+if test -n "$ids"
+    printf "$D%-10s %-25s %-7s %-12s %-15s %-15s %s$R\n" app "sent as" files "same bytes" "manifest kept" "AI label kept" "identifiers kept"
+else
+    printf "$D%-10s %-25s %-7s %-12s %-15s %s$R\n" app "sent as" files "same bytes" "manifest kept" "AI label kept"
+end
 for r in $routes
     set -l p (string split '|' -- $r)
     set -l n 0
@@ -184,6 +210,8 @@ for r in $routes
     set -l man_out 0
     set -l lab_in 0
     set -l lab_out 0
+    set -l id_in 0
+    set -l id_out 0
     for f in $delivered
         set -l name (path basename $f)
         set -l q (string split __ -- $name)
@@ -203,12 +231,21 @@ for r in $routes
             set lab_in (math $lab_in + 1)
             test (fact $name 4) -eq 1; and set lab_out (math $lab_out + 1)
         end
+        if test (fact $src 5) -eq 1
+            set id_in (math $id_in + 1)
+            test (fact $name 5) -eq 1; and set id_out (math $id_out + 1)
+        end
     end
     test $n -gt 0; or continue
     printf '%-10s %-25s %-7s ' $p[2] $p[3] $n
     kept $same $n 13
     kept $man_out $man_in 16
-    kept $lab_out $lab_in 13
+    if test -n "$ids"
+        kept $lab_out $lab_in 16
+        kept $id_out $id_in 13 plain
+    else
+        kept $lab_out $lab_in 13
+    end
     echo
 end
 
@@ -216,4 +253,6 @@ echo
 echo "$D# same bytes: the delivered file's sha256 equals its input's$R"
 echo "$D# kept: still in the delivered file, out of the inputs on that route that had it; — = none had it$R"
 echo "$D# AI label: IPTC DigitalSourceType or a vendor AI flag in XMP (both unsigned)$R"
+test -n "$ids"; and echo "$D# identifiers: account, tracking, person, device, document or location fields in the metadata (unsigned)$R"
 echo "$D# each row: desktop app to my own chat, read back from a phone; \"from the phone\": Android to desktop$R"
+
