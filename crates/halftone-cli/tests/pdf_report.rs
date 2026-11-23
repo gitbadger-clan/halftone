@@ -69,7 +69,7 @@ fn without_the_feature_the_option_says_how_to_get_it_and_writes_nothing() {
     assert_eq!(run.status.code(), Some(1));
     let stderr = String::from_utf8_lossy(&run.stderr);
     assert!(stderr.contains("built without PDF reports"), "{stderr}");
-    assert!(stderr.contains("--features c2pa,pdf"), "{stderr}");
+    assert!(stderr.contains("--features pdf --locked"), "{stderr}");
     assert!(run.stdout.is_empty(), "nothing is inspected first");
     assert!(!dir.join("grey.halftone.pdf").exists());
     let _ = std::fs::remove_dir_all(&dir);

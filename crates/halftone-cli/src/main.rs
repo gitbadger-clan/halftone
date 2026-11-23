@@ -538,7 +538,7 @@ fn write_pdf(_: &halftone_core::Inspection, _: &Path, _: PdfTheme) -> Result<()>
 
 /// Said when `--pdf` is asked of a build that cannot write one.
 const NO_PDF: &str = "this ht was built without PDF reports; build it with the `pdf` feature \
-(cargo install --path crates/halftone-cli --features c2pa,pdf --locked), or use --report and \
+(cargo install --path crates/halftone-cli --features pdf --locked), or use --report and \
 print the page";
 
 /// What a person at the terminal should know before reading or passing on the

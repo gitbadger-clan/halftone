@@ -28,9 +28,9 @@ halftone-formats.workspace = true
 
 
 [features]
-# Real manifest validation via the `c2pa` crate. Off by default only because the crate
-# is heavy; enable with `--features halftone-cli/c2pa` (or make it default once it builds
-# in CI). Without it the source reports NotApplicable.
+# Real manifest validation via the `c2pa` crate. Off by default in this library
+# because the crate is heavy; the CLI (`halftone-cli`) turns it on by default. Without
+# it the source reports NotApplicable.
 c2pa = ["dep:c2pa", "dep:ureq", "dep:x509-parser", "c2pa/fetch_remote_manifests"]
 
 [lints]

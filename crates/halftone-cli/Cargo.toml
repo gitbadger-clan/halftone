@@ -1,9 +1,11 @@
 [package]
 name = "halftone-cli"
-description = "Halftone: layered provenance and forensics for image, video, audio and text"
+description = "ht: reads C2PA manifests and the file structure and metadata of images, layer by layer, with no merged score"
 version.workspace = true
 edition.workspace = true
-rust-version.workspace = true
+# c2pa declares Rust 1.96 (every release from 0.91.0 to 0.92.2), and c2pa is a default
+# feature here. (The `pdf` feature alone would need 1.92.)
+rust-version = "1.96"
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
@@ -39,10 +41,12 @@ image.workspace = true
 serde_json.workspace = true
 
 [features]
-# Enable real C2PA validation (heavy dependency).
+default = ["c2pa"]
+# C2PA manifest validation (the manifest layer). On by default: a build without it
+# (`--no-default-features`) reads no manifest and says so in every inspection. A
+# heavy dependency.
 c2pa = ["halftone-c2pa/c2pa"]
-# Enable `ht inspect --pdf`: reports typeset in-process (heavy dependency; needs Rust
-# 1.92 or newer).
+# `ht inspect --pdf`: reports typeset in-process. A heavy dependency.
 pdf = ["halftone-report/pdf"]
 
 [lints]
