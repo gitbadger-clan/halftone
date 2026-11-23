@@ -1,6 +1,8 @@
 [package]
 name = "halftone-mark"
-description = "Layer 2: keyed watermark detection and embedding (DWT-DCT, AudioSeal via ONNX)"
+description = "Layer 2: keyed watermark detection. A stub: no decoder is implemented, and the CLI does not use this crate"
+# Not released: there is nothing in it to use yet.
+publish = false
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

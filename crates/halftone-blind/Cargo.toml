@@ -1,6 +1,8 @@
 [package]
 name = "halftone-blind"
-description = "Layer 3: blind forensic classifiers via ONNX Runtime"
+description = "Layer 3: blind forensic classifiers. A stub: no model is run, and the CLI does not use this crate"
+# Not released: there is nothing in it to use yet.
+publish = false
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

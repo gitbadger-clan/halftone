@@ -17,8 +17,6 @@ homepage = "https://halftone.gitbadger.com"
 halftone-core = { path = "crates/halftone-core", version = "0.1.0" }
 halftone-c2pa = { path = "crates/halftone-c2pa", version = "0.1.0" }
 halftone-container = { path = "crates/halftone-container", version = "0.1.0" }
-halftone-mark = { path = "crates/halftone-mark", version = "0.1.0" }
-halftone-blind = { path = "crates/halftone-blind", version = "0.1.0" }
 halftone-bench = { path = "crates/halftone-bench", version = "0.1.0" }
 halftone-packs = { path = "crates/halftone-packs", version = "0.1.0" }
 halftone-report = { path = "crates/halftone-report", version = "0.1.0" }
@@ -64,6 +62,8 @@ x509-parser = "0.18"
 yaml-rust2 = "0.13"
 
 # Reserved: no crate uses these yet. Uncomment here together with the crate-level line.
+# halftone-mark = { path = "crates/halftone-mark", version = "0.1.0" }     # layer 2, a stub; still a workspace member
+# halftone-blind = { path = "crates/halftone-blind", version = "0.1.0" }   # layer 3, a stub; still a workspace member
 # ort = "2.0.0-rc.9"     # blind FeatureProbe encoder + head; mark AudioSeal/VideoSeal (check for a newer 2.0 first)
 # ndarray = "0.17"       # input tensors for ort
 # rustfft = "6"          # frequency-domain watermark checks in halftone-mark

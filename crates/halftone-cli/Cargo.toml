@@ -22,8 +22,6 @@ required-features = ["c2pa"]
 halftone-core.workspace = true
 halftone-c2pa.workspace = true
 halftone-container.workspace = true
-halftone-mark.workspace = true
-halftone-blind.workspace = true
 halftone-bench.workspace = true
 halftone-packs = { workspace = true, features = ["net"] }
 halftone-report.workspace = true

@@ -40,15 +40,6 @@ enum Cmd {
     Sources,
     /// Harvest JPEG writer fingerprints from files whose writer you know.
     Fingerprint(FingerprintArgs),
-    /// Embed a C2PA manifest and an open watermark (provenance side).
-    Sign {
-        /// Input file.
-        #[arg(add = complete::asset_files())]
-        input: PathBuf,
-        /// Signing key.
-        #[arg(long, value_hint = ValueHint::FilePath)]
-        key: PathBuf,
-    },
     /// Build a corpus manifest from a labelled folder tree
     /// (`real-<class>/` and `gen-<generator>/` subfolders).
     Corpus {
@@ -132,7 +123,8 @@ struct UpdateArgs {
     #[arg(long, value_enum)]
     only: Option<OnlyArg>,
     /// Fetch the C2PA trust lists straight from the C2PA conformance repository
-    /// (TLS only, no publisher signature, no index). Works before any key ceremony.
+    /// (TLS only, no publisher signature, no index). The way to update while this
+    /// version has no publisher key built in.
     #[arg(long)]
     upstream: bool,
     /// Install from a directory holding index.json, index.json.sig and the artifacts,
@@ -178,7 +170,8 @@ struct InspectArgs {
     /// spreadsheets).
     #[arg(long, conflicts_with_all = ["json", "batch", "table"])]
     tsv: bool,
-    /// Only run these layers.
+    /// Only run these layers. This version has sources in `manifest` and
+    /// `container`; `mark` and `blind` have none yet, and the output says so.
     #[arg(long, value_delimiter = ',')]
     only: Option<Vec<LayerArg>>,
     /// Write an HTML report next to each input.
@@ -427,16 +420,9 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
         // Pixel-domain lattice runs dark (no threshold) until a calibration exists.
         reg.push(Box::new(halftone_pixel::LatticeSource { threshold: None }));
     }
-    if want(Layer::Mark) {
-        reg.push(Box::new(halftone_mark::DwtDct {
-            payload: b"SDV2".to_vec(),
-        }));
-    }
-    if want(Layer::Blind) {
-        reg.push(Box::new(halftone_blind::FeatureProbe {
-            pack: "blind-image-dinov2-probe".into(),
-        }));
-    }
+    // The Mark and Blind layers have no source in this version: no watermark decoder
+    // and no classifier is registered. An inspection asked for them all the same
+    // has no row there, and every output says so (`halftone_core::empty_layers`).
     reg.set_run(run);
     Ok(reg)
 }
@@ -607,13 +593,6 @@ fn main() -> Result<()> {
             Ok(())
         }
         Cmd::Fingerprint(a) => fingerprint(a),
-        Cmd::Sign { input, key } => {
-            anyhow::bail!(
-                "sign: not yet implemented ({} with key {})",
-                input.display(),
-                key.display()
-            )
-        }
         Cmd::Corpus { dir, out } => make_corpus(&dir, &out),
         Cmd::Bench {
             corpus,
