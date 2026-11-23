@@ -5,41 +5,67 @@
   <img alt="Halftone" src="brand/halftone-lockup-light.svg" width="360">
 </picture>
 
-Layered provenance and forensics for image, video, audio and text. Local-first.
+Layered provenance and forensics for images. Local-first.
 
-Four independent evidence layers, four separate verdicts, no merged score:
+The evidence model has four independent layers. Each source in a layer gives its own
+verdict, and nothing merges them into a score. This version has sources in two of the
+four:
 
-| Layer | Crate | Question |
+| Layer | In this version | Question |
 |---|---|---|
 | Manifest | `halftone-c2pa` | Is there a valid signed C2PA manifest, and what source type does it declare? |
-| Container | `halftone-container` | Does the file structure match its claimed origin? |
-| Mark | `halftone-mark` | Does it carry a watermark we hold a key/decoder for? |
-| Blind | `halftone-blind` | Does a calibrated classifier flag it — at what FPR? |
+| Container | `halftone-container`, `halftone-pixel` | Does the file structure match its claimed origin, and what does its unsigned metadata say? |
+| Mark | no source yet | Does it carry a watermark we hold a key or decoder for? |
+| Blind | no source yet | Does a calibrated classifier flag it, and at what false-positive rate? |
+
+No watermark is looked for and no classifier is run. A run that asks for all four
+layers (the default) says so wherever its result is read: one sentence after the
+rows in the terminal, under the evidence table of a report, and under the counts of
+the batch matrix. In JSON, `run.options.layers` lists what was asked for and
+`evidence` has no row in those two layers.
+
+What is read from which file:
+
+| File | Manifest layer | Container layer |
+|---|---|---|
+| JPEG, PNG, WebP | yes | yes |
+| HEIF, HEIC, AVIF | yes | the metadata sources (see the table below) |
+| MP4 / MOV, WAV, FLAC, MP3 | yes | no |
+| WebM | no: the C2PA library does not read the format, and the `c2pa` row is `inconclusive` | no |
+| Text, PDF, anything else | not accepted | not accepted |
 
 ## Install
 
-    cargo install halftone-cli
+Halftone is not on crates.io yet. From a checkout:
 
-Installs the `ht` binary. Not related to the unrelated `halftone` crate
-on crates.io.
+    cargo install --path crates/halftone-cli --locked
+
+Installs the `ht` binary. It needs Rust 1.96 or newer, which is what the C2PA
+library asks for. C2PA validation is built in by default; `--features pdf` adds PDF
+reports, and `--no-default-features` gives a build with no manifest validation, whose
+`c2pa` row says so. The `halftone` crate on crates.io is an unrelated project.
 
 ```
 ht inspect photo.jpg
 ht inspect --json --only manifest,container *.jpg
 ht inspect --batch shots/*.jpg                  # file × source matrix
 ht inspect --batch --json shots/*.jpg > run.json # one document, per-file summary rows
-ht inspect --report clip.mp4
+ht inspect --report photo.jpg                   # HTML report next to the file
 ht inspect --pdf photo.jpg                      # PDF report (a build with the `pdf` feature)
 ht inspect --pdf --pdf-theme dark photo.jpg    # the same report for reading on a screen
 ht inspect --fingerprints my-writers.json --trust-anchors anchors.pem photo.jpg
 ht fingerprint --writer "Canon EOS R5 fw 1.8.1" --class camera --into my-writers.json shots/*.jpg
 ht fingerprint --writer "macOS 15 screenshot" --class screenshot --into my-writers.json ~/Desktop/Screenshot*.png
-ht sign photo.jpg --key mykey.pem
+ht sources                                      # every source this build runs, by layer
 ht bench corpus.json
-ht packs update
+ht packs update --upstream                      # the C2PA trust lists, from the C2PA conformance repository
 ```
 
-## Container layer (implemented)
+`ht packs update` without `--upstream` installs from a signed index. This version
+has no publisher key built in, so it stops before any request and says what works;
+`--publisher-key` is for an index of your own. No model pack is published.
+
+## Container layer
 
 | Source | Format | What it reports | `Present` means |
 |---|---|---|---|
@@ -48,10 +74,12 @@ ht packs update
 | `png_writer` | PNG | Chunk inventory → built-in writer rules (`png_rules.rs`, each marked verified/documented) + exact-hash DB, iCCP name (printed only when it is a standard colour-space or writer name), the EXIF `Software` tag of an `eXIf` chunk (quoted; one rule pairs it with a layout to name Android's screenshot tool), pHYs, `caBX`, generation-parameters text (text chunks compressed or not) | Embedded metadata names a generator or carries pipeline parameters. Writer matches are `Inconclusive` unless the writer is a generator. |
 | `webp_writer` | WebP | Chunk inventory, lossy/lossless, EXIF/XMP | XMP names a generator. |
 | `exif_consistency` | JPEG/PNG/WebP/HEIF | Self-identification, camera-metadata contradictions, EXIF-vs-frame dimensions | Metadata explicitly names a generator. Contradictions are `Inconclusive`. |
-| `marking_metadata` | JPEG/PNG/WebP | IPTC `DigitalSourceType` in XMP (JPEG APP1 + ExtendedXMP, PNG text chunk, WebP), value and syntactic form as written; IPTC IIM block from APP13 or a PNG's raw IPTC profile (originating program, version); whether a C2PA container is present | XMP self-declares a generative source type (`trainedAlgorithmicMedia` / `compositeWithTrainedAlgorithmicMedia`). Unsigned; verifies nothing. Non-generative terms are `Absent` with the value in `details`; unknown or conflicting terms are `Inconclusive`. |
+| `marking_metadata` | JPEG/PNG/WebP/HEIF | IPTC `DigitalSourceType` in XMP (JPEG APP1 + ExtendedXMP, PNG text chunk, WebP, HEIF item), value and syntactic form as written; IPTC IIM block from APP13 or a PNG's raw IPTC profile (originating program, version); whether a C2PA container is present | XMP self-declares a generative source type (`trainedAlgorithmicMedia` / `compositeWithTrainedAlgorithmicMedia`). Unsigned; verifies nothing. Non-generative terms are `Absent` with the value in `details`; unknown or conflicting terms are `Inconclusive`. |
 | `data_mining_reservation` | JPEG/PNG/WebP/HEIF | IPTC / PLUS `Data Mining` property in XMP (`plus:DataMining`), value as written and judged against the PLUS vocabulary; the `plus:OtherConstraints` text | XMP states a prohibition (`DMI-PROHIBITED…`): the file's metadata reserves rights against data mining or AI training. Unsigned; verifies nothing and decides no legal question. `Allowed` / `Unspecified` are `Absent` with the value in `details`; unknown or conflicting terms are `Inconclusive`. Absence is not permission. |
 | `vendor_ai_flag` | JPEG/PNG/WebP/HEIF | A vendor's own statement, outside the IPTC vocabulary, that the content is AI-generated or was edited with AI: the yes/no field `ContainsAiGeneratedContent` (namespace `https://canva.com/export`) and the credit lines `Made with Google AI` and `Edited with Google AI`, with prefix, namespace and value | The writing application says yes, and the rationale says which statement: generated, or edited with AI. Not the IPTC vocabulary, so `marking_metadata` does not report it. Unsigned. `No` is `Absent` with the value in `details`; any other value of the field is `Inconclusive`. Only statements measured on real files are looked for; any other credit line is just a credit line. |
 | `rights_statements` | JPEG/PNG/WebP/HEIF | Copyright notice (EXIF, IIM, `dc:rights`, PNG text), rights holder and licensor, usage terms and instructions, web statement, Creative Commons licence, credit line and source, PLUS releases, rights expressions: each value quoted with its field | At least one rights or credit statement is there. Quoted, never interpreted: nothing about who owns anything or whether a notice is valid. Copies of the notice or the credit line that disagree are `Inconclusive` (a copy cut at IIM's field limit is not a disagreement). Absence is not a waiver. |
+| `container_directory` | JPEG | The Motion Photo / Ultra HDR container directory: the items it declares (primary image, gain map, motion clip), checked against the bytes of the file | The directory is there and the file holds every declared item where the directory places it, and nothing after. A disagreement is `Inconclusive` and says what does not fit. Unsigned; agreement says nothing about edits inside an item. |
+| `mpf_index` | JPEG | The Multi-Picture Format index (APP2): the images it declares, checked against the bytes of the file | The index is there and the file holds what it declares. A disagreement is `Inconclusive`. Unsigned; agreement says nothing about edits inside an image. |
 | `embedded_identifiers` | JPEG/PNG/WebP/HEIF | The privacy listing: person names (`Artist`, By-line, `dc:creator`, `pdf:Author`), creator contact details, account and tracking records (`Attrib:Ads`, the `FBMD` marker), device serial numbers and owner name, the name of a display (the description of a display-class ICC profile that is not a standard colour space's, as macOS embeds in screenshots; JPEG/PNG/WebP), document identifiers (EXIF `ImageUniqueID`, the `xmpMM` IDs), GPS position | The file discloses at least one of these to anyone who receives it. Quoted as written; says nothing about accuracy. `Absent` is not "identifies nobody": MakerNotes, manifests, thumbnails, a colour profile's other tags and pixels are not read. |
 
 None of these carries a calibration yet; the `details` object exposes every raw
@@ -92,8 +120,9 @@ by name, type, size and SHA-256. Under it and before the evidence, a note for ea
 thing that differs from a default run and changes how the evidence reads: values
 shown in full, remote manifests fetched, a build from modified source, a layer that
 did not run, a trust list the operator changed, anything not established. A default
-run has no notes. Below the evidence, the whole record as a collapsed section with a
-one-line summary.
+run has no notes. Under the evidence table, one sentence names each layer that was
+asked for and has no source in the build, and what was therefore not looked for.
+Below the evidence, the whole record as a collapsed section with a one-line summary.
 
 The page is one self-contained file: its stylesheet, the mark and the verdict glyphs
 are inlined, it carries no script, and its Content-Security-Policy forbids loading
@@ -115,9 +144,9 @@ every section open and the file's name and the start of its hash at the foot of 
 page. `--pdf-theme dark` gives the same report in the brand's dark colours for reading
 on a screen; printed, it is a dark page, so file and print the light one.
 
-PDF support is a build feature, like `c2pa`: `cargo install --path crates/halftone-cli
---features c2pa,pdf --locked`. It brings in the Typst compiler (about 180 more
-packages, Rust 1.92 or newer). The PDFs are set in Libertinus Serif and DejaVu Sans
+PDF support is a build feature, off by default: `cargo install --path
+crates/halftone-cli --features pdf --locked`. It brings in the Typst compiler (about
+180 more packages). The PDFs are set in Libertinus Serif and DejaVu Sans
 Mono; the three font files and their licences are in `crates/halftone-report/fonts/`,
 and text in a script they do not cover (Chinese, Japanese, Korean, Arabic, among
 others) is typeset as missing glyphs. A build without the feature says so when `--pdf`
@@ -125,7 +154,8 @@ is asked.
 
 On the terminal, `ht inspect` says in one line on stderr when the build is from
 modified source and when `--reveal` is on. With `--json` it adds no line, because the
-document carries both facts.
+document carries both facts. After the rows it names the layers that were asked for
+and have no source, once per run.
 
 ## Batch output
 
@@ -216,7 +246,9 @@ needs, named on stderr, and shown as `-` in the table.
 
 ## Manifest layer
 
-Layer 1 (`c2pa`) is implemented behind the `c2pa` feature: `cargo build --features halftone-cli/c2pa`.
+Layer 1 (`c2pa`) is the `c2pa` feature of `halftone-cli`, on by default. A build with
+`--no-default-features` validates no manifest: its `c2pa` row is `not_applicable` and
+says that the build has no manifest validation.
 `Present` means the manifest validates and the signer chains to a configured trust
 anchor (`details.validation_state = Trusted`); a valid signature from an untrusted signer,
 or a broken hard binding, is `Inconclusive` with the reason in `details.validation_status`.
@@ -273,32 +305,42 @@ halftone/
 ├── Cargo.toml                  workspace
 ├── crates/
 │   ├── halftone-core/          Asset, Evidence, Status, EvidenceSource trait, Registry
-│   ├── halftone-c2pa/          layer 1
-│   ├── halftone-container/     layer 4: jpeg quant/huffman/double-compression, png, webp, exif
-│   ├── halftone-mark/          layer 2: detect + embed (DWT-DCT, AudioSeal via ort)
-│   ├── halftone-blind/         layer 3: ort-backed classifiers from signed packs
-│   ├── halftone-bench/         eval harness → calibration.json
-│   ├── halftone-packs/         signed pack download/verify, offline license
+│   ├── halftone-formats/       file-format reading shared by the layers (JPEG segments, container directory)
+│   ├── halftone-c2pa/          layer 1: manifest validation, lineage, trust lists
+│   ├── halftone-rubric/        the C2PA asset rubrics, evaluated natively
+│   ├── halftone-container/     layer 4: JPEG tables and double compression, PNG, WebP, EXIF, embedded metadata
 │   ├── halftone-pixel/         pixel-domain model-free statistics (dark until calibrated)
-│   ├── halftone-report/        per-file HTML/PDF report
-│   └── halftone-cli/           binary `ht`
-├── python/
-│   ├── export/                 PyTorch → ONNX export scripts only
-│   └── train/                  head training + calibration; never imported by Rust
-├── packs/                      pack manifests + calibration.json (weights are not committed)
-├── schemas/verdict.schema.json semver'd JSON schema for Inspection
-├── testdata/                   tiny synthetic assets for unit tests
-└── .github/workflows/          fmt, clippy, test, bench, pack signing
+│   ├── halftone-bench/         eval harness → calibration.json; the survival runner
+│   ├── halftone-packs/         trust-list and pack store: signed index, download, verify
+│   ├── halftone-report/        per-file HTML and PDF report
+│   ├── halftone-cli/           binary `ht`
+│   ├── halftone-mark/          layer 2, a stub: no decoder, not built into `ht`, not released
+│   └── halftone-blind/         layer 3, a stub: no model, not built into `ht`, not released
+├── schemas/                    JSON schemas for an inspection and a batch (semver'd)
+├── corpus/differential/        ground truth of the differential test (the files are not committed)
+├── scripts/                    Python and fish tooling: corpus, references, preflight
+├── docker/                     the reference-tool image and an offline build
+├── python/export/              notes for the ONNX export; no script yet
+├── packs/                      pack licence texts; no pack yet
+├── brand/                      the mark, the lockups, the verdict glyphs
+├── testdata/                   small assets for unit tests
+└── .github/workflows/          ci (fmt, clippy, tests on Linux, macOS, Windows), the differential
+                                test on the public strata, and a manually started run over every stratum
 ```
 
 ## Rules
 
-- Every source records name + version + calibration hash. Old verdicts stay readable.
+- Every source records its name and version, and its calibration once it has one.
+  Old verdicts stay readable.
+- No network unless asked for: `ht packs update`, and `ht inspect
+  --fetch-remote-manifests` for a manifest a file only refers to. No telemetry.
+- Not for education or hiring decisions. See `halftone-report::NOTICE`.
+
+For the layers that have no source yet, the rules they will be built to:
+
 - `Absent` from a blind source means "not flagged at FPR x", never "human".
 - Text: keyed tests first; blind text is feature-gated, reports `Inconclusive` below a
   minimum length, and never emits per-sentence output.
-- No network except `ht packs update`. No telemetry.
-- Not for education or hiring decisions. See `halftone-report::NOTICE`.
 
 ## License
 
@@ -307,14 +349,14 @@ The code in this repository is dual-licensed under either the
 at your option.
 
 Model packs, calibration sets and fingerprint DB updates are separate
-works. Eval packs are under the
-[PolyForm Noncommercial License 1.0.0](packs/LICENSE-EVAL.md); pro
-packs are under commercial terms. See [COMMERCIAL.md](COMMERCIAL.md)
-for exactly what is open and what is paid.
+works. None is published yet. Eval packs will be under the
+[PolyForm Noncommercial License 1.0.0](packs/LICENSE-EVAL.md) and pro
+packs under commercial terms. See [COMMERCIAL.md](COMMERCIAL.md)
+for what is open and what is planned as paid.
 
 ### Name
 
 Forks are welcome under the licenses above. Please don't call a modified
-version "Halftone": verdicts from this tool carry a stated false-positive
-rate, and a fork with different thresholds or models shouldn't be
+version "Halftone": a report names the tool and the version that made it,
+and a fork with different sources, thresholds or models shouldn't be
 mistaken for it. "Forked from Halftone" is fine.

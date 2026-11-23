@@ -1,6 +1,6 @@
 [package]
 name = "halftone-report"
-description = "Signed per-file HTML/PDF reports from an Inspection"
+description = "Per-file HTML and PDF reports from an Inspection"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

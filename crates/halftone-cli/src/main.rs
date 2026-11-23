@@ -38,7 +38,7 @@ enum Cmd {
     Survive(SurviveArgs),
     /// List registered evidence sources.
     Sources,
-    /// Harvest JPEG writer fingerprints from files whose writer you know.
+    /// Harvest writer fingerprints from JPEG or PNG files whose writer you know.
     Fingerprint(FingerprintArgs),
     /// Build a corpus manifest from a labelled folder tree
     /// (`real-<class>/` and `gen-<generator>/` subfolders).
@@ -66,7 +66,7 @@ enum Cmd {
         #[arg(long, add = complete::dirs())]
         calib_dir: Option<PathBuf>,
     },
-    /// Manage model packs.
+    /// Manage installed trust lists and packs.
     Packs {
         #[command(subcommand)]
         cmd: PacksCmd,
@@ -185,7 +185,7 @@ struct InspectArgs {
     /// The PDF's colours: light for filing and print, dark for reading on a screen.
     #[arg(long, value_enum, default_value_t = PdfTheme::Light, requires = "pdf")]
     pdf_theme: PdfTheme,
-    /// Extra JPEG writer-fingerprint DB (JSON) merged over the built-in one.
+    /// Extra writer-fingerprint DB (JSON) merged over the built-in one.
     #[arg(long, add = complete::json_files())]
     fingerprints: Option<PathBuf>,
     /// Extra C2PA trust anchors (PEM bundle). Repeatable. Added to the internal list.
@@ -269,7 +269,7 @@ struct SurviveArgs {
     /// Only run these layers. Default: manifest,container.
     #[arg(long, value_delimiter = ',')]
     only: Option<Vec<LayerArg>>,
-    /// Extra JPEG writer-fingerprint DB (JSON) merged over the built-in one.
+    /// Extra writer-fingerprint DB (JSON) merged over the built-in one.
     #[arg(long)]
     fingerprints: Option<PathBuf>,
     /// Extra C2PA trust anchors (PEM bundle). Repeatable.
