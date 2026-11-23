@@ -118,6 +118,9 @@ table.evidence tr.layer + tr > * { border-top: 0; }
 tr.not_applicable { color: var(--ink-soft); }
 tr.not_applicable .status { font-weight: 400; }
 
+/* Layers that were asked for and have no source: said in full ink, under the rows. */
+p.empty-layers { margin: 0.9rem 0 0; padding-top: 0.6rem; border-top: 1px solid var(--ink); }
+
 p.legend { margin: 0.9rem 0 0; color: var(--ink-soft); font-size: 0.86rem; }
 p.legend .glyph { width: 0.8em; height: 0.8em; margin-right: 0.3em; }
 p.legend b { font-weight: 600; }

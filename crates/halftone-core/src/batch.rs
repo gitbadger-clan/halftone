@@ -18,6 +18,7 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::evidence::{empty_layers, empty_layers_note};
 use crate::{Inspection, Layer, RunInfo, SCHEMA_VERSION, Status, ToolInfo};
 
 /// Source name of the manifest layer, as registered by the CLI.
@@ -336,8 +337,23 @@ fn str_list(d: &serde_json::Value, key: &str) -> Vec<String> {
 pub fn render_matrix(batch: &Batch, glyph: impl Fn(Status) -> &'static str) -> String {
     let cols = batch.columns();
     let mut out = String::new();
+    let has_row = |l: Layer| {
+        batch
+            .summary
+            .iter()
+            .any(|r| r.statuses.iter().any(|s| s.layer == l))
+    };
+    // What was asked for is known only when the batch states its run.
+    let empty = batch
+        .run
+        .as_ref()
+        .and_then(|run| empty_layers_note(&empty_layers(&run.options.layers, has_row)));
     if cols.is_empty() {
         out.push_str("(no evidence)\n");
+        if let Some(note) = &empty {
+            out.push_str(note);
+            out.push('\n');
+        }
         return out;
     }
     let legend: Vec<String> = cols
@@ -383,16 +399,29 @@ pub fn render_matrix(batch: &Batch, glyph: impl Fn(Status) -> &'static str) -> S
         }
     }
     // Per-layer counts: a fingerprint match in the container layer is a Present
-    // too, and lumping it with a valid manifest misleads.
+    // too, and lumping it with a valid manifest misleads. Only layers in which a
+    // source reported are counted: "mark present 0" where no watermark source exists
+    // would read as "no watermark found".
+    let counts: Vec<String> = [
+        (Layer::Manifest, "manifest present"),
+        (Layer::Mark, "mark present"),
+        (Layer::Blind, "blind present"),
+        (Layer::Container, "container"),
+    ]
+    .into_iter()
+    .filter(|(layer, _)| has_row(*layer))
+    .map(|(layer, label)| format!("{label} {}", batch.files_with_present_in(layer)))
+    .collect();
     out.push_str(&format!(
-        "{} file{}: manifest present {}, mark present {}, blind present {}, container {}\n",
+        "{} file{}: {}\n",
         batch.summary.len(),
         if batch.summary.len() == 1 { "" } else { "s" },
-        batch.files_with_present_in(Layer::Manifest),
-        batch.files_with_present_in(Layer::Mark),
-        batch.files_with_present_in(Layer::Blind),
-        batch.files_with_present_in(Layer::Container),
+        counts.join(", "),
     ));
+    if let Some(note) = &empty {
+        out.push_str(note);
+        out.push('\n');
+    }
     out
 }
 
@@ -656,7 +685,7 @@ mod tests {
                 ),
                 ev(
                     Layer::Blind,
-                    "feature_probe",
+                    "a_classifier",
                     Status::NotApplicable,
                     serde_json::Value::Null,
                 ),
@@ -888,7 +917,7 @@ mod tests {
         assert_eq!(b.schema_version, SCHEMA_VERSION);
         assert_eq!(
             b.columns(),
-            ["c2pa", "png_writer", "marking_metadata", "feature_probe"]
+            ["c2pa", "png_writer", "marking_metadata", "a_classifier"]
         );
         assert_eq!(b.files_with_present(), 1);
         assert_eq!(b.created_at.len(), 20);
@@ -924,9 +953,61 @@ mod tests {
             !lines[3].contains("c2pa container present"),
             "redundant when manifest column is set"
         );
+        // No row in the mark layer, so it is not counted; without a run record the
+        // batch cannot say whether it was asked for, and says nothing.
         assert_eq!(
             lines[4],
-            "1 file: manifest present 1, mark present 0, blind present 0, container 0"
+            "1 file: manifest present 1, blind present 0, container 0"
+        );
+        assert_eq!(lines.len(), 5);
+    }
+
+    #[test]
+    fn matrix_names_the_layers_that_were_asked_for_and_had_no_source() {
+        let glyph = |_: Status| "x";
+        let asked = |layers: &[Layer]| RunInfo {
+            options: crate::RunOptions {
+                layers: layers.to_vec(),
+                trust_list: "auto".into(),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let with = |run: RunInfo, evidence: Vec<Evidence>| {
+            let mut i = insp("/tmp/a.png", evidence);
+            i.run = Some(run);
+            Batch::new(tool(), vec![i])
+        };
+        let rows = || {
+            vec![
+                ev(Layer::Manifest, "c2pa", Status::Absent, json!({})),
+                ev(Layer::Container, "png_writer", Status::Present, json!({})),
+            ]
+        };
+        // Every layer asked for, sources in two of them.
+        let text = render_matrix(&with(asked(&Layer::ALL), rows()), glyph);
+        let lines: Vec<&str> = text.lines().collect();
+        assert_eq!(
+            lines[lines.len() - 2],
+            "1 file: manifest present 0, container 1"
+        );
+        assert_eq!(
+            lines[lines.len() - 1],
+            "No source in this build: Mark, Blind. No watermark was looked for and no \
+             classifier was run; a layer with no source says nothing about the file."
+        );
+        // Only layers that have sources were asked for: nothing to add.
+        let text = render_matrix(
+            &with(asked(&[Layer::Manifest, Layer::Container]), rows()),
+            glyph,
+        );
+        assert!(text.ends_with("1 file: manifest present 0, container 1\n"));
+        // Only an empty layer was asked for: no grid, and the reason.
+        let text = render_matrix(&with(asked(&[Layer::Mark]), vec![]), glyph);
+        assert_eq!(
+            text,
+            "(no evidence)\nNo source in this build: Mark. No watermark was looked for; a layer \
+             with no source says nothing about the file.\n"
         );
     }
 

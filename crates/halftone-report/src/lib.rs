@@ -247,12 +247,16 @@ pub fn report_html(r: &Report) -> String {
 <title>{}</title><style>{CSS}</style><style>{}</style></head><body>\
 <header><span class=\"mark\" aria-hidden=\"true\">{}</span><div><h1>Halftone report</h1>\
 <p>{}</p></div></header><main><h2>File</h2><table class=\"file\">{file}</table>{notes}\
-<h2>Evidence</h2>{}{}{}{}{}</main><footer><p>{}</p></footer></body></html>",
+<h2>Evidence</h2>{}{}{}{}{}{}</main><footer><p>{}</p></footer></body></html>",
         html_escape(&r.title),
         page_footer_css(&r.page_footer),
         MARK.trim(),
         html_escape(&r.checked),
         groups_html(&r.evidence),
+        r.empty_layers
+            .as_ref()
+            .map(|s| format!("<p class=\"empty-layers\">{}</p>", html_escape(s)))
+            .unwrap_or_default(),
         legend_html(),
         r.declared
             .as_ref()
@@ -492,9 +496,9 @@ mod tests {
                 ),
                 evidence(
                     Layer::Blind,
-                    "feature_probe",
+                    "a_classifier",
                     Status::NotApplicable,
-                    "no pack",
+                    "not an image it reads",
                 ),
             ],
             run: None,
@@ -551,6 +555,35 @@ mod tests {
         assert_eq!(h.matches("</svg></span>Not applicable</td>").count(), 2);
         assert!(!h.contains("NotApplicable"));
         assert!(h.contains("<td class=\"source\"><code>png_writer</code><small>0.1.0</small></td><td>a &lt;b&gt; &amp; c</td>"), "{h}");
+    }
+
+    #[test]
+    fn a_layer_with_no_source_is_said_under_the_evidence_and_never_guessed() {
+        let asked = |layers: &[Layer]| halftone_core::RunInfo {
+            options: halftone_core::RunOptions {
+                layers: layers.to_vec(),
+                trust_list: "auto".into(),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        // The inspection has rows in Manifest, Container and Blind, none in Mark.
+        let mut i = inspection("a.png");
+        i.run = Some(asked(&Layer::ALL));
+        let h = to_html(&i);
+        let sentence = "<p class=\"empty-layers\">No source in this build: Mark. No watermark \
+                        was looked for; a layer with no source says nothing about the file.</p>";
+        let at = h.find(sentence).unwrap_or_else(|| panic!("{h}"));
+        // After the rows, before the legend.
+        assert!(h.find("</table>").unwrap() < at && at < h.find("<p class=\"legend\">").unwrap());
+
+        // Mark was not asked for: that is a note at the top, not an empty layer.
+        i.run = Some(asked(&[Layer::Manifest, Layer::Container, Layer::Blind]));
+        assert!(!to_html(&i).contains("class=\"empty-layers\""));
+        // No record of what was asked for: the report cannot tell, and does not say.
+        i.run = None;
+        assert!(!to_html(&i).contains("class=\"empty-layers\""));
+        assert_eq!(Report::new(&i).empty_layers, None);
     }
 
     #[test]

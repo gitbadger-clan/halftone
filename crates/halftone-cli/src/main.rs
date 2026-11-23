@@ -842,6 +842,14 @@ fn inspect(a: InspectArgs) -> Result<()> {
             a.inputs.len()
         );
     }
+    // The plain listing shows each file's rows. Said once, after them: which layers
+    // were asked for and had no source, so that no row is not read as nothing found.
+    // The batch matrix says the same under its counts; JSON carries `run.options.layers`.
+    if !(a.json || a.batch || a.table || a.tsv)
+        && let Some(note) = no_source_note(&reg)
+    {
+        println!("{note}");
+    }
     if a.table || a.tsv {
         let batch = halftone_core::Batch::new(tool(), collected);
         let format = if a.tsv {
@@ -866,6 +874,15 @@ fn inspect(a: InspectArgs) -> Result<()> {
         std::process::exit(2);
     }
     Ok(())
+}
+
+/// The sentence naming the layers this registry was asked for and has no source in.
+fn no_source_note(reg: &Registry) -> Option<String> {
+    let run = reg.run()?;
+    let ids = reg.ids();
+    halftone_core::empty_layers_note(&halftone_core::empty_layers(&run.options.layers, |l| {
+        ids.iter().any(|(layer, _)| *layer == l)
+    }))
 }
 
 fn survive(a: SurviveArgs) -> Result<()> {

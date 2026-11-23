@@ -373,9 +373,9 @@ mod tests {
                 ),
                 evidence(
                     Layer::Mark,
-                    "dwtdct",
+                    "a_decoder",
                     Status::NotApplicable,
-                    "not implemented",
+                    "not an image it reads",
                 ),
             ],
             run: Some(RunInfo {
@@ -478,6 +478,15 @@ mod tests {
     #[test]
     fn a_long_report_runs_over_pages_and_every_branch_of_the_template_typesets() {
         let mut insp = inspection("/cases/long.jpg");
+        // As it stands the inspection asked for a layer that has no row: the sentence
+        // under the evidence typesets.
+        assert!(
+            Report::new(&insp)
+                .empty_layers
+                .unwrap()
+                .starts_with("No source in this build: Blind.")
+        );
+        to_pdf(&insp, Theme::Light).unwrap();
         let words = "A rationale of ordinary length, as most sources write them. ".repeat(4);
         for i in 0..60 {
             insp.evidence.push(evidence(

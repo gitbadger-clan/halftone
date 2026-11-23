@@ -210,6 +210,10 @@ pub struct Report {
     pub notes_lead: String,
     /// The evidence, a group per layer.
     pub evidence: Vec<LayerGroup>,
+    /// The layers that were asked for and had no source, as one sentence. `None`
+    /// when every layer asked for reported, or when the inspection does not record
+    /// what was asked for.
+    pub empty_layers: Option<String>,
     /// What the statuses mean.
     pub legend: Vec<LegendItem>,
     /// The legend's closing sentences.
@@ -242,6 +246,7 @@ impl Report {
             notes: crate::conditions::notes(insp),
             notes_lead: crate::NOTES_LEAD.to_string(),
             evidence: crate::evidence_groups(&insp.evidence),
+            empty_layers: halftone_core::empty_layers_note(&insp.empty_layers()),
             legend: crate::legend(),
             legend_close: crate::LEGEND_CLOSE.to_string(),
             declared: crate::declared::declared(&insp.evidence),

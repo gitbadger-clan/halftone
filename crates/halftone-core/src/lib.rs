@@ -17,7 +17,7 @@ pub use asset::{Asset, AssetInfo, Modality, sha256_hex};
 pub use batch::{Batch, FileRow, TableFormat, render_matrix, render_table, shared_run, summarize};
 pub use evidence::{
     BuildInfo, CalibrationRef, Evidence, Inspection, Layer, SCHEMA_VERSION, SourceId, Statistic,
-    Status, ToolInfo,
+    Status, ToolInfo, empty_layers, empty_layers_note,
 };
 pub use registry::{EvidenceSource, Registry, now_rfc3339, rfc3339_from_unix};
 pub use run::{FileRef, PackRef, RunInfo, RunOptions, TrustInput};

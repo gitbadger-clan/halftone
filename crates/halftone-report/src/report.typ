@@ -164,6 +164,11 @@
     .flatten(),
 )
 
+// Layers that were asked for and have no source: said under the rows, in full ink.
+#if r.empty_layers != none {
+  block(above: 6pt, stroke: (top: 0.75pt + ink), inset: (top: 6pt), width: 100%, r.empty_layers)
+}
+
 #block(above: 10pt, text(size: 8.5pt, fill: soft, {
   for item in r.legend {
     glyph(item.status, size: 0.72em)

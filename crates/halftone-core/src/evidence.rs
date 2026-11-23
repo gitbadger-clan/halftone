@@ -36,6 +36,60 @@ pub enum Layer {
     Blind,
 }
 
+impl Layer {
+    /// All four, in execution order.
+    pub const ALL: [Layer; 4] = [Layer::Manifest, Layer::Container, Layer::Mark, Layer::Blind];
+
+    /// What was not done for a file when no source reported in this layer, as a
+    /// clause for a sentence.
+    pub fn not_done(self) -> &'static str {
+        match self {
+            Layer::Manifest => "no signed manifest was looked for",
+            Layer::Container => "the file's structure and metadata were not read",
+            Layer::Mark => "no watermark was looked for",
+            Layer::Blind => "no classifier was run",
+        }
+    }
+}
+
+/// The layers of `asked` in which no source reported, in the order asked.
+///
+/// The registry writes a row for every source of a layer that ran, a
+/// `not_applicable` one when the source does not read the file. So a layer that was
+/// asked for and has no row at all had no source: nothing was looked for there, which
+/// is not the same as nothing being found.
+pub fn empty_layers(asked: &[Layer], has_row: impl Fn(Layer) -> bool) -> Vec<Layer> {
+    asked.iter().copied().filter(|l| !has_row(*l)).collect()
+}
+
+/// `a`, `a and b`, `a, b and c`.
+fn listed(items: &[String]) -> String {
+    match items {
+        [] => String::new(),
+        [one] => one.clone(),
+        [head @ .., last] => format!("{} and {last}", head.join(", ")),
+    }
+}
+
+/// One sentence for the layers [`empty_layers`] found, or `None` when there are
+/// none. The same words in the terminal, on the report page and in the PDF.
+pub fn empty_layers_note(layers: &[Layer]) -> Option<String> {
+    if layers.is_empty() {
+        return None;
+    }
+    let names: Vec<String> = layers.iter().map(|l| format!("{l:?}")).collect();
+    let clauses: Vec<String> = layers.iter().map(|l| l.not_done().to_string()).collect();
+    let mut not_done = listed(&clauses);
+    if let Some(first) = not_done.get(..1) {
+        not_done = first.to_uppercase() + &not_done[1..];
+    }
+    Some(format!(
+        "No source in this build: {}. {not_done}; a layer with no source says nothing \
+         about the file.",
+        names.join(", ")
+    ))
+}
+
 /// Outcome of one source on one asset. Deliberately not a probability.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -55,7 +109,7 @@ pub enum Status {
 /// whenever the model, decoder, or rules change.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SourceId {
-    /// Stable machine name, e.g. `c2pa`, `jpeg_quant`, `dwtdct`, `clip_probe`.
+    /// Stable machine name, e.g. `c2pa`, `jpeg_quant`, `marking_metadata`.
     pub name: String,
     /// Source/model version, e.g. `1.1.0` or `2026.08`.
     pub version: String,
@@ -185,9 +239,63 @@ pub struct Inspection {
     pub created_at: String,
 }
 
+impl Inspection {
+    /// The layers this inspection was asked for in which no source reported. Empty
+    /// when the inspection carries no run record: what was asked for is then not
+    /// known, and a missing layer cannot be told from one that was left out.
+    pub fn empty_layers(&self) -> Vec<Layer> {
+        match &self.run {
+            Some(run) => empty_layers(&run.options.layers, |l| {
+                self.evidence.iter().any(|e| e.layer == l)
+            }),
+            None => Vec::new(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_layer_that_was_asked_for_and_has_no_row_is_named() {
+        let row = |layer| {
+            Evidence::not_applicable(
+                layer,
+                SourceId {
+                    name: "s".into(),
+                    version: "1".into(),
+                },
+                "source does not support this asset",
+            )
+        };
+        let rows = [row(Layer::Manifest), row(Layer::Container)];
+        let has = |l: Layer| rows.iter().any(|e| e.layer == l);
+        // A not-applicable row is a row: the layer had a source.
+        assert_eq!(empty_layers(&Layer::ALL, has), [Layer::Mark, Layer::Blind]);
+        // A layer that was not asked for is not empty; it did not run.
+        assert_eq!(empty_layers(&[Layer::Container], has), []);
+        assert_eq!(empty_layers(&[Layer::Blind], has), [Layer::Blind]);
+
+        assert_eq!(empty_layers_note(&[]), None);
+        assert_eq!(
+            empty_layers_note(&[Layer::Mark, Layer::Blind]).unwrap(),
+            "No source in this build: Mark, Blind. No watermark was looked for and no \
+             classifier was run; a layer with no source says nothing about the file."
+        );
+        assert_eq!(
+            empty_layers_note(&[Layer::Blind]).unwrap(),
+            "No source in this build: Blind. No classifier was run; a layer with no source \
+             says nothing about the file."
+        );
+        assert_eq!(
+            empty_layers_note(&Layer::ALL).unwrap(),
+            "No source in this build: Manifest, Container, Mark, Blind. No signed manifest \
+             was looked for, the file's structure and metadata were not read, no watermark \
+             was looked for and no classifier was run; a layer with no source says nothing \
+             about the file."
+        );
+    }
 
     #[test]
     fn evidence_roundtrips_json() {
