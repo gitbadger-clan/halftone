@@ -2,9 +2,10 @@
 //! part tables shaped like real ones (mostly contiguous, with gaps, overlaps,
 //! unreadable or unsupported part hashes) over file lengths derived from the table
 //! (exact fit, cut at a part, cut inside a part, longer). Part hashes come as byte
-//! arrays or as base64 text (what c2pa's detailed JSON writes), with or without
-//! exclusion ranges; part starts may carry JPEG or MP4 magic. Every report must
-//! pass `multi_asset::check_invariants`; a panic anywhere is a finding.
+//! arrays, as bare base64 text (what c2pa 0.91.1's detailed JSON wrote) or as
+//! `b64'<base64>'` (what 0.92.2 writes), with or without exclusion ranges; part
+//! starts may carry JPEG or MP4 magic. Every report must pass
+//! `multi_asset::check_invariants`; a panic anywhere is a finding.
 #![no_main]
 
 use arbitrary::Arbitrary;
@@ -23,8 +24,9 @@ struct Part {
     /// store, 8 a box-hash part, 9 a BMFF locator, 10 a hash the hasher rejects,
     /// 11 a remote data hash.
     kind: u8,
-    /// Write the hash as base64 text instead of a byte array.
-    base64: bool,
+    /// How the hash is written, modulo 3: 0 a byte array, 1 bare base64 text,
+    /// 2 base64 inside `b64'...'`.
+    form: u8,
     /// None: no exclusions; Some((start, length)); start 0xFFFF: an unreadable range.
     exclusion: Option<(u16, u16)>,
     /// 0 none, 1 JPEG SOI at the part's start, 2 MP4 `ftyp` at offset 4.
@@ -53,7 +55,7 @@ impl PartHasher for Oracle {
     }
 }
 
-/// Standard base64 with padding, as c2pa's JSON writes byte strings.
+/// Standard base64 with padding.
 fn b64(bytes: &[u8]) -> String {
     const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     let mut s = String::new();
@@ -102,10 +104,11 @@ fuzz_target!(|input: Input| {
             let mut a = Map::new();
             a.insert(
                 "hash".into(),
-                match (kind, p.base64) {
+                match (kind, p.form % 3) {
                     (6, _) => json!("%%"),
-                    (_, true) => json!(b64(&raw)),
-                    (_, false) => json!(raw),
+                    (_, 1) => json!(b64(&raw)),
+                    (_, 2) => json!(format!("b64'{}'", b64(&raw))),
+                    (_, _) => json!(raw),
                 },
             );
             match p.exclusion {

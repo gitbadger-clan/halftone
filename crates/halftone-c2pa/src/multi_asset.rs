@@ -328,8 +328,8 @@ fn sniff(bytes: &[u8]) -> Option<&'static str> {
     }
 }
 
-/// Decode standard base64 (with or without padding). c2pa's detailed JSON writes
-/// byte strings this way; an array of byte values is accepted too ([`bytes_of`]).
+/// Decode standard base64 (with or without padding). [`bytes_of`] says which
+/// spellings of a byte string are accepted around it.
 fn base64_decode(s: &str) -> Option<Vec<u8>> {
     fn val(c: u8) -> Option<u32> {
         match c {
@@ -364,10 +364,20 @@ fn base64_decode(s: &str) -> Option<Vec<u8>> {
     Some(out)
 }
 
-/// A byte string from c2pa's JSON: base64 text, or an array of byte values.
+/// A byte string from c2pa's detailed JSON. Three spellings are accepted:
+///
+/// - `"b64'<base64>'"`: what c2pa 0.92.2 writes (seen for `hash` and `pad`);
+/// - bare base64 text: what c2pa 0.91.1 wrote;
+/// - an array of byte values.
+///
+/// A string that opens with `b64'` and does not close with `'` is not a byte
+/// string in any of them, so it reads as nothing rather than as bare base64.
 fn bytes_of(v: &Value) -> Option<Vec<u8>> {
     match v {
-        Value::String(s) => base64_decode(s),
+        Value::String(s) => match s.strip_prefix("b64'") {
+            Some(rest) => base64_decode(rest.strip_suffix('\'')?),
+            None => base64_decode(s),
+        },
         Value::Array(a) => a
             .iter()
             .map(|x| x.as_u64().and_then(|n| u8::try_from(n).ok()))
@@ -1062,6 +1072,62 @@ mod tests {
         );
         assert!(base64_decode("a=b=").is_none());
         assert!(base64_decode("A").is_none());
+    }
+
+    #[test]
+    fn a_byte_string_is_read_in_each_spelling_c2pa_has_written() {
+        let raw = [0x86u8, 0xB1, 0xE4, 0x11, 0x05];
+        let bare = b64(&raw);
+        // 0.91.1: bare base64. 0.92.2: the same text inside b64'...'.
+        assert_eq!(bytes_of(&json!(bare)).as_deref(), Some(&raw[..]));
+        assert_eq!(
+            bytes_of(&json!(format!("b64'{bare}'"))).as_deref(),
+            Some(&raw[..])
+        );
+        assert_eq!(bytes_of(&json!(raw)).as_deref(), Some(&raw[..]));
+        // A SHA-256 `hash` value as c2pa 0.92.2 wrote it for a public test image.
+        assert_eq!(
+            bytes_of(&json!("b64'hrHkEQU/Ib6/1/hVlU4Ak9dMqTLnWqyM6I3pLGRYHHI='")).map(|h| h.len()),
+            Some(32)
+        );
+        // A `pad` value as c2pa 0.92.2 wrote it: seven zero bytes.
+        assert_eq!(bytes_of(&json!("b64'AAAAAAAAAA=='")), Some(vec![0u8; 7]));
+        // Empty in both spellings; `part_hash` refuses an empty hash itself.
+        assert_eq!(bytes_of(&json!("b64''")), Some(vec![]));
+        assert_eq!(bytes_of(&json!("")), Some(vec![]));
+        // A wrapper that is opened and not closed, or closed twice, is not read.
+        assert_eq!(bytes_of(&json!(format!("b64'{bare}"))), None);
+        assert_eq!(bytes_of(&json!(format!("b64'{bare}''"))), None);
+        assert_eq!(bytes_of(&json!("b64'")), None);
+        // A closing quote with no opening is not base64 either.
+        assert_eq!(bytes_of(&json!(format!("{bare}'"))), None);
+        assert_eq!(bytes_of(&json!([1, 2, 256])), None);
+        assert_eq!(bytes_of(&json!(7)), None);
+    }
+
+    #[test]
+    fn a_table_with_wrapped_hashes_matches_like_one_with_bare_hashes() {
+        let mut f = fixture();
+        for label in ["c2pa.hash.data.part", "c2pa.hash.data.part__1"] {
+            let bare = f.store[label]["hash"].as_str().unwrap().to_string();
+            f.store[label]["hash"] = json!(format!("b64'{bare}'"));
+        }
+        let r = evaluate(&f.multi_asset, &f.store, &f.file, &Plain);
+        assert_eq!(r.outcome, Outcome::Match);
+        assert_eq!(results(&r), vec![PartResult::Match; 3]);
+
+        // A wrapper left open is an unreadable hash, said as such, not a mismatch.
+        let bare = b64(&[1, 2, 3]);
+        f.store["c2pa.hash.data.part__1"]["hash"] = json!(format!("b64'{bare}"));
+        let r = evaluate(&f.multi_asset, &f.store, &f.file, &Plain);
+        assert_eq!(r.outcome, Outcome::NotEvaluated);
+        assert!(
+            r.reason
+                .as_deref()
+                .is_some_and(|m| m.contains("c2pa.hash.data.part__1 has no readable hash value")),
+            "{:?}",
+            r.reason
+        );
     }
 
     /// Fixed-seed random tables, run on every `cargo test`: the same invariants the
