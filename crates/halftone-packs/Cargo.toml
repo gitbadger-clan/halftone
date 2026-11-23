@@ -1,6 +1,6 @@
 [package]
 name = "halftone-packs"
-description = "Signed model-pack download, verification and license checks"
+description = "Trust-list and pack store for Halftone: signed index, download, verification, install"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

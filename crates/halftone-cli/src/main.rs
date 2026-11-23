@@ -116,9 +116,10 @@ impl ShellArg {
 
 #[derive(Subcommand)]
 enum PacksCmd {
-    /// Show installed packs and their calibration.
+    /// Show installed trust lists and packs.
     List,
-    /// Download and verify current packs and trust lists (the only networked command).
+    /// Download and verify trust lists and packs. Uses the network, unless --from
+    /// is given.
     Update(UpdateArgs),
 }
 
@@ -652,6 +653,12 @@ fn packs_update(a: UpdateArgs) -> Result<()> {
                 .map(String::from),
         );
     }
+    // An index is only installed from when its signature verifies against a
+    // publisher key. With none there is nothing to fetch it for, so no request is
+    // made, and the message says what does work.
+    if !a.upstream && keys.is_empty() {
+        anyhow::bail!("{NO_PUBLISHER_KEY}");
+    }
     let opts = UpdateOptions {
         index_url: a.index_url,
         publisher_keys: parse_keys(&keys).map_err(|e| anyhow::anyhow!("{e}"))?,
@@ -675,13 +682,28 @@ fn packs_update(a: UpdateArgs) -> Result<()> {
     Ok(())
 }
 
+/// Said by `packs update` when no publisher key is configured.
+const NO_PUBLISHER_KEY: &str = "no publisher key is configured, and this version of ht has none \
+built in, so a pack index cannot be verified and was not fetched.\n\
+To install the C2PA trust lists, run `ht packs update --upstream`: they come straight from \
+the C2PA conformance repository, over TLS.\n\
+For an index of your own, pass --publisher-key or set HALFTONE_PUBLISHER_KEYS.";
+
 fn packs_list() -> Result<()> {
+    use halftone_packs::index::OFFICIAL_PUBLISHER_KEYS_HEX;
     use halftone_packs::store::Store;
     let store = Store::resolve().map_err(|e| anyhow::anyhow!("{e}"))?;
     let inst = store.load_installed().map_err(|e| anyhow::anyhow!("{e}"))?;
     println!("home: {}", store.root().display());
     if inst.packs.is_empty() && inst.trust.is_empty() {
-        println!("nothing installed; run `ht packs update`");
+        // Without a built-in publisher key a plain update cannot verify an index.
+        if OFFICIAL_PUBLISHER_KEYS_HEX.is_empty() {
+            println!(
+                "nothing installed; `ht packs update --upstream` installs the C2PA trust lists"
+            );
+        } else {
+            println!("nothing installed; run `ht packs update`");
+        }
     }
     for (name, p) in &inst.packs {
         println!(
