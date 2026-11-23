@@ -778,15 +778,14 @@ fn inspect(a: InspectArgs) -> Result<()> {
                     && e.rationale == "source does not support this asset"
             };
             let skipped = insp.evidence.iter().filter(unsupported).count();
-            if a.provenance {
-                if let Some(l) = insp
+            if a.provenance
+                && let Some(l) = insp
                     .evidence
                     .iter()
                     .find(|e| e.source.name == "c2pa")
                     .and_then(|e| e.details.get("lineage"))
-                {
-                    print!("{}", halftone_c2pa::lineage::render_timeline(l));
-                }
+            {
+                print!("{}", halftone_c2pa::lineage::render_timeline(l));
             }
             for e in insp.evidence.iter().filter(|e| !unsupported(e)) {
                 // With --provenance the block above already tells the source-type story

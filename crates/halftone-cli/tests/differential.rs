@@ -1179,17 +1179,17 @@ fn compare_conformance(
             });
             continue;
         };
-        if let Some(want) = shas[id.as_str()].as_str() {
-            if ours["sha256"].as_str() != Some(want) {
-                // Different rubric files: nothing below is comparable.
-                out.push(Disagreement {
-                    file,
-                    field: "conformance.rubric",
-                    expected: want.into(),
-                    got: show(ours["sha256"].as_str()),
-                });
-                continue;
-            }
+        if let Some(want) = shas[id.as_str()].as_str()
+            && ours["sha256"].as_str() != Some(want)
+        {
+            // Different rubric files: nothing below is comparable.
+            out.push(Disagreement {
+                file,
+                field: "conformance.rubric",
+                expected: want.into(),
+                got: show(ours["sha256"].as_str()),
+            });
+            continue;
         }
         match (theirs.get("error").is_some(), ours.get("error").is_some()) {
             (true, true) => continue,
