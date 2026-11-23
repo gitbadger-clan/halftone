@@ -9,10 +9,10 @@ description = "D-011: print the decode error c2pa 0.91 discards on soft-binding 
 [workspace]
 
 [dependencies]
-# Exactly the versions D-011 is about. c2pa_cbor must match the workspace
-# Cargo.lock, since the decoder is what's under test (compare with
-# `grep -A1 'name = "c2pa_cbor"' Cargo.lock` at the repo root).
-c2pa = "=0.91.1"
-c2pa_cbor = "=0.78.0"
+# Exactly the versions in the workspace Cargo.lock (preflight step 2 compares them):
+# the probe must decode with the library Halftone runs. D-011 was measured on
+# c2pa 0.91.1 with c2pa_cbor 0.78.0.
+c2pa = "=0.92.2"
+c2pa_cbor = "=0.78.2"
 serde_path_to_error = "0.1.20"
 anyhow = "1"

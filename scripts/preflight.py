@@ -10,7 +10,7 @@
 the first failure and naming it.
 
      1  cargo check, all targets and features, zero warnings
-     2  lockfile: one c2pa (0.91.x, D-011), one c2pa_cbor, one ureq; probe pins match
+     2  lockfile: one c2pa (0.92.x), one c2pa_cbor, one ureq; probe pins match
      3  rustfmt
      4  clippy, no default features (-D warnings)
      5  clippy, all features (-D warnings)
@@ -110,8 +110,11 @@ def lockfile(_: bool) -> str:
     for name, found in (("c2pa", c2pa), ("c2pa_cbor", cbor), ("ureq", ureq)):
         if len(found) != 1:
             raise Fail(f"{name} versions: {found or 'none'}")
-    if not c2pa[0].startswith("c2pa v0.91."):
-        raise Fail(f"expected c2pa 0.91.x (D-011), got {c2pa[0]}")
+    # The line the ground truth was collected with. Another line changes what the
+    # library reports (0.90 to 0.91 was D-011), so it moves on purpose, with the
+    # reference c2patool and a differential run, never through a lock update.
+    if not c2pa[0].startswith("c2pa v0.92."):
+        raise Fail(f"expected c2pa 0.92.x, got {c2pa[0]}")
     # The soft-binding probe reproduces what Halftone's c2pa discards, so it must run
     # the same c2pa and c2pa_cbor (a scratch-branch bump once leaked past it).
     probe = PROBE.read_text()
@@ -268,7 +271,7 @@ def docs(_: bool) -> str:
 
 STEPS: list[tuple[str, Callable[[bool], str]]] = [
     ("cargo check, all targets and features: zero warnings", check),
-    ("lockfile: one c2pa (0.91.x, D-011), one c2pa_cbor, one ureq; probe pins match", lockfile),
+    ("lockfile: one c2pa (0.92.x), one c2pa_cbor, one ureq; probe pins match", lockfile),
     ("rustfmt", fmt),
     ("clippy, no default features (-D warnings)", clippy_min),
     ("clippy, all features (-D warnings)", clippy_all),

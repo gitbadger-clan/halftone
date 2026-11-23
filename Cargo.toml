@@ -39,16 +39,18 @@ clap_complete = { version = "4.6", features = ["unstable-dynamic"] }
 rayon = "1"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 kamadak-exif = "0.6"
-# Inflate only, for the zlib stream of a PNG iCCP chunk (halftone-container reads the
-# profile's description). Pure Rust, already in the build through `image`.
-miniz_oxide = { version = "0.8", default-features = false, features = ["with-alloc"] }
+# Inflate only, for the zlib streams of a PNG's iCCP and compressed text chunks
+# (halftone-container). Pure Rust, and already in the build: `image`'s PNG decoder
+# brings this version in through `flate2`. (`png` also uses 0.8 directly, so the lock
+# file holds both whichever one is asked for here.)
+miniz_oxide = { version = "0.9", default-features = false, features = ["with-alloc"] }
 # The PDF report (halftone-report's `pdf` feature). Pinned exactly: the three crates
 # are released together and their API moves between minor versions. The fonts are
 # our own copies (crates/halftone-report/fonts/), not typst-assets' `fonts` feature.
 typst = "=0.15.1"
 typst-layout = "=0.15.1"
 typst-pdf = "=0.15.1"
-c2pa = "0.91"
+c2pa = "0.92"
 # Same major as c2pa's own HTTP client, so `ureq::Agent` is the type c2pa implements
 # its resolver trait for. No features of our own: c2pa already enables rustls.
 ureq = { version = "3.5", default-features = false }
