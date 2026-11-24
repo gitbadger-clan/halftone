@@ -10,7 +10,9 @@
 //!
 //! The iCCP profile name is part of that inventory, and it is free text chosen by the
 //! writer. Every writer measured so far puts a colour-space name or a fixed keyword of
-//! its own there: Pillow and Apple ImageIO both write `ICC Profile`, libvips `icc`. On
+//! its own there: Pillow and Apple ImageIO both write `ICC Profile`, libvips `icc`, and
+//! an iPadOS screenshot in Display P3 the system constant's name
+//! `kCGColorSpaceDisplayP3`. On
 //! macOS screenshots the display's name is the description inside the profile, not
 //! the chunk's name ([`crate::icc`] reads it; `embedded_identifiers` lists it,
 //! masked). Nothing stops another writer from copying that description into the
@@ -116,6 +118,9 @@ pub const ICC_CHUNK_KEYWORDS: &[&str] = &[
     "icc",         // libvips, ImageMagick
     "icm",         // ImageMagick, for an .icm source; ExifTool
     "ICC Profile", // Pillow; Apple ImageIO (macOS 27 screenshots)
+    // Apple ImageIO, iPadOS 18 screenshots in Display P3: the name of the system's
+    // colour-space constant, read on one file.
+    "kCGColorSpaceDisplayP3",
     "ICC profile", // GIMP
     "Photoshop ICC profile",
     "Skia",
@@ -910,6 +915,7 @@ mod tests {
             "ICC Profile",
             "icc profile",
             " icc ",
+            "kCGColorSpaceDisplayP3",
         ] {
             let ev = assess(known);
             assert_eq!(ev.details["icc_name"], known, "{known}");
