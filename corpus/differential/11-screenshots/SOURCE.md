@@ -52,20 +52,45 @@ microphone indicator was noticed in it.
 
 "Capture more" was not offered in Chrome; it was in Settings.
 
+## iPad Pro 12.9-inch, M1 (`iPad13,10`) — iPadOS 18.7.3, 2026-11-23
+
+Taken with the hardware shortcut (top button + a volume button), saved by the
+system to the camera roll (`/DCIM/100APPLE/`), pulled with `htc ios grab` over
+Wi-Fi. `htc` read each file from the device twice and compared the two reads.
+
+iPadOS has no demo mode for the status bar. Where one is in the frame it is the
+device's own: the clock and date, the Wi-Fi sign, and the battery at 100% and
+charging. Calculator and Safari were opened from Search, so those two frames
+also show the "Search" link back. No notification badge or banner is in any
+frame.
+
+All four files are 2732×2048, the whole display in landscape, and keep the
+upper-case `.PNG` the device gave them.
+
+| File | Size | On screen |
+|---|---|---|
+| `ipadpro129m1__home__screenshot__s01__1.PNG` | 12,561,362 B | a Home Screen page: two of Apple's apps (Stocks, Voice Memos), Notes in the Dock, and the wallpaper, a photograph of star trails over a lake |
+| `ipadpro129m1__app__screenshot__s02__1.PNG` | 228,777 B | Calculator on its black background, after a multiplication |
+| `ipadpro129m1__web__screenshot__s03__1.PNG` | 1,116,857 B | Safari on the English Wikipedia article "Renaissance", in the site's light appearance, with its Contents and Appearance panels open |
+| `ipadpro129m1__photo-marked__screenshot__s04__1.PNG` | 9,628,237 B | `10-messaging/airdrop__file__gemini-app-nano-banana__p1__1.JPG` full screen in Photos, controls hidden: the image between black bars, no status bar. That file is byte-identical to `04-generators/gemini-app__nano-banana__web-download__p1__1.jpg`, the signed image the macOS row shows |
+
 ## Findings
 
-- No file carries a C2PA manifest (10 of 10).
-- The two marked rows are the point of the stratum. On the Fold, the image on
+- No file carries a C2PA manifest (14 of 14).
+- The three marked rows are the point of the stratum. On the Fold, the image on
   screen is a camera capture with a trusted Google manifest declaring
   computationalCapture; the screenshot of it has no manifest and no metadata
-  that says so. On macOS the same holds for the signed image shown in Preview.
-  A signed file becomes an unsigned one by being displayed.
+  that says so. On macOS the same holds for the signed image shown in Preview,
+  and on the iPad for the same image shown in Photos. The copy on the iPad
+  still validates and declares trainedAlgorithmicMedia; the screenshot of it
+  declares nothing. A signed file becomes an unsigned one by being displayed.
 - macOS PNG: `png_writer` reads the chunk layout as a macOS screenshot (Apple
   ImageIO, XMP `UserComment=Screenshot`). The rule was written from the
   documented layout and marked "not yet verified"; these four files were its
   first real samples, and it is marked verified since 2026-11-17. The XMP
   holds none of the rights, identifier, vendor-flag or data-mining fields
-  (`ht inspect --metadata`).
+  (`ht inspect --metadata`). Since 2026-11-23 the rule also asks for the
+  profile chunk's name, `ICC Profile` (see the iPad findings).
 - Fold PNG: the chunk layout is that of Skia's PNG encoder (sBIT and sRGB,
   8 KiB blocks), a rule measured on a Skia canvas binding. No XMP and no ICC
   profile. So by layout alone an Android screenshot is not told apart from
@@ -127,8 +152,41 @@ microphone indicator was noticed in it.
   descriptions above, the generic `Display` among them. `png_writer` still
   reads the chunk's name and not the profile, and the JPEG and WebP sources
   still record only whether a profile is present.
-- All files inspected read as dark-mode images to `pixel_lattice` (macOS PNG
-  0.0207, Fold Calculator 0.0026); no verdict, the statistic is uncalibrated.
+- iPad PNG: iPadOS writes two layouts, two files of each. The Home Screen and
+  the Safari page are 16 bits per channel with an `iCCP` chunk named
+  `kCGColorSpaceDisplayP3` (a 536-byte profile whose description is
+  `Display P3`) and a `cICP` chunk (12, 13, 0, 1: P3 primaries, the sRGB
+  transfer curve, RGB, full range). Calculator and the photo in Photos are 8
+  bits per channel with an `sRGB` chunk and no profile. All four have `eXIf`
+  and an XMP `iTXt`, no `pHYs`, and image data in 16,384-byte blocks behind
+  zlib header `78 01`. Why the iPad chose which layout was not established.
+- At collection time `png_writer` read the two Display P3 files as a macOS
+  screenshot, which names the wrong system, and found no known layout in the
+  two sRGB files. The macOS rule asked only for the XMP comment, and iPadOS
+  writes the same one. Since 2026-11-23 there is one rule per iPadOS layout,
+  each marked "iPhone not measured", and the macOS rule needs its own profile
+  chunk name. Re-read that day: the four iPad files by the new rules, two
+  each, and the four macOS PNGs still as macOS screenshots.
+- The iPad's EXIF block, all four files (read from the chunk directly,
+  2026-11-24, not with ExifTool): orientation, the capture time to the second
+  with no UTC offset, `UserComment = Screenshot` and the pixel size; the two
+  sRGB files add `ColorSpace = sRGB`. No `Software`, no make or model, no
+  `ImageUniqueID`. The XMP is the same 495-byte packet in all four (toolkit
+  `XMP Core 6.0.0`): `exif:UserComment = Screenshot` and
+  `photoshop:DateCreated` with the same time, again without a zone. In the
+  three files with a status bar that time agrees with the clock on screen.
+- So the iPad screenshot says the least about where it came from. Unlike the
+  Fold's it names no system build, has no unique ID and no time zone. Unlike
+  the Mac's it names no display: the profile is the colour space's own, and
+  `embedded_identifiers` lists nothing for any of the four. What is left is
+  an unsigned comment that it is a screenshot, a local time, and a pixel size
+  that is this display's.
+- `pixel_lattice` gives no verdict on any file here. It runs without a
+  calibrated threshold, and its rationale calls that state "dark mode": the
+  words describe the source, not the image. Its statistic: macOS PNG 0.0207,
+  Fold Calculator 0.0026, iPad 0.0097 (Home Screen), 0.0114 (Calculator),
+  0.0302 (web) and 0.0167 (photo). This line used to say the files "read as
+  dark-mode images", which misread that rationale; corrected 2026-11-24.
 
 ## Privacy
 
@@ -139,7 +197,13 @@ shows a date and a temperature.
 
 Every Fold screenshot holds its real capture time, UTC offset and a unique ID
 in EXIF; every macOS screenshot holds the display's ICC profile, usually named
-after the monitor. Strip metadata from any of these before publishing one.
+after the monitor; every iPad screenshot holds its capture time, without a
+zone, in EXIF and XMP. Strip metadata from any of these before publishing one.
+
+Three of the iPad files show the real clock, date and battery state, since
+iPadOS has no demo mode. The Home Screen file shows two installed apps, both
+Apple's, and that the device has two more pages. The Safari file shows no tab,
+bookmark or account.
 
 `macos__window__screencapture__s03__1.png` shows no account, bookmark or
 history. It does show which browser is installed, that it is not the default,
@@ -148,19 +212,25 @@ and the title of a second tab (the browser's own settings page).
 Three of the macOS files are pictures of the wallpaper, and the browser window
 shows a credited photograph on its New Tab page. Those are other people's
 photographs: the files serve the corpus, and are not for publication as images.
+The iPad Home Screen file is mostly wallpaper too, a photograph whose source
+was not noted; the same holds for it.
 
 ## Open
 
-- iPhone and iPad screenshots: wait for those devices.
+- iPhone screenshots: not collected. The two iPadOS rules say "iPhone not
+  measured" for that reason.
+- Other iPadOS versions, and what decides between the Display P3 and the sRGB
+  layout: not measured.
+- A full-page capture in Safari on the iPad: not collected, and whether it
+  gives a PNG was not checked.
 - `adb exec-out screencap -p` on the Fold, a different writer from the
   hardware shortcut: not collected.
 - Chrome's own "Long screenshot": not collected.
-- A light-theme capture: every file inspected here is dark.
 - The Fold unfolded (inner display): not collected.
 
 ## Results
 
-Differential run 2026-11-17 (ground truth collected 2026-11-17T13:29:55Z): 10
-of 10 files compared, 0 disagreements; rights and identifier values compared by
+Differential run 2026-11-24 (ground truth collected 2026-11-24T13:22:38Z): 14
+of 14 files compared, 0 disagreements; rights and identifier values compared by
 keyed fingerprint. No signals or conformance rubric applies, since no file has
-a manifest. Whole corpus: 396 of 396 files across 10 corpora, 0 disagreements.
+a manifest. Whole corpus: 410 of 410 files across 10 corpora, 0 disagreements.

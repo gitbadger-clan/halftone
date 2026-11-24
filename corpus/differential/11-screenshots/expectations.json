@@ -1,13 +1,149 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-17T13:29:55Z",
+  "collected_at": "2026-11-24T13:22:38Z",
   "conformance_rubrics": {
     "conformance-0.2-spec-2.4": "63e9dd777fbb9d1295efe086864c88475f8cae8d944ecb7b1ff21b718c4bade9",
     "integrity": "f87ece6ff2c232540eb9fee5b3249d9961939e432c0456d353e45f88b77bba76"
   },
   "corpus": "corpus/differential/11-screenshots",
   "files": {
+    "ipadpro129m1__app__screenshot__s02__1.PNG": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "f50692da0623ddfc6ab3b4aa6934a9151a1773ef29ab9a19fcbf6d97fc98ae31",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 228777
+    },
+    "ipadpro129m1__home__screenshot__s01__1.PNG": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "cfe226a4bae8fd56c545fa0cb067786447b2d3f6ed4e8e07e1ebe3f1ed22f115",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 12561362
+    },
+    "ipadpro129m1__photo-marked__screenshot__s04__1.PNG": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "f778c81519226ee82ac978f3b6a614fcad48903fc70dad26b49521c2dedc2f88",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 9628237
+    },
+    "ipadpro129m1__web__screenshot__s03__1.PNG": {
+      "c2patool": {
+        "present": false
+      },
+      "conformance": {
+        "error": "no crJSON (exit 1)"
+      },
+      "credentio": {
+        "error": "no result (exit 1)"
+      },
+      "exiftool": {
+        "data_mining": [],
+        "digital_source_type": [],
+        "digital_source_type_raw": [],
+        "embedded": {
+          "identifiers": [],
+          "rights": [],
+          "vendor_ai": {
+            "contains_ai_generated_content": [],
+            "credit_phrase": false
+          }
+        },
+        "iim_originating_program": null,
+        "iim_program_version": null,
+        "mime": "image/png",
+        "xmp_present": true,
+        "xmp_tag_count": 3
+      },
+      "sha256": "b31758b60fc6c623dac43a553225855fa13f017a1cd98c0700ef15f6e4165d24",
+      "signals": {
+        "error": "no crJSON (exit 1)"
+      },
+      "size_bytes": 1116857
+    },
     "macos__fullscreen-jpg__screencapture__s05__1.jpg": {
       "c2patool": {
         "present": false

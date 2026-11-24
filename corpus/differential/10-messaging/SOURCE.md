@@ -1,12 +1,14 @@
 # 10-messaging — provenance
 
-Corpus files after one trip through a messaging app, one section per app. Files
-are not committed; this file and `expectations.json` are. Names follow 07, with
+Corpus files after one trip through a messaging app, one section per app, and
+since 2026-11-23 through AirDrop, which is a transfer between two devices and
+not a messaging app. Files are not committed; this file and `expectations.json`
+are. Names follow 07, with
 the app in place of the editor and the send mode in place of the operation:
 `<app>__<mode>__<input generator>-<input variant>__<subject>__<n>.<ext>`. The
 extension is the one the app delivered, also where it differs from the input's.
 
-Collected 2026-11-12 with `scripts/htc.py` (`HT_STRATUM=10-messaging`).
+Collected from 2026-11-12 with `scripts/htc.py` (`HT_STRATUM=10-messaging`).
 
 ## Inputs
 
@@ -23,10 +25,11 @@ as `ht inspect` reads it.
 
 ## Method
 
-- Direction: every row was sent from the app's macOS desktop client to the
-  account's own self-chat and pulled from the Pixel 9 Pro Fold over adb. The
-  same direction for all three apps and all modes, with one exception: the
-  Signal `file-android` row ran the other way (2026-11-13).
+- Direction: every messaging row was sent from the app's macOS desktop client
+  to the account's own self-chat and pulled from the Pixel 9 Pro Fold over
+  adb. The same direction for all three apps and all modes, with one
+  exception: the Signal `file-android` row ran the other way (2026-11-13).
+  The AirDrop rows go from the same Mac to an iPad; see that section.
 - Receiving on a second device is deliberate: the sending client can show its
   own cached original.
 - Devices: macOS 27.2.1; Pixel 9 Pro Fold, Android 17.
@@ -35,16 +38,17 @@ as `ht inspect` reads it.
   Gemini and Fold inputs only, in all three apps.
 - Hash check of the file-mode rows against the inputs (sha256, 2026-11-12):
   WhatsApp `document` 5 of 5 and Telegram `file` 5 of 5 are byte-identical to
-  their inputs. Signal `file` 0 of 5: see the Signal section.
+  their inputs. Signal `file` 0 of 5: see the Signal section. AirDrop `file`
+  5 of 5 (sha256, 2026-11-24).
 
 ## Summary
 
-| Mode | WhatsApp | Telegram | Signal |
-|---|---|---|---|
-| file / document | byte-identical, 5 of 5 | byte-identical, 5 of 5 | sent as file from Desktop, delivered re-encoded as JPEG; no manifest, no XMP (5 of 5) |
-| file, phone to Mac | not collected | not collected | re-encoded and scaled down, format kept; no manifest (5 of 5); gain map rebuilt on the Fold capture |
-| photo | JPEG; no manifest, no XMP (5 of 5) | JPEG; no manifest, no XMP (5 of 5) | JPEG; no manifest, no XMP (5 of 5) |
-| photo-hd | JPEG; no manifest, no XMP (2 of 2) | JPEG; no manifest, no XMP (2 of 2) | JPEG; no manifest, no XMP (2 of 2) |
+| Mode | WhatsApp | Telegram | Signal | AirDrop |
+|---|---|---|---|---|
+| file / document | byte-identical, 5 of 5 | byte-identical, 5 of 5 | sent as file from Desktop, delivered re-encoded as JPEG; no manifest, no XMP (5 of 5) | byte-identical, 5 of 5 (Mac to iPad) |
+| file, phone to Mac | not collected | not collected | re-encoded and scaled down, format kept; no manifest (5 of 5); gain map rebuilt on the Fold capture | not collected |
+| photo | JPEG; no manifest, no XMP (5 of 5) | JPEG; no manifest, no XMP (5 of 5) | JPEG; no manifest, no XMP (5 of 5) | no such mode |
+| photo-hd | JPEG; no manifest, no XMP (2 of 2) | JPEG; no manifest, no XMP (2 of 2) | JPEG; no manifest, no XMP (2 of 2) | no such mode |
 
 Every compressed or HD send removed the C2PA manifest and all XMP, and with the
 XMP the Meta DigitalSourceType marking and the Canva vendor flag. Both PNG
@@ -77,7 +81,7 @@ gain map, read here as its container directory and MPF index.
 
 | Route | EXIF | Gain map |
 |---|---|---|
-| WhatsApp `document`, Telegram `file` (byte-identical) | kept on both | kept |
+| WhatsApp `document`, Telegram `file`, AirDrop `file` (byte-identical) | kept on both | kept |
 | every `photo` and `photo-hd` route, all three apps | gone from both | gone |
 | Signal `file` from Desktop | gone from both | gone |
 | Signal `file-android` | an EXIF block on the Fold capture, none on the Canva PNG | present, rebuilt (see Signal) |
@@ -187,13 +191,43 @@ a new one was not compared.
   XMP on any of them.
 - Files (17): `file` ×5, `file-android` ×5, `photo` ×5, `photo-hd` ×2.
 
+## AirDrop — macOS to iPadOS 18.7.3, 2026-11-23 and 2026-11-24
+
+- Not a messaging app: the file goes from one device to the other with no
+  chat, account or server in between. It is here because it is a common way
+  for an image to change hands, and the question is the same.
+- Direction: sent from Finder on the Mac (Share → AirDrop) to an iPad Pro
+  12.9-inch, M1 (`iPad13,10`), accepted there and received into Photos. The
+  Mac's macOS version was not noted for these sends.
+- `file`: the only mode. Sharing a file from Finder offers no choice of
+  quality.
+- Pulled from the iPad's camera roll (`/DCIM/100APPLE/`) with `htc ios grab`
+  over Wi-Fi; `htc` read each file twice and compared the two reads. The
+  Gemini row was collected on 2026-11-23, the other four on 2026-11-24.
+- So each file passed through one step more than the Fold rows did: Photos
+  took it in and filed it before the pull.
+- Photos files a received image under its own running name (`IMG_0027.JPG`
+  for the Gemini row), so the original file name is gone while the bytes are
+  not. The upper-case `.JPG` and `.PNG` in these five names come from there.
+- Finding (`file`): all five byte-identical to their inputs (sha256,
+  2026-11-24), the two PNG inputs as PNG. They read exactly as the WhatsApp
+  `document` rows do: the three trusted manifests validate, the Canva
+  manifest is expired as on the input, the Meta XMP marking, the Canva vendor
+  flag and the Fold gain map are all present.
+- What this measures is the copy in the camera roll. What Photos hands on
+  when the image is shared again from the iPad, by AirDrop, Messages or its
+  share sheet, is another route and was not measured.
+- Files (5): `file` ×5.
+
 ## Open
 
 - All rows are self-chat: one account, its desktop client to its phone. Not
   yet checked: that a copy delivered to a different account is identical.
   Deferred because the received file could not be retrieved without a second
   transfer.
-- iMessage and AirDrop: wait for the iPhone and iPad.
+- iMessage: not collected.
+- AirDrop in the other direction (iPad to Mac), from Photos with its sharing
+  options, and to or from an iPhone: not collected.
 - Signal: a control with a non-image file (one input inside a zip), to show
   whether the change is specific to files Signal recognises as images.
 - Telegram's "without compression" option as a row of its own.
@@ -206,9 +240,10 @@ a new one was not compared.
 
 ## Results
 
-Differential run 2026-11-17 (ground truth collected 2026-11-13T06:49:43Z): 41
-of 41 files compared, 0 disagreements; rights and identifier values compared by
-keyed fingerprint; signals rubric compared on 10 nodes in 8 files, integrity
-and conformance rubrics on 296 checks in 8 files (the eight files that still
-carry a manifest: WhatsApp `document` and Telegram `file`, without the Meta
-input). Whole corpus: 396 of 396 files across 10 corpora, 0 disagreements.
+Differential run 2026-11-24 (ground truth collected 2026-11-24T13:22:36Z): 46
+of 46 files compared, 0 disagreements; rights and identifier values compared by
+keyed fingerprint; signals rubric compared on 15 nodes in 12 files, integrity
+and conformance rubrics on 444 checks in 12 files (the twelve files that still
+carry a manifest: WhatsApp `document`, Telegram `file` and AirDrop `file`,
+without the Meta input). Whole corpus: 410 of 410 files across 10 corpora, 0
+disagreements.
