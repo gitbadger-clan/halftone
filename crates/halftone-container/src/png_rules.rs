@@ -217,7 +217,7 @@ pub const RULES: &[PngRule] = &[
         zlib: None,
         deflate_block: None,
         deflate_prefix: &[],
-        notes: "Two of the four hardware-shortcut screenshots from an iPad on iPadOS 18.7.3 (11-screenshots, 2026-11-23: the Home Screen and a Safari page). 16 bits per channel; chunks IHDR, iCCP, cICP, eXIf, iTXt, then the image data in 16,384-byte blocks behind zlib header 78 01, as ImageIO writes on macOS. The XMP holds exif:UserComment = Screenshot. The profile chunk's name was read on one of the two files. The name sets these apart from the macOS captures, which call the chunk `ICC Profile`. Why the iPad wrote Display P3 for these two and sRGB for the other two was not established. iPhone and other iPadOS versions were not measured.",
+        notes: "Two of the four hardware-shortcut screenshots from an iPad on iPadOS 18.7.3 (11-screenshots, 2026-11-23: the Home Screen and a Safari page). 16 bits per channel; chunks IHDR, iCCP, cICP, eXIf, iTXt, then the image data in 16,384-byte blocks behind zlib header 78 01, as ImageIO writes on macOS. The XMP holds exif:UserComment = Screenshot, and the profile chunk has that name in both files. The name sets these apart from the macOS captures, which call the chunk `ICC Profile`. Why the iPad wrote Display P3 for these two and sRGB for the other two was not established. iPhone and other iPadOS versions were not measured.",
     },
     PngRule {
         name: "iPadOS screenshot in sRGB (Apple ImageIO: XMP UserComment=Screenshot, an EXIF block, an sRGB chunk and no profile; iPhone not measured)",
@@ -234,7 +234,7 @@ pub const RULES: &[PngRule] = &[
         zlib: None,
         deflate_block: None,
         deflate_prefix: &[],
-        notes: "The other two of the four screenshots from the same iPad (11-screenshots, 2026-11-23: Calculator, and a photo full screen in Photos). 8 bits per channel; chunks IHDR, sRGB, eXIf, iTXt, then the image data in 16,384-byte blocks behind zlib header 78 01. No macOS capture measured carries an sRGB chunk. iPhone and other iPadOS versions were not measured.",
+        notes: "The other two of the four screenshots from the same iPad (11-screenshots, 2026-11-23: Calculator, and a photo full screen in Photos). 8 bits per channel; chunks IHDR, sRGB, eXIf, iTXt, then the image data in 16,384-byte blocks behind zlib header 78 01. The XMP holds exif:UserComment = Screenshot in both. No macOS capture measured carries an sRGB chunk. iPhone and other iPadOS versions were not measured.",
     },
     PngRule {
         name: "macOS screenshot (Apple ImageIO, XMP UserComment=Screenshot, profile chunk named `ICC Profile`)",

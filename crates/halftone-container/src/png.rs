@@ -119,7 +119,7 @@ pub const ICC_CHUNK_KEYWORDS: &[&str] = &[
     "icm",         // ImageMagick, for an .icm source; ExifTool
     "ICC Profile", // Pillow; Apple ImageIO (macOS 27 screenshots)
     // Apple ImageIO, iPadOS 18 screenshots in Display P3: the name of the system's
-    // colour-space constant, read on one file.
+    // colour-space constant, read on the two files of that layout.
     "kCGColorSpaceDisplayP3",
     "ICC profile", // GIMP
     "Photoshop ICC profile",
