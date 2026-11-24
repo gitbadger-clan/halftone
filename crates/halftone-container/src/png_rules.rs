@@ -35,12 +35,21 @@
 //! | Pillow 13.0 with `icc_profile` | iCCP `ICC Profile` | 64 KiB blocks | `78 9c` | dynamic |
 //! | macOS Preview (16 corpus files) | gAMA, cHRM, eXIf, iTXt | 16,384-byte blocks | `78 01` | dynamic |
 //! | Android 17 system screenshot (5 corpus files, 2026-11-16) | sBIT, sRGB, eXIf | 8,192-byte blocks | not recorded | not recorded |
+//! | iPadOS 18.7.3 system screenshot (4 corpus files, 2026-11-23) | iCCP `kCGColorSpaceDisplayP3`, cICP, eXIf, XMP text (2 files, 16-bit); or sRGB, eXIf, XMP text (2 files, 8-bit) | 16,384-byte blocks | `78 01` | dynamic |
 //!
 //! One rule also asks what the file says about itself. Android's screenshot tool
 //! encodes through Skia, so its layout is the Skia row's plus an `eXIf` chunk; what
 //! tells it from any other Skia program is the EXIF `Software` tag in that chunk
 //! ([`PngRule::exif_software_starts`]). The tag is unsigned text and proves nothing
 //! alone, which is why the rule needs the layout as well.
+//!
+//! Apple's screenshot tools say what the file is in its XMP (`exif:UserComment` =
+//! `Screenshot`), on macOS and on iPadOS alike, so that comment does not tell the two
+//! systems apart. The chunks around it do, on the files measured: the macOS captures
+//! name their profile chunk `ICC Profile`; the iPadOS captures carry an `eXIf` chunk
+//! and either a profile chunk named `kCGColorSpaceDisplayP3` beside `cICP`, or an
+//! `sRGB` chunk and no profile. Each rule asks for its own side of that difference,
+//! so a capture that matches neither is not given a system's name.
 //!
 //! Below the block size every encoder writes one chunk, so a small file names a writer
 //! only if its stream does (the fdeflate header, stb's fixed block). A rule's name must
@@ -194,12 +203,29 @@ pub const RULES: &[PngRule] = &[
         notes: "AUTOMATIC1111/Forge write the generation parameters into tEXt `parameters`.",
     },
     PngRule {
-        name: "macOS screenshot (Apple ImageIO, XMP UserComment=Screenshot)",
+        name: "iPadOS screenshot in Display P3 (Apple ImageIO: XMP UserComment=Screenshot, an EXIF block, cICP and a profile chunk named `kCGColorSpaceDisplayP3`; iPhone not measured)",
         class: WriterClass::Screenshot,
         confidence: Confidence::Verified,
-        all_of: &["iTXt"],
+        all_of: &["iCCP", "cICP", "eXIf", "iTXt"],
         any_of: &[],
-        none_of: &["gAMA", "sRGB"],
+        none_of: &["pHYs", "gAMA", "sRGB", "iDOT"],
+        any_text: &["XML:com.adobe.xmp"],
+        icc_contains: Some("kCGColorSpaceDisplayP3"),
+        xmp_contains_any: &[">Screenshot<"],
+        exif_software_starts: None,
+        idat: None,
+        zlib: None,
+        deflate_block: None,
+        deflate_prefix: &[],
+        notes: "Two of the four hardware-shortcut screenshots from an iPad on iPadOS 18.7.3 (11-screenshots, 2026-11-23: the Home Screen and a Safari page). 16 bits per channel; chunks IHDR, iCCP, cICP, eXIf, iTXt, then the image data in 16,384-byte blocks behind zlib header 78 01, as ImageIO writes on macOS. The XMP holds exif:UserComment = Screenshot. The profile chunk's name was read on one of the two files. The name sets these apart from the macOS captures, which call the chunk `ICC Profile`. Why the iPad wrote Display P3 for these two and sRGB for the other two was not established. iPhone and other iPadOS versions were not measured.",
+    },
+    PngRule {
+        name: "iPadOS screenshot in sRGB (Apple ImageIO: XMP UserComment=Screenshot, an EXIF block, an sRGB chunk and no profile; iPhone not measured)",
+        class: WriterClass::Screenshot,
+        confidence: Confidence::Verified,
+        all_of: &["sRGB", "eXIf", "iTXt"],
+        any_of: &[],
+        none_of: &["iCCP", "pHYs", "gAMA", "cHRM", "sBIT", "iDOT"],
         any_text: &["XML:com.adobe.xmp"],
         icc_contains: None,
         xmp_contains_any: &[">Screenshot<"],
@@ -208,7 +234,24 @@ pub const RULES: &[PngRule] = &[
         zlib: None,
         deflate_block: None,
         deflate_prefix: &[],
-        notes: "Four `screencapture` PNGs from macOS 27.2.1 (11-screenshots, 2026-11-13 and 2026-11-16; full screen, region and window): an XMP packet with exif:UserComment = Screenshot, reported since macOS Monterey, and an iCCP chunk named `ICC Profile` that holds the profile of the display the capture came from, not Display P3 as this note used to say. Other macOS versions were not measured.",
+        notes: "The other two of the four screenshots from the same iPad (11-screenshots, 2026-11-23: Calculator, and a photo full screen in Photos). 8 bits per channel; chunks IHDR, sRGB, eXIf, iTXt, then the image data in 16,384-byte blocks behind zlib header 78 01. No macOS capture measured carries an sRGB chunk. iPhone and other iPadOS versions were not measured.",
+    },
+    PngRule {
+        name: "macOS screenshot (Apple ImageIO, XMP UserComment=Screenshot, profile chunk named `ICC Profile`)",
+        class: WriterClass::Screenshot,
+        confidence: Confidence::Verified,
+        all_of: &["iCCP", "iTXt"],
+        any_of: &[],
+        none_of: &["gAMA", "sRGB"],
+        any_text: &["XML:com.adobe.xmp"],
+        icc_contains: Some("ICC Profile"),
+        xmp_contains_any: &[">Screenshot<"],
+        exif_software_starts: None,
+        idat: None,
+        zlib: None,
+        deflate_block: None,
+        deflate_prefix: &[],
+        notes: "Four `screencapture` PNGs from macOS 27.2.1 (11-screenshots, 2026-11-13 and 2026-11-16; full screen, region and window): an XMP packet with exif:UserComment = Screenshot, reported since macOS Monterey, and an iCCP chunk named `ICC Profile` that holds the profile of the display the capture came from, not Display P3 as this note used to say. The chunk's name is a condition since 2026-11-23: iPadOS screenshots carry the same XMP comment under another profile name, and two of them were read as macOS captures before. Other macOS versions were not measured.",
     },
     PngRule {
         name: "Apple ImageIO (macOS/iOS export or screenshot)",
@@ -1207,15 +1250,129 @@ mod tests {
         );
     }
 
+    /// An XMP packet with the comment Apple's screenshot tools write, in the plain
+    /// form read from the iPad's home-screen capture.
+    const SCREENSHOT_XMP: (&str, &str) = (
+        "XML:com.adobe.xmp",
+        "<x:xmpmeta><rdf:Description><exif:UserComment>Screenshot</exif:UserComment>\
+         <photoshop:DateCreated>2026-11-23T20:37:06</photoshop:DateCreated>\
+         </rdf:Description></x:xmpmeta>",
+    );
+
+    fn shot(chunks: &[&str], icc_name: Option<&str>) -> PngInfo {
+        PngInfo {
+            icc_name: icc_name.map(str::to_string),
+            has_exif: chunks.contains(&"eXIf"),
+            ..info_v(chunks, &[SCREENSHOT_XMP])
+        }
+    }
+
+    #[test]
+    fn an_ipad_screenshot_is_read_in_both_layouts_and_never_as_macos() {
+        // The two layouts measured on iPadOS 18.7.3, chunk for chunk.
+        let p3 = shot(
+            &[
+                "IHDR", "iCCP", "cICP", "eXIf", "iTXt", "IDAT", "IDAT", "IEND",
+            ],
+            Some("kCGColorSpaceDisplayP3"),
+        );
+        let srgb = shot(
+            &["IHDR", "sRGB", "eXIf", "iTXt", "IDAT", "IDAT", "IEND"],
+            None,
+        );
+        let m = match_rules(&p3).unwrap();
+        assert!(
+            m.name.starts_with("iPadOS screenshot in Display P3"),
+            "{}",
+            m.name
+        );
+        assert_eq!(m.class, WriterClass::Screenshot);
+        assert_eq!(m.confidence, Confidence::Verified);
+        let m = match_rules(&srgb).unwrap();
+        assert!(
+            m.name.starts_with("iPadOS screenshot in sRGB"),
+            "{}",
+            m.name
+        );
+        assert_eq!(m.class, WriterClass::Screenshot);
+
+        // The macOS layout keeps its own name, and needs its own profile name for it.
+        let mac = shot(
+            &["IHDR", "pHYs", "iCCP", "iTXt", "IDAT", "IEND"],
+            Some("ICC Profile"),
+        );
+        assert!(
+            name(&mac).unwrap().starts_with("macOS screenshot"),
+            "{:?}",
+            name(&mac)
+        );
+
+        // Neither system's name is given to a capture that has only the comment in
+        // common with them: the P3 layout without cICP, or under another profile
+        // name, and the macOS layout under the iPad's profile name.
+        for other in [
+            shot(
+                &["IHDR", "iCCP", "eXIf", "iTXt", "IDAT", "IEND"],
+                Some("kCGColorSpaceDisplayP3"),
+            ),
+            shot(
+                &["IHDR", "iCCP", "cICP", "eXIf", "iTXt", "IDAT", "IEND"],
+                Some("Display P3"),
+            ),
+            shot(
+                &["IHDR", "pHYs", "iCCP", "iTXt", "IDAT", "IEND"],
+                Some("kCGColorSpaceDisplayP3"),
+            ),
+            shot(
+                &["IHDR", "iCCP", "iTXt", "IDAT", "IEND"],
+                Some("ACME UltraView 27Q"),
+            ),
+            shot(&["IHDR", "iTXt", "IDAT", "IEND"], None),
+        ] {
+            assert_eq!(
+                name(&other),
+                None,
+                "{:?} {:?}",
+                other.chunks,
+                other.icc_name
+            );
+        }
+
+        // Without the comment the sRGB layout is anybody's: sRGB, eXIf and an XMP
+        // packet say nothing about a screenshot.
+        let plain = PngInfo {
+            has_exif: true,
+            ..info(
+                &["IHDR", "sRGB", "eXIf", "iTXt", "IDAT", "IEND"],
+                &["XML:com.adobe.xmp"],
+            )
+        };
+        assert_eq!(name(&plain), None);
+        // Skia's sBIT keeps an Android capture out of the iPad's sRGB rule even if it
+        // carried the comment.
+        let skia = shot(
+            &["IHDR", "sBIT", "sRGB", "eXIf", "iTXt", "IDAT", "IEND"],
+            None,
+        );
+        assert!(
+            !name(&skia).is_some_and(|n| n.starts_with("iPadOS")),
+            "{:?}",
+            name(&skia)
+        );
+    }
+
     #[test]
     fn xmp_content_separates_mac_screenshot_from_photoshop() {
-        let mac = info_v(
-            &["IHDR", "pHYs", "iCCP", "iTXt", "IDAT", "IEND"],
-            &[(
-                "XML:com.adobe.xmp",
-                "<x:xmpmeta><exif:UserComment><rdf:Alt><rdf:li>Screenshot</rdf:li></rdf:Alt></exif:UserComment></x:xmpmeta>",
-            )],
-        );
+        let mac = PngInfo {
+            icc_name: Some("ICC Profile".into()),
+            ..info_v(
+                &["IHDR", "pHYs", "iCCP", "iTXt", "IDAT", "IEND"],
+                &[(
+                    "XML:com.adobe.xmp",
+                    "<x:xmpmeta><exif:UserComment><rdf:Alt><rdf:li>Screenshot</rdf:li></rdf:Alt></exif:UserComment></x:xmpmeta>",
+                )],
+            )
+        };
         assert!(
             name(&mac).unwrap().starts_with("macOS screenshot"),
             "{:?}",
