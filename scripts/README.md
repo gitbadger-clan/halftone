@@ -80,12 +80,50 @@ set -gx HT_STRATUM 06-phones
 dev htc android use fold | source  # Android over adb, one phone per terminal
 dev htc android mark               # then save on the phone
 dev htc android grab <stem>        # the one new image, sha256-checked, inspected
-dev htc ios mark                   # iPhone / iPad over AFC
+dev htc ios connect                # iPhone / iPad, once: trust this Mac, allow Wi-Fi, unplug
+dev htc ios connect --check        # what each device needs now; changes nothing
+dev htc ios mark                   # iPhone / iPad over AFC, cable or Wi-Fi
 dev htc ios grab <stem>
 dev htc desk mark                  # then download in the browser
 dev htc desk take <stem>
 dev htc --help                     # everything else: type, send, latest, range, tmp, layout
 ```
+
+### iPhone and iPad: the first connection
+
+An iPhone or iPad answers only a computer it trusts, and it can be asked to trust one
+only over a cable. `dev htc ios connect` does the whole sequence and says at each wait
+where to look:
+
+1. it waits for the device on USB (on the Mac: allow the accessory if asked);
+2. it asks the device to trust this Mac (on the device: unlock, Trust, passcode);
+3. it turns on the device's Wi-Fi connections setting, after asking;
+4. it waits until the device answers over Wi-Fi once the cable is out.
+
+Steps that are already done are skipped, so running it again is safe. With several
+devices on cables it lists them and asks which one, or all.
+
+`dev htc ios connect --check` lists every device on a cable or on the network, with
+whether it trusts this Mac and whether Wi-Fi connections are on, and one line saying
+what it needs. That line is how to tell the cases apart:
+
+| `--check` says | Do |
+|---|---|
+| ready over Wi-Fi | nothing |
+| trusted and allowed, not on the network | wake and unlock the device, same Wi-Fi network as the Mac |
+| not trusted, on the cable or on the network | pair again: cable in, `dev htc ios connect` |
+| nothing listed, with the device plugged in | the Mac's accessory dialog, then the cable and the port |
+
+A device stops trusting a Mac when its trust decisions are reset or when it is erased
+or restored. It may also drop a computer it has not connected to for a long time; that
+is how iOS is described to behave and was not measured here. Start over
+(`dev htc ios connect --forget`, and on the device Settings, General, Transfer or
+Reset, Reset, Reset Location & Privacy) only when the Trust dialog never appears on an
+unlocked device, or pairing fails right after Trust was tapped.
+
+`mark`, `new`, `grab` and `pull` never start a pairing themselves. On a device that
+is listed but not trusted they stop and point here; before this they waited on the
+Trust dialog without saying so.
 
 ## Setting up
 

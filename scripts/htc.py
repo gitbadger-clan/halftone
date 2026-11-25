@@ -9,6 +9,11 @@
 """Bring files from outside the repo into a corpus stratum: Android phones over adb,
 iPhones and iPads over AFC, and browser downloads from ~/Downloads.
 
+An iPhone or iPad has to trust this Mac once, over a cable, before anything else
+works; after that it can be reached over Wi-Fi. `htc ios connect` walks through that
+and says at each wait where to look; `htc ios connect --check` shows what each device
+needs without changing anything.
+
 Every command that writes into the corpus needs the target stratum:
 
     set -gx HT_STRATUM 06-phones
@@ -54,7 +59,7 @@ import time
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, NamedTuple
 
 import typer
 
@@ -74,6 +79,8 @@ Examples (`dev` as set up in scripts/README.md; or `uv run scripts/htc.py …`):
     dev htc android range 2026-11-09 14:00 +45m  # candidates, outside the corpus
     dev htc desk mark
     dev htc desk take -f firefly__image-4__web-download__p1__1
+    dev htc ios connect                          # trust, Wi-Fi connections, then unplug
+    dev htc ios connect --check                  # what each device needs, changing nothing
     dev htc ios mark
     dev htc ios grab iphone13__default__afc-pull__s01__1
     dev htc layout corpus/differential/06-phones/*.jpg
@@ -573,38 +580,92 @@ Device = Annotated[str | None, typer.Option("--device", envvar="HT_IOS",
                                            help="Part of the device name, model (iPhone14,2) or UDID.")]
 
 
-async def ios_devices() -> list[tuple[str, str, dict]]:
-    """(udid, connection, lockdown short_info) per device. Wi-Fi sync can list a device
-    a second time, under its UDID without the dash; USB wins."""
-    from pymobiledevice3 import usbmux
+class IosDev(NamedTuple):
+    """One way to reach one device, as usbmuxd lists it and lockdown answers."""
+
+    serial: str            # the UDID as usbmuxd spells it for this connection
+    conn: str              # "USB" or "Network"
+    info: dict             # lockdown short_info; a device answers this unpaired too
+    paired: bool           # the device trusts this Mac and a session started
+    wifi: bool | None      # EnableWifiConnections; None when it could not be read
+
+    @property
+    def key(self) -> str:
+        """The UDID without the dash: Wi-Fi sync lists a device under that spelling."""
+        return self.serial.replace("-", "")
+
+    @property
+    def name(self) -> str:
+        return str(self.info.get("DeviceName") or self.info.get("ProductType") or self.serial)
+
+    @property
+    def kind(self) -> str:
+        """`iPad`, `iPhone`: the word for the help lines."""
+        return str(self.info.get("DeviceClass") or "device")
+
+
+async def ios_probe(serial: str, conn: str) -> IosDev:
+    """Ask one device who it is and whether it trusts this Mac. Never starts a pairing:
+    an unpaired device would show its Trust dialog and this call would wait on it
+    without a word."""
+    from pymobiledevice3.exceptions import PyMobileDevice3Exception
     from pymobiledevice3.lockdown import create_using_usbmux
 
-    seen: dict[str, tuple[str, str]] = {}
-    for d in await usbmux.list_devices():
-        key = d.serial.replace("-", "")
-        if key not in seen or d.is_usb:
-            seen[key] = (d.serial, d.connection_type)
-    out = []
-    for serial, conn in seen.values():
-        async with await create_using_usbmux(serial=serial) as ld:
-            out.append((serial, conn, ld.short_info))
-    return out
+    try:
+        async with await create_using_usbmux(serial=serial, connection_type=conn, autopair=False) as ld:
+            wifi = None
+            if ld.paired:
+                try:
+                    wifi = bool(await ld.get_enable_wifi_connections())
+                except PyMobileDevice3Exception:
+                    wifi = None
+            return IosDev(serial, conn, dict(ld.short_info), bool(ld.paired), wifi)
+    except (PyMobileDevice3Exception, OSError) as e:
+        # Listed by usbmuxd but lockdown did not answer: gone to sleep, just unplugged.
+        return IosDev(serial, conn, {"DeviceName": None, "Error": f"{type(e).__name__}: {e}".rstrip(": ")}, False, None)
+
+
+async def ios_rows() -> list[IosDev]:
+    """Every connection usbmuxd lists, probed: a device on a cable and on Wi-Fi is two
+    rows."""
+    from pymobiledevice3 import usbmux
+
+    rows = [await ios_probe(d.serial, d.connection_type) for d in await usbmux.list_devices()]
+    return sorted(rows, key=lambda r: (r.name.lower(), r.key, r.conn != "USB"))
+
+
+async def ios_devices() -> list[IosDev]:
+    """One row per device; where it is on a cable and on Wi-Fi, USB wins."""
+    seen: dict[str, IosDev] = {}
+    for r in await ios_rows():
+        if r.key not in seen or r.conn == "USB":
+            seen[r.key] = r
+    return list(seen.values())
+
+
+def ios_matches(dev: IosDev, want: str) -> bool:
+    w = want.lower()
+    return any(w in str(dev.info.get(k) or "").lower()
+               for k in ("DeviceName", "ProductType", "DeviceClass", "UniqueDeviceID")) or w in dev.serial.lower()
 
 
 async def ios_pick(want: str | None) -> tuple[str, dict]:
     devs = await ios_devices()
     if not devs:
-        die("no iOS device: connect it by USB (or Wi-Fi sync), unlock it, trust this Mac", 1)
+        die("no iOS device: connect it by USB, or over Wi-Fi once `htc ios connect` has set that up", 1)
     if want:
-        w = want.lower()
-        devs = [d for d in devs if any(w in str(d[2].get(k) or "").lower()
-                                       for k in ("DeviceName", "ProductType", "DeviceClass", "UniqueDeviceID"))]
+        devs = [d for d in devs if ios_matches(d, want)]
         if not devs:
             die(f"no connected device matches {want!r} (see: htc ios devices)", 2)
     if len(devs) > 1:
-        names = ", ".join(f"{d[2].get('DeviceName')} ({d[2].get('ProductType')})" for d in devs)
+        names = ", ".join(f"{d.name} ({d.info.get('ProductType')})" for d in devs)
         die(f"several devices connected ({names}): set HT_IOS or pass --device", 2)
-    return devs[0][0], devs[0][2]
+    dev = devs[0]
+    if not dev.paired:
+        why = dev.info.get("Error") or "it has not trusted this Mac, or no longer does"
+        die(f"{dev.name} is listed over {dev.conn} but cannot be used ({why}): "
+            "plug in the cable and run `htc ios connect`", 1)
+    return dev.serial, dev.info
 
 
 async def with_afc(want: str | None, fn):
@@ -612,7 +673,7 @@ async def with_afc(want: str | None, fn):
     from pymobiledevice3.services.afc import AfcService
 
     udid, info = await ios_pick(want)
-    async with await create_using_usbmux(serial=udid) as ld, AfcService(lockdown=ld) as afc:
+    async with await create_using_usbmux(serial=udid, autopair=False) as ld, AfcService(lockdown=ld) as afc:
         return await fn(udid, info, afc)
 
 
@@ -715,12 +776,319 @@ async def ios_pull_verified(afc, src: str, dst: Path) -> str:
 
 @ios.command("devices")
 def ios_devices_cmd() -> None:
-    """Connected devices: name, model, iOS version, USB or Network, UDID."""
+    """Connected devices: name, model, iOS version, USB or Network, UDID. A device
+    that has not trusted this Mac is listed and marked; `htc ios connect` fixes that."""
     async def go():
-        for udid, conn, i in await ios_devices():
-            print(f"{i.get('DeviceName')!s:<24} {i.get('ProductType')!s:<14} "
-                  f"iOS {i.get('ProductVersion')!s:<8} {conn:<8} {udid}")
+        for d in await ios_devices():
+            i = d.info
+            mark = "" if d.paired else f"  {C.YELLOW}not trusted: htc ios connect{C.RESET}"
+            print(f"{d.name:<24} {i.get('ProductType')!s:<14} "
+                  f"iOS {i.get('ProductVersion')!s:<8} {d.conn:<8} {d.serial}{mark}")
     asyncio.run(go())
+
+
+# ---- ios connect: trust, Wi-Fi connections, off the cable ------------------------
+
+IOS_USB_WAIT = 120     # seconds to wait for a cable connection to show up
+IOS_TRUST_WAIT = 180   # seconds to wait for Trust to be tapped
+IOS_WIFI_WAIT = 90     # seconds to wait for the device to appear on the network
+IOS_RESET_HINT = ("Settings > General > Transfer or Reset > Reset > Reset Location & Privacy "
+                  "(forgets every trusted computer, and resets the apps' location and privacy permissions)")
+
+
+def hint(text: str) -> None:
+    """Where to look and what to do while this script waits."""
+    print(f"  {C.YELLOW}->{C.RESET} {text}", flush=True)
+
+
+def done(text: str) -> None:
+    print(f"  {C.GREEN}ok{C.RESET}  {text}", flush=True)
+
+
+def ios_advice(rows: list[IosDev]) -> str:
+    """What one device needs, from all the ways it is listed."""
+    usb = next((r for r in rows if r.conn == "USB"), None)
+    net = next((r for r in rows if r.conn != "USB"), None)
+    if net and net.paired:
+        return "ready over Wi-Fi: mark, grab and pull work without the cable"
+    if net and not net.paired and not (usb and usb.paired):
+        return ("seen on the network but it does not trust this Mac any more: pair again, "
+                "with the cable in: htc ios connect")
+    if usb and not usb.paired:
+        if usb.info.get("Error"):
+            return f"on the cable but not answering ({usb.info['Error']}): unlock it, replug, try again"
+        return "on the cable, not trusted yet: htc ios connect"
+    if usb and usb.wifi is False:
+        return "trusted, Wi-Fi connections off: htc ios connect"
+    if usb and usb.wifi:
+        return ("trusted and allowed over Wi-Fi; works on the cable now. Unplug and it should "
+                "appear as Network within a minute if it is awake and on this Mac's Wi-Fi")
+    if usb:
+        return "trusted; the Wi-Fi setting could not be read: htc ios connect"
+    return "listed, state unknown"
+
+
+def ios_table(rows: list[IosDev]) -> None:
+    by_dev: dict[str, list[IosDev]] = {}
+    for r in rows:
+        by_dev.setdefault(r.key, []).append(r)
+    for group in by_dev.values():
+        for r in group:
+            trust = "trusted" if r.paired else "not trusted"
+            wifi = {True: "Wi-Fi connections on", False: "Wi-Fi connections off", None: ""}[r.wifi]
+            print(f"{r.name:<24} {r.info.get('ProductType')!s:<14} iOS {r.info.get('ProductVersion')!s:<8} "
+                  f"{r.conn:<8} {trust:<12} {wifi}".rstrip())
+        hint(ios_advice(group))
+
+
+async def ios_wait_usb(want: str | None) -> list[IosDev]:
+    """The devices on a cable, waiting for one when there is none yet."""
+    from pymobiledevice3 import usbmux
+
+    said = False
+    for _ in range(IOS_USB_WAIT):
+        if any(d.is_usb for d in await usbmux.list_devices()):
+            break
+        if not said:
+            print("No iPhone or iPad on a cable yet.")
+            hint("Plug it in and unlock it to the Home Screen.")
+            hint('On this Mac: if a dialog asks "Allow accessory to connect?", click Allow.')
+            hint(f"Waiting up to {IOS_USB_WAIT} s (Ctrl-C stops) ...")
+            said = True
+        await asyncio.sleep(1)
+    else:
+        die("no device showed up on USB. In the order to check: the Allow dialog on this Mac; "
+            "the cable (some only charge); the port or hub (plug straight into the Mac); "
+            "then unplug, unlock the device, plug in again", 1)
+    if said:
+        await asyncio.sleep(1)  # lockdown answers a moment after usbmuxd lists the device
+    rows = [r for r in await ios_rows() if r.conn == "USB"]
+    if want:
+        rows = [r for r in rows if ios_matches(r, want)]
+        if not rows:
+            die(f"no device on a cable matches {want!r} (see: htc ios connect --check)", 2)
+    return rows
+
+
+def ios_choose(rows: list[IosDev]) -> list[IosDev]:
+    """One device goes ahead; several are listed and asked about."""
+    if len(rows) == 1:
+        return rows
+    print("On a cable:")
+    for n, r in enumerate(rows, 1):
+        trust = "trusted" if r.paired else "not trusted"
+        print(f"  {n}  {r.name}  ({r.info.get('ProductType')}, iOS {r.info.get('ProductVersion')}, {trust})")
+    while True:
+        answer = typer.prompt("Which one? A number, or a for all, one after the other", default="1").strip().lower()
+        if answer in ("a", "all"):
+            return rows
+        if answer.isdigit() and 1 <= int(answer) <= len(rows):
+            return [rows[int(answer) - 1]]
+        print(f"  1 to {len(rows)}, or a")
+
+
+async def ios_trust(dev: IosDev) -> None:
+    """Pair with a device on a cable, saying where to look while it waits."""
+    from pymobiledevice3.exceptions import (
+        PairingDialogResponsePendingError,
+        PasswordRequiredError,
+        PyMobileDevice3Exception,
+        UserDeniedPairingError,
+    )
+    from pymobiledevice3.lockdown import create_using_usbmux
+
+    print(f"{dev.name} has not trusted this Mac yet.")
+    hint(f"On the {dev.kind}: unlock it, tap Trust on the dialog, then enter its passcode.")
+    hint(f"Waiting up to {IOS_TRUST_WAIT} s for that (Ctrl-C stops) ...")
+    deadline = time.monotonic() + IOS_TRUST_WAIT
+    said_locked = False
+    while True:
+        left = deadline - time.monotonic()
+        if left <= 0:
+            die(f"no answer on {dev.name} in {IOS_TRUST_WAIT} s. If no dialog was showing: unplug, "
+                f"unlock the {dev.kind}, plug in and run this again. If it still never asks, reset "
+                f"its trust decisions, on the {dev.kind}: {IOS_RESET_HINT}", 1)
+        try:
+            async with await create_using_usbmux(serial=dev.serial, connection_type="USB", autopair=False) as ld:
+                if ld.paired:
+                    return
+                try:
+                    await ld.pair(timeout=left)
+                except PasswordRequiredError:
+                    if not said_locked:
+                        hint(f"The {dev.kind} is locked: unlock it, the dialog comes after that.")
+                        said_locked = True
+                    await asyncio.sleep(2)
+                    continue
+                except PairingDialogResponsePendingError:
+                    continue  # the deadline above ends it with the full message
+                except UserDeniedPairingError:
+                    die(f"Don't Trust was tapped on {dev.name}. Unplug the cable, plug it in again "
+                        "and run this again: the dialog returns on a new connection", 1)
+                if not await ld.validate_pairing():
+                    die(f"{dev.name} accepted the pairing but no session started: unplug, plug in, run this again", 1)
+                return
+        except (PyMobileDevice3Exception, OSError) as e:
+            what = f"{type(e).__name__}: {e}".rstrip(": ")
+            die(f"pairing with {dev.name} failed ({what}): check the cable and run this again; "
+                "if it fails the same way twice, `htc ios connect --forget` starts over", 1)
+
+
+async def ios_allow_wifi(dev: IosDev, yes: bool) -> None:
+    from pymobiledevice3.lockdown import create_using_usbmux
+
+    async with await create_using_usbmux(serial=dev.serial, connection_type="USB", autopair=False) as ld:
+        if await ld.get_enable_wifi_connections():
+            done("Wi-Fi connections were already on")
+            return
+        if not yes and not typer.confirm(
+                f"Let this Mac reach {dev.name} over Wi-Fi (the device setting EnableWifiConnections)?", default=True):
+            die("left off: the device stays reachable on the cable only", 1)
+        await ld.set_enable_wifi_connections(True)
+        if not await ld.get_enable_wifi_connections():
+            die(f"{dev.name} did not keep the setting. Finder has the same switch: select the device, "
+                f"General, 'Show this {dev.kind} when on Wi-Fi', Apply", 1)
+        done("Wi-Fi connections turned on")
+
+
+async def ios_wait_network(dev: IosDev) -> bool:
+    """Wait until the device answers over Wi-Fi. False, with the reason printed, when
+    it does not: the caller goes on to the next device."""
+    from pymobiledevice3 import usbmux
+
+    def failed(msg: str) -> bool:
+        print(f"  {C.RED}no{C.RESET}  {msg}", flush=True)
+        return False
+
+    async def state() -> tuple[bool, str | None]:
+        usb, net = False, None
+        for d in await usbmux.list_devices():
+            if d.serial.replace("-", "") == dev.key:
+                if d.is_usb:
+                    usb = True
+                else:
+                    net = d.serial
+        return usb, net
+
+    usb, net = await state()
+    if not net:
+        if usb:
+            hint(f"Unplug the cable from the {dev.kind} now.")
+        hint(f"Keep the {dev.kind} unlocked and on the same Wi-Fi network as this Mac.")
+        hint(f"Waiting up to {IOS_WIFI_WAIT} s for it to appear on the network (Ctrl-C stops) ...")
+        for _ in range(IOS_WIFI_WAIT):
+            await asyncio.sleep(1)
+            usb, net = await state()
+            if net:
+                break
+        else:
+            still = " It is still on the cable, where it works: unplug it to use Wi-Fi." if usb else ""
+            return failed(
+                f"{dev.name} did not appear on the network.{still} It is trusted and allowed, so "
+                "nothing needs repeating. In the order to check: the device is awake and unlocked; "
+                "both are on the same Wi-Fi network (not a guest network, which keeps devices apart); "
+                "a VPN or firewall on this Mac. Then: htc ios connect --check")
+    over = await ios_probe(net, "Network")
+    if not over.paired:
+        return failed(f"{dev.name} is on the network but did not start a session there "
+                      f"({over.info.get('Error') or 'not trusted over Wi-Fi'}): "
+                      "run `htc ios connect --check` in a moment")
+    tail = " You can unplug the cable." if usb else ""
+    done(f"{dev.name} answers over Wi-Fi.{tail} `htc ios mark`, `grab` and `pull` work without the cable.")
+    return True
+
+
+async def ios_forget(dev: IosDev, yes: bool) -> None:
+    from pymobiledevice3.lockdown import create_using_usbmux
+
+    if not dev.paired:
+        print(f"{dev.name} does not trust this Mac, so there is nothing to remove from here.")
+        hint(f"If its Trust dialog never appears, reset it on the {dev.kind}: {IOS_RESET_HINT}")
+        return
+    if not yes and not typer.confirm(
+            f"Remove the trust between this Mac and {dev.name}? It will ask to Trust again next time", default=False):
+        die("nothing removed", 1)
+    async with await create_using_usbmux(serial=dev.serial, connection_type="USB", autopair=False) as ld:
+        await ld.unpair()
+    done(f"{dev.name} no longer trusts this Mac. Unplug it, plug it in, and run `htc ios connect`.")
+
+
+@ios.command("connect")
+def ios_connect(device: Device = None,
+                check: Annotated[bool, typer.Option(
+                    "--check", help="Only show each device's state and what it needs; change nothing.")] = False,
+                forget: Annotated[bool, typer.Option(
+                    "--forget", help="Remove the trust between this Mac and the device, to start over.")] = False,
+                yes: Annotated[bool, typer.Option("--yes", "-y", help="Do not ask before changing a setting.")] = False,
+                ) -> None:
+    """Get a device from "plugged in" to "works without the cable": wait for it on USB,
+    have it trust this Mac, allow Wi-Fi connections, and wait until it answers over
+    Wi-Fi. Each wait says where to look. Steps already done are skipped, so it is safe
+    to run again.
+
+    Pair again when `--check` says a device is not trusted. That happens after its
+    trust decisions were reset or it was erased or restored; a device may also drop a
+    computer it has not connected to for a long time (not measured here). Reset (`--forget`, and the device's own
+    "Reset Location & Privacy") only when the Trust dialog never appears on an unlocked
+    device, or pairing fails right after Trust was tapped."""
+    async def go():
+        if check:
+            rows = await ios_rows()
+            if device:
+                rows = [r for r in rows if ios_matches(r, device)]
+            if not rows:
+                print("No iPhone or iPad on a cable or on the network.")
+                hint("For a first connection: plug it in, unlock it, and run `htc ios connect`.")
+                hint("For one that worked before: wake and unlock it, same Wi-Fi as this Mac, then try again.")
+                return
+            ios_table(rows)
+            return
+        def title(dev: IosDev) -> None:
+            print(f"{C.BOLD_CYAN}{dev.name}{C.RESET}  ({dev.info.get('ProductType')}, "
+                  f"iOS {dev.info.get('ProductVersion')})")
+
+        # Nothing on a cable, but already answering over Wi-Fi: there is nothing to do,
+        # and waiting two minutes for a cable would say the opposite.
+        rows = [r for r in await ios_rows() if not device or ios_matches(r, device)]
+        if rows and all(r.conn != "USB" for r in rows):
+            ios_table(rows)
+            if not forget and any(r.paired for r in rows):
+                return
+        chosen = ios_choose(await ios_wait_usb(device))
+        # Everything that needs the cable first, for every device, then the unplugging.
+        for dev in chosen:
+            title(dev)
+            if dev.info.get("Error"):
+                die(f"{dev.name} is on the cable but not answering ({dev.info['Error']}): "
+                    "unlock it, replug, run this again", 1)
+            if forget:
+                await ios_forget(dev, yes)
+                continue
+            if not dev.paired:
+                await ios_trust(dev)
+            done("trusts this Mac")
+            await ios_allow_wifi(dev, yes)
+        if forget:
+            return
+        reached = []
+        for dev in chosen:
+            if len(chosen) > 1:
+                title(dev)
+            reached.append(await ios_wait_network(dev))
+        if not all(reached):
+            sys.exit(1)
+    from pymobiledevice3.exceptions import ConnectionFailedToUsbmuxdError, PyMobileDevice3Exception
+
+    try:
+        asyncio.run(go())
+    except KeyboardInterrupt:
+        die("stopped; nothing is left half-done, run it again when ready", 1)
+    except ConnectionFailedToUsbmuxdError:
+        die("this Mac's device service (usbmuxd) is not answering. It is part of macOS and restarts "
+            "on its own: unplug the device, run `sudo killall usbmuxd`, plug it in, try again", 1)
+    except PyMobileDevice3Exception as e:
+        die(f"the device stopped answering ({type(e).__name__}: {e}); check the cable or the Wi-Fi "
+            "and run this again: steps already done are skipped", 1)
 
 
 @ios.command("mark")
