@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.14"
-# dependencies = ["typer>=0.27", "pymobiledevice3>=11.45,<12"]
+# dependencies = ["typer>=0.27", "inquirer>=3.4", "pymobiledevice3>=11.45,<12"]
 #
 # [tool.uv]
 # exclude-newer = "14 days"  # only releases at least two weeks old
@@ -871,20 +871,26 @@ async def ios_wait_usb(want: str | None) -> list[IosDev]:
 
 
 def ios_choose(rows: list[IosDev]) -> list[IosDev]:
-    """One device goes ahead; several are listed and asked about."""
+    """One device goes ahead. Several are offered as a list to pick from with the arrow
+    keys; without a terminal there is nobody to ask, so the option is named instead."""
     if len(rows) == 1:
         return rows
-    print("On a cable:")
-    for n, r in enumerate(rows, 1):
+    if not sys.stdin.isatty():
+        names = ", ".join(r.name for r in rows)
+        die(f"several devices on cables ({names}) and no terminal to ask in: pass --device", 2)
+    import inquirer  # only needed when there is a choice to make
+
+    def label(r: IosDev) -> str:
         trust = "trusted" if r.paired else "not trusted"
-        print(f"  {n}  {r.name}  ({r.info.get('ProductType')}, iOS {r.info.get('ProductVersion')}, {trust})")
-    while True:
-        answer = typer.prompt("Which one? A number, or a for all, one after the other", default="1").strip().lower()
-        if answer in ("a", "all"):
-            return rows
-        if answer.isdigit() and 1 <= int(answer) <= len(rows):
-            return [rows[int(answer) - 1]]
-        print(f"  1 to {len(rows)}, or a")
+        return f"{r.name}  ({r.info.get('ProductType')}, iOS {r.info.get('ProductVersion')}, {trust})"
+
+    everything = "All of them, one after the other"
+    choices = [(label(r), r.key) for r in rows] + [(everything, "")]
+    answer = inquirer.prompt([inquirer.List("device", message="Which device", choices=choices, carousel=True)])
+    if not answer:  # Ctrl-C in the list
+        die("stopped; nothing was changed", 1)
+    picked = answer["device"]
+    return rows if picked == "" else [r for r in rows if r.key == picked]
 
 
 def ios_agree(question: str, yes: bool, default: bool) -> bool:

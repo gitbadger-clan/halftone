@@ -101,7 +101,8 @@ where to look:
 4. it waits until the device answers over Wi-Fi once the cable is out.
 
 Steps that are already done are skipped, so running it again is safe. With several
-devices on cables it lists them and asks which one, or all.
+devices on cables it shows a list to pick from with the arrow keys, one device or all
+of them; `--device` answers that in advance, and without a terminal it is required.
 
 `dev htc ios connect --check` lists every device on a cable or on the network, with
 whether it trusts this Mac and whether Wi-Fi connections are on, and one line saying
