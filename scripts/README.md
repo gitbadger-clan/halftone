@@ -219,6 +219,13 @@ machine's ExifTool, OpenSSL, c2patool, Credentio and rubrics against the pins an
 collects nothing if one differs (`--allow-unpinned` overrides, for a comparison or
 the nightly), so a committed header can never record a tool the pins do not name.
 
+A file added to a stratum has no ground truth until that stratum is collected again.
+The differential test compares the files the ground truth lists, so it also looks for
+images in a stratum folder that the ground truth does not list, and each one fails
+the run with the collect command in its row. Without that check such files were
+passed over in silence: on 2026-11-24 a run reported 401 of 401 files while nine
+new ones had never been looked at.
+
 ### Personal values in the ground truth
 
 `expectations.json` is committed and the repo is public, but the private strata hold

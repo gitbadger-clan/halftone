@@ -16,6 +16,12 @@
 //! Files are matched by SHA-256, not path. Every disagreement is printed as one row
 //! of a table before the assertion fails, so a run is also the differential log.
 //!
+//! The ground truth decides which files are compared, so a file it does not list
+//! would never be looked at. That is a row too: an image in a stratum folder with no
+//! entry in that stratum's `expectations.json` fails the run, with the command that
+//! collects it. "N of N files compared" then means every image in the folder, not
+//! every image somebody remembered to collect.
+//!
 //! One change is not a disagreement: a manifest that was `Valid` or `Trusted` when
 //! the expectations were collected and now reads `Invalid` because its signing
 //! certificate expired, with nothing else new and nothing broken (D-010). The
@@ -174,6 +180,71 @@ fn header_disagreements(label: &str, exp: &Value) -> Vec<Disagreement> {
 }
 
 /// The workspace root, two levels above this package.
+/// The extensions the collector looks at (`IMAGE_EXTS` in `scripts/differential.py`),
+/// lower case and without the dot. A test below keeps the two lists equal.
+const COLLECTED_EXTS: [&str; 8] = ["jpg", "jpeg", "jpe", "png", "webp", "heic", "heif", "avif"];
+
+/// Files under `dir` that the collector would look at and `listed` has no entry for:
+/// paths relative to `dir`, with forward slashes as the ground truth writes them,
+/// sorted. The walk goes through every level, as the collector's does, with one
+/// difference: a subfolder with an `expectations.json` of its own is another corpus
+/// and is left to its own run.
+///
+/// The extension decides, in either case. The collector goes on to ask ExifTool what
+/// the file is and records nothing for a file `ht` cannot load, so a mislabelled or
+/// stray file with an image extension is reported here as well. It does not belong
+/// in the folder: the collector says so once and then never again.
+fn unlisted(dir: &Path, listed: &serde_json::Map<String, Value>) -> Vec<String> {
+    fn walk(at: &Path, rel: &str, listed: &serde_json::Map<String, Value>, out: &mut Vec<String>) {
+        let Ok(rd) = std::fs::read_dir(at) else {
+            return;
+        };
+        for entry in rd.flatten() {
+            let path = entry.path();
+            let name = entry.file_name().to_string_lossy().into_owned();
+            let rel = if rel.is_empty() {
+                name
+            } else {
+                format!("{rel}/{name}")
+            };
+            if path.is_dir() {
+                if !path.join("expectations.json").is_file() {
+                    walk(&path, &rel, listed, out);
+                }
+            } else if path.is_file()
+                && path
+                    .extension()
+                    .and_then(|e| e.to_str())
+                    .is_some_and(|e| COLLECTED_EXTS.contains(&e.to_ascii_lowercase().as_str()))
+                && !listed.contains_key(&rel)
+            {
+                out.push(rel);
+            }
+        }
+    }
+    let mut out = Vec::new();
+    walk(dir, "", listed, &mut out);
+    out.sort();
+    out
+}
+
+/// One row per unlisted file, naming the command that collects the stratum.
+fn unlisted_rows(label: &str, extra: &[String]) -> Vec<Disagreement> {
+    extra
+        .iter()
+        .map(|rel| Disagreement {
+            file: format!("{label}/{rel}"),
+            field: "file",
+            expected: "an entry in the ground truth".into(),
+            got: format!(
+                "on disk with none, so never compared: collect it \
+                 (uv run scripts/references.py collect {label}), or take the file out \
+                 of the folder if it does not belong here"
+            ),
+        })
+        .collect()
+}
+
 fn repo_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..")
 }
@@ -1337,17 +1408,29 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
                 });
             }
         }
+        // Images in the folder that the ground truth does not list. Nothing below
+        // would ever look at them.
+        let extra = unlisted(dir, files_obj);
+        if !extra.is_empty() {
+            println!(
+                "differential[{label}]: {} file(s) on disk have no ground truth",
+                extra.len()
+            );
+        }
         if files.is_empty() {
             // None of this stratum's files are on this machine: it is a private
             // stratum (generators, phones, messaging) or an unfetched public one.
             // Skip with a notice rather than 80 "missing" rows; the CI workflow
-            // separately asserts that the public strata fetched.
+            // separately asserts that the public strata fetched. Files that are
+            // here without ground truth are still rows.
             println!(
                 "differential[{label}]: skipped, none of its {} files are on disk",
                 files_obj.len()
             );
+            all.extend(unlisted_rows(&label, &extra));
             continue;
         }
+        dis.extend(unlisted_rows(&label, &extra));
 
         let results = run_ht(&label, &files);
         let keyed: HashMap<String, (Value, Value)> = results
@@ -1492,6 +1575,154 @@ fn halftone_agrees_with_exiftool_and_c2patool() {
         all.len(),
         render(&all)
     );
+}
+
+// ---- files without ground truth: a scratch folder, no corpus needed --------------
+
+#[cfg(test)]
+mod unlisted_rule {
+    use super::*;
+
+    /// A scratch stratum folder holding `files` (empty files; only names matter).
+    fn stratum(name: &str, files: &[&str]) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!("ht-unlisted-{name}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        for f in files {
+            let p = dir.join(f);
+            std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+            std::fs::write(p, b"").unwrap();
+        }
+        dir
+    }
+
+    fn listed(names: &[&str]) -> serde_json::Map<String, Value> {
+        names
+            .iter()
+            .map(|n| (n.to_string(), serde_json::json!({})))
+            .collect()
+    }
+
+    #[test]
+    fn a_fully_collected_folder_has_nothing_unlisted() {
+        let dir = stratum(
+            "clean",
+            &[
+                "a.jpg",
+                "b.PNG",
+                "sub/c.heic",
+                "expectations.json",
+                "SOURCE.md",
+            ],
+        );
+        assert!(unlisted(&dir, &listed(&["a.jpg", "b.PNG", "sub/c.heic"])).is_empty());
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn an_image_added_after_the_collection_is_found_at_any_level_and_in_either_case() {
+        // This is what happened on 2026-11-24: nine new files, a run of "401 of 401".
+        let dir = stratum(
+            "added",
+            &[
+                "old__1.jpg",
+                "ipad__home__screenshot__s01__1.PNG",
+                "airdrop__file__x__p1__1.JPG",
+                "sub/new.HEIC",
+                "sub/old.webp",
+                "expectations.json",
+            ],
+        );
+        let got = unlisted(&dir, &listed(&["old__1.jpg", "sub/old.webp"]));
+        assert_eq!(
+            got,
+            [
+                "airdrop__file__x__p1__1.JPG",
+                "ipad__home__screenshot__s01__1.PNG",
+                "sub/new.HEIC"
+            ]
+        );
+        let rows = unlisted_rows("10-messaging", &got);
+        assert_eq!(rows.len(), 3);
+        assert_eq!(rows[0].file, "10-messaging/airdrop__file__x__p1__1.JPG");
+        assert_eq!(rows[0].field, "file");
+        assert!(
+            rows[0]
+                .got
+                .contains("uv run scripts/references.py collect 10-messaging"),
+            "{}",
+            rows[0].got
+        );
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn what_the_collector_does_not_look_at_is_not_reported() {
+        // Notes, the ground truth itself, a Live Photo's clip, a raw file, and a name
+        // that only ends like an image's.
+        let dir = stratum(
+            "others",
+            &[
+                "SOURCE.md",
+                "expectations.json",
+                "cases.json",
+                "IMG_0001.MOV",
+                "capture.dng",
+                "notes.jpg.txt",
+                "png",
+            ],
+        );
+        assert!(unlisted(&dir, &listed(&[])).is_empty());
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn a_folder_with_its_own_ground_truth_is_another_corpus() {
+        // The root may hold an `expectations.json` beside the strata; each stratum's
+        // files are then that stratum's to account for.
+        let dir = stratum(
+            "nested",
+            &[
+                "root.jpg",
+                "04-generators/expectations.json",
+                "04-generators/gen.jpg",
+                "plain/also.png",
+            ],
+        );
+        assert_eq!(unlisted(&dir, &listed(&[])), ["plain/also.png", "root.jpg"]);
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn a_key_is_matched_as_written() {
+        // A re-grab under another extension case is a new name: the old entry would
+        // be reported as missing, the new file here.
+        let dir = stratum("case", &["a.JPG"]);
+        let got = unlisted(&dir, &listed(&["a.jpg"]));
+        // On a case-insensitive volume the name on disk is still the one written.
+        assert_eq!(got, ["a.JPG"]);
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn the_extension_list_is_the_collectors() {
+        let script = repo_root().join("scripts").join("differential.py");
+        let text = std::fs::read_to_string(&script)
+            .unwrap_or_else(|e| panic!("{}: {e}", script.display()));
+        let line = text
+            .lines()
+            .find(|l| l.starts_with("IMAGE_EXTS = {"))
+            .expect("scripts/differential.py defines IMAGE_EXTS on one line");
+        let mut theirs: Vec<String> = line
+            .split('"')
+            .skip(1)
+            .step_by(2)
+            .map(|e| e.trim_start_matches('.').to_string())
+            .collect();
+        theirs.sort();
+        let mut ours: Vec<String> = COLLECTED_EXTS.iter().map(|e| e.to_string()).collect();
+        ours.sort();
+        assert_eq!(ours, theirs, "COLLECTED_EXTS and IMAGE_EXTS differ");
+    }
 }
 
 // ---- ageing rule: fabricated expectation / result pairs, no corpus needed -------
