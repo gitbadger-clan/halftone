@@ -887,6 +887,16 @@ def ios_choose(rows: list[IosDev]) -> list[IosDev]:
         print(f"  1 to {len(rows)}, or a")
 
 
+def ios_agree(question: str, yes: bool, default: bool) -> bool:
+    """A yes/no question before a setting changes. `--yes` answers it; without a
+    terminal the option is named instead of waiting on a prompt nobody sees."""
+    if yes:
+        return True
+    if not sys.stdin.isatty():
+        die("this changes a setting and there is no terminal to ask in: pass --yes", 2)
+    return typer.confirm(question, default=default)
+
+
 async def ios_trust(dev: IosDev) -> None:
     """Pair with a device on a cable, saying where to look while it waits."""
     from pymobiledevice3.exceptions import (
@@ -941,8 +951,8 @@ async def ios_allow_wifi(dev: IosDev, yes: bool) -> None:
         if await ld.get_enable_wifi_connections():
             done("Wi-Fi connections were already on")
             return
-        if not yes and not typer.confirm(
-                f"Let this Mac reach {dev.name} over Wi-Fi (the device setting EnableWifiConnections)?", default=True):
+        if not ios_agree(f"Let this Mac reach {dev.name} over Wi-Fi (the device setting "
+                         "EnableWifiConnections)?", yes, default=True):
             die("left off: the device stays reachable on the cable only", 1)
         await ld.set_enable_wifi_connections(True)
         if not await ld.get_enable_wifi_connections():
@@ -1005,8 +1015,8 @@ async def ios_forget(dev: IosDev, yes: bool) -> None:
         print(f"{dev.name} does not trust this Mac, so there is nothing to remove from here.")
         hint(f"If its Trust dialog never appears, reset it on the {dev.kind}: {IOS_RESET_HINT}")
         return
-    if not yes and not typer.confirm(
-            f"Remove the trust between this Mac and {dev.name}? It will ask to Trust again next time", default=False):
+    if not ios_agree(f"Remove the trust between this Mac and {dev.name}? It will ask to Trust "
+                     "again next time", yes, default=False):
         die("nothing removed", 1)
     async with await create_using_usbmux(serial=dev.serial, connection_type="USB", autopair=False) as ld:
         await ld.unpair()
