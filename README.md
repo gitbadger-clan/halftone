@@ -80,11 +80,19 @@ has no publisher key built in, so it stops before any request and says what work
 | `rights_statements` | JPEG/PNG/WebP/HEIF | Copyright notice (EXIF, IIM, `dc:rights`, PNG text), rights holder and licensor, usage terms and instructions, web statement, Creative Commons licence, credit line and source, PLUS releases, rights expressions: each value quoted with its field | At least one rights or credit statement is there. Quoted, never interpreted: nothing about who owns anything or whether a notice is valid. Copies of the notice or the credit line that disagree are `Inconclusive` (a copy cut at IIM's field limit is not a disagreement). Absence is not a waiver. |
 | `container_directory` | JPEG | The Motion Photo / Ultra HDR container directory: the items it declares (primary image, gain map, motion clip), checked against the bytes of the file | The directory is there and the file holds every declared item where the directory places it, and nothing after. A disagreement is `Inconclusive` and says what does not fit. Unsigned; agreement says nothing about edits inside an item. |
 | `mpf_index` | JPEG | The Multi-Picture Format index (APP2): the images it declares, checked against the bytes of the file | The index is there and the file holds what it declares. A disagreement is `Inconclusive`. Unsigned; agreement says nothing about edits inside an image. |
-| `embedded_identifiers` | JPEG/PNG/WebP/HEIF | The privacy listing: person names (`Artist`, By-line, `dc:creator`, `pdf:Author`), creator contact details, account and tracking records (`Attrib:Ads`, the `FBMD` marker), device serial numbers and owner name, the name of a display (the description of a display-class ICC profile that is not a standard colour space's, as macOS embeds in screenshots; JPEG/PNG/WebP), document identifiers (EXIF `ImageUniqueID`, the `xmpMM` IDs), GPS position | The file discloses at least one of these to anyone who receives it. Quoted as written; says nothing about accuracy. `Absent` is not "identifies nobody": MakerNotes, manifests, thumbnails, a colour profile's other tags and pixels are not read. |
+| `embedded_identifiers` | JPEG/PNG/WebP/HEIF | The privacy listing: person names (`Artist`, By-line, `dc:creator`, `pdf:Author`), creator contact details, account and tracking records (`Attrib:Ads`, the `FBMD` marker), device serial numbers and owner name, the time since power-on that an Apple camera writes (`RunTime` in Apple's MakerNote), the name of a display (the description of a display-class ICC profile that is not a standard colour space's, as macOS embeds in screenshots; JPEG/PNG/WebP), document identifiers (EXIF `ImageUniqueID`, the `xmpMM` IDs, and the three UUIDs in Apple's MakerNote: `PhotoIdentifier`, `ImageCaptureRequestID`, `ContentIdentifier`), GPS position | The file discloses at least one of these to anyone who receives it. Quoted as written; says nothing about accuracy. `Absent` is not "identifies nobody": MakerNotes other than those four fields of Apple's, manifests, thumbnails, a colour profile's other tags and pixels are not read. |
 
 None of these carries a calibration yet; the `details` object exposes every raw
 discriminant so `ht bench` can measure per-signal false-positive rates against a
 labelled corpus. The `jpeg_double` threshold is provisional and says so.
+
+From Apple's MakerNote, the block an iPhone or iPad camera writes into EXIF, four
+fields are read and no others: the time since the device was switched on and three
+UUIDs. Measured on six camera files of one iPad on iPadOS 18.7.3, three HEIC and
+three JPEG. The run time is listed as a device identifier because, taken from the
+capture time, it gives the moment of power-on: the same value for every photo until
+the device restarts, so two files that agree on it came from one device in one
+stretch of use. Other makers' MakerNotes are not read.
 
 In a PNG, text chunks are read compressed or not (`tEXt`, `zTXt`, `iTXt`; at most
 4 MiB inflated per chunk), and IPTC IIM is read from a raw IPTC profile in a text

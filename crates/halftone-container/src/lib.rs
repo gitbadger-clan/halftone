@@ -27,6 +27,8 @@
 //!   person names, contact details, account and tracking records, device and document
 //!   identifiers, a display's name, location. All three read their fields through
 //!   [`embedded`].
+//! - [`apple_makernote`]: the four fields read from the block an Apple camera writes
+//!   into EXIF. No source of its own; `embedded_identifiers` lists them.
 //! - [`icc`]: the embedded ICC colour profile, read: header, tag list, description.
 //!   No source of its own; `embedded_identifiers` lists a display's name from it.
 //! - [`gcontainer::ContainerDirectory`] (`container_directory`): the Motion Photo / Ultra HDR
@@ -37,6 +39,7 @@
 //! All sources report *encoder path* and *self-identification* facts. None of them
 //! claims authorship on its own; the rationale strings say so.
 
+pub mod apple_makernote;
 pub mod data_mining;
 pub mod double;
 pub mod embedded;

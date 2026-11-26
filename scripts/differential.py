@@ -286,7 +286,10 @@ def embedded_facts(d: dict) -> dict:
     FBMD marker being an identifier and not an instruction, placeholders not being
     identifiers, GPS as decimal degrees with five places, and the rule for a display's
     name: the description of a display-class ICC profile, unless it is the name of a
-    standard colour space on the list both sides read."""
+    standard colour space on the list both sides read. From Apple's MakerNote, four
+    fields under ExifTool's names: the run time as the count the camera wrote (-n), and
+    three identifiers. One of them, ImageCaptureRequestID, ExifTool keeps among its
+    unknown tags, which is why exiftool_facts passes -u."""
     rights: list[tuple[str, str]] = []
     ids: list[tuple[str, str]] = []
 
@@ -372,6 +375,7 @@ def embedded_facts(d: dict) -> dict:
         ("exif:BodySerialNumber", text("ExifIFD:SerialNumber")),
         ("exif:LensSerialNumber", text("ExifIFD:LensSerialNumber")),
         ("exif:CameraOwnerName", text("ExifIFD:OwnerName")),
+        ("apple:RunTime", text("Apple:RunTimeValue")),
         ("aux:SerialNumber", text("XMP-aux:SerialNumber")),
         ("aux:OwnerName", text("XMP-aux:OwnerName")),
         ("exifEX:BodySerialNumber", text("XMP-exifEX:SerialNumber")),
@@ -379,6 +383,9 @@ def embedded_facts(d: dict) -> dict:
         ("exifEX:CameraOwnerName", text("XMP-exifEX:OwnerName")),
         ("icc:ProfileDescription", display_name()),
         ("exif:ImageUniqueID", text("ExifIFD:ImageUniqueID")),
+        ("apple:PhotoIdentifier", text("Apple:PhotoIdentifier")),
+        ("apple:ImageCaptureRequestID", text("Apple:ImageCaptureRequestID")),
+        ("apple:ContentIdentifier", text("Apple:ContentIdentifier")),
         ("xmpMM:DocumentID", text("XMP-xmpMM:DocumentID")),
         ("xmpMM:OriginalDocumentID", text("XMP-xmpMM:OriginalDocumentID")),
         ("xmpMM:InstanceID", text("XMP-xmpMM:InstanceID")),
@@ -426,10 +433,12 @@ def exiftool_facts(p: Path) -> dict:
     """XMP presence, XMP DigitalSourceType and Data Mining values, IIM program fields,
     MIME, and the embedded fields the listing sources read (embedded_facts)."""
     rc, out, err = run([
-        "exiftool", "-j", "-G1", "-a", "-struct", "-n",
+        "exiftool", "-j", "-G1", "-a", "-struct", "-n", "-u",
         "-XMP:all", "-IPTC:all", "-IFD0:Artist", "-IFD0:Copyright",
         "-ExifIFD:SerialNumber", "-ExifIFD:LensSerialNumber", "-ExifIFD:OwnerName",
         "-ExifIFD:ImageUniqueID",
+        "-Apple:RunTimeValue", "-Apple:PhotoIdentifier", "-Apple:ImageCaptureRequestID",
+        "-Apple:ContentIdentifier",
         "-ICC_Profile:ProfileDescription*", "-ICC-header:ProfileClass",
         "-GPS:GPSLatitude", "-GPS:GPSLatitudeRef", "-GPS:GPSLongitude", "-GPS:GPSLongitudeRef",
         "-PNG:Copyright", "-PNG:Author", "-PNG:Source", "-PNG:Disclaimer",

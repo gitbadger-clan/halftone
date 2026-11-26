@@ -10,7 +10,8 @@
 //!   PNG, WebP).
 //!
 //! Reading only: nothing here judges a value. Every value is returned as written,
-//! trimmed and bounded. Not read, and the sources say so: EXIF MakerNotes, values
+//! trimmed and bounded. Not read, and the sources say so: EXIF MakerNotes other than
+//! the listed fields of Apple's ([`crate::apple_makernote`]), values
 //! inside a C2PA manifest, and XMP or IIM in containers that keep them somewhere this
 //! module does not look. A compressed PNG text chunk that cannot be inflated is
 //! named in [`Embedded::png_text_unread`], so "not found" is not taken for "not
@@ -284,6 +285,16 @@ impl Embedded {
         parts.into_iter().filter(|p| !p.is_empty()).collect()
     }
 
+    /// The listed fields of Apple's MakerNote ([`crate::apple_makernote`]). `None`
+    /// when the EXIF block has no MakerNote or it is another maker's.
+    pub fn apple_makernote(&self) -> Option<crate::apple_makernote::AppleMakerNote> {
+        let f = self.exif.as_ref()?.get_field(Tag::MakerNote, In::PRIMARY)?;
+        match &f.value {
+            exif::Value::Undefined(bytes, _) => crate::apple_makernote::parse(bytes),
+            _ => None,
+        }
+    }
+
     /// An EXIF text field of the primary image, its parts joined with `; `; `None`
     /// when absent or empty.
     pub fn exif_text(&self, tag: Tag) -> Option<String> {
@@ -547,6 +558,12 @@ pub(crate) mod testutil {
     /// A little-endian EXIF block with ASCII tags in IFD0 (`ifd0`) and in the Exif
     /// sub-IFD (`sub`).
     pub fn exif(ifd0: &[(u16, &str)], sub: &[(u16, &str)]) -> Vec<u8> {
+        exif_with(ifd0, sub, &[])
+    }
+
+    /// As [`exif`], with byte-string (`UNDEFINED`) tags in the Exif sub-IFD as well:
+    /// a MakerNote is one (`0x927C`).
+    pub fn exif_with(ifd0: &[(u16, &str)], sub: &[(u16, &str)], blobs: &[(u16, &[u8])]) -> Vec<u8> {
         fn ifd(entries: &[(u16, u16, u32, Vec<u8>)], at: u32, next: u32) -> Vec<u8> {
             // entries: (tag, type, count, data). Data over 4 bytes goes after the IFD.
             let mut dir = (entries.len() as u16).to_le_bytes().to_vec();
@@ -582,7 +599,13 @@ pub(crate) mod testutil {
                 .collect()
         };
         let mut e0 = ascii(ifd0);
-        let sub_entries = ascii(sub);
+        let mut sub_entries = ascii(sub);
+        sub_entries.extend(
+            blobs
+                .iter()
+                .map(|(t, d)| (*t, 7u16, d.len() as u32, d.to_vec())),
+        );
+        sub_entries.sort_by_key(|e| e.0);
         // Size IFD0 first with a placeholder pointer to learn where the sub-IFD goes.
         if !sub_entries.is_empty() {
             e0.push((0x8769, 4, 1, 0u32.to_le_bytes().to_vec()));

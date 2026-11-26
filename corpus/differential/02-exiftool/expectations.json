@@ -1,7 +1,7 @@
 {
   "c2patool_env": "XDG_CONFIG_HOME=<empty>; C2PATOOL_SETTINGS and C2PATOOL_TRUST_ANCHORS unset",
   "c2patool_settings": "[verify]\nremote_manifest_fetch = false\nocsp_fetch = false\n[[trust.anchors]] trust_kind = \"manifest\" <pem>; [[trust.anchors]] trust_kind = \"tsa\" <pem>; [trust] trust_config = <eku oids>",
-  "collected_at": "2026-11-17T06:07:13Z",
+  "collected_at": "2026-11-26T10:55:46Z",
   "conformance_rubrics": null,
   "corpus": "corpus/differential/02-exiftool",
   "files": {
@@ -40,6 +40,10 @@
         "digital_source_type_raw": [],
         "embedded": {
           "identifiers": [
+            {
+              "field": "apple:RunTime",
+              "value": "39772089846958"
+            },
             {
               "field": "exif:GPS",
               "value": "53.38285 N, 1.45668 W"

@@ -15,6 +15,19 @@
 //! writes a random UUID, some camera firmware writes the same string into every
 //! file. It is quoted as written like everything else here.
 //!
+//! An iPhone or iPad camera writes its own identifiers, and not into any standard
+//! field: they sit in Apple's MakerNote ([`crate::apple_makernote`]). Three are UUIDs
+//! and are listed as document identifiers: one per photo (`PhotoIdentifier`), one per
+//! capture (`ImageCaptureRequestID`), and one that a still shares with its Live Photo
+//! clip (`ContentIdentifier`; the `live_photo` source reports what its presence
+//! means). The fourth is listed as a device identifier though it names no device:
+//! `RunTime`, the time since the device was switched on, counted in thousand
+//! millionths of a second. Taken from the capture time it gives the moment of
+//! power-on, which is the same for every photo the device takes until it restarts.
+//! Two files that agree on it came from one device, in one stretch of use. Measured
+//! on six camera files of one iPad (iPadOS 18.7.3, 2026-11-26); all four are in the
+//! HEIC and the JPEG alike.
+//!
 //! A display is listed by the name of its colour profile. macOS embeds in a
 //! screenshot the profile of the screen the capture came from (measured on macOS 27),
 //! and that profile's description is usually the monitor's model name: the file says
@@ -38,7 +51,8 @@
 //! - `Inconclusive`: nothing found, but some metadata could not be read completely.
 //!
 //! Not read, and named in the `Absent` rationale: EXIF MakerNotes (camera makers'
-//! own blocks, which often hold serial numbers and owner data), the signer and
+//! own blocks, which often hold serial numbers and owner data) apart from the four
+//! fields of Apple's above, the signer and
 //! assertions of a C2PA manifest, embedded thumbnails and previews, the colour
 //! profile of a HEIF file and what any profile holds besides its description
 //! (Apple's `mmod` tag, for one, has fields for a display's make, model and serial
@@ -113,7 +127,8 @@ pub const FIELDS: &[(Kind, &str)] = &[
     ),
     (
         Kind::Device,
-        "EXIF body and lens serial numbers, camera owner name, and their XMP copies",
+        "EXIF body and lens serial numbers, camera owner name, and their XMP copies; \
+         Apple MakerNote RunTime (time since power-on)",
     ),
     (
         Kind::Display,
@@ -121,7 +136,8 @@ pub const FIELDS: &[(Kind, &str)] = &[
     ),
     (
         Kind::Document,
-        "EXIF ImageUniqueID, xmpMM DocumentID, OriginalDocumentID, InstanceID",
+        "EXIF ImageUniqueID; Apple MakerNote PhotoIdentifier, ImageCaptureRequestID, \
+         ContentIdentifier; xmpMM DocumentID, OriginalDocumentID, InstanceID",
     ),
     (Kind::Location, "EXIF GPS latitude and longitude"),
 ];
@@ -232,6 +248,11 @@ pub fn scan(e: &Embedded) -> Vec<Identifier> {
             add(Kind::Device, &format!("{prefix}:{name}"), v);
         }
     }
+    // Apple's cameras: the time since power-on, as the count the camera wrote.
+    let apple = e.apple_makernote();
+    if let Some(run) = apple.as_ref().and_then(|m| m.run_time) {
+        add(Kind::Device, "apple:RunTime", run.value.to_string());
+    }
 
     // Displays: the profile a screenshot tool embeds is the screen's own. A standard
     // colour space is a display-class profile too and names no screen.
@@ -245,6 +266,17 @@ pub fn scan(e: &Embedded) -> Vec<Identifier> {
     // what editing software added.
     if let Some(v) = e.exif_text(Tag::ImageUniqueID) {
         add(Kind::Document, "exif:ImageUniqueID", v);
+    }
+    if let Some(m) = &apple {
+        for (field, value) in [
+            ("apple:PhotoIdentifier", &m.photo_identifier),
+            ("apple:ImageCaptureRequestID", &m.capture_request_id),
+            ("apple:ContentIdentifier", &m.content_identifier),
+        ] {
+            if let Some(v) = value {
+                add(Kind::Document, field, v.clone());
+            }
+        }
     }
     for name in ["DocumentID", "OriginalDocumentID", "InstanceID"] {
         for v in xmp(XMP_MM, "xmpMM", name, false) {
@@ -302,12 +334,21 @@ impl EvidenceSource for EmbeddedIdentifiers {
         let e = Embedded::read(a).map_err(halftone_core::Error::Parse)?;
         let found = scan(&e);
 
-        const BLIND: &str = "Not read: camera makers' own EXIF blocks (MakerNotes), the signer \
-            and contents of a C2PA manifest, embedded thumbnails and previews, the colour \
-            profile of a HEIF file and any profile's contents beyond its description, anything \
-            hidden in the pixels, and fields outside this source's list.";
+        const BLIND: &str = "Not read: camera makers' own EXIF blocks (MakerNotes) apart from \
+            four fields of Apple's, the signer and contents of a C2PA manifest, embedded \
+            thumbnails and previews, the colour profile of a HEIF file and any profile's \
+            contents beyond its description, anything hidden in the pixels, and fields \
+            outside this source's list.";
+        let makernote = e.apple_makernote();
+        let makernote_incomplete = makernote.as_ref().is_some_and(|m| m.incomplete());
         let (status, rationale) = if found.is_empty() {
-            let unread_what = e.unread(e.icc.unreadable().then_some("the colour profile"));
+            let also = match (e.icc.unreadable(), makernote_incomplete) {
+                (true, true) => Some("the colour profile and part of Apple's MakerNote"),
+                (true, false) => Some("the colour profile"),
+                (false, true) => Some("part of Apple's MakerNote"),
+                (false, false) => None,
+            };
+            let unread_what = e.unread(also);
             let unread = unread_what.is_some();
             (
                 if unread {
@@ -362,6 +403,11 @@ impl EvidenceSource for EmbeddedIdentifiers {
                 "xmp_incomplete": e.xmp_incomplete(),
                 "has_exif": e.has_exif,
                 "icc_profile": e.icc.state(),
+                "apple_makernote": match &makernote {
+                    None => "absent",
+                    Some(m) if m.incomplete() => "incomplete",
+                    Some(_) => "read",
+                },
             }),
             duration_ms: 0,
         })
@@ -588,6 +634,115 @@ mod tests {
         chunk.extend_from_slice(&[0; 4]);
         out.splice(iend..iend, chunk);
         out
+    }
+
+    #[test]
+    fn an_apple_camera_file_discloses_its_makernote_identifiers() {
+        use crate::apple_makernote::testutil::{CONTENT, PHOTO, REQUEST, TICKS, camera};
+        use crate::embedded::testutil::exif_with;
+
+        // A still: the run time, the photo and the capture request. No Live Photo.
+        let still = camera(false);
+        let ev = assess(jpeg(
+            None,
+            Some(&exif_with(&[(0x010F, "Apple")], &[], &[(0x927C, &still)])),
+            &[],
+        ));
+        assert_eq!(ev.status, Status::Present);
+        assert_eq!(
+            fields(&ev),
+            [
+                ("apple:RunTime".to_string(), TICKS.to_string()),
+                ("apple:PhotoIdentifier".to_string(), PHOTO.to_string()),
+                (
+                    "apple:ImageCaptureRequestID".to_string(),
+                    REQUEST.to_string()
+                ),
+            ]
+        );
+        assert_eq!(ev.details["identifiers"][0]["kind"], "device");
+        assert_eq!(ev.details["identifiers"][1]["kind"], "document");
+        assert_eq!(ev.details["apple_makernote"], "read");
+        assert!(
+            ev.rationale
+                .contains("carries 1 device identifier and 2 document identifiers"),
+            "{}",
+            ev.rationale
+        );
+        // What is still not read is still said, and no longer says "all MakerNotes".
+        assert!(
+            ev.rationale
+                .contains("MakerNotes) apart from four fields of Apple's"),
+            "{}",
+            ev.rationale
+        );
+
+        // A Live Photo still adds the identifier it shares with its clip, last.
+        let live = camera(true);
+        let ev = assess(jpeg(
+            None,
+            Some(&exif_with(&[], &[], &[(0x927C, &live)])),
+            &[],
+        ));
+        assert_eq!(
+            fields(&ev).last().unwrap(),
+            &("apple:ContentIdentifier".to_string(), CONTENT.to_string())
+        );
+        assert_eq!(fields(&ev).len(), 4);
+
+        // Masked by default: field, kind and length, never the value.
+        let a = Asset::from_bytes(
+            jpeg(None, Some(&exif_with(&[], &[], &[(0x927C, &live)])), &[]),
+            None,
+        )
+        .unwrap();
+        let masked = EmbeddedIdentifiers::default().assess(&a).unwrap();
+        let text = serde_json::to_string(&masked.details).unwrap() + &masked.rationale;
+        for secret in [PHOTO, REQUEST, CONTENT, &TICKS.to_string()] {
+            assert!(!text.contains(secret), "{secret} leaked: {text}");
+        }
+        assert_eq!(
+            masked.details["identifiers"][1],
+            serde_json::json!({ "kind": "document", "field": "apple:PhotoIdentifier",
+                                "masked": true, "length": 36 })
+        );
+    }
+
+    #[test]
+    fn another_makers_block_and_a_damaged_apple_block_list_nothing() {
+        use crate::apple_makernote::testutil::camera;
+        use crate::embedded::testutil::exif_with;
+
+        // Another maker's MakerNote: not read, and the file is not called incomplete.
+        let ev = assess(jpeg(
+            None,
+            Some(&exif_with(
+                &[(0x010F, "NIKON")],
+                &[],
+                &[(0x927C, b"Nikon\0\x02\x10\0\0MM\0\x2A")],
+            )),
+            &[],
+        ));
+        assert_eq!(ev.status, Status::Absent);
+        assert_eq!(ev.details["apple_makernote"], "absent");
+
+        // Apple's block cut short before any listed field could be read: nothing is
+        // listed, and "none found" is not claimed.
+        let whole = camera(true);
+        let cut = &whole[..40];
+        let ev = assess(jpeg(
+            None,
+            Some(&exif_with(&[], &[], &[(0x927C, cut)])),
+            &[],
+        ));
+        assert_eq!(ev.status, Status::Inconclusive, "{}", ev.rationale);
+        assert_eq!(ev.details["apple_makernote"], "incomplete");
+        assert!(
+            ev.rationale
+                .contains("part of Apple's MakerNote could not be read"),
+            "{}",
+            ev.rationale
+        );
     }
 
     #[test]
