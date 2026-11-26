@@ -3,14 +3,68 @@
 Camera captures from own devices. Files are not committed; this file and
 `expectations.json` are. Naming: `<device>__<variant>__<transfer>__<subject>__<n>.<ext>`
 (variant = mode/settings, transfer = how the bytes reached the Mac, subject =
-s01…s15; the same subject number is the same scene on every device). Only the
-JPEG is collected; DNG, MOV and HEIC stay out (HEIC until `ht` can load it).
+s01…s15; the same subject number is the same scene on every device). Stills are
+collected, JPEG and since 2026-11-26 HEIC (`ht` reads a HEIC's metadata; it
+never decodes the pixels). DNG and MOV stay out.
 
 Location: every file here was shot with location off. The first set
 (2026-10-06/07) was shot with location on; it was moved to 07-editors and
 GPS-stripped there, so no file with coordinates remains in the corpus. The
 hashing and container findings below were first measured on that set and are
 confirmed on the reshoot.
+
+## iPad Pro (12.9-inch) (5th generation) — iPadOS 18.7.3
+
+- Date: 2026-11-26, location off for the camera. Model identifier `iPad13,10`;
+  the name above is the one the files carry in EXIF `Model`. Pulled with
+  `htc ios grab` over Wi-Fi (AFC).
+- Settings: Smart HDR, Scene Detection and Lens Correction on. Formats on High
+  Efficiency for the `heic` rows and Most Compatible for the `jpeg` rows; Live
+  Photo on for the two `-live` rows. Back wide camera for all six.
+- Scenes: s01 a bookshelf, s02 water running into a glass, s09 a ceiling spot
+  in a lit room. s09 is new with this device and exists on no other.
+- Finding: no C2PA manifest and no XMP in any of the six. EXIF names the make,
+  the model (also as `HostComputer` and in the lens model) and the OS version
+  (`Software`), and gives the capture time with sub-seconds and a UTC offset.
+  All six say `CompositeImage = 2` (a general composite: the camera states the
+  photo was merged from several frames). No GPS, no serial number, no owner
+  name, no EXIF `ImageUniqueID`.
+- Identifiers sit in Apple's MakerNote (version 15): `RunTime` (the time since
+  power-on), `PhotoIdentifier` and `ImageCaptureRequestID` in all six, and
+  `ContentIdentifier` in the two Live Photo rows only. Until 2026-11-26
+  Halftone read all six as carrying no identifier and could not tell the Live
+  Photo stills from the others; since then `embedded_identifiers` lists the
+  four fields and `live_photo` reports the last.
+- Live Photo: the clip is a separate MOV on the device and was not collected.
+  That it carries the same `ContentIdentifier` was not checked.
+- HDR data, without a gain map. No file holds a second image: the JPEGs have
+  no MPF index, the HEICs no auxiliary item. The three JPEGs carry a 764-byte
+  `APP10` segment tagged `AROT`, which ExifTool reads as `HDRGainCurve`; no
+  counterpart was found in the HEICs. The MakerNote's `HDRHeadroom` is 1.69 in
+  both s09 files and the HEIC s02, and 0 in both s01 files and the JPEG s02.
+  Halftone reads none of this.
+- JPEG container: 4032×3024 baseline, 4:2:0, Display P3 profile. Segments in
+  the order APP1 (EXIF, with a thumbnail), APP2 (ICC), APP10 (`AROT`), DQT,
+  DRI (restart interval 252), SOF0, DHT, SOS. The quantization tables are
+  identical in all three files. `jpeg_quant` reads them as non-standard and
+  not in the fingerprint DB.
+- HEIC container: brand `heic` (compatible: mif1, MiPr, miaf, MiHB, heic). The
+  primary item is a grid of 48 HEVC tiles, 4032×3024, 8 bits per channel; with
+  it one 320×240 thumbnail, one EXIF item and a Display P3 profile. No
+  Halftone source reads HEIF structure, so these three files get no container
+  evidence beyond their metadata.
+- Privacy: each file carries per-photo UUIDs and the device's run time, so
+  the six link to each other and to one stretch of use of one device. s01
+  shows the spines of a bookshelf. None is for publication as an image.
+- Differential run 2026-11-26 (ground truth collected 2026-11-26T10:56:04Z):
+  19 of 19 files in the stratum compared, 0 disagreements; identifier values
+  compared by keyed fingerprint.
+- Open: the HDR curve and headroom, `CompositeImage`, a fingerprint for the
+  JPEG encoder and a structure source for HEIF are not read yet. Two
+  rationales (`mpf_index`, `container_directory`) mention an iPhone gain map
+  in the MPF index; this iPad writes none, and no iPhone has been measured.
+- Files (6): s01 heic, s01 jpeg, s02 heic-live, s02 jpeg-live, s09 heic,
+  s09 jpeg.
 
 ## Pixel 9 Pro Fold — Pixel Camera 10.4.117, Android 17
 
