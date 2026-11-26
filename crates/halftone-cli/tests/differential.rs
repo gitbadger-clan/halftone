@@ -587,6 +587,15 @@ fn compare_embedded(
             }
             push(field, show(want), show(got));
         }
+        // A Live Photo still is one that carries the identifier it shares with its
+        // clip: `live_photo` must be Present exactly when ExifTool reads that field.
+        let wants_live = ex["identifiers"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .any(|i| i["field"] == "apple:ContentIdentifier");
+        let got_live = evidence(insp, "live_photo").is_some_and(|e| e["status"] == "present");
+        push("live_photo.present", show(wants_live), show(got_live));
     }
     // The synthetic cases also state what each source must say.
     for (field, key, source) in [

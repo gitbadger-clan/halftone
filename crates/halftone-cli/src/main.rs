@@ -416,6 +416,7 @@ fn registry(o: &RegistryOpts) -> Result<Registry> {
         ));
         reg.push(Box::new(halftone_container::gcontainer::ContainerDirectory));
         reg.push(Box::new(halftone_container::mpf::MpfIndex));
+        reg.push(Box::new(halftone_container::live_photo::LivePhoto));
 
         // Pixel-domain lattice runs dark (no threshold) until a calibration exists.
         reg.push(Box::new(halftone_pixel::LatticeSource { threshold: None }));

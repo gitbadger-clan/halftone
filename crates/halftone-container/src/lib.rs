@@ -29,6 +29,8 @@
 //!   [`embedded`].
 //! - [`apple_makernote`]: the four fields read from the block an Apple camera writes
 //!   into EXIF. No source of its own; `embedded_identifiers` lists them.
+//! - [`live_photo::LivePhoto`] (`live_photo`): whether a still carries the identifier
+//!   it shares with a Live Photo clip. The clip is another file and is not looked for.
 //! - [`icc`]: the embedded ICC colour profile, read: header, tag list, description.
 //!   No source of its own; `embedded_identifiers` lists a display's name from it.
 //! - [`gcontainer::ContainerDirectory`] (`container_directory`): the Motion Photo / Ultra HDR
@@ -49,6 +51,7 @@ pub mod gcontainer;
 pub mod icc;
 pub mod identifiers;
 pub mod jpeg;
+pub mod live_photo;
 pub mod marking;
 pub mod mpf;
 pub mod png;
