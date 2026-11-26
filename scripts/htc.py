@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.14"
-# dependencies = ["typer>=0.27", "inquirer>=3.4", "pymobiledevice3>=11.45,<12"]
+# dependencies = ["typer>=0.27", "inquirer>=3.4", "pymobiledevice3>=11.46,<12"]
 #
 # [tool.uv]
 # exclude-newer = "14 days"  # only releases at least two weeks old
@@ -29,9 +29,10 @@ says so: the capture probably produced no new file.
 
 Every copy is checked before it gets its name: Android pulls by the sha256 the phone
 computes, iOS pulls by the size before and after reading plus the SHA-1 the device
-computes (pymobiledevice3 11.50 or newer; older versions cannot ask for it, and the
-file is read twice and the two reads compared instead). A copy that fails the check
-never lands in the stratum; it is kept in /tmp/ht-mismatch/ for inspection.
+computes (pymobiledevice3 11.46 added that request, hence the floor above). When a
+device refuses to compute it, the file is read a second time and the two reads are
+compared instead: a copy is never accepted on its size alone. A copy that fails the
+check never lands in the stratum; it is kept in /tmp/ht-mismatch/ for inspection.
 
 Needs adb for `android`, exiftool for `layout`, ht for the inspection after a grab or
 take. That inspection is how a capture gets judged, so the commands that start or
@@ -737,36 +738,36 @@ async def ios_read(afc, src: str, size: int, sink) -> tuple[bytes, str]:
 async def ios_pull_verified(afc, src: str, dst: Path) -> str:
     """Copy via a temporary file; return the sha256. Checks: the size settled, the size
     did not change while reading, and the SHA-1 the device computes over its own copy
-    matches the bytes received. pymobiledevice3 before 11.50 cannot ask the device for
-    a hash; then the file is read a second time and the two reads must agree. A
-    failed copy goes to /tmp/ht-mismatch/."""
+    matches the bytes received. A device that refuses the hash request has the file
+    read a second time instead, and the two reads must agree: a copy is never
+    accepted on its size alone. A failed copy goes to /tmp/ht-mismatch/."""
     size = await ios_settled_size(afc, src)
     tmp = dst.with_name(f".{dst.name}.part")
     try:
         with tmp.open("wb") as f:
             sha1, sha256 = await ios_read(afc, src, size, f.write)
-    except BaseException:
+        got = tmp.stat().st_size
+        after = (await afc.stat(src))["st_size"]
+        problem = None
+        if got != size or after != size:
+            problem = f"size: device {size} before, {after} after, received {got}"
+        else:
+            try:
+                device_sha1 = await afc.get_file_hash(src)
+            except Exception as e:  # an iOS version that refuses the request
+                why = f"{type(e).__name__}: {e}".rstrip(": ")
+                print(f"{C.YELLOW}device hash unavailable ({why}); reading the file a second time instead{C.RESET}")
+                _, again = await ios_read(afc, src, size, lambda _chunk: None)
+                if again != sha256:
+                    problem = "two reads of the file returned different bytes"
+                else:
+                    print(f"{C.DIM}checked by reading twice{C.RESET}")
+            else:
+                if device_sha1 != sha1:
+                    problem = "SHA-1 of the received bytes differs from the device's"
+    except BaseException:  # interrupted, or the device went away: leave no .part behind
         tmp.unlink(missing_ok=True)
         raise
-    got = tmp.stat().st_size
-    after = (await afc.stat(src))["st_size"]
-    problem = None
-    if got != size or after != size:
-        problem = f"size: device {size} before, {after} after, received {got}"
-    elif hasattr(afc, "get_file_hash"):
-        try:
-            device_sha1 = await afc.get_file_hash(src)
-        except Exception as e:  # an iOS version that refuses the request
-            print(f"{C.YELLOW}device hash unavailable ({e}); size check only{C.RESET}")
-            device_sha1 = None
-        if device_sha1 is not None and device_sha1 != sha1:
-            problem = "SHA-1 of the received bytes differs from the device's"
-    else:
-        _, again = await ios_read(afc, src, size, lambda _chunk: None)
-        if again != sha256:
-            problem = "two reads of the file returned different bytes"
-        else:
-            print(f"{C.DIM}checked by reading twice (device hash needs pymobiledevice3 11.50+){C.RESET}")
     if problem:
         kept = keep_bad(tmp, dst.name)
         die(f"{src}: {problem}; copy kept at {kept}, nothing written to the stratum", 1)
