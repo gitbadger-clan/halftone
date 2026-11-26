@@ -25,7 +25,9 @@ the extension they were delivered with (SOURCE.md naming rule). `-f` on grab and
 replaces an existing file of the same stem, under any extension, once the new copy
 has passed its check, and keeps the old copy in /tmp/ht-replaced/ (cleared on
 restart). When the new copy has the same sha256 as the file it replaces, a warning
-says so: the capture probably produced no new file.
+says so: the capture probably produced no new file. Without `-f` an existing file
+stops the command, and the refusal says whether the new file is byte-identical to
+the one already there or a different one; nothing is written and the mark stays.
 
 Every copy is checked before it gets its name: Android pulls by the sha256 the phone
 computes, iOS pulls by the size before and after reading plus the SHA-1 the device
@@ -60,7 +62,7 @@ import time
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Annotated, NamedTuple
+from typing import Annotated, NamedTuple, NoReturn
 
 import typer
 
@@ -125,11 +127,23 @@ def existing(folder: Path, stem: str) -> list[Path]:
     return sorted(folder.glob(glob.escape(stem) + ".*"))
 
 
-def refuse_existing(folder: Path, stem: str, force: bool, again: str) -> None:
-    """Without -f, an existing <stem>.* stops the command before anything moves."""
-    old = existing(folder, stem)
-    if old and not force:
-        die(f"exists: {old[0]} (use {again} -f {stem} to replace it)", 1)
+def taken(folder: Path, stem: str, force: bool) -> list[Path]:
+    """The <stem>.* that stop a command run without -f; empty when it may go ahead."""
+    return [] if force else existing(folder, stem)
+
+
+def refuse_existing(old: list[Path], new_sha: str | None, again: str, stem: str) -> NoReturn:
+    """Stop before anything moves, and say whether the new file is the one already
+    there. `new_sha` is the new file's sha256, or None when it is already known to
+    differ (no old file has its size). Nothing is written and the mark stays, so the
+    same capture can be grabbed again under another name."""
+    same = next((o for o in old if new_sha is not None and sha256_of(o) == new_sha), None)
+    if same is not None:
+        mark = again.rsplit(" ", 1)[0] + " mark"
+        die(f"exists: {same}, and the new file is byte-identical to it (sha256 {new_sha[:16]}…): "
+            f"already collected, nothing written. `{mark}` moves past it.", 1)
+    die(f"exists: {old[0]}, and the new file differs from it: nothing written. "
+        f"Use {again} -f {stem} to replace it, or give this capture its own name.", 1)
 
 
 def install(new: Path, folder: Path, stem: str) -> Path:
@@ -258,6 +272,14 @@ def phone_new() -> list[str]:
     return [line.strip() for line in out.splitlines() if line.strip()]
 
 
+def phone_sha256(remote: str) -> str:
+    """The sha256 the phone computes over its own copy of a file."""
+    out = sh(f"sha256sum {shlex.quote(remote)}").split()
+    if not out:
+        die(f"the phone returned no sha256 for {remote}", 1)
+    return out[0]
+
+
 def adb_pull_verified(remote: str, dst: Path, mismatch_to: Path | None = None) -> str | None:
     """Pull byte-exact via a temporary file and compare with the sha256 the phone
     computes. Returns the sha256, or None after printing why. A mismatched copy goes
@@ -369,7 +391,9 @@ def android_grab(stem: Stem, force: Force = False) -> None:
         die(f"more than one new image since the mark; pull the right one with "
             f"`htc android pull <remote> {stem}.<ext>`:\n  {listing}", 1)
     folder = stratum()
-    refuse_existing(folder, stem, force, "htc android grab")
+    old = taken(folder, stem, force)
+    if old:
+        refuse_existing(old, phone_sha256(files[0]), "htc android grab", stem)
     print(f"found {files[0]}")
     stage = staging(folder, stem, ext_of(files[0]))
     if adb_pull_verified(files[0], stage) is None:
@@ -546,7 +570,9 @@ def desk_take(stem: Stem, force: Force = False) -> None:
         listing = "\n  ".join(map(str, files))
         die(f"more than one new image since the mark; move the right one by hand:\n  {listing}", 1)
     folder = stratum()
-    refuse_existing(folder, stem, force, "htc desk take")
+    old = taken(folder, stem, force)
+    if old:
+        refuse_existing(old, sha256_of(files[0]), "htc desk take", stem)
     print(f"found {files[0]}")
     stage = staging(folder, stem, ext_of(files[0].name))
     shutil.move(files[0], stage)
@@ -733,6 +759,17 @@ async def ios_read(afc, src: str, size: int, sink) -> tuple[bytes, str]:
     finally:
         await afc.fclose(handle)
     return sha1.digest(), sha256.hexdigest()
+
+
+async def ios_sha256_if_sized_like(afc, src: str, old: list[Path]) -> str | None:
+    """The device file's sha256, to compare with files already in the stratum. None
+    when none of them has its size: it differs, and is not read. One read, not
+    checked against the device's hash: enough for a refusal, not for a copy."""
+    size = await ios_settled_size(afc, src)
+    if all(o.stat().st_size != size for o in old):
+        return None
+    _, sha256 = await ios_read(afc, src, size, lambda _chunk: None)
+    return sha256
 
 
 async def ios_pull_verified(afc, src: str, dst: Path) -> str:
@@ -1156,7 +1193,9 @@ def ios_grab(stem: Stem, force: Force = False, device: Device = None,
             listing = "\n  ".join(stills) or "(none)"
             die(f"{len(stills)} new stills since the mark (want exactly one; --pick NAME):\n  {listing}", 1)
         src = stills[0]
-        refuse_existing(folder, stem, force, "htc ios grab")
+        old = taken(folder, stem, force)
+        if old:
+            refuse_existing(old, await ios_sha256_if_sized_like(afc, src, old), "htc ios grab", stem)
         print(f"found {src}")
         stage = staging(folder, stem, ext_of(src))
         sha = await ios_pull_verified(afc, src, stage)
